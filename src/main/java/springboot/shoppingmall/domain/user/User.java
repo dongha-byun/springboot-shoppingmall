@@ -29,4 +29,17 @@ public class User extends BaseEntity {
 
     @Column(nullable = false)
     private String telNo;
+
+    protected User(){
+
+    }
+
+    public User(String userName, String loginId, String password, String telNo) {
+        this.userName = userName;
+        this.loginId = loginId;
+        this.password = password;
+        this.telNo = telNo;
+    }
+
+
 }
