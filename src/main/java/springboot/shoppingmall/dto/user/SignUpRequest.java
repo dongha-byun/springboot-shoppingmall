@@ -1,19 +1,17 @@
 package springboot.shoppingmall.dto.user;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import springboot.shoppingmall.domain.user.User;
 
 @Data
+@NoArgsConstructor
 public class SignUpRequest {
     private String name;
     private String loginId;
     private String password;
     private String confirmPassword;
     private String telNo;
-
-    public SignUpRequest(){
-
-    }
 
     public SignUpRequest(String name, String loginId, String password, String confirmPassword, String telNo) {
         this.name = name;
