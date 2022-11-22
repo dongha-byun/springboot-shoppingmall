@@ -78,6 +78,36 @@ public class SignUpAcceptanceTest {
         );
     }
 
+    /**
+     * given 회원가입을 하고
+     * when 비밀번호 찾기를 시도하면
+     * then 마스킹된 아이디가 조회된다.
+     */
+    @Test
+    @DisplayName("회원정보 조회에 성공한다.")
+    void findPwSuccess(){
+        // given
+        회원가입("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
+
+        // when
+        Map<String, String> param = new HashMap<>();
+        param.put("name", "변동하");
+        param.put("telNo", "010-1234-1234");
+        param.put("loginId", "dongha");
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(param)
+                .when().get("/find-pw")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().get("body.name").toString()).isEqualTo(
+                "변동하"
+        );
+    }
+
     public static ExtractableResponse<Response> 회원가입(String name, String loginId, String password, String confirmPassword, String telNo) {
         Map<String, String> param = new HashMap<>();
         param.put("name", name);

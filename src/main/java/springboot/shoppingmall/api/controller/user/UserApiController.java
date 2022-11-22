@@ -9,15 +9,15 @@ import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.api.util.ApiResult;
 import springboot.shoppingmall.dto.user.FindIdRequest;
 import springboot.shoppingmall.dto.user.FindIdResponse;
+import springboot.shoppingmall.dto.user.FindPwRequest;
+import springboot.shoppingmall.dto.user.FindPwResponse;
 import springboot.shoppingmall.dto.user.SignUpRequest;
 import springboot.shoppingmall.service.user.UserService;
 
 @RestController
 @RequiredArgsConstructor
 public class UserApiController {
-
     private final UserService userService;
-
     @PostMapping("/sign-up")
     public ApiResult signUp(@RequestBody SignUpRequest signUpRequest){
         userService.signUp(signUpRequest);
@@ -34,6 +34,15 @@ public class UserApiController {
         return ApiResult.build()
                 .returnCode("0")
                 .message("아이디 조회에 성공했습니다.")
+                .body(response);
+    }
+
+    @GetMapping("/find-pw")
+    public ApiResult findPw(@RequestBody FindPwRequest findPwRequest){
+        FindPwResponse response = userService.findPw(findPwRequest);
+        return ApiResult.build()
+                .returnCode("0")
+                .message("회원정보 조회에 성공했습니다.")
                 .body(response);
     }
 }
