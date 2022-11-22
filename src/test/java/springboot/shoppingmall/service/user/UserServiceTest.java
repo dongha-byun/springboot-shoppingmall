@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.domain.user.User;
 import springboot.shoppingmall.dto.user.FindIdRequest;
 import springboot.shoppingmall.dto.user.FindIdResponse;
+import springboot.shoppingmall.dto.user.FindPwRequest;
+import springboot.shoppingmall.dto.user.FindPwResponse;
 import springboot.shoppingmall.dto.user.SignUpRequest;
 
 @Transactional
@@ -51,5 +53,32 @@ class UserServiceTest {
 
         // then
         assertThat(response.getLoginId()).isEqualTo("dongha");
+    }
+
+    @Test
+    @DisplayName("비밀번호 조회 성공")
+    void findPw(){
+        // given
+        SignUpRequest signUpRequest = new SignUpRequest("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
+        userService.signUp(signUpRequest);
+
+        // when
+        FindPwResponse response = userService.findPw(new FindPwRequest("변동하", "010-1234-1234", "dongha"));
+
+        // then
+        assertThat(response.getLoginId()).isEqualTo("dongha");
+    }
+
+    @Test
+    @DisplayName("회원정보 조회")
+    void selectUserInfo(){
+        // given
+        SignUpRequest signUpRequest = new SignUpRequest("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
+        Long userId = userService.signUp(signUpRequest);
+
+        // when
+        User user = userService.findUser(userId);
+
+        // then
     }
 }

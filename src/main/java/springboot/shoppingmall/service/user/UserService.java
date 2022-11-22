@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.domain.user.User;
 import springboot.shoppingmall.dto.user.FindIdRequest;
 import springboot.shoppingmall.dto.user.FindIdResponse;
+import springboot.shoppingmall.dto.user.FindPwRequest;
+import springboot.shoppingmall.dto.user.FindPwResponse;
 import springboot.shoppingmall.dto.user.SignUpRequest;
 import springboot.shoppingmall.repository.user.UserRepository;
 
@@ -32,5 +34,10 @@ public class UserService {
     public FindIdResponse findId(FindIdRequest findIdRequest) {
         User user = userRepository.findLoginIdByNameAndTelNo(findIdRequest);
         return FindIdResponse.of(user);
+    }
+
+    public FindPwResponse findPw(FindPwRequest findPwRequest) {
+        User user = userRepository.findUserByNameAndTelNoAndLoginId(findPwRequest);
+        return FindPwResponse.of(user);
     }
 }
