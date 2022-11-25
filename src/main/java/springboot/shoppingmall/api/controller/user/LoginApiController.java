@@ -3,6 +3,7 @@ package springboot.shoppingmall.api.controller.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,11 +20,9 @@ public class LoginApiController {
     private final LoginService loginService;
 
     @PostMapping("/login")
-    public ApiResult login(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity login(@RequestBody LoginRequest loginRequest){
         User user = loginService.login(loginRequest.getLoginId(), loginRequest.getPassword());
         log.info("loginApiController : login user={}",user);
-        return ApiResult.build()
-                .returnCode("0")
-                .message("로그인 성공");
+        return ResponseEntity.ok().build();
     }
 }

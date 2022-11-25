@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Getter;
 import springboot.shoppingmall.domain.BaseEntity;
+import springboot.shoppingmall.dto.user.UserRequest;
 
 @Entity
 @Getter
@@ -42,4 +43,8 @@ public class User extends BaseEntity {
     }
 
 
+    public void updateUser(UserRequest userRequest) {
+        this.telNo = userRequest.getTelNo();
+        this.password = userRequest.getPassword();
+    }
 }

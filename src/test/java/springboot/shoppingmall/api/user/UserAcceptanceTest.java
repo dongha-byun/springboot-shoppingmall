@@ -16,7 +16,9 @@ import springboot.shoppingmall.AcceptanceTest;
 public class UserAcceptanceTest extends AcceptanceTest {
 
     /**
-     * given 회원가입 정보를 생성하고 when 회원가입을 시도하면 then 회원가입에 성공한다.
+     * given 회원가입 정보를 생성하고
+     * when 회원가입을 시도하면
+     * then 회원가입에 성공한다.
      */
     @Test
     @DisplayName("회원가입에 성공한다.")
@@ -31,7 +33,9 @@ public class UserAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * given 회원가입을 하고 when 아이디 찾기를 시도하면 then 마스킹된 아이디가 조회된다.
+     * given 회원가입을 하고
+     * when 아이디 찾기를 시도하면
+     * then 마스킹된 아이디가 조회된다.
      */
     @Test
     @DisplayName("아이디 조회에 성공한다.")
@@ -50,7 +54,9 @@ public class UserAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * given 회원가입을 하고 when 비밀번호 찾기를 시도하면 then 마스킹된 아이디가 조회된다.
+     * given 회원가입을 하고
+     * when 비밀번호 찾기를 시도하면
+     * then 마스킹된 아이디가 조회된다.
      */
     @Test
     @DisplayName("회원정보 조회에 성공한다.")

@@ -14,6 +14,7 @@ import springboot.shoppingmall.dto.user.FindIdResponse;
 import springboot.shoppingmall.dto.user.FindPwRequest;
 import springboot.shoppingmall.dto.user.FindPwResponse;
 import springboot.shoppingmall.dto.user.SignUpRequest;
+import springboot.shoppingmall.dto.user.UserResponse;
 
 @Transactional
 @SpringBootTest
@@ -32,12 +33,12 @@ class UserServiceTest {
         Long id = userService.signUp(signUpRequest);
 
         // then
-        User user = userService.findUser(id);
+        UserResponse userResponse = userService.findUser(id);
         assertAll(
-                () -> assertThat(user.getUserName()).isEqualTo("변동하"),
-                () -> assertThat(user.getLoginId()).isEqualTo("dongha"),
-                () -> assertThat(user.getPassword()).isEqualTo("dongha1!"),
-                () -> assertThat(user.getTelNo()).isEqualTo("010-1234-1234")
+                () -> assertThat(userResponse.getName()).isEqualTo("변동하"),
+                () -> assertThat(userResponse.getLoginId()).isEqualTo("dongha"),
+                () -> assertThat(userResponse.getLoginId()).isEqualTo("dongha1!"),
+                () -> assertThat(userResponse.getTelNo()).isEqualTo("010-1234-1234")
         );
     }
 
@@ -69,16 +70,4 @@ class UserServiceTest {
         assertThat(response.getLoginId()).isEqualTo("dongha");
     }
 
-    @Test
-    @DisplayName("회원정보 조회")
-    void selectUserInfo(){
-        // given
-        SignUpRequest signUpRequest = new SignUpRequest("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
-        Long userId = userService.signUp(signUpRequest);
-
-        // when
-        User user = userService.findUser(userId);
-
-        // then
-    }
 }
