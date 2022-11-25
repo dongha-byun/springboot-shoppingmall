@@ -13,36 +13,33 @@ import springboot.shoppingmall.dto.user.UserRequest;
 import springboot.shoppingmall.dto.user.UserResponse;
 import springboot.shoppingmall.repository.user.UserRepository;
 
-@Transactional
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
-
+    @Transactional
     public Long signUp(SignUpRequest signUpRequest){
         User user = userRepository.save(SignUpRequest.to(signUpRequest));
         return user.getId();
     }
 
-    @Transactional(readOnly = true)
     public UserResponse findUser(Long id){
         return UserResponse.of(userRepository.findById(id)
                 .orElseThrow(
                         () -> new IllegalArgumentException("사용자 정보 조회 실패")
                 ));
     }
-    @Transactional(readOnly = true)
     public FindIdResponse findId(FindIdRequest findIdRequest) {
         User user = userRepository.findLoginIdByNameAndTelNo(findIdRequest);
         return FindIdResponse.of(user);
     }
-    @Transactional(readOnly = true)
     public FindPwResponse findPw(FindPwRequest findPwRequest) {
         User user = userRepository.findUserByNameAndTelNoAndLoginId(findPwRequest);
         return FindPwResponse.of(user);
     }
-
+    @Transactional
     public void editUser(Long id, UserRequest userRequest){
         User user = userRepository.findById(id)
                 .orElseThrow(

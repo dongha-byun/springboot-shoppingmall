@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.domain.user.User;
 import springboot.shoppingmall.api.util.ApiResult;
 import springboot.shoppingmall.dto.user.LoginRequest;
+import springboot.shoppingmall.dto.user.LoginResponse;
 import springboot.shoppingmall.service.user.LoginService;
 
 @RestController
@@ -21,8 +22,8 @@ public class LoginApiController {
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequest loginRequest){
-        User user = loginService.login(loginRequest.getLoginId(), loginRequest.getPassword());
-        log.info("loginApiController : login user={}",user);
-        return ResponseEntity.ok().build();
+        LoginResponse login = loginService.login(loginRequest);
+        log.info("loginApiController : login user={}", login);
+        return ResponseEntity.ok(login);
     }
 }

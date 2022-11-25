@@ -1,6 +1,7 @@
 package springboot.shoppingmall.api.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static springboot.shoppingmall.api.LoginAcceptanceTest.*;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
+import springboot.shoppingmall.dto.user.LoginResponse;
+import springboot.shoppingmall.dto.user.UserResponse;
 
 public class UserAcceptanceTest extends AcceptanceTest {
 
@@ -65,7 +68,7 @@ public class UserAcceptanceTest extends AcceptanceTest {
         회원가입("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
 
         // when
-        ExtractableResponse<Response> response = 회원정보_조회("변동하", "010-1234-1234","dongha");
+        ExtractableResponse<Response> response = 비밀번호_찾기("변동하", "010-1234-1234","dongha");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -74,7 +77,43 @@ public class UserAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private ExtractableResponse<Response> 회원정보_조회(String name, String telNo, String loginId) {
+    /**
+     * given 회원가입한 회원으로 로그인하고
+     * when password 와 연락처를 변경하면
+     * then 회원정보 조회 시, 변경된 정보가 조회된다.
+     */
+    @Test
+    @DisplayName("회원정보 수정에 성공한다.")
+    void updateUser() {
+        // given
+        회원가입("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
+        LoginResponse login = 로그인("dongha", "dongha1!").as(LoginResponse.class);
+
+        // when
+        Map<String, String> param = new HashMap<>();
+        param.put("password", "dongha2@");
+        param.put("telNo", "010-4567-4567");
+        RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(param)
+                .when().put("/user/{id}", login.getUserId())
+                .then().log().all()
+                .extract();
+
+        // then
+        UserResponse response = 회원정보_조회(login.getUserId()).as(UserResponse.class);
+
+        assertThat(response.getTelNo()).isEqualTo("010-4567-4567");
+    }
+
+    private ExtractableResponse<Response> 회원정보_조회(Long id) {
+        return RestAssured.given().log().all()
+                .when().get("/user/{id}", id)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 비밀번호_찾기(String name, String telNo, String loginId) {
         Map<String, String> param = new HashMap<>();
         param.put("name", name);
         param.put("telNo", telNo);

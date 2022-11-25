@@ -33,7 +33,7 @@ public class LoginAcceptanceTest extends AcceptanceTest {
         assertThat(loginResponse.jsonPath().get("returnCode").toString()).isEqualTo("0");
     }
 
-    private ExtractableResponse<Response> 로그인(String loginId, String password) {
+    public static ExtractableResponse<Response> 로그인(String loginId, String password) {
         Map<String, String> loginParam = new HashMap<>();
         loginParam.put("loginId", loginId);
         loginParam.put("password", password);

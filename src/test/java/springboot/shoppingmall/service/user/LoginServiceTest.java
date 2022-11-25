@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.domain.user.User;
+import springboot.shoppingmall.dto.user.LoginRequest;
+import springboot.shoppingmall.dto.user.LoginResponse;
 import springboot.shoppingmall.repository.user.UserRepository;
 
 @Transactional
@@ -30,10 +32,10 @@ class LoginServiceTest {
         );
 
         // when
-        User loginUser = loginService.login("admin", "admin1!");
+        LoginResponse login = loginService.login(new LoginRequest("admin", "admin1!"));
 
         // then
-        assertThat(loginUser).isEqualTo(saveUser);
+        assertThat(login.getUserId()).isEqualTo(saveUser.getId());
     }
 
 }
