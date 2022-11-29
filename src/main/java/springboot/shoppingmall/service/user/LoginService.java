@@ -22,4 +22,12 @@ public class LoginService {
                         () -> new IllegalArgumentException("로그인 실패")
                 ));
     }
+
+    public User login2(LoginRequest loginRequest) {
+        return userRepository.findUserByLoginId(loginRequest.getLoginId())
+                .filter(user -> loginRequest.getPassword().equals(user.getPassword()))
+                .orElseThrow(
+                        () -> new IllegalArgumentException("로그인 실패")
+                );
+    }
 }
