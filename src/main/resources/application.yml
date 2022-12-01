@@ -16,4 +16,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    show-sql: true
+        show_sql: true
+        use_sql_comments: true
+
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql: trace
