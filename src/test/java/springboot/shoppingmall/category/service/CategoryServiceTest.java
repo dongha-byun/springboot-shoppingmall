@@ -1,4 +1,4 @@
-package springboot.shoppingmall.service.category;
+package springboot.shoppingmall.category.service;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -9,8 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.dto.category.CategoryRequest;
-import springboot.shoppingmall.dto.category.CategoryResponse;
+import springboot.shoppingmall.category.dto.CategoryRequest;
+import springboot.shoppingmall.category.dto.CategoryResponse;
+import springboot.shoppingmall.category.service.CategoryService;
 
 @Transactional
 @SpringBootTest

@@ -1,4 +1,4 @@
-package springboot.shoppingmall.api.category;
+package springboot.shoppingmall.category;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
-import springboot.shoppingmall.dto.category.CategoryResponse;
+import springboot.shoppingmall.category.dto.CategoryResponse;
 
 public class CategoryAcceptanceTest extends AcceptanceTest {
 

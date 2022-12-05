@@ -1,7 +1,7 @@
-package springboot.shoppingmall.api.user;
+package springboot.shoppingmall.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static springboot.shoppingmall.api.LoginAcceptanceTest.*;
+import static springboot.shoppingmall.user.LoginAcceptanceTest.*;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
-import springboot.shoppingmall.dto.user.LoginResponse;
-import springboot.shoppingmall.dto.user.UserResponse;
+import springboot.shoppingmall.user.dto.LoginResponse;
+import springboot.shoppingmall.user.dto.UserResponse;
 
 public class UserAcceptanceTest extends AcceptanceTest {
 

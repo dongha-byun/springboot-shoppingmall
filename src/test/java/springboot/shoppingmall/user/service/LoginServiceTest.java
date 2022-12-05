@@ -1,17 +1,16 @@
-package springboot.shoppingmall.service.user;
+package springboot.shoppingmall.user.service;
 
 import static org.assertj.core.api.Assertions.*;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.domain.user.User;
-import springboot.shoppingmall.dto.user.LoginRequest;
-import springboot.shoppingmall.dto.user.LoginResponse;
-import springboot.shoppingmall.repository.user.UserRepository;
+import springboot.shoppingmall.user.domain.User;
+import springboot.shoppingmall.user.dto.LoginRequest;
+import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.user.service.LoginService;
 
 @Transactional
 @SpringBootTest
@@ -32,10 +31,10 @@ class LoginServiceTest {
         );
 
         // when
-        LoginResponse login = loginService.login(new LoginRequest("admin", "admin1!"));
+        User user = loginService.login(new LoginRequest("admin", "admin1!"));
 
         // then
-        assertThat(login.getUserId()).isEqualTo(saveUser.getId());
+        assertThat(user.getId()).isEqualTo(saveUser.getId());
     }
 
 }

@@ -1,22 +1,21 @@
-package springboot.shoppingmall.api.product;
+package springboot.shoppingmall.product;
 
 import static org.assertj.core.api.Assertions.*;
-import static springboot.shoppingmall.api.category.CategoryAcceptanceTest.*;
+import static springboot.shoppingmall.category.CategoryAcceptanceTest.*;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
-import springboot.shoppingmall.dto.category.CategoryResponse;
-import springboot.shoppingmall.dto.product.ProductRequest;
+import springboot.shoppingmall.category.dto.CategoryResponse;
+import springboot.shoppingmall.product.dto.ProductRequest;
 
 public class ProductAcceptanceTest extends AcceptanceTest {
 

@@ -1,4 +1,4 @@
-package springboot.shoppingmall.service.user;
+package springboot.shoppingmall.user.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,13 +8,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.domain.user.User;
-import springboot.shoppingmall.dto.user.FindIdRequest;
-import springboot.shoppingmall.dto.user.FindIdResponse;
-import springboot.shoppingmall.dto.user.FindPwRequest;
-import springboot.shoppingmall.dto.user.FindPwResponse;
-import springboot.shoppingmall.dto.user.SignUpRequest;
-import springboot.shoppingmall.dto.user.UserResponse;
+import springboot.shoppingmall.user.dto.FindIdRequest;
+import springboot.shoppingmall.user.dto.FindIdResponse;
+import springboot.shoppingmall.user.dto.FindPwRequest;
+import springboot.shoppingmall.user.dto.FindPwResponse;
+import springboot.shoppingmall.user.dto.SignUpRequest;
+import springboot.shoppingmall.user.dto.UserResponse;
+import springboot.shoppingmall.user.service.UserService;
 
 @Transactional
 @SpringBootTest
