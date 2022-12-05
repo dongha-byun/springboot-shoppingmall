@@ -16,14 +16,14 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Transactional
-    public Long saveCategory(CategoryRequest categoryRequest) {
+    public CategoryResponse saveCategory(CategoryRequest categoryRequest) {
         Category parent = null;
         if(categoryRequest.getParentId() != null){
             parent = categoryRepository.findById(categoryRequest.getParentId()).orElseGet(null);
         }
 
         Category category = categoryRepository.save(CategoryRequest.toCategory(categoryRequest, parent));
-        return category.getId();
+        return CategoryResponse.of(category);
     }
 
     public CategoryResponse findCategoryById(Long categoryId) {

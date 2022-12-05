@@ -26,11 +26,10 @@ public class CategoryServiceTest {
         CategoryRequest categoryRequest = new CategoryRequest("식품", null);
 
         // when
-        Long categoryId = categoryService.saveCategory(categoryRequest);
+        CategoryResponse categoryResponse = categoryService.saveCategory(categoryRequest);
 
         // then
-        CategoryResponse categoryResponse = categoryService.findCategoryById(categoryId);
-        assertThat(categoryResponse.getId()).isEqualTo(categoryId);
+        assertThat(categoryResponse.getId()).isNotNull();
     }
 
     @Test
@@ -38,15 +37,15 @@ public class CategoryServiceTest {
     void addSubCategoryTest(){
         // given
         CategoryRequest categoryRequest = new CategoryRequest("식품", null);
-        Long categoryId = categoryService.saveCategory(categoryRequest);
+        CategoryResponse categoryResponse = categoryService.saveCategory(categoryRequest);
 
         // when
-        categoryService.saveCategory(new CategoryRequest("육류", categoryId));
-        categoryService.saveCategory(new CategoryRequest("생선", categoryId));
+        categoryService.saveCategory(new CategoryRequest("육류", categoryResponse.getId()));
+        categoryService.saveCategory(new CategoryRequest("생선", categoryResponse.getId()));
 
         // then
-        CategoryResponse categoryResponse = categoryService.findCategoryById(categoryId);
-        List<String> categoryNames = categoryResponse.getSubCategories().stream()
+        CategoryResponse response = categoryService.findCategoryById(categoryResponse.getId());
+        List<String> categoryNames = response.getSubCategories().stream()
                 .map(CategoryResponse::getName)
                 .collect(Collectors.toList());
         assertThat(categoryNames).containsExactly(

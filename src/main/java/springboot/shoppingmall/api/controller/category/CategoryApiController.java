@@ -1,5 +1,7 @@
 package springboot.shoppingmall.api.controller.category;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +22,17 @@ public class CategoryApiController {
     private final CategoryService categoryService;
 
     @PostMapping("/category")
-    public ResponseEntity addCategory(@RequestBody CategoryRequest categoryRequest){
-        Long categoryId = categoryService.saveCategory(categoryRequest);
-        return ResponseEntity.ok(categoryId);
+    public ResponseEntity<CategoryResponse> addCategory(@RequestBody CategoryRequest categoryRequest){
+        CategoryResponse categoryResponse = categoryService.saveCategory(categoryRequest);
+        try {
+            return ResponseEntity.created(new URI("/category/"+categoryResponse.getId())).body(categoryResponse);
+        } catch (URISyntaxException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping("/category/{id}")
-    public ResponseEntity getCategory(@PathVariable("id") Long id){
+    public ResponseEntity<CategoryResponse> getCategory(@PathVariable("id") Long id){
         CategoryResponse categoryResponse = categoryService.findCategoryById(id);
         return ResponseEntity.ok(categoryResponse);
     }

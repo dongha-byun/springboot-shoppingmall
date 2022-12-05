@@ -38,6 +38,11 @@ public class Category extends BaseEntity {
     private List<Category> subCategories = new ArrayList<>();
 
     public Category(String name, Category parent) {
+        this(null, name, parent);
+    }
+
+    public Category(Long id, String name, Category parent) {
+        this.id = id;
         this.name = name;
         mappingParent(parent);
     }
