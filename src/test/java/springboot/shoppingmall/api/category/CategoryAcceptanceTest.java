@@ -30,10 +30,10 @@ public class CategoryAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> 등록_응답 = 카테고리_등록("식품", null);
-        assertThat(등록_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(등록_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        ExtractableResponse<Response> 조회_응답 = 카테고리_조회(등록_응답.as(Long.class));
+        ExtractableResponse<Response> 조회_응답 = 카테고리_조회(등록_응답);
         assertThat(조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -47,16 +47,19 @@ public class CategoryAcceptanceTest extends AcceptanceTest {
     void addSubCategory(){
         // given
         ExtractableResponse<Response> 상위_등록_응답 = 카테고리_등록("식품", null);
-        assertThat(상위_등록_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(상위_등록_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
-        ExtractableResponse<Response> 하위_등록_응답1 = 카테고리_등록("육류", 상위_등록_응답.as(Long.class));
-        assertThat(하위_등록_응답1.statusCode()).isEqualTo(HttpStatus.OK.value());
-        ExtractableResponse<Response> 하위_등록_응답2 = 카테고리_등록("생선", 상위_등록_응답.as(Long.class));
-        assertThat(하위_등록_응답2.statusCode()).isEqualTo(HttpStatus.OK.value());
+        CategoryResponse categoryResponse = 상위_등록_응답.as(CategoryResponse.class);
+
+        ExtractableResponse<Response> 하위_등록_응답1 = 카테고리_등록("육류", categoryResponse.getId());
+        assertThat(하위_등록_응답1.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        ExtractableResponse<Response> 하위_등록_응답2 = 카테고리_등록("생선", categoryResponse.getId());
+        assertThat(하위_등록_응답2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        ExtractableResponse<Response> 조회_응답 = 카테고리_조회(상위_등록_응답.as(Long.class));
+        ExtractableResponse<Response> 조회_응답 = 카테고리_조회(상위_등록_응답);
         CategoryResponse response = 조회_응답.as(CategoryResponse.class);
         List<String> names = response.getSubCategories().stream()
                 .map(CategoryResponse::getName)
@@ -67,31 +70,32 @@ public class CategoryAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private ExtractableResponse<Response> 카테고리_조회(Long id) {
+    public static ExtractableResponse<Response> 카테고리_조회(ExtractableResponse<Response> response) {
+        CategoryResponse categoryResponse = response.as(CategoryResponse.class);
+
         Map<String, String> headerParam = new HashMap<>();
         headerParam.put("x-auth-token", "testToken");
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers(headerParam)
-                .when().get("/category/{id}", id)
+                .when().get("/category/{id}", categoryResponse.getId())
                 .then().log().all()
                 .extract();
     }
 
-    private ExtractableResponse<Response> 카테고리_등록(String name, Long parentId) {
+    public static ExtractableResponse<Response> 카테고리_등록(String name, Long parentId) {
         Map<String, String> headerParam = new HashMap<>();
         headerParam.put("x-auth-token", "testToken");
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("parentId", parentId);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return  RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers(headerParam)
                 .body(params)
                 .when().post("/category")
                 .then().log().all()
                 .extract();
-        return response;
     }
 }
