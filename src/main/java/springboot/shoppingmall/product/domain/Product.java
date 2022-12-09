@@ -52,15 +52,17 @@ public class Product extends BaseEntity {
     @OneToMany(mappedBy = "product")
     private final List<ProductDetail> details = new ArrayList<>();
 
-    public Product(String name, int price, int count) {
-        this(null, name, price, count);
+    public Product(String name, int price, int count, Category category, Category subCategory) {
+        this(null, name, price, count, 0.0, category, subCategory);
     }
 
-    public Product(Long id, String name, int price, int count) {
+    public Product(Long id, String name, int price, int count, double score, Category category, Category subCategory) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.count = count;
-        this.score = 0.0;
+        this.score = score;
+        this.category = category;
+        this.subCategory = subCategory;
     }
 }

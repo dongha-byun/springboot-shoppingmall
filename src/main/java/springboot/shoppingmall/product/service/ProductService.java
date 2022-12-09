@@ -3,21 +3,32 @@ package springboot.shoppingmall.product.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.category.domain.Category;
+import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.dto.ProductRequest;
 import springboot.shoppingmall.product.dto.ProductResponse;
 import springboot.shoppingmall.product.domain.ProductRepository;
 
-@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
-    public Long saveProduct(ProductRequest productRequest){
-        Product product = productRepository.save(ProductRequest.toProduct(productRequest));
-        return product.getId();
+    public ProductResponse saveProduct(ProductRequest productRequest){
+        Category category = getCategory(productRequest.getCategoryId());
+        Category subCategory = getCategory(productRequest.getSubCategoryId());
+
+        Product product = productRepository.save(ProductRequest.toProduct(productRequest,category, subCategory));
+        return ProductResponse.of(product);
+    }
+
+    private Category getCategory(Long id) {
+        return categoryRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("카테고리가 존재하지 않습니다.")
+        );
     }
 
     public ProductResponse findProduct(Long id){

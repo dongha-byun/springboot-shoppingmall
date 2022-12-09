@@ -1,7 +1,9 @@
 package springboot.shoppingmall.product.dto;
 
+import javax.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.product.domain.Product;
 
 @Data
@@ -11,8 +13,9 @@ public class ProductRequest {
     private String name;
     private int price;
     private int count;
+    @NotBlank
     private Long categoryId;
-
+    @NotBlank
     private Long subCategoryId;
 
     public ProductRequest(String name, int price, int count, Long categoryId, Long subCategoryId) {
@@ -23,7 +26,7 @@ public class ProductRequest {
         this.subCategoryId = subCategoryId;
     }
 
-    public static Product toProduct(ProductRequest productRequest){
-        return new Product(productRequest.getName(), productRequest.getPrice(), productRequest.getCount());
+    public static Product toProduct(ProductRequest productRequest, Category category, Category subCategory){
+        return new Product(productRequest.getName(), productRequest.getPrice(), productRequest.getCount(), category, subCategory);
     }
 }
