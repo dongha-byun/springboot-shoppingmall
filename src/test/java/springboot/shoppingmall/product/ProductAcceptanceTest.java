@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
 import springboot.shoppingmall.category.dto.CategoryResponse;
 import springboot.shoppingmall.product.dto.ProductRequest;
+import springboot.shoppingmall.product.dto.ProductResponse;
 
 public class ProductAcceptanceTest extends AcceptanceTest {
 
@@ -77,11 +78,14 @@ public class ProductAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 상품_조회_요청(ExtractableResponse<Response> response) {
-        CategoryResponse categoryResponse = response.as(CategoryResponse.class);
+        ProductResponse productResponse = response.as(ProductResponse.class);
+        Map<String, String> headerParam = new HashMap<>();
+        headerParam.put("x-auth-token", "testToken");
 
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/products/{id}", categoryResponse.getId())
+                .headers(headerParam)
+                .when().get("/products/{id}", productResponse.getId())
                 .then().log().all()
                 .extract();
     }
