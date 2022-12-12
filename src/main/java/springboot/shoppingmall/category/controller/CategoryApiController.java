@@ -24,11 +24,8 @@ public class CategoryApiController {
     @PostMapping("/category")
     public ResponseEntity<CategoryResponse> addCategory(@RequestBody CategoryRequest categoryRequest){
         CategoryResponse categoryResponse = categoryService.saveCategory(categoryRequest);
-        try {
-            return ResponseEntity.created(new URI("/category/"+categoryResponse.getId())).body(categoryResponse);
-        } catch (URISyntaxException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.created(URI.create("/category/"+categoryResponse.getId())).body(categoryResponse);
+
     }
 
     @GetMapping("/category/{id}")

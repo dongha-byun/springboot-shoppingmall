@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
 import springboot.shoppingmall.product.dto.ProductRequest;
 import springboot.shoppingmall.product.dto.ProductResponse;
@@ -23,7 +24,7 @@ public class ProductApiController {
     private final ProductService productService;
 
     @PostMapping("/products")
-    public ResponseEntity<ProductResponse> createProduct(@RequestAttribute AuthorizedUser authorizedUser,
+    public ResponseEntity<ProductResponse> createProduct(@AuthenticationStrategy AuthorizedUser authorizedUser,
                                                          @Validated @RequestBody ProductRequest productRequest,
                                                          BindingResult bindingResult){
 
@@ -32,8 +33,8 @@ public class ProductApiController {
     }
 
     @GetMapping("/products/{id}")
-    public ResponseEntity<ProductResponse> getProduct(@RequestAttribute AuthorizedUser authorizedUser,
-                                     @PathVariable("id") Long id){
+    public ResponseEntity<ProductResponse> getProduct(@AuthenticationStrategy AuthorizedUser authorizedUser,
+                                                      @PathVariable("id") Long id){
         ProductResponse productResponse = productService.findProduct(id);
         return ResponseEntity.ok(productResponse);
     }
