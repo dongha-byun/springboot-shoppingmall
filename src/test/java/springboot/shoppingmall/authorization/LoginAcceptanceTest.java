@@ -1,4 +1,4 @@
-package springboot.shoppingmall.user;
+package springboot.shoppingmall.authorization;
 
 import static org.assertj.core.api.Assertions.*;
 import static springboot.shoppingmall.user.UserAcceptanceTest.회원가입;
@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
+import springboot.shoppingmall.authorization.dto.TokenResponse;
 
 public class LoginAcceptanceTest extends AcceptanceTest {
 
@@ -27,10 +28,11 @@ public class LoginAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> loginResponse = 로그인("user1", "user1!");
+        TokenResponse tokenResponse = loginResponse.as(TokenResponse.class);
 
         // then
         assertThat(loginResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(loginResponse.jsonPath().get("returnCode").toString()).isEqualTo("0");
+        assertThat(tokenResponse.getToken()).isNotNull();
     }
 
     public static ExtractableResponse<Response> 로그인(String loginId, String password) {

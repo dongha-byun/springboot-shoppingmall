@@ -47,4 +47,8 @@ public class User extends BaseEntity {
         this.telNo = userRequest.getTelNo();
         this.password = userRequest.getPassword();
     }
+
+    public boolean isEqualPassword(String password) {
+        return this.password.equals(password);
+    }
 }
