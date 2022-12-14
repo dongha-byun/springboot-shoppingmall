@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.authorization.service.AuthService;
-import springboot.shoppingmall.user.dto.LoginRequest;
+import springboot.shoppingmall.authorization.dto.LoginRequest;
 
 @RestController
 @RequiredArgsConstructor

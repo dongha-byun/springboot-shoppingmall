@@ -2,7 +2,6 @@ package springboot.shoppingmall.authorization.service;
 
 import static org.assertj.core.api.Assertions.*;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserRepository;
-import springboot.shoppingmall.user.dto.LoginRequest;
+import springboot.shoppingmall.authorization.dto.LoginRequest;
 
 @Transactional
 @SpringBootTest

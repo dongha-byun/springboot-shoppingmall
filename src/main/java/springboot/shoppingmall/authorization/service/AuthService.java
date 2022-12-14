@@ -6,7 +6,7 @@ import springboot.shoppingmall.authorization.JwtTokenProvider;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserRepository;
-import springboot.shoppingmall.user.dto.LoginRequest;
+import springboot.shoppingmall.authorization.dto.LoginRequest;
 
 @Service
 @RequiredArgsConstructor

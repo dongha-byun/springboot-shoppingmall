@@ -1,4 +1,4 @@
-package springboot.shoppingmall.user.dto;
+package springboot.shoppingmall.authorization.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
