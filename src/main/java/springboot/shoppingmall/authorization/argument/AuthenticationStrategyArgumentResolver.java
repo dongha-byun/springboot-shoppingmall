@@ -25,7 +25,6 @@ public class AuthenticationStrategyArgumentResolver implements HandlerMethodArgu
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-
-        return new AuthorizedUser(20L, "testUser");
+        return authService.getAuthorizedUser(webRequest.getParameter("token"));
     }
 }

@@ -2,6 +2,7 @@ package springboot.shoppingmall.authorization.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import springboot.shoppingmall.authorization.AuthorizedUser;
 import springboot.shoppingmall.authorization.JwtTokenProvider;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.user.domain.User;
@@ -22,5 +23,19 @@ public class AuthService {
                 );
         String token = jwtTokenProvider.createToken(findUser);
         return new TokenResponse(token);
+    }
+
+    public AuthorizedUser getAuthorizedUser(String token){
+        if(jwtTokenProvider.validateExpireToken(token)){
+            throw new IllegalArgumentException();
+        }
+
+        Long userId = jwtTokenProvider.getUserId(token);
+        User user = userRepository.findById(userId)
+                .orElseThrow(
+                        () -> new IllegalArgumentException()
+                );
+
+        return new AuthorizedUser(user.getId(), user.getLoginId());
     }
 }

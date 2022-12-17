@@ -42,9 +42,9 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public AuthorizedUser getAuthorizedUser(String token){
+    public Long getUserId(String token){
         String subject = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
-        return new AuthorizedUser(Long.valueOf(subject));
+        return Long.valueOf(subject);
     }
 
     // request 애서 jwt 토큰 추출
