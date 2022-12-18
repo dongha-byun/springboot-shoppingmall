@@ -26,15 +26,13 @@ public class AuthService {
     }
 
     public AuthorizedUser getAuthorizedUser(String token){
-        if(jwtTokenProvider.validateExpireToken(token)){
+        if(!jwtTokenProvider.validateExpireToken(token)){
             throw new IllegalArgumentException();
         }
 
         Long userId = jwtTokenProvider.getUserId(token);
         User user = userRepository.findById(userId)
-                .orElseThrow(
-                        () -> new IllegalArgumentException()
-                );
+                .orElseThrow(IllegalArgumentException::new);
 
         return new AuthorizedUser(user.getId(), user.getLoginId());
     }

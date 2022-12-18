@@ -1,7 +1,7 @@
 package springboot.shoppingmall.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static springboot.shoppingmall.user.LoginAcceptanceTest.*;
+import static springboot.shoppingmall.authorization.LoginAcceptanceTest.*;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
-import springboot.shoppingmall.user.dto.LoginResponse;
+import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.user.dto.UserResponse;
 
 public class UserAcceptanceTest extends AcceptanceTest {
@@ -87,28 +87,35 @@ public class UserAcceptanceTest extends AcceptanceTest {
     void updateUser() {
         // given
         회원가입("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
-        LoginResponse login = 로그인("dongha", "dongha1!").as(LoginResponse.class);
+        TokenResponse login = 로그인("dongha", "dongha1!").as(TokenResponse.class);
 
         // when
+        Map<String, String> headers = new HashMap<>();
+        headers.put("X-AUTH-TOKEN", login.getToken());
+
         Map<String, String> param = new HashMap<>();
         param.put("password", "dongha2@");
         param.put("telNo", "010-4567-4567");
         RestAssured.given().log().all()
+                .headers(headers)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(param)
-                .when().put("/user/{id}", login.getUserId())
+                .when().put("/user")
                 .then().log().all()
                 .extract();
 
         // then
-        UserResponse response = 회원정보_조회(login.getUserId()).as(UserResponse.class);
+        UserResponse response = 회원정보_조회(login.getToken()).as(UserResponse.class);
 
         assertThat(response.getTelNo()).isEqualTo("010-4567-4567");
     }
 
-    private ExtractableResponse<Response> 회원정보_조회(Long id) {
+    private ExtractableResponse<Response> 회원정보_조회(String token) {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("X-AUTH-TOKEN", token);
         return RestAssured.given().log().all()
-                .when().get("/user/{id}", id)
+                .headers(headers)
+                .when().get("/user")
                 .then().log().all()
                 .extract();
     }

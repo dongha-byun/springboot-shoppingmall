@@ -1,6 +1,7 @@
 package springboot.shoppingmall.authorization.argument;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -13,6 +14,7 @@ import springboot.shoppingmall.authorization.service.AuthService;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationStrategyArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthService authService;
@@ -25,6 +27,7 @@ public class AuthenticationStrategyArgumentResolver implements HandlerMethodArgu
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        return authService.getAuthorizedUser(webRequest.getParameter("token"));
+        log.info("request : {}", webRequest.getHeader("X-AUTH-TOKEN"));
+        return authService.getAuthorizedUser(webRequest.getHeader("X-AUTH-TOKEN"));
     }
 }

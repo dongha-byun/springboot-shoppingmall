@@ -19,7 +19,7 @@ import springboot.shoppingmall.user.domain.User;
 public class JwtTokenProvider {
     private String secretKey = "tndusdlqkqhapfhd";
 
-    private long tokenValidTime = 1 * 60 * 1000L;//30 * 60 * 1000L; // 30분
+    private long tokenValidTime = 30 * 60 * 1000L;//30 * 60 * 1000L; // 30분
 
     // 객체 생성 후(Component 니까 bean 에 등록 후), PostConstruct 실행
     @PostConstruct
