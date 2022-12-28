@@ -37,7 +37,6 @@ class UserServiceTest {
         assertAll(
                 () -> assertThat(userResponse.getName()).isEqualTo("변동하"),
                 () -> assertThat(userResponse.getLoginId()).isEqualTo("dongha"),
-                () -> assertThat(userResponse.getLoginId()).isEqualTo("dongha1!"),
                 () -> assertThat(userResponse.getTelNo()).isEqualTo("010-1234-1234")
         );
     }

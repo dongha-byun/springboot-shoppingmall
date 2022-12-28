@@ -4,11 +4,11 @@ server:
 
 # jpa 설정 부분
 spring:
-  datasource:
-    url: jdbc:h2:tcp://localhost/~/byun/h2/dbfile/h2_214/project/shoppingmall
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+#  datasource:
+#    url: jdbc:h2:tcp://localhost/~/byun/h2/dbfile/h2_214/project/shoppingmall
+#    username: sa
+#    password:
+#    driver-class-name: org.h2.Driver
 
   jpa:
     hibernate:
@@ -18,6 +18,10 @@ spring:
         format_sql: true
         show_sql: true
         use_sql_comments: true
+
+  h2:
+    console:
+      enabled: true
 
 logging:
   level:

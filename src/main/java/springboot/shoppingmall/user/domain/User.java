@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import springboot.shoppingmall.BaseEntity;
 import springboot.shoppingmall.user.dto.UserRequest;
@@ -35,6 +36,7 @@ public class User extends BaseEntity {
 
     }
 
+    @Builder
     public User(String userName, String loginId, String password, String telNo) {
         this.userName = userName;
         this.loginId = loginId;

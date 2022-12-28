@@ -1,16 +1,18 @@
 package springboot.shoppingmall.authorization.dto;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
 public class TokenResponse {
-    private String token;
+    private String accessToken;
+    private String refreshToken;
 
-    public TokenResponse() {
-    }
-
-    public TokenResponse(String token) {
-        this.token = token;
-    }
-
-    public String getToken() {
-        return token;
+    @Builder
+    public TokenResponse(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 }

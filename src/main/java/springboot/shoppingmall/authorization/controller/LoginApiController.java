@@ -1,5 +1,6 @@
 package springboot.shoppingmall.authorization.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,9 @@ public class LoginApiController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest loginRequest){
-        TokenResponse tokenResponse = authService.login(loginRequest);
+    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest loginRequest,
+                                               HttpServletRequest request){
+        TokenResponse tokenResponse = authService.login(loginRequest, request.getRemoteAddr());
 
         return ResponseEntity.ok(tokenResponse);
     }

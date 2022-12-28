@@ -29,9 +29,10 @@ class AuthServiceTest {
         userRepository.save(new User("테스터", "test", "test1!", "010-1111-2222"));
 
         // when
-        TokenResponse tokenResponse = authService.login(new LoginRequest("test", "test1!"));
+        TokenResponse tokenResponse = authService.login(new LoginRequest("test", "test1!"), "127.0.0.1");
 
         // then
-        assertThat(tokenResponse.getToken()).isNotNull();
+        assertThat(tokenResponse.getAccessToken()).isNotNull();
+        assertThat(tokenResponse.getRefreshToken()).isNotNull();
     }
 }

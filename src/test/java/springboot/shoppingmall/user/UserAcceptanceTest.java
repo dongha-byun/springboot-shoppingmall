@@ -91,7 +91,7 @@ public class UserAcceptanceTest extends AcceptanceTest {
 
         // when
         Map<String, String> headers = new HashMap<>();
-        headers.put("X-AUTH-TOKEN", login.getToken());
+        headers.put("X-AUTH-TOKEN", login.getAccessToken());
 
         Map<String, String> param = new HashMap<>();
         param.put("password", "dongha2@");
@@ -105,7 +105,7 @@ public class UserAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        UserResponse response = 회원정보_조회(login.getToken()).as(UserResponse.class);
+        UserResponse response = 회원정보_조회(login.getAccessToken()).as(UserResponse.class);
 
         assertThat(response.getTelNo()).isEqualTo("010-4567-4567");
     }

@@ -11,7 +11,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import springboot.shoppingmall.authorization.AuthorizedUser;
+import org.springframework.web.context.request.RequestContextHolder;
 import springboot.shoppingmall.user.domain.User;
 
 @Component
@@ -19,7 +19,8 @@ import springboot.shoppingmall.user.domain.User;
 public class JwtTokenProvider {
     private String secretKey = "tndusdlqkqhapfhd";
 
-    private long tokenValidTime = 30 * 60 * 1000L;//30 * 60 * 1000L; // 30분
+    private long accessTokenValidTime = 1 * 60 * 1000L;//30 * 60 * 1000L; // 30분
+    private long refreshTokenValidTime = 14 * 24 * 60 * 60 * 1000L;// 14 * 24 * 60 * 60 * 1000L // 14일
 
     // 객체 생성 후(Component 니까 bean 에 등록 후), PostConstruct 실행
     @PostConstruct
@@ -28,16 +29,31 @@ public class JwtTokenProvider {
     }
 
     // jwt 토큰 생성
-    public String createToken(User user) {
+    public String createAccessToken(User user, String accessIp) {
         Claims claims = Jwts.claims().setSubject(user.getId().toString());
         claims.put("role", "NORMAL");
+        claims.put("access_ip", accessIp);
 
         Date now = new Date();
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(now.getTime() + tokenValidTime))
+                .setExpiration(new Date(now.getTime() + accessTokenValidTime))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
+    public String createRefreshToken(User user, String accessIp){
+        Claims claims = Jwts.claims().setSubject(user.getId().toString());
+        claims.put("access_ip", accessIp);
+
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(now.getTime() + refreshTokenValidTime))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
