@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 class MaskingUtilTest {
 
     @ParameterizedTest
-    @CsvSource(value = {"변동하:변*하", "김수연바보:김***보"}, delimiterString = ":")
+    @CsvSource(value = {"마스크:마*크", "강남역출구:강***구"}, delimiterString = ":")
     @DisplayName("문자열 마스킹 처리")
     void masking(String input, String result){
         // given

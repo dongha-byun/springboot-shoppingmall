@@ -2,6 +2,8 @@ package springboot.shoppingmall.authorization.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +20,11 @@ class RefreshTokenRepositoryTest {
     @Autowired
     UserRepository userRepository;
 
+    User saveUser;
 
-    @Test
-    @DisplayName("user 의 refresh token 조회")
-    void findByUserTest(){
-        // given
-        User saveUser = userRepository.save(
+    @BeforeEach
+    void beforeEach(){
+        saveUser = userRepository.save(
                 User.builder()
                         .userName("테스터")
                         .loginId("tester")
@@ -37,6 +38,12 @@ class RefreshTokenRepositoryTest {
                         .refreshToken("refreshToken")
                         .build()
         );
+    }
+
+    @Test
+    @DisplayName("user 의 refresh token 조회")
+    void findByUserTest(){
+        // given
 
         // when
         RefreshToken refreshToken = refreshTokenRepository.findByUser(saveUser)
@@ -44,6 +51,19 @@ class RefreshTokenRepositoryTest {
 
         // then
         assertThat(refreshToken.getId()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("user 의 refresh token 삭제")
+    void deleteByUserTest(){
+        // given
+
+        // when
+        refreshTokenRepository.deleteByUser(saveUser);
+
+        // then
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByUser(saveUser);
+        assertThat(refreshToken.isPresent()).isFalse();
     }
 
 }

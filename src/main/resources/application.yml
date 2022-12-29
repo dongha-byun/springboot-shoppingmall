@@ -4,24 +4,22 @@ server:
 
 # jpa 설정 부분
 spring:
-#  datasource:
+  datasource:
 #    url: jdbc:h2:tcp://localhost/~/byun/h2/dbfile/h2_214/project/shoppingmall
-#    username: sa
-#    password:
-#    driver-class-name: org.h2.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        format_sql: true
-        show_sql: true
-        use_sql_comments: true
-
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
   h2:
     console:
       enabled: true
+
+  jpa:
+    show_sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
 
 logging:
   level:

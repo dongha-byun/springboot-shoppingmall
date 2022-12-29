@@ -69,7 +69,7 @@ public class ProductAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> 상품_등록_요청(ProductRequest productRequest) {
         Map<String, String> headerParam = new HashMap<>();
-        headerParam.put("x-auth-token", tokenResponse.getAccessToken());
+        headerParam.put("Authorization", "Bearer" + tokenResponse.getAccessToken());
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", productRequest.getName());
@@ -90,7 +90,7 @@ public class ProductAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> 상품_조회_요청(ExtractableResponse<Response> response) {
         ProductResponse productResponse = response.as(ProductResponse.class);
         Map<String, String> headerParam = new HashMap<>();
-        headerParam.put("X-AUTH-TOKEN", tokenResponse.getAccessToken());
+        headerParam.put("Authorization", "Bearer" + tokenResponse.getAccessToken());
 
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

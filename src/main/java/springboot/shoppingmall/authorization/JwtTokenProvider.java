@@ -11,16 +11,12 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
 import springboot.shoppingmall.user.domain.User;
 
 @Component
 @Slf4j
 public class JwtTokenProvider {
-    private String secretKey = "tndusdlqkqhapfhd";
-
-    private long accessTokenValidTime = 1 * 60 * 1000L;//30 * 60 * 1000L; // 30분
-    private long refreshTokenValidTime = 14 * 24 * 60 * 60 * 1000L;// 14 * 24 * 60 * 60 * 1000L // 14일
+    private String secretKey = "secret_key_of_dong_ha_do_not_snap_this";
 
     // 객체 생성 후(Component 니까 bean 에 등록 후), PostConstruct 실행
     @PostConstruct
@@ -36,6 +32,7 @@ public class JwtTokenProvider {
 
         Date now = new Date();
 
+        long accessTokenValidTime = 60 * 1000L; // 30 * 60 * 1000L; // 30분
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())
@@ -50,6 +47,7 @@ public class JwtTokenProvider {
 
         Date now = new Date();
 
+        long refreshTokenValidTime = 14 * 24 * 60 * 60 * 1000L; // 14 * 24 * 60 * 60 * 1000L // 14일
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())
@@ -78,8 +76,20 @@ public class JwtTokenProvider {
         }
     }
 
+    public String createExpireToken(){
+        return Jwts.builder()
+                .setExpiration(new Date())
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
     public long getExpiration(String jwtToken){
         Jws<Claims> claimsJws = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
         return claimsJws.getBody().getExpiration().getTime();
+    }
+
+    public String getClaim(String jwtToken, String key){
+        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+        return (String)claimsJws.getBody().get(key);
     }
 }

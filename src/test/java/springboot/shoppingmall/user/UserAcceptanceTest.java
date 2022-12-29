@@ -91,7 +91,7 @@ public class UserAcceptanceTest extends AcceptanceTest {
 
         // when
         Map<String, String> headers = new HashMap<>();
-        headers.put("X-AUTH-TOKEN", login.getAccessToken());
+        headers.put("Authorization", "Bearer " + login.getAccessToken());
 
         Map<String, String> param = new HashMap<>();
         param.put("password", "dongha2@");
@@ -112,7 +112,7 @@ public class UserAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> 회원정보_조회(String token) {
         Map<String, String> headers = new HashMap<>();
-        headers.put("X-AUTH-TOKEN", token);
+        headers.put("Authorization", "Bearer " + token);
         return RestAssured.given().log().all()
                 .headers(headers)
                 .when().get("/user")

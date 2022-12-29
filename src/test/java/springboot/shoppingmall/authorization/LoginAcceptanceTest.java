@@ -33,7 +33,6 @@ public class LoginAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(loginResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(tokenResponse.getAccessToken()).isNotNull();
-        assertThat(tokenResponse.getRefreshToken()).isNotNull();
     }
 
     public static ExtractableResponse<Response> 로그인(String loginId, String password) {

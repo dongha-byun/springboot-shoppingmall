@@ -21,7 +21,7 @@ public class LoginApiController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest loginRequest,
                                                HttpServletRequest request){
-        TokenResponse tokenResponse = authService.login(loginRequest, request.getRemoteAddr());
+        TokenResponse tokenResponse = authService.login(loginRequest, request.getRemoteHost());
 
         return ResponseEntity.ok(tokenResponse);
     }

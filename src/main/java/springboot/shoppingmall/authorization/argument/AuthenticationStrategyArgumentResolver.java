@@ -1,5 +1,7 @@
 package springboot.shoppingmall.authorization.argument;
 
+import java.util.Enumeration;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -17,17 +19,38 @@ import springboot.shoppingmall.authorization.service.AuthService;
 @Slf4j
 public class AuthenticationStrategyArgumentResolver implements HandlerMethodArgumentResolver {
 
+    private static final String AUTHORIZATION = "Authorization";
+    private static final String BEARER_TYPE = "Bearer";
     private final AuthService authService;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AuthenticationStrategy.class);
+        boolean hasParameterAnnotation = parameter.hasParameterAnnotation(AuthenticationStrategy.class);
+        boolean isAuthorizedUserType = AuthorizedUser.class.equals(parameter.getParameterType());
+
+        return hasParameterAnnotation && isAuthorizedUserType;
     }
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        log.info("request : {}", webRequest.getHeader("X-AUTH-TOKEN"));
-        return authService.getAuthorizedUser(webRequest.getHeader("X-AUTH-TOKEN"));
+        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+        if(request == null){
+            throw new IllegalArgumentException();
+        }
+
+        String token = parsingTokenInRequest(request);
+        return authService.getAuthorizedUser(token);
+    }
+
+    public String parsingTokenInRequest(HttpServletRequest request){
+        Enumeration<String> headers = request.getHeaders(AUTHORIZATION);
+        while (headers.hasMoreElements()){
+            String value = headers.nextElement();
+            if(value.startsWith(BEARER_TYPE)){
+                return value.replace(BEARER_TYPE, "").trim();
+            }
+        }
+        return null;
     }
 }
