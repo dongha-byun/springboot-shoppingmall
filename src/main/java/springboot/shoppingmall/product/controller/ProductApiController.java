@@ -1,6 +1,7 @@
 package springboot.shoppingmall.product.controller;
 
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
@@ -36,5 +38,12 @@ public class ProductApiController {
                                                       @PathVariable("id") Long id){
         ProductResponse productResponse = productService.findProduct(id);
         return ResponseEntity.ok(productResponse);
+    }
+
+    @GetMapping("/products")
+    public ResponseEntity<List<ProductResponse>> getProducts(@RequestParam("categoryId") Long categoryId,
+                                                             @RequestParam("subCategoryId") Long subCategoryId){
+        List<ProductResponse> products = productService.findProductsByCategory(categoryId, subCategoryId);
+        return ResponseEntity.ok(products);
     }
 }

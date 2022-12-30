@@ -47,7 +47,7 @@ public class DataInitializer {
             Category category3 = new Category("출산/유아용품", null);
             em.persist(category3);
             em.persist(new Category("장난감", category3));
-            em.persist(new Category("", category3));
+            em.persist(new Category("기타", category3));
 
             Category category4 = new Category("스포츠용품", null);
             em.persist(category4);

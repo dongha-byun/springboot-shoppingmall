@@ -1,5 +1,7 @@
 package springboot.shoppingmall.category.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,5 +33,11 @@ public class CategoryService {
                 () -> new IllegalArgumentException("카테고리 조회 실패")
         );
         return CategoryResponse.of(category);
+    }
+
+    public List<CategoryResponse> findCategories() {
+        return categoryRepository.findParentCategoryAll().stream()
+                .map(CategoryResponse::of)
+                .collect(Collectors.toList());
     }
 }

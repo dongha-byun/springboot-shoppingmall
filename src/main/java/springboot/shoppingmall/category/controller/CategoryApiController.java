@@ -2,6 +2,7 @@ package springboot.shoppingmall.category.controller;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -32,5 +33,11 @@ public class CategoryApiController {
     public ResponseEntity<CategoryResponse> getCategory(@PathVariable("id") Long id){
         CategoryResponse categoryResponse = categoryService.findCategoryById(id);
         return ResponseEntity.ok(categoryResponse);
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<CategoryResponse>> getCategories(){
+        List<CategoryResponse> categories = categoryService.findCategories();
+        return ResponseEntity.ok(categories);
     }
 }

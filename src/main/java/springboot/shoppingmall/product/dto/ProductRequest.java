@@ -1,6 +1,5 @@
 package springboot.shoppingmall.product.dto;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
