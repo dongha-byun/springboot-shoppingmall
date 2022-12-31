@@ -38,8 +38,8 @@ public class ProductServiceTest {
 
     @BeforeEach
     void beforeEach(){
-        category = categoryRepository.save(new Category("의류", null));
-        subCategory = categoryRepository.save(new Category("바지", category));
+        category = categoryRepository.save(new Category("의류"));
+        subCategory = categoryRepository.save(new Category("바지").changeParent(category));
     }
 
     @Test

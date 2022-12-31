@@ -2,6 +2,7 @@ package springboot.shoppingmall.category.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -34,23 +35,25 @@ public class Category extends BaseEntity {
     @JoinColumn(name = "parent_id")
     private Category parent;
 
-    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Category> subCategories = new ArrayList<>();
 
-    public Category(String name, Category parent) {
-        this(null, name, parent);
+    public Category(String name) {
+        this(null, name);
     }
 
-    public Category(Long id, String name, Category parent) {
+    public Category(Long id, String name) {
         this.id = id;
         this.name = name;
-        mappingParent(parent);
     }
 
-    private void mappingParent(Category parent) {
+    public Category changeParent(Category parent){
         this.parent = parent;
-        if(parent != null){
-            parent.getSubCategories().add(this);
-        }
+        return this;
+    }
+
+    public void addSubCategory(Category subCategory){
+        this.subCategories.add(subCategory);
+        subCategory.changeParent(this);
     }
 }

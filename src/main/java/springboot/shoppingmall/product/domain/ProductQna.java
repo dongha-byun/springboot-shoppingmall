@@ -12,12 +12,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import springboot.shoppingmall.BaseEntity;
 import springboot.shoppingmall.user.domain.User;
 
-@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Entity
 @Table(name = "product_qna")
 public class ProductQna extends BaseEntity {
     @Id
@@ -31,18 +35,19 @@ public class ProductQna extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime writeDate;
 
-    private boolean isResponse;
-
-    private LocalDateTime responseDate;
-
-    @Lob
-    private String responseContent;
-
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "writer_id")
     private User writer;
+
+    @Builder
+    public ProductQna(String content, Product product, User writer) {
+        this.content = content;
+        this.product = product;
+        this.writer = writer;
+        this.writeDate = LocalDateTime.now();
+    }
 }

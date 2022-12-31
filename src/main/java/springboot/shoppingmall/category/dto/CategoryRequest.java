@@ -12,7 +12,7 @@ public class CategoryRequest {
     private String name;
     private Long parentId;
 
-    public static Category toCategory(CategoryRequest categoryRequest, Category parent) {
-        return new Category(categoryRequest.getName(), parent);
+    public static Category toCategory(CategoryRequest categoryRequest) {
+        return new Category(categoryRequest.getName());
     }
 }

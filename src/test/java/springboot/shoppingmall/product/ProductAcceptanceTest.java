@@ -60,23 +60,23 @@ public class ProductAcceptanceTest extends AcceptanceTest {
         ProductRequest productRequest = new ProductRequest("한돈 돼지고기", 10000, 100, 식품.getId(), 육류.getId());
 
         // when
-        ExtractableResponse<Response> 상품_등록_요청_결과 = 상품_등록_요청(productRequest);
+        ExtractableResponse<Response> 상품_등록_요청_결과 = 상품_등록_요청(tokenResponse,"한돈 돼지고기", 10000, 100 , 식품.getId(), 육류.getId());
 
         // then
         ExtractableResponse<Response> 상품_조회_요청_결과 = 상품_조회_요청(상품_등록_요청_결과);
         assertThat(상품_조회_요청_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    private ExtractableResponse<Response> 상품_등록_요청(ProductRequest productRequest) {
+    public static ExtractableResponse<Response> 상품_등록_요청(TokenResponse tokenResponse, String productName, int price, int count, Long categoryId, Long subCategoryId) {
         Map<String, String> headerParam = new HashMap<>();
         headerParam.put("Authorization", "Bearer" + tokenResponse.getAccessToken());
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", productRequest.getName());
-        params.put("price", productRequest.getPrice());
-        params.put("count", productRequest.getCount());
-        params.put("categoryId", productRequest.getCategoryId());
-        params.put("subCategoryId", productRequest.getSubCategoryId());
+        params.put("name", productName);
+        params.put("price", price);
+        params.put("count", count);
+        params.put("categoryId", categoryId);
+        params.put("subCategoryId", subCategoryId);
 
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

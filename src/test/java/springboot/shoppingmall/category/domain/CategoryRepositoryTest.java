@@ -18,13 +18,13 @@ class CategoryRepositoryTest {
 
     @BeforeEach
     void setUp(){
-        Category parent = categoryRepository.save(new Category("상위 카테고리 1", null));
-        categoryRepository.save(new Category("하위 카테고리1", parent));
-        categoryRepository.save(new Category("하위 카테고리2", parent));
+        Category parent = categoryRepository.save(new Category("상위 카테고리 1"));
+        categoryRepository.save(new Category("하위 카테고리1").changeParent(parent));
+        categoryRepository.save(new Category("하위 카테고리2").changeParent(parent));
 
-        Category parent2 = categoryRepository.save(new Category("상위 카테고리 2", null));
-        categoryRepository.save(new Category("하위 카테고리3", parent2));
-        categoryRepository.save(new Category("하위 카테고리4", parent2));
+        Category parent2 = categoryRepository.save(new Category("상위 카테고리 2"));
+        categoryRepository.save(new Category("하위 카테고리3").changeParent(parent2));
+        categoryRepository.save(new Category("하위 카테고리4").changeParent(parent2));
     }
 
     @Test

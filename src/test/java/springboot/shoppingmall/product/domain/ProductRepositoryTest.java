@@ -25,8 +25,8 @@ class ProductRepositoryTest {
     @DisplayName("카테고리 별 상품목록 조회")
     void findProductsByCategoryAndSubCategoryTest(){
         // given
-        Category category = categoryRepository.save(new Category("카테고리1", null));
-        Category subCategory = categoryRepository.save(new Category("하위 카테고리1", category));
+        Category category = categoryRepository.save(new Category("카테고리1"));
+        Category subCategory = categoryRepository.save(new Category("하위 카테고리1").changeParent(category));
         Product product1 = productRepository.save(new Product("상품1", 120000, 22, category, subCategory));
         Product product2 = productRepository.save(new Product("상품2", 120000, 22, category, subCategory));
 

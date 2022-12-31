@@ -19,25 +19,31 @@ public class CategoryService {
 
     @Transactional
     public CategoryResponse saveCategory(CategoryRequest categoryRequest) {
-        Category parent = null;
-        if(categoryRequest.getParentId() != null){
-            parent = categoryRepository.findById(categoryRequest.getParentId()).orElseGet(null);
+        Category category = CategoryRequest.toCategory(categoryRequest);
+
+        if (categoryRequest.getParentId() != null) {
+            Category parent = findById(categoryRequest.getParentId());
+            parent.addSubCategory(category);
         }
 
-        Category category = categoryRepository.save(CategoryRequest.toCategory(categoryRequest, parent));
+        categoryRepository.save(category);
         return CategoryResponse.of(category);
     }
 
     public CategoryResponse findCategoryById(Long categoryId) {
-        Category category = categoryRepository.findById(categoryId).orElseThrow(
-                () -> new IllegalArgumentException("카테고리 조회 실패")
-        );
-        return CategoryResponse.of(category);
+        return CategoryResponse.of(findById(categoryId));
     }
 
     public List<CategoryResponse> findCategories() {
         return categoryRepository.findParentCategoryAll().stream()
                 .map(CategoryResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    private Category findById(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(
+                        () -> new IllegalArgumentException("카테고리 조회 실패")
+                );
     }
 }
