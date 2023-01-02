@@ -1,18 +1,25 @@
 package springboot.shoppingmall.user.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import springboot.shoppingmall.BaseEntity;
 import springboot.shoppingmall.user.dto.UserRequest;
 
-@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Entity
 @Table(name = "users")
 public class User extends BaseEntity {
 
@@ -32,9 +39,11 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String telNo;
 
-    protected User(){
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Basket> baskets = new ArrayList<>();
 
-    }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Delivery> deliveries = new ArrayList<>();
 
     @Builder
     public User(String userName, String loginId, String password, String telNo) {
@@ -52,5 +61,21 @@ public class User extends BaseEntity {
 
     public boolean isEqualPassword(String password) {
         return this.password.equals(password);
+    }
+
+    public void addBasket(Basket basket){
+        this.getBaskets().add(basket);
+    }
+
+    public void removeBasket(Basket basket) {
+        this.getBaskets().remove(basket);
+    }
+
+    public void addDelivery(Delivery delivery){
+        this.getDeliveries().add(delivery);
+    }
+
+    public void removeDelivery(Delivery delivery){
+        this.getDeliveries().remove(delivery);
     }
 }

@@ -8,12 +8,16 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import springboot.shoppingmall.BaseEntity;
 
-@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(name = "delivery")
+@Entity
 public class Delivery extends BaseEntity {
 
     @Id
@@ -32,4 +36,22 @@ public class Delivery extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Builder
+    public Delivery(String nickName, String receiverName, String zipCode, String address, String detailAddress,
+                    String requestMessage, User user) {
+        this.nickName = nickName;
+        this.receiverName = receiverName;
+        this.zipCode = zipCode;
+        this.address = address;
+        this.detailAddress = detailAddress;
+        this.requestMessage = requestMessage;
+        this.user = user;
+    }
+
+    public Delivery createBy(User user){
+        this.user = user;
+        user.addDelivery(this);
+        return this;
+    }
 }
