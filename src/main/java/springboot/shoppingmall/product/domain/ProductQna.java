@@ -36,11 +36,11 @@ public class ProductQna extends BaseEntity {
     private LocalDateTime writeDate;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "writer_id")
+    @JoinColumn(name = "writer_id", nullable = false)
     private User writer;
 
     @Builder
@@ -49,5 +49,9 @@ public class ProductQna extends BaseEntity {
         this.product = product;
         this.writer = writer;
         this.writeDate = LocalDateTime.now();
+
+        if(product != null){
+            product.addQna(this);
+        }
     }
 }

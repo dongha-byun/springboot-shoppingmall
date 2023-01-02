@@ -2,6 +2,7 @@ package springboot.shoppingmall.product.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -49,7 +50,7 @@ public class Product extends BaseEntity {
     @OneToMany(mappedBy = "product")
     private final List<ProductReview> reviews = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<ProductQna> qna = new ArrayList<>();
 
     @OneToMany(mappedBy = "product")
@@ -67,5 +68,9 @@ public class Product extends BaseEntity {
         this.score = score;
         this.category = category;
         this.subCategory = subCategory;
+    }
+
+    public void addQna(ProductQna productQna){
+        this.getQna().add(productQna);
     }
 }

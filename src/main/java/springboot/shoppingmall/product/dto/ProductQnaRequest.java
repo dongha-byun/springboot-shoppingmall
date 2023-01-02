@@ -2,10 +2,10 @@ package springboot.shoppingmall.product.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Getter
+@Data
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @AllArgsConstructor
 public class ProductQnaRequest {

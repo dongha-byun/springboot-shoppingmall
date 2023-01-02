@@ -2,11 +2,13 @@ package springboot.shoppingmall.product.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.domain.Product;
@@ -16,6 +18,7 @@ import springboot.shoppingmall.product.dto.ProductQnaResponse;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserRepository;
 
+@Transactional
 @SpringBootTest
 class ProductQnaServiceTest {
 
@@ -58,5 +61,20 @@ class ProductQnaServiceTest {
 
         // then
         assertThat(qna.getId()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("상품에 대한 문의 목록을 조회한다.")
+    void findQnaAllTest(){
+        // given
+        productQnaService.createQna(saveUser.getId(), product.getId(), new ProductQnaRequest("제품이 이상해요 1"));
+        productQnaService.createQna(saveUser.getId(), product.getId(), new ProductQnaRequest("제품이 이상해요 2"));
+
+        // when
+        List<ProductQnaResponse> productQnaList = productQnaService.findQnaAllByProduct(product.getId());
+
+        // then
+        assertThat(productQnaList).hasSize(2);
+        assertThat(productQnaList.get(0).getWriteDate()).isNotNull();
     }
 }

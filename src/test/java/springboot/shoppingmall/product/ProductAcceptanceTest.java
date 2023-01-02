@@ -1,9 +1,7 @@
 package springboot.shoppingmall.product;
 
 import static org.assertj.core.api.Assertions.*;
-import static springboot.shoppingmall.authorization.LoginAcceptanceTest.*;
 import static springboot.shoppingmall.category.CategoryAcceptanceTest.*;
-import static springboot.shoppingmall.user.UserAcceptanceTest.*;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -16,20 +14,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
-import springboot.shoppingmall.authorization.LoginAcceptanceTest;
-import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.category.dto.CategoryResponse;
 import springboot.shoppingmall.product.dto.ProductRequest;
 import springboot.shoppingmall.product.dto.ProductResponse;
-import springboot.shoppingmall.user.UserAcceptanceTest;
 
 public class ProductAcceptanceTest extends AcceptanceTest {
 
     CategoryResponse 식품;
     CategoryResponse 육류;
     CategoryResponse 생선;
-
-    TokenResponse tokenResponse;
 
     @BeforeEach
     public void beforeEach(){
@@ -38,9 +31,6 @@ public class ProductAcceptanceTest extends AcceptanceTest {
         식품 = 카테고리_등록("식품", null).as(CategoryResponse.class);
         육류 = 카테고리_등록("육류", 식품.getId()).as(CategoryResponse.class);
         생선 = 카테고리_등록("생선", 식품.getId()).as(CategoryResponse.class);
-
-        회원가입("테스터", "tester1", "tester1!", "tester1!", "010-1234-1234");
-        tokenResponse = 로그인("tester1", "tester1!").as(TokenResponse.class);
     }
 
     /**
@@ -60,16 +50,14 @@ public class ProductAcceptanceTest extends AcceptanceTest {
         ProductRequest productRequest = new ProductRequest("한돈 돼지고기", 10000, 100, 식품.getId(), 육류.getId());
 
         // when
-        ExtractableResponse<Response> 상품_등록_요청_결과 = 상품_등록_요청(tokenResponse,"한돈 돼지고기", 10000, 100 , 식품.getId(), 육류.getId());
+        ExtractableResponse<Response> 상품_등록_요청_결과 = 상품_등록_요청("한돈 돼지고기", 10000, 100 , 식품.getId(), 육류.getId());
 
         // then
         ExtractableResponse<Response> 상품_조회_요청_결과 = 상품_조회_요청(상품_등록_요청_결과);
         assertThat(상품_조회_요청_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    public static ExtractableResponse<Response> 상품_등록_요청(TokenResponse tokenResponse, String productName, int price, int count, Long categoryId, Long subCategoryId) {
-        Map<String, String> headerParam = new HashMap<>();
-        headerParam.put("Authorization", "Bearer" + tokenResponse.getAccessToken());
+    public static ExtractableResponse<Response> 상품_등록_요청(String productName, int price, int count, Long categoryId, Long subCategoryId) {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", productName);
@@ -80,7 +68,7 @@ public class ProductAcceptanceTest extends AcceptanceTest {
 
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .headers(headerParam)
+                .headers(createAuthorizationHeader(로그인정보))
                 .body(params)
                 .when().post("/products")
                 .then().log().all()
@@ -89,12 +77,10 @@ public class ProductAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> 상품_조회_요청(ExtractableResponse<Response> response) {
         ProductResponse productResponse = response.as(ProductResponse.class);
-        Map<String, String> headerParam = new HashMap<>();
-        headerParam.put("Authorization", "Bearer" + tokenResponse.getAccessToken());
 
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .headers(headerParam)
+                .headers(createAuthorizationHeader(로그인정보))
                 .when().get("/products/{id}", productResponse.getId())
                 .then().log().all()
                 .extract();

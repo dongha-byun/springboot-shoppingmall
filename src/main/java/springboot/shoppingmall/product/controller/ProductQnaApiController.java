@@ -1,9 +1,12 @@
 package springboot.shoppingmall.product.controller;
 
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +17,7 @@ import springboot.shoppingmall.product.dto.ProductQnaRequest;
 import springboot.shoppingmall.product.dto.ProductQnaResponse;
 import springboot.shoppingmall.product.service.ProductQnaService;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class ProductQnaApiController {
@@ -24,7 +28,15 @@ public class ProductQnaApiController {
     public ResponseEntity<ProductQnaResponse> createQna(@AuthenticationStrategy AuthorizedUser user,
                                                         @PathVariable("id") Long productId,
                                                         @RequestBody ProductQnaRequest request){
+        log.info("productId : {}", productId);
+        log.info("content : {}", request.getContent());
         ProductQnaResponse productQnaResponse = productQnaService.createQna(user.getId(), productId, request);
         return ResponseEntity.created(URI.create("/qna/"+productQnaResponse.getId())).body(productQnaResponse);
+    }
+
+    @GetMapping("/products/{id}/qna")
+    public ResponseEntity<List<ProductQnaResponse>> findAllQna(@PathVariable("id") Long productId){
+        List<ProductQnaResponse> allQna = productQnaService.findQnaAllByProduct(productId);
+        return ResponseEntity.ok(allQna);
     }
 }
