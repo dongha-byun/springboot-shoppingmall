@@ -73,26 +73,20 @@ public class CategoryAcceptanceTest extends AcceptanceTest {
     public static ExtractableResponse<Response> 카테고리_조회(ExtractableResponse<Response> response) {
         CategoryResponse categoryResponse = response.as(CategoryResponse.class);
 
-        Map<String, String> headerParam = new HashMap<>();
-        headerParam.put("x-auth-token", "testToken");
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .headers(headerParam)
                 .when().get("/category/{id}", categoryResponse.getId())
                 .then().log().all()
                 .extract();
     }
 
     public static ExtractableResponse<Response> 카테고리_등록(String name, Long parentId) {
-        Map<String, String> headerParam = new HashMap<>();
-        headerParam.put("x-auth-token", "testToken");
-
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("parentId", parentId);
+
         return  RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .headers(headerParam)
                 .body(params)
                 .when().post("/category")
                 .then().log().all()

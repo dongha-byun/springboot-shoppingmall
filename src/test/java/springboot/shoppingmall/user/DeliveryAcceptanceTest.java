@@ -76,7 +76,7 @@ public class DeliveryAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 배송지_추가_요청(String nickName, String receiverName, String zipCode, String address, String detailAddress, String requestMessage) {
+    public static ExtractableResponse<Response> 배송지_추가_요청(String nickName, String receiverName, String zipCode, String address, String detailAddress, String requestMessage) {
         Map<String, String> params = new HashMap<>();
         params.put("nickName", nickName);
         params.put("receiverName", receiverName);
