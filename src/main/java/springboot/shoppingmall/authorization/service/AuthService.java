@@ -65,16 +65,19 @@ public class AuthService {
     public TokenResponse reCreateAccessToken(String token, String accessIp){
         Long userId = jwtTokenProvider.getUserId(token);
         User user = findUserById(userId);
-        String refreshToken = refreshTokenRepository.findByUser(user)
-                .orElseThrow(
-                        () -> new ExpireTokenException("인증 만료됨")
-                )
-                .getRefreshToken();
+        String refreshToken = findRefreshTokenByUser(user).getRefreshToken();
         if(!jwtTokenProvider.validateExpireToken(refreshToken)){
             throw new ExpireTokenException("인증 만료됨");
         }
 
         String accessToken = jwtTokenProvider.createAccessToken(user, accessIp);
         return new TokenResponse(accessToken);
+    }
+
+    private RefreshToken findRefreshTokenByUser(User user) {
+        return refreshTokenRepository.findByUser(user)
+                .orElseThrow(
+                        () -> new ExpireTokenException("인증 만료됨")
+                );
     }
 }

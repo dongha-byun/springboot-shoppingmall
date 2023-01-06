@@ -1,14 +1,12 @@
 package springboot.shoppingmall.authorization;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import springboot.shoppingmall.user.domain.User;
@@ -32,7 +30,7 @@ public class JwtTokenProvider {
 
         Date now = new Date();
 
-        long accessTokenValidTime = 60 * 1000L; // 30 * 60 * 1000L; // 30분
+        long accessTokenValidTime = 5 * 1000L; // 30 * 60 * 1000L; // 30분
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())
@@ -61,16 +59,13 @@ public class JwtTokenProvider {
         return Long.valueOf(subject);
     }
 
-    // request 애서 jwt 토큰 추출
-    public String resolveToken(HttpServletRequest request){
-        return request.getHeader("X-AUTH-TOKEN");
-    }
-
     // jwt 토큰 유효성 체크
     public boolean validateExpireToken(String jwtToken){
         try {
-            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
-            return !claimsJws.getBody().getExpiration().before(new Date());
+            Claims claims = Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(jwtToken).getBody();
+            return !claims.getExpiration().before(new Date());
         }catch (Exception e){
             return false;
         }
@@ -81,15 +76,5 @@ public class JwtTokenProvider {
                 .setExpiration(new Date())
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
-    }
-
-    public long getExpiration(String jwtToken){
-        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
-        return claimsJws.getBody().getExpiration().getTime();
-    }
-
-    public String getClaim(String jwtToken, String key){
-        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
-        return (String)claimsJws.getBody().get(key);
     }
 }
