@@ -53,6 +53,16 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
+    public Order(User user, Product product, int quantity, Delivery delivery, OrderStatus orderStatus){
+        this.user = user;
+        this.product = product;
+        this.quantity = quantity;
+        this.orderDate = LocalDateTime.now();
+        this.orderStatus = orderStatus;
+        this.totalPrice = product.getPrice() * quantity;
+        this.delivery = delivery;
+    }
+
     public static Order createOrder(User user, Product product, int quantity, Delivery delivery){
         Order order = new Order();
         order.user = user;
@@ -66,4 +76,24 @@ public class Order extends BaseEntity {
         return order;
     }
 
+    public void cancel() {
+        if(!this.orderStatus.equals(OrderStatus.READY)){
+            throw new IllegalArgumentException("준비 중인 주문만 취소 가능합니다.");
+        }
+        this.orderStatus = OrderStatus.CANCEL;
+    }
+
+    public void outing() {
+        if(!this.orderStatus.equals(OrderStatus.READY)){
+            throw new IllegalArgumentException("준비 중인 주문만 출고중으로 처리 가능합니다.");
+        }
+        this.orderStatus = OrderStatus.OUTING;
+    }
+
+    public void delivery() {
+        if(!this.orderStatus.equals(OrderStatus.OUTING)){
+            throw new IllegalArgumentException("출고 중인 주문만 배송중으로 처리 가능합니다.");
+        }
+        this.orderStatus = OrderStatus.DELIVERY;
+    }
 }
