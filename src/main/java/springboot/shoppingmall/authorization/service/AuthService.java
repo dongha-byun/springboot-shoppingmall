@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.authorization.AuthorizedUser;
-import springboot.shoppingmall.authorization.JwtTokenProvider;
 import springboot.shoppingmall.authorization.domain.RefreshToken;
 import springboot.shoppingmall.authorization.domain.RefreshTokenRepository;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
@@ -28,7 +27,7 @@ public class AuthService {
 
         refreshTokenRepository.save(new RefreshToken(loginUser, refreshToken));
 
-        return new TokenResponse(accessToken);
+        return new TokenResponse(accessToken, refreshToken);
     }
 
     @Transactional

@@ -1,4 +1,4 @@
-package springboot.shoppingmall.authorization;
+package springboot.shoppingmall.authorization.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -7,13 +7,19 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
 import javax.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import springboot.shoppingmall.authorization.service.JwtTokenExpireDurationStrategy;
 import springboot.shoppingmall.user.domain.User;
 
-@Component
+
 @Slf4j
+@RequiredArgsConstructor
+@Component
 public class JwtTokenProvider {
+
+    private final JwtTokenExpireDurationStrategy expireDateStrategy;
     private String secretKey = "secret_key_of_dong_ha_do_not_snap_this";
 
     // 객체 생성 후(Component 니까 bean 에 등록 후), PostConstruct 실행
@@ -21,6 +27,8 @@ public class JwtTokenProvider {
     public void encryptSecretKey(){
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
     }
+
+
 
     // jwt 토큰 생성
     public String createAccessToken(User user, String accessIp) {
@@ -30,7 +38,7 @@ public class JwtTokenProvider {
 
         Date now = new Date();
 
-        long accessTokenValidTime = 5 * 1000L; // 30 * 60 * 1000L; // 30분
+        long accessTokenValidTime = expireDateStrategy.getAccessTokenExpireDuration(); // 30 * 60 * 1000L; // 30분
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())
@@ -45,7 +53,7 @@ public class JwtTokenProvider {
 
         Date now = new Date();
 
-        long refreshTokenValidTime = 14 * 24 * 60 * 60 * 1000L; // 14 * 24 * 60 * 60 * 1000L // 14일
+        long refreshTokenValidTime = expireDateStrategy.getRefreshTokenExpireDuration(); // 14 * 24 * 60 * 60 * 1000L // 14일
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())

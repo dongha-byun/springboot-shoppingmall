@@ -22,7 +22,6 @@ import springboot.shoppingmall.product.dto.ProductResponse;
 
 public class ProductQnaAcceptanceTest extends AcceptanceTest {
     ProductResponse 상품;
-    TokenResponse 로그인정보;
 
     @BeforeEach
     void setUp(){

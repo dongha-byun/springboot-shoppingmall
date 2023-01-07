@@ -166,7 +166,7 @@ class OrderServiceTest {
     @DisplayName("배송중 상태 변경 테스트")
     void deliveryTest(){
         // given
-        Order order = orderRepository.save(new Order(user, product, 2, delivery, OrderStatus.READY));
+        Order order = orderRepository.save(new Order(user, product, 2, delivery, OrderStatus.OUTING));
 
         // when
         OrderResponse orderResponse = orderService.deliveryOrder(order.getId());
@@ -179,7 +179,7 @@ class OrderServiceTest {
     @DisplayName("배송중 상태 변경 테스트 - 출고중 상태인 주문만 배송 중으로 변경 가능하다.")
     void deliveryExceptionTest(){
         // given
-        Order order = orderRepository.save(new Order(user, product, 2, delivery, OrderStatus.READY));
+        Order order = orderRepository.save(new Order(user, product, 2, delivery, OrderStatus.OUTING));
 
         // when
         OrderResponse orderResponse = orderService.deliveryOrder(order.getId());
