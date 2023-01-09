@@ -2,6 +2,8 @@ package springboot.shoppingmall.authorization.controller;
 
 import static springboot.shoppingmall.authorization.service.AuthorizationExtractor.parsingToken;
 
+import java.util.Enumeration;
+import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +36,12 @@ public class LoginApiController {
 
     @GetMapping("/login-refresh")
     public ResponseEntity<TokenResponse> loginRefresh(HttpServletRequest request){
+        Enumeration<String> headerNames = request.getHeaderNames();
+        Iterator<String> stringIterator = headerNames.asIterator();
+        while(stringIterator.hasNext()){
+            String header = stringIterator.next();
+            log.info("{} : {}", header, request.getHeader(header));
+        }
         log.info("login-refresh");
         String token = parsingToken(request);
         TokenResponse tokenResponse = authService.reCreateAccessToken(token, request.getRemoteHost());

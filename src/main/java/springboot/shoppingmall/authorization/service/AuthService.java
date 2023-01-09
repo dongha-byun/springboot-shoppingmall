@@ -70,7 +70,7 @@ public class AuthService {
         }
 
         String accessToken = jwtTokenProvider.createAccessToken(user, accessIp);
-        return new TokenResponse(accessToken);
+        return new TokenResponse(accessToken, refreshToken);
     }
 
     private RefreshToken findRefreshTokenByUser(User user) {
