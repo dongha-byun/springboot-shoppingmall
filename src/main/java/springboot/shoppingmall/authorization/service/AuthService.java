@@ -1,5 +1,6 @@
 package springboot.shoppingmall.authorization.service;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +26,17 @@ public class AuthService {
         String accessToken = jwtTokenProvider.createAccessToken(loginUser, accessIp);
         String refreshToken = jwtTokenProvider.createRefreshToken(loginUser, accessIp);
 
-        refreshTokenRepository.save(new RefreshToken(loginUser, refreshToken));
+        saveRefreshToken(loginUser, refreshToken);
 
         return new TokenResponse(accessToken, refreshToken);
+    }
+
+    private void saveRefreshToken(User loginUser, String refreshToken) {
+        boolean isPresent = refreshTokenRepository.findByUser(loginUser).isPresent();
+        if(isPresent){
+            refreshTokenRepository.deleteByUser(loginUser);
+        }
+        refreshTokenRepository.save(new RefreshToken(loginUser, refreshToken));
     }
 
     @Transactional
