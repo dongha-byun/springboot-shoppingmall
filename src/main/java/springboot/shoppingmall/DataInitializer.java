@@ -12,7 +12,7 @@ import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.user.domain.User;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 public class DataInitializer {
 
