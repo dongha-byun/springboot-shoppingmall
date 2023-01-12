@@ -1,13 +1,10 @@
-#api 서버 포트
-server:
-  port: 10000
-
 # jpa 설정 부분
 spring:
+  profiles: default
   datasource:
 #    url: jdbc:h2:tcp://localhost/~/byun/h2/dbfile/h2_214/project/shoppingmall
 #    url: jdbc:h2:mem:testdb
-    url: jdbc:mysql://127.0.0.1:3306/shop?useSSL=false&useUnicode=yes&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://127.0.0.1:3306/shop?useSSL=false&useUnicode=yes&characterEncoding=UTF-8&serverTimezone=UTC&&allowPublicKeyRetrieval=true
     username: root
     password: password
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -25,7 +22,11 @@ spring:
         format_sql: true
         use_sql_comments: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
+
+#api 서버 포트
+server:
+  port: 10000
 
 logging:
   level:
@@ -34,3 +35,17 @@ logging:
         type:
           descriptor:
             sql: trace
+
+---
+spring:
+  profiles: test
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+
