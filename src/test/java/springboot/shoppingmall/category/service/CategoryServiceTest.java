@@ -53,4 +53,11 @@ public class CategoryServiceTest {
                 "육류", "생선"
         );
     }
+
+    @Test
+    @DisplayName("모든 카테고리 조회")
+    void findCategoryAll(){
+        List<CategoryResponse> categories = categoryService.findCategories();
+        assertThat(categories).hasSize(10);
+    }
 }

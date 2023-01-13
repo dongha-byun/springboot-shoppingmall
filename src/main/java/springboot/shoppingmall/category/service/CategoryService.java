@@ -1,5 +1,7 @@
 package springboot.shoppingmall.category.service;
 
+import static java.util.stream.Collectors.*;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +11,8 @@ import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.dto.CategoryRequest;
 import springboot.shoppingmall.category.dto.CategoryResponse;
 import springboot.shoppingmall.category.domain.CategoryRepository;
+import springboot.shoppingmall.category.query.CategoryQueryDto;
+import springboot.shoppingmall.category.query.CategoryQueryRepository;
 
 @Transactional(readOnly = true)
 @Service
@@ -16,6 +20,7 @@ import springboot.shoppingmall.category.domain.CategoryRepository;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final CategoryQueryRepository categoryQueryRepository;
 
     @Transactional
     public CategoryResponse saveCategory(CategoryRequest categoryRequest) {
@@ -35,9 +40,18 @@ public class CategoryService {
     }
 
     public List<CategoryResponse> findCategories() {
-        return categoryRepository.findParentCategoryAll().stream()
-                .map(CategoryResponse::of)
-                .collect(Collectors.toList());
+        List<CategoryQueryDto> categories = categoryQueryRepository.findCategoryAll();
+        return categories.stream()
+                .collect(
+                        groupingBy(categoryQueryDto -> new CategoryResponse(categoryQueryDto.getParentId(),
+                                        categoryQueryDto.getParentName()),
+                                mapping(categoryQueryDto -> new CategoryResponse(categoryQueryDto.getChildId(),
+                                        categoryQueryDto.getChildName()), toList()
+                                )
+                        )).entrySet().stream()
+                .map(
+                        e -> new CategoryResponse(e.getKey().getId(), e.getKey().getName(), e.getValue())
+                ).collect(toList());
     }
 
     private Category findById(Long id) {

@@ -16,6 +16,11 @@ public class CategoryResponse {
     private String name;
     private List<CategoryResponse> subCategories = new ArrayList<>();
 
+    public CategoryResponse(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public CategoryResponse(Long id, String name, List<CategoryResponse> subCategories) {
         this.id = id;
         this.name = name;
