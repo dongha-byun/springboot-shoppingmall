@@ -64,7 +64,7 @@ public class OrderAcceptanceTest extends AcceptanceTest {
         assertThat(주문_생성_결과.jsonPath().getLong("id")).isNotNull();
     }
 
-    private ExtractableResponse<Response> 주문_생성_요청(ProductResponse product, int quantity, int deliveryFee, DeliveryResponse delivery) {
+    public static ExtractableResponse<Response> 주문_생성_요청(ProductResponse product, int quantity, int deliveryFee, DeliveryResponse delivery) {
         Map<String, Object> params = new HashMap<>();
         params.put("productId", product.getId());
         params.put("quantity", quantity);
