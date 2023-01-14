@@ -68,6 +68,32 @@ public class ProductQnaAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    /**
+     *  given 상품 문의를 등록하고
+     *  when 상품 문의를 조회하면
+     *  then 상품 문의의 내용이 조회된다.
+     */
+    @Test
+    @DisplayName("상품 문의 정보가 조회된다.")
+    void addQnaAnswerTest(){
+        // given
+        ProductQnaResponse 문의_1 = 문의_등록_요청(상품, "상품 문의 등록합니다 1.").as(ProductQnaResponse.class);
+
+        // when
+        ExtractableResponse<Response> 문의_조회_결과 = 문의_조회_요청(문의_1);
+
+        // then
+        assertThat(문의_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private ExtractableResponse<Response> 문의_조회_요청(ProductQnaResponse productQnaResponse) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/products/{productId}/qna/{qnaId}", 상품.getId(), productQnaResponse.getId())
+                .then().log().all()
+                .extract();
+    }
+
     private ExtractableResponse<Response> 문의_목록_조회_요청(ProductResponse productResponse) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

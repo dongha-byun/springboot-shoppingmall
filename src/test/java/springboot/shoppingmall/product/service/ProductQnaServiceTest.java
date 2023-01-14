@@ -77,4 +77,19 @@ class ProductQnaServiceTest {
         assertThat(productQnaList).hasSize(2);
         assertThat(productQnaList.get(0).getWriteDate()).isNotNull();
     }
+
+    @Test
+    @DisplayName("상품 문의 1건을 조회한다.")
+    void findQnaTest(){
+        // given
+        ProductQnaResponse qna = productQnaService.createQna(saveUser.getId(), product.getId(),
+                new ProductQnaRequest("제품에 대해 물어볼게 있어요. 1"));
+
+        // when
+        ProductQnaResponse findQna = productQnaService.findQnaByProduct(product.getId(), qna.getId());
+
+        // then
+        assertThat(findQna.getId()).isNotNull();
+        assertThat(qna.getId()).isEqualTo(findQna.getId());
+    }
 }

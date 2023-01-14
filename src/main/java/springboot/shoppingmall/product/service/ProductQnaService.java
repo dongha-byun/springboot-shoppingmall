@@ -11,6 +11,7 @@ import springboot.shoppingmall.product.domain.ProductQnaRepository;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.dto.ProductQnaRequest;
 import springboot.shoppingmall.product.dto.ProductQnaResponse;
+import springboot.shoppingmall.product.dto.ProductResponse;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserRepository;
 
@@ -41,6 +42,19 @@ public class ProductQnaService {
         return product.getQna().stream()
                 .map(ProductQnaResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public ProductQnaResponse findQnaByProduct(Long productId, Long qnaId){
+        Product product = findProductById(productId);
+        ProductQna productQna = product.getQna().stream()
+                .filter(
+                        qna -> qna.getId().equals(qnaId)
+                )
+                .findAny()
+                .orElseThrow(
+                        () -> new IllegalArgumentException("문의 글이 존재하지 않습니다.")
+                );
+        return ProductQnaResponse.of(productQna);
     }
 
     private Product findProductById(Long productId) {

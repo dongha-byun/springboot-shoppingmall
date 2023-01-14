@@ -39,4 +39,11 @@ public class ProductQnaApiController {
         List<ProductQnaResponse> allQna = productQnaService.findQnaAllByProduct(productId);
         return ResponseEntity.ok(allQna);
     }
+
+    @GetMapping("/products/{productId}/qna/{qnaId}")
+    public ResponseEntity<ProductQnaResponse> findQna(@PathVariable("productId") Long productId,
+                                                      @PathVariable("qnaId") Long qnaId){
+        ProductQnaResponse qnaResponse = productQnaService.findQnaByProduct(productId, qnaId);
+        return ResponseEntity.ok().body(qnaResponse);
+    }
 }
