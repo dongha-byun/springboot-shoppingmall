@@ -41,8 +41,10 @@ public class ProductQnaAnswer extends BaseEntity {
         this.answerDate = LocalDateTime.now();
     }
 
-    public ProductQnaAnswer ofProductQna(ProductQna productQna){
-        this.productQna = productQna;
+    public ProductQnaAnswer ofQna(ProductQna qna){
+        this.productQna = qna;
+        qna.addAnswer(this);
+
         return this;
     }
 }

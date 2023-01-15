@@ -3,6 +3,7 @@ package springboot.shoppingmall.product.domain;
 import static javax.persistence.FetchType.*;
 
 import java.time.LocalDateTime;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -43,6 +45,9 @@ public class ProductQna extends BaseEntity {
     @JoinColumn(name = "writer_id", nullable = false)
     private User writer;
 
+    @OneToOne(mappedBy = "productQna", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ProductQnaAnswer answer;
+
     @Builder
     public ProductQna(String content, Product product, User writer) {
         this.content = content;
@@ -53,5 +58,9 @@ public class ProductQna extends BaseEntity {
         if(product != null){
             product.addQna(this);
         }
+    }
+
+    public void addAnswer(ProductQnaAnswer answer){
+        this.answer = answer;
     }
 }

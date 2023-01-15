@@ -80,16 +80,16 @@ public class ProductQnaAcceptanceTest extends AcceptanceTest {
         ProductQnaResponse 문의_1 = 문의_등록_요청(상품, "상품 문의 등록합니다 1.").as(ProductQnaResponse.class);
 
         // when
-        ExtractableResponse<Response> 문의_조회_결과 = 문의_조회_요청(문의_1);
+        ExtractableResponse<Response> 문의_조회_결과 = 문의_조회_요청(상품, 문의_1);
 
         // then
         assertThat(문의_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    private ExtractableResponse<Response> 문의_조회_요청(ProductQnaResponse productQnaResponse) {
+    public static ExtractableResponse<Response> 문의_조회_요청(ProductResponse product, ProductQnaResponse productQnaResponse) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/products/{productId}/qna/{qnaId}", 상품.getId(), productQnaResponse.getId())
+                .when().get("/products/{productId}/qna/{qnaId}", product.getId(), productQnaResponse.getId())
                 .then().log().all()
                 .extract();
     }
@@ -103,7 +103,7 @@ public class ProductQnaAcceptanceTest extends AcceptanceTest {
         return response;
     }
 
-    private ExtractableResponse<Response> 문의_등록_요청(ProductResponse productResponse, String content) {
+    public static ExtractableResponse<Response> 문의_등록_요청(ProductResponse productResponse, String content) {
         Map<String, Object> body = new HashMap<>();
         body.put("content", content);
 
