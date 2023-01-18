@@ -19,14 +19,16 @@ public class ProductQnaAnswerService {
 
     @Transactional
     public ProductQnaAnswerResponse createQnaAnswer(Long qnaId, String content) {
-        ProductQna productQna = productQnaRepository.findById(qnaId)
+        ProductQna productQna = findQnaById(qnaId);
+        ProductQnaAnswer answer = ProductQnaAnswer.createQnaAnswer(content, productQna);
+
+        return ProductQnaAnswerResponse.of(productQnaAnswerRepository.save(answer));
+    }
+
+    private ProductQna findQnaById(Long qnaId) {
+        return productQnaRepository.findById(qnaId)
                 .orElseThrow(
                         () -> new IllegalArgumentException("상품 문의글 조회 실패")
                 );
-        ProductQnaAnswer answer = ProductQnaAnswer.builder()
-                .answer(content)
-                .build()
-                .ofQna(productQna);
-        return ProductQnaAnswerResponse.of(productQnaAnswerRepository.save(answer));
     }
 }

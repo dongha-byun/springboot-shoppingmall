@@ -42,7 +42,7 @@ public class ProductQnaAnswerServiceTest {
         User user = new User("문의작성자1", "qnaWriter1", "qnaWriter1!", "010-2222-3333");
         ProductQnaAnswerService productQnaAnswerService = new ProductQnaAnswerService(productQnaRepository, productQnaAnswerRepository);
         when(productQnaRepository.findById(any())).thenReturn(Optional.of(new ProductQna(content, product, user)));
-        when(productQnaAnswerRepository.save(any())).thenReturn(new ProductQnaAnswer(content));
+        when(productQnaAnswerRepository.save(any())).thenReturn(ProductQnaAnswer.createQnaAnswer(content, new ProductQna(content, product, user)));
 
         // when
         ProductQnaAnswerResponse qnaAnswer = productQnaAnswerService.createQnaAnswer(qnaId, content);

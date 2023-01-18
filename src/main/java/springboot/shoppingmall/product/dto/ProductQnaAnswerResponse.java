@@ -14,6 +14,9 @@ public class ProductQnaAnswerResponse {
     private String content;
 
     public static ProductQnaAnswerResponse of(ProductQnaAnswer answer){
+        if(answer == null || answer.getId() == null){
+            return new ProductQnaAnswerResponse();
+        }
         return new ProductQnaAnswerResponse(answer.getId(), answer.getAnswer());
     }
 }

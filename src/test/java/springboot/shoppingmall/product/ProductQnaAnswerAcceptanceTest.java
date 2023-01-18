@@ -1,5 +1,6 @@
 package springboot.shoppingmall.product;
 
+import static org.assertj.core.api.Assertions.*;
 import static springboot.shoppingmall.category.CategoryAcceptanceTest.카테고리_등록;
 import static springboot.shoppingmall.product.ProductAcceptanceTest.상품_등록_요청;
 import static springboot.shoppingmall.product.ProductQnaAcceptanceTest.*;
@@ -9,7 +10,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,7 +54,35 @@ public class ProductQnaAnswerAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 문의_답변_작성_결과 = 문의_답변_등록_요청(상품, 상품_문의, "답변드립니다. 불편을 드려 죄송합니다. 감사합니다.");
 
         // then
-        Assertions.assertThat(문의_답변_작성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(문의_답변_작성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    /**
+     * Feature: 답변이 등록된 문의 조회
+     *  Background:
+     *      given: 문의가 등록되어 있고
+     *      And: 문의에 답변이 등록되어 있음
+     *  Scenario: 답변 달린 문의 조회
+     *      when: 답변이 달린 문의를 조회하면,
+     *      then: 문의내용과 함께 답변내용도 같이 조회된다.
+     */
+    @Test
+    @DisplayName("문의 내용 조회 시, 답변을 같이 조회한다")
+    void findAnswerWithQna(){
+
+        // given
+        ExtractableResponse<Response> 문의_답변_등록_요청_결과 = 문의_답변_등록_요청(상품, 상품_문의, "답변은 아래와 같습니다. 감사합니다. ");
+        assertThat(문의_답변_등록_요청_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // when
+        ExtractableResponse<Response> 답변이_포함된_문의_조회_결과 = 문의_조회_요청(상품, 상품_문의);
+
+        // then
+        assertThat(답변이_포함된_문의_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ProductQnaResponse productQnaResponse = 답변이_포함된_문의_조회_결과.as(ProductQnaResponse.class);
+        assertThat(productQnaResponse.getId()).isNotNull();
+        assertThat(productQnaResponse.getAnswer().getContent()).contains("답변은 아래와 같습니다. 감사합니다. ");
+
     }
 
     private ExtractableResponse<Response> 문의_답변_등록_요청(ProductResponse productResponse, ProductQnaResponse qnaResponse, String content) {

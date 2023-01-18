@@ -35,13 +35,17 @@ public class ProductQnaAnswer extends BaseEntity {
     @JoinColumn(name = "product_qna_id")
     private ProductQna productQna;
 
-    @Builder
-    public ProductQnaAnswer(String answer) {
-        this.answer = answer;
-        this.answerDate = LocalDateTime.now();
+    public static ProductQnaAnswer createQnaAnswer(String answer, ProductQna qna){
+        ProductQnaAnswer productQnaAnswer = new ProductQnaAnswer();
+        productQnaAnswer.answer = answer;
+        productQnaAnswer.answerDate = LocalDateTime.now();
+
+        productQnaAnswer.ofQna(qna);
+
+        return productQnaAnswer;
     }
 
-    public ProductQnaAnswer ofQna(ProductQna qna){
+    private ProductQnaAnswer ofQna(ProductQna qna){
         this.productQna = qna;
         qna.addAnswer(this);
 

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
+import springboot.shoppingmall.product.dto.ProductQnaAnswerRequest;
 import springboot.shoppingmall.product.dto.ProductQnaAnswerResponse;
 import springboot.shoppingmall.product.service.ProductQnaAnswerService;
 
@@ -22,8 +23,8 @@ public class ProductQnaAnswerApiController {
     public ResponseEntity<ProductQnaAnswerResponse> createQnaAnswer(@AuthenticationStrategy AuthorizedUser user,
                                                                     @PathVariable("productId") Long productId,
                                                                     @PathVariable("qnaId") Long qnaId,
-                                                                    @RequestBody String content){
-        ProductQnaAnswerResponse answerResponse = productQnaAnswerService.createQnaAnswer(qnaId, content);
+                                                                    @RequestBody ProductQnaAnswerRequest answerRequest){
+        ProductQnaAnswerResponse answerResponse = productQnaAnswerService.createQnaAnswer(qnaId, answerRequest.getContent());
 
         return ResponseEntity.created(URI.create("/products/"+productId+"/qna/"+qnaId+"/answer/"+answerResponse.getId())).body(answerResponse);
 
