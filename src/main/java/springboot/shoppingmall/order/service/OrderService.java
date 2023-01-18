@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderRepository;
+import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.domain.Product;
@@ -33,6 +34,14 @@ public class OrderService {
         Order newOrder = orderRepository.save(Order.createOrder(user, product, orderRequest.getQuantity(), delivery));
 
         return OrderResponse.of(newOrder);
+    }
+
+    @Transactional
+    public OrderResponse changeOrderStatus(Long orderId, String changeStatus){
+        Order order = findOrderById(orderId);
+        order.changeStatus(OrderStatus.valueOf(changeStatus));
+
+        return OrderResponse.of(order);
     }
 
     @Transactional

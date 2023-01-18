@@ -96,4 +96,10 @@ public class Order extends BaseEntity {
         }
         this.orderStatus = OrderStatus.DELIVERY;
     }
+
+    public void changeStatus(OrderStatus orderStatus) {
+        if(OrderStatus.OUTING.equals(orderStatus)){
+            outing();
+        }
+    }
 }

@@ -17,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
 import springboot.shoppingmall.category.dto.CategoryResponse;
+import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.dto.ProductResponse;
 import springboot.shoppingmall.user.dto.DeliveryResponse;
 
@@ -62,6 +64,41 @@ public class OrderAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(주문_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(주문_생성_결과.jsonPath().getLong("id")).isNotNull();
+    }
+
+    /**
+     * Feature: 준비중인 주문의 상태를 출고중으로 변경
+     *  Background:
+     *      given: 판매자 정보로 로그인 되어있음
+     *      And: 판매자가 판매한 상품의 준비중인 주문이 들어와 있음
+     *  Scenario: 준비중인 주문의 상태을 출고중으로 변경
+     *      when: 조회된 주문정보의 주문상태를 출고중으로 변경하면
+     *      then: 주문정보가 출고중으로 변경된다.
+     */
+    @Test
+    @DisplayName("주문 상태 변경 : 준비중 -> 출고중")
+    void statusChangeTest1(){
+        // given
+        OrderResponse 주문 = 주문_생성_요청(상품, 3, 3000, 배송지).as(OrderResponse.class);
+
+        // when
+        ExtractableResponse<Response> 주문_상태_변경_결과 = 주문_상태_변경_요청(주문, OrderStatus.OUTING);
+
+        // then
+        assertThat(주문_상태_변경_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private ExtractableResponse<Response> 주문_상태_변경_요청(OrderResponse order, OrderStatus status) {
+        Map<String, String> params = new HashMap<>();
+        params.put("status", status.name());
+
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers(createAuthorizationHeader(로그인정보))
+                .body(params)
+                .when().post("/orders/{id}/change-status", order.getId())
+                .then().log().all()
+                .extract();
     }
 
     public static ExtractableResponse<Response> 주문_생성_요청(ProductResponse product, int quantity, int deliveryFee, DeliveryResponse delivery) {
