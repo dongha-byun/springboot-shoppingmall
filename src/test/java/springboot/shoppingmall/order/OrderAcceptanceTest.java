@@ -82,7 +82,7 @@ public class OrderAcceptanceTest extends AcceptanceTest {
         OrderResponse 주문 = 주문_생성_요청(상품, 3, 3000, 배송지).as(OrderResponse.class);
 
         // when
-        ExtractableResponse<Response> 주문_상태_변경_결과 = 주문_상태_변경_요청(주문, OrderStatus.OUTING);
+        ExtractableResponse<Response> 주문_상태_변경_결과 = 주문_상태_변경_요청(주문, OrderStatus.OUTING); 
 
         // then
         assertThat(주문_상태_변경_결과.statusCode()).isEqualTo(HttpStatus.OK.value());

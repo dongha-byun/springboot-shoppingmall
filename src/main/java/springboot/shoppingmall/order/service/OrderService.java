@@ -44,30 +44,6 @@ public class OrderService {
         return OrderResponse.of(order);
     }
 
-    @Transactional
-    public OrderResponse cancelOrder(Long orderId) {
-        Order order = findOrderById(orderId);
-        order.cancel();
-
-        return OrderResponse.of(order);
-    }
-
-    @Transactional
-    public OrderResponse outingOrder(Long orderId) {
-        Order order = findOrderById(orderId);
-        order.outing();
-
-        return OrderResponse.of(order);
-    }
-
-    @Transactional
-    public OrderResponse deliveryOrder(Long orderId) {
-        Order order = findOrderById(orderId);
-        order.delivery();
-
-        return OrderResponse.of(order);
-    }
-
     private Delivery getDeliveryById(Long deliveryId) {
         return deliveryRepository.findById(deliveryId)
                 .orElseThrow(IllegalArgumentException::new);

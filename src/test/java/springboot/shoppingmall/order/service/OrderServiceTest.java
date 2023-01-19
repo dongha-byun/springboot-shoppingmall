@@ -84,7 +84,7 @@ class OrderServiceTest {
         OrderResponse orderResponse = orderService.createOrder(user.getId(), orderRequest);
 
         // when
-        OrderResponse cancelOrder = orderService.cancelOrder(orderResponse.getId());
+        OrderResponse cancelOrder = orderService.changeOrderStatus(orderResponse.getId(), OrderStatus.CANCEL.name());
 
         // then
         assertThat(cancelOrder.getOrderStatusName()).isEqualTo(OrderStatus.CANCEL.getStatusName());
@@ -106,20 +106,20 @@ class OrderServiceTest {
         // when & then
         assertAll(
                 () -> assertThatIllegalArgumentException().isThrownBy(
-                        () -> orderService.cancelOrder(outingOrder.getId())),
+                        () -> orderService.changeOrderStatus(outingOrder.getId(), OrderStatus.CANCEL.name())),
                 () -> assertThatIllegalArgumentException().isThrownBy(
-                        () -> orderService.cancelOrder(cancelOrder.getId())),
+                        () -> orderService.changeOrderStatus(cancelOrder.getId(), OrderStatus.CANCEL.name())),
                 () -> assertThatIllegalArgumentException().isThrownBy(
-                        () -> orderService.cancelOrder(checkingOrder.getId())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.cancelOrder(endOrder.getId())),
+                        () -> orderService.changeOrderStatus(checkingOrder.getId(), OrderStatus.CANCEL.name())),
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(endOrder.getId(), OrderStatus.CANCEL.name())),
                 () -> assertThatIllegalArgumentException().isThrownBy(
-                        () -> orderService.cancelOrder(exchangeReqOrder.getId())),
+                        () -> orderService.changeOrderStatus(exchangeReqOrder.getId(), OrderStatus.CANCEL.name())),
                 () -> assertThatIllegalArgumentException().isThrownBy(
-                        () -> orderService.cancelOrder(finishOrder.getId())),
+                        () -> orderService.changeOrderStatus(finishOrder.getId(), OrderStatus.CANCEL.name())),
                 () -> assertThatIllegalArgumentException().isThrownBy(
-                        () -> orderService.cancelOrder(returnEndOrder.getId())),
+                        () -> orderService.changeOrderStatus(returnEndOrder.getId(), OrderStatus.CANCEL.name())),
                 () -> assertThatIllegalArgumentException().isThrownBy(
-                        () -> orderService.cancelOrder(returnReqOrder.getId()))
+                        () -> orderService.changeOrderStatus(returnReqOrder.getId(), OrderStatus.CANCEL.name()))
         );
     }
 
@@ -130,7 +130,7 @@ class OrderServiceTest {
         Order order = orderRepository.save(new Order(user, product, 2, delivery, OrderStatus.READY));
 
         // when
-        OrderResponse orderResponse = orderService.outingOrder(order.getId());
+        OrderResponse orderResponse = orderService.changeOrderStatus(order.getId(), OrderStatus.OUTING.name());
 
         // then
         assertThat(orderResponse.getOrderStatusName()).isEqualTo(OrderStatus.OUTING.getStatusName());
@@ -151,14 +151,14 @@ class OrderServiceTest {
 
         // when & then
         assertAll(
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.outingOrder(outingOrder.getId())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.outingOrder(cancelOrder.getId())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.outingOrder(checkingOrder.getId())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.outingOrder(endOrder.getId())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.outingOrder(exchangeReqOrder.getId())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.outingOrder(finishOrder.getId())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.outingOrder(returnEndOrder.getId())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.outingOrder(returnReqOrder.getId()))
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(outingOrder.getId(), OrderStatus.OUTING.name())),
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(cancelOrder.getId(), OrderStatus.OUTING.name())),
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(checkingOrder.getId(), OrderStatus.OUTING.name())),
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(endOrder.getId(), OrderStatus.OUTING.name())),
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(exchangeReqOrder.getId(), OrderStatus.OUTING.name())),
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(finishOrder.getId(), OrderStatus.OUTING.name())),
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(returnEndOrder.getId(), OrderStatus.OUTING.name())),
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(returnReqOrder.getId(), OrderStatus.OUTING.name()))
         );
     }
 
@@ -169,7 +169,7 @@ class OrderServiceTest {
         Order order = orderRepository.save(new Order(user, product, 2, delivery, OrderStatus.OUTING));
 
         // when
-        OrderResponse orderResponse = orderService.deliveryOrder(order.getId());
+        OrderResponse orderResponse = orderService.changeOrderStatus(order.getId(), OrderStatus.DELIVERY.name());
 
         // then
         assertThat(orderResponse.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY.getStatusName());
@@ -179,12 +179,25 @@ class OrderServiceTest {
     @DisplayName("배송중 상태 변경 테스트 - 출고중 상태인 주문만 배송 중으로 변경 가능하다.")
     void deliveryExceptionTest(){
         // given
-        Order order = orderRepository.save(new Order(user, product, 2, delivery, OrderStatus.OUTING));
+        Order readyOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.READY));
+        Order cancelOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.CANCEL));
+        Order checkingOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.CHECKING));
+        Order endOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.END));
+        Order exchangeReqOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.EXCHANGE_REQ));
+        Order finishOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.FINISH));
+        Order returnEndOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.RETURN_END));
+        Order returnReqOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.RETURN_REQ));
 
-        // when
-        OrderResponse orderResponse = orderService.deliveryOrder(order.getId());
-
-        // then
-        assertThat(orderResponse.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY.getStatusName());
+        // when & then
+        assertAll(
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(readyOrder.getId(), OrderStatus.DELIVERY.name())),
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(cancelOrder.getId(), OrderStatus.DELIVERY.name())),
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(checkingOrder.getId(), OrderStatus.DELIVERY.name())),
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(endOrder.getId(), OrderStatus.DELIVERY.name())),
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(exchangeReqOrder.getId(), OrderStatus.DELIVERY.name())),
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(finishOrder.getId(), OrderStatus.DELIVERY.name())),
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(returnEndOrder.getId(), OrderStatus.DELIVERY.name())),
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(returnReqOrder.getId(), OrderStatus.DELIVERY.name()))
+        );
     }
 }

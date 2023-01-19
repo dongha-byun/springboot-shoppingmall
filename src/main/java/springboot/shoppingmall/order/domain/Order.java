@@ -101,5 +101,11 @@ public class Order extends BaseEntity {
         if(OrderStatus.OUTING.equals(orderStatus)){
             outing();
         }
+        if(OrderStatus.CANCEL.equals(orderStatus)){
+            cancel();
+        }
+        if(OrderStatus.DELIVERY.equals(orderStatus)){
+            delivery();
+        }
     }
 }
