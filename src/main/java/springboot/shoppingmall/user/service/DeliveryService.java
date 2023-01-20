@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.user.domain.Delivery;
 import springboot.shoppingmall.user.domain.DeliveryRepository;
 import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.user.domain.UserFinder;
 import springboot.shoppingmall.user.dto.DeliveryRequest;
 import springboot.shoppingmall.user.dto.DeliveryResponse;
 
@@ -18,25 +18,18 @@ import springboot.shoppingmall.user.dto.DeliveryResponse;
 public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
-    private final UserRepository userRepository;
+    private final UserFinder userFinder;
 
     @Transactional
     public DeliveryResponse create(Long userId, DeliveryRequest deliveryRequest) {
-        User user = findUserById(userId);
+        User user = userFinder.findUserById(userId);
         Delivery delivery = deliveryRepository.save(DeliveryRequest.to(deliveryRequest).createBy(user));
         return DeliveryResponse.of(delivery);
     }
 
-    private User findUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(
-                        () -> new IllegalArgumentException("사용자 조회 실패")
-                );
-    }
-
     @Transactional
     public void delete(Long userId, Long deliveryId) {
-        User user = findUserById(userId);
+        User user = userFinder.findUserById(userId);
         Delivery delivery = findDeliveryById(deliveryId);
 
         user.removeDelivery(delivery);
@@ -50,7 +43,7 @@ public class DeliveryService {
     }
 
     public List<DeliveryResponse> findAllDelivery(Long userId) {
-        User user = findUserById(userId);
+        User user = userFinder.findUserById(userId);
         return user.getDeliveries().stream()
                 .map(DeliveryResponse::of).collect(Collectors.toList());
     }

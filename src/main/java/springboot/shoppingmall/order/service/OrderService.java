@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
 import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.domain.Product;
@@ -13,6 +14,7 @@ import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.user.domain.Delivery;
 import springboot.shoppingmall.user.domain.DeliveryRepository;
 import springboot.shoppingmall.user.domain.User;
+import springboot.shoppingmall.user.domain.UserFinder;
 import springboot.shoppingmall.user.domain.UserRepository;
 
 @RequiredArgsConstructor
@@ -20,14 +22,15 @@ import springboot.shoppingmall.user.domain.UserRepository;
 @Service
 public class OrderService {
 
-    private final UserRepository userRepository;
+    private final UserFinder userFinder;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final DeliveryRepository deliveryRepository;
+    private final OrderDeliveryInterfaceService orderDeliveryInterfaceService;
 
     @Transactional
     public OrderResponse createOrder(Long userId, OrderRequest orderRequest) {
-        User user = findUserById(userId);
+        User user = userFinder.findUserById(userId);
         Product product = findProductById(orderRequest.getProductId());
         Delivery delivery = getDeliveryById(orderRequest.getDeliveryId());
 
@@ -41,6 +44,12 @@ public class OrderService {
         Order order = findOrderById(orderId);
         order.changeStatus(OrderStatus.valueOf(changeStatus));
 
+        if(order.isOuting()){
+            // 여기서 송장번호 발부
+            OrderDeliveryInvoiceResponse deliveryInvoice = orderDeliveryInterfaceService.createInvoiceNumber(order);
+            return OrderResponse.of(order, deliveryInvoice);
+        }
+
         return OrderResponse.of(order);
     }
 
@@ -51,11 +60,6 @@ public class OrderService {
 
     private Product findProductById(Long productId) {
         return productRepository.findById(productId)
-                .orElseThrow(IllegalArgumentException::new);
-    }
-
-    private User findUserById(Long userId) {
-        return userRepository.findById(userId)
                 .orElseThrow(IllegalArgumentException::new);
     }
 
