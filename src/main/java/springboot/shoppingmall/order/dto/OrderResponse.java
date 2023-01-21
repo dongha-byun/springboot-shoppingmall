@@ -16,17 +16,19 @@ public class OrderResponse {
     private int quantity;
     private int totalPrice;
     private DeliveryResponse delivery;
+    private String invoiceNumber;
     private OrderDeliveryInvoiceResponse deliveryInvoice;
+
 
     public static OrderResponse of(Order order) {
         return new OrderResponse(order.getId(), order.getOrderStatus().getStatusName(),
                 order.getProduct().getName(), order.getQuantity(), order.getTotalPrice(),
-                DeliveryResponse.of(order.getDelivery()), null);
+                DeliveryResponse.of(order.getDelivery()), order.getInvoiceNumber(), null);
     }
 
     public static OrderResponse of(Order order, OrderDeliveryInvoiceResponse deliveryInvoice) {
         return new OrderResponse(order.getId(), order.getOrderStatus().getStatusName(),
                 order.getProduct().getName(), order.getQuantity(), order.getTotalPrice(),
-                DeliveryResponse.of(order.getDelivery()), deliveryInvoice);
+                DeliveryResponse.of(order.getDelivery()), order.getInvoiceNumber(), deliveryInvoice);
     }
 }

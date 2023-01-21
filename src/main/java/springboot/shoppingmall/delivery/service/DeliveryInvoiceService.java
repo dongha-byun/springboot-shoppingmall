@@ -6,4 +6,5 @@ import springboot.shoppingmall.delivery.dto.DeliveryInvoiceResponse;
 public interface DeliveryInvoiceService {
 
     DeliveryInvoiceResponse getDeliveryInvoice(DeliveryInvoiceRequest deliveryInvoiceRequest);
+    String changeDeliveryEnd(String invoiceNumber);
 }

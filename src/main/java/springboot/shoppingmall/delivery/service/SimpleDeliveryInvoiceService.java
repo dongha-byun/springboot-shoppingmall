@@ -13,4 +13,9 @@ public class SimpleDeliveryInvoiceService implements DeliveryInvoiceService{
         String invoiceNumber = UUID.randomUUID().toString();
         return DeliveryInvoiceResponse.of(invoiceNumber, deliveryInvoiceRequest);
     }
+
+    @Override
+    public String changeDeliveryEnd(String invoiceNumber) {
+        return null;
+    }
 }

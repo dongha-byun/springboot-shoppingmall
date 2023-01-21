@@ -2,6 +2,7 @@ package springboot.shoppingmall.order.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -15,6 +16,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 import springboot.shoppingmall.BaseEntity;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.user.domain.Delivery;
@@ -42,7 +44,8 @@ public class Order extends BaseEntity {
 
     private int quantity;
 
-    private String orderNo;
+    @Column(unique = true)
+    private String invoiceNumber;
 
     private int totalPrice;
 
@@ -107,5 +110,16 @@ public class Order extends BaseEntity {
         if(OrderStatus.DELIVERY.equals(orderStatus)){
             delivery();
         }
+    }
+
+    public boolean isOuting() {
+        return OrderStatus.OUTING.equals(orderStatus);
+    }
+
+    public void changeInvoiceNumber(String invoiceNumber) {
+        if(StringUtils.hasText(this.invoiceNumber)){
+            throw new IllegalArgumentException("기존에 발급받은 송장번호가 존재합니다.");
+        }
+        this.invoiceNumber = invoiceNumber;
     }
 }

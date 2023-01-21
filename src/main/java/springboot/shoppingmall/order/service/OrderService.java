@@ -47,6 +47,7 @@ public class OrderService {
         if(order.isOuting()){
             // 여기서 송장번호 발부
             OrderDeliveryInvoiceResponse deliveryInvoice = orderDeliveryInterfaceService.createInvoiceNumber(order);
+            order.changeInvoiceNumber(deliveryInvoice.getInvoiceNumber());
             return OrderResponse.of(order, deliveryInvoice);
         }
 
