@@ -1,9 +1,9 @@
-package springboot.shoppingmall.delivery.service;
+package springboot.shoppingmall.deliveryinvoice.service;
 
 import java.util.UUID;
 import org.springframework.stereotype.Component;
-import springboot.shoppingmall.delivery.dto.DeliveryInvoiceRequest;
-import springboot.shoppingmall.delivery.dto.DeliveryInvoiceResponse;
+import springboot.shoppingmall.deliveryinvoice.dto.DeliveryInvoiceRequest;
+import springboot.shoppingmall.deliveryinvoice.dto.DeliveryInvoiceResponse;
 
 @Component
 public class SimpleDeliveryInvoiceService implements DeliveryInvoiceService{

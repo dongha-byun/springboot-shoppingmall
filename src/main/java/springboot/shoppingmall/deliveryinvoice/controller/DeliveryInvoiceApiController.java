@@ -1,4 +1,4 @@
-package springboot.shoppingmall.delivery.controller;
+package springboot.shoppingmall.deliveryinvoice.controller;
 
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +16,10 @@ import springboot.shoppingmall.deliveryinvoice.service.DeliveryInvoiceService;
  * 송장번호 발부 및 조회 등의 기능을 사용 시엔
  * 의존관계를 받는게 아닌, WebClient 를 통해 API 통신으로 데이터를 주고 받아야 합니다.
  */
-
 @RequiredArgsConstructor
 @RestController
-public class DeliveryApiController {
+public class DeliveryInvoiceApiController {
+
     private final DeliveryInvoiceService deliveryInvoiceService;
 
     @PostMapping("/delivery-invoice")

@@ -1,4 +1,4 @@
-package springboot.shoppingmall.delivery.dto;
+package springboot.shoppingmall.deliveryinvoice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

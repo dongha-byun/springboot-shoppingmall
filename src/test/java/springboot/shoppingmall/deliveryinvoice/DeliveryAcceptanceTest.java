@@ -1,4 +1,4 @@
-package springboot.shoppingmall.delivery;
+package springboot.shoppingmall.deliveryinvoice;
 
 import static org.assertj.core.api.Assertions.*;
 import static springboot.shoppingmall.category.CategoryAcceptanceTest.카테고리_등록;
@@ -18,8 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
 import springboot.shoppingmall.category.dto.CategoryResponse;
-import springboot.shoppingmall.delivery.dto.DeliveryInvoiceResponse;
-import springboot.shoppingmall.order.OrderAcceptanceTest;
+import springboot.shoppingmall.deliveryinvoice.dto.DeliveryInvoiceResponse;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.dto.ProductResponse;

@@ -1,11 +1,13 @@
-package springboot.shoppingmall.delivery.service;
+package springboot.shoppingmall.deliveryinvoice.service;
 
 import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import springboot.shoppingmall.delivery.dto.DeliveryInvoiceRequest;
-import springboot.shoppingmall.delivery.dto.DeliveryInvoiceResponse;
+import springboot.shoppingmall.deliveryinvoice.dto.DeliveryInvoiceRequest;
+import springboot.shoppingmall.deliveryinvoice.dto.DeliveryInvoiceResponse;
+import springboot.shoppingmall.deliveryinvoice.service.DeliveryInvoiceService;
+import springboot.shoppingmall.deliveryinvoice.service.SimpleDeliveryInvoiceService;
 
 class DeliveryInvoiceServiceTest {
 
