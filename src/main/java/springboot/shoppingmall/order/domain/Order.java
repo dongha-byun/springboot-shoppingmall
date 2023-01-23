@@ -57,6 +57,10 @@ public class Order extends BaseEntity {
     private OrderStatus orderStatus;
 
     public Order(User user, Product product, int quantity, Delivery delivery, OrderStatus orderStatus){
+        this(user, product, quantity, delivery, orderStatus, null);
+    }
+
+    public Order(User user, Product product, int quantity, Delivery delivery, OrderStatus orderStatus, String invoiceNumber) {
         this.user = user;
         this.product = product;
         this.quantity = quantity;
@@ -64,6 +68,7 @@ public class Order extends BaseEntity {
         this.orderStatus = orderStatus;
         this.totalPrice = product.getPrice() * quantity;
         this.delivery = delivery;
+        this.invoiceNumber = invoiceNumber;
     }
 
     public static Order createOrder(User user, Product product, int quantity, Delivery delivery){
