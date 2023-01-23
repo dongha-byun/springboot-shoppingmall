@@ -27,7 +27,7 @@ public class AcceptanceTest {
     public static TokenResponse 로그인정보;
 
     @BeforeEach
-    public void beforeEach(){
+    public void acceptance_beforeEach(){
         if(RestAssured.port == RestAssured.UNDEFINED_PORT){
             RestAssured.port = this.port;
         }

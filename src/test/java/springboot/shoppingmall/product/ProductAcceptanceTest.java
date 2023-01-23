@@ -26,7 +26,7 @@ public class ProductAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     public void beforeEach(){
-        super.beforeEach();
+        super.acceptance_beforeEach();
 
         식품 = 카테고리_등록("식품", null).as(CategoryResponse.class);
         육류 = 카테고리_등록("육류", 식품.getId()).as(CategoryResponse.class);

@@ -19,7 +19,7 @@ public class DeliveryAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setUp(){
-        super.beforeEach();
+        super.acceptance_beforeEach();
     }
 
     /**
