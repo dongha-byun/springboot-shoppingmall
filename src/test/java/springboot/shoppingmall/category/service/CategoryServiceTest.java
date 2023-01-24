@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.category.domain.Category;
+import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.category.dto.CategoryRequest;
 import springboot.shoppingmall.category.dto.CategoryResponse;
 import springboot.shoppingmall.category.service.CategoryService;
@@ -19,6 +21,10 @@ public class CategoryServiceTest {
 
     @Autowired
     CategoryService categoryService;
+
+    @Autowired
+    CategoryRepository categoryRepository;
+
 
     @Test
     @DisplayName("카테고리 추가")
@@ -57,7 +63,24 @@ public class CategoryServiceTest {
     @Test
     @DisplayName("모든 카테고리 조회")
     void findCategoryAll(){
+        // given
+        CategoryResponse categoryResponse1 = categoryService.saveCategory(new CategoryRequest("상위 카테고리 1", null));
+        categoryService.saveCategory(new CategoryRequest("하위 카테고리 1-1", categoryResponse1.getId()));
+        categoryService.saveCategory(new CategoryRequest("하위 카테고리 1-2", categoryResponse1.getId()));
+
+        CategoryResponse categoryResponse2 = categoryService.saveCategory(new CategoryRequest("상위 카테고리 2", null));
+        categoryService.saveCategory(new CategoryRequest("하위 카테고리 2-1", categoryResponse2.getId()));
+        categoryService.saveCategory(new CategoryRequest("하위 카테고리 2-2", categoryResponse2.getId()));
+        categoryService.saveCategory(new CategoryRequest("하위 카테고리 2-3", categoryResponse2.getId()));
+
+        // when
         List<CategoryResponse> categories = categoryService.findCategories();
-        assertThat(categories).hasSize(10);
+
+        // then
+        List<Long> categoryIds = categories.stream()
+                .map(CategoryResponse::getId).collect(Collectors.toList());
+        assertThat(categoryIds).contains(
+                categoryResponse1.getId(), categoryResponse2.getId()
+        );
     }
 }
