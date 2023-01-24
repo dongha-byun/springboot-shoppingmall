@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.category.domain.Category;
@@ -56,6 +57,7 @@ public class Product extends BaseEntity {
     @OneToMany(mappedBy = "product")
     private final List<ProductDetail> details = new ArrayList<>();
 
+    @Builder
     public Product(String name, int price, int count, Category category, Category subCategory) {
         this(null, name, price, count, 0.0, category, subCategory);
     }
@@ -72,5 +74,15 @@ public class Product extends BaseEntity {
 
     public void addQna(ProductQna productQna){
         this.getQna().add(productQna);
+    }
+
+    public ProductQna findQna(Long qnaId) {
+        return qna.stream().filter(
+                        qna -> qna.getId().equals(qnaId)
+                )
+                .findAny()
+                .orElseThrow(
+                        () -> new IllegalArgumentException("문의 글이 존재하지 않습니다.")
+                );
     }
 }

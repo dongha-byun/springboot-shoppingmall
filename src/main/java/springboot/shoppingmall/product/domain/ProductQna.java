@@ -15,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -50,11 +51,15 @@ public class ProductQna extends BaseEntity {
 
     @Builder
     public ProductQna(String content, Product product, User writer) {
-        this.content = content;
-        this.product = product;
-        this.writer = writer;
-        this.writeDate = LocalDateTime.now();
+        this(null, content, product, writer);
+    }
 
+    public ProductQna(Long id, String content, Product product, User writer) {
+        this.id = id;
+        this.content = content;
+        this.writeDate = LocalDateTime.now();
+        this.writer = writer;
+        this.product = product;
         if(product != null){
             product.addQna(this);
         }

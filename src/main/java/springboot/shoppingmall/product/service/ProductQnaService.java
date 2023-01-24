@@ -11,8 +11,8 @@ import springboot.shoppingmall.product.domain.ProductQnaRepository;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.dto.ProductQnaRequest;
 import springboot.shoppingmall.product.dto.ProductQnaResponse;
-import springboot.shoppingmall.product.dto.ProductResponse;
 import springboot.shoppingmall.user.domain.User;
+import springboot.shoppingmall.user.domain.UserFinder;
 import springboot.shoppingmall.user.domain.UserRepository;
 
 @RequiredArgsConstructor
@@ -21,12 +21,12 @@ import springboot.shoppingmall.user.domain.UserRepository;
 public class ProductQnaService {
 
     private final ProductQnaRepository productQnaRepository;
-    private final UserRepository userRepository;
+    private final UserFinder userFinder;
     private final ProductRepository productRepository;
 
     @Transactional
     public ProductQnaResponse createQna(Long userId, Long productId, ProductQnaRequest productQnaRequest) {
-        User writer = findUserById(userId);
+        User writer = userFinder.findUserById(userId);
         Product product = findProductById(productId);
         ProductQna productQna = productQnaRepository.save(ProductQna.builder()
                 .content(productQnaRequest.getContent())
@@ -46,14 +46,7 @@ public class ProductQnaService {
 
     public ProductQnaResponse findQnaByProduct(Long productId, Long qnaId){
         Product product = findProductById(productId);
-        ProductQna productQna = product.getQna().stream()
-                .filter(
-                        qna -> qna.getId().equals(qnaId)
-                )
-                .findAny()
-                .orElseThrow(
-                        () -> new IllegalArgumentException("문의 글이 존재하지 않습니다.")
-                );
+        ProductQna productQna = product.findQna(qnaId);
         return ProductQnaResponse.of(productQna);
     }
 
@@ -61,13 +54,6 @@ public class ProductQnaService {
         return productRepository.findById(productId)
                 .orElseThrow(
                         () -> new IllegalArgumentException("상품 조회 실패")
-                );
-    }
-
-    private User findUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(
-                        () -> new IllegalArgumentException("사용자 조회 실패")
                 );
     }
 }
