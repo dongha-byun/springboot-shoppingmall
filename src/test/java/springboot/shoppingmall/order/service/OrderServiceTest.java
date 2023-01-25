@@ -200,4 +200,16 @@ class OrderServiceTest {
                 () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(returnReqOrder.getId(), OrderStatus.DELIVERY.name()))
         );
     }
+
+    @Test
+    @DisplayName("송장번호로 주문정보 조회하기")
+    void findOrderByInvoiceNumber() {
+        // given
+
+
+        // when
+
+        // then
+
+    }
 }

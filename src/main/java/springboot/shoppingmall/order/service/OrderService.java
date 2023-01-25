@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderFinder;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
@@ -23,6 +24,7 @@ import springboot.shoppingmall.user.domain.UserRepository;
 public class OrderService {
 
     private final UserFinder userFinder;
+    private final OrderFinder orderFinder;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final DeliveryRepository deliveryRepository;
@@ -39,9 +41,14 @@ public class OrderService {
         return OrderResponse.of(newOrder);
     }
 
+    public OrderResponse changeStatusEnd(String invoiceNumber) {
+        Order order = orderFinder.findOrderByInvoiceNumber(invoiceNumber);
+        return changeOrderStatus(order.getId(), OrderStatus.END.name());
+    }
+
     @Transactional
     public OrderResponse changeOrderStatus(Long orderId, String changeStatus){
-        Order order = findOrderById(orderId);
+        Order order = orderFinder.findOrderById(orderId);
         order.changeStatus(OrderStatus.valueOf(changeStatus));
 
         if(order.isOuting()){
@@ -62,12 +69,5 @@ public class OrderService {
     private Product findProductById(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(IllegalArgumentException::new);
-    }
-
-    private Order findOrderById(Long orderId) {
-        return orderRepository.findById(orderId)
-                .orElseThrow(
-                        () -> new IllegalArgumentException("주문이 존재하지 않습니다.")
-                );
     }
 }
