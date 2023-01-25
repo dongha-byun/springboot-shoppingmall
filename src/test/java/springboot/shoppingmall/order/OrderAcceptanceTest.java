@@ -76,7 +76,15 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
      *      when: 출고중인 주문 상태를 주문 취소로 변경하면,
      *      then: 준비 중인 주문이 아니므로, 주문 취소 상태로 변경되지 않고,
      *      when: 출고중인 주문 상태를 배송 중으로 변경하면,
-     *      then: 주문 상태가 배송중으로 변경된다.
+     *      then: 주문 상태가 배송중으로 변경되고
+     *      when: 배송이 완료되어 배송완료 처리를 하면
+     *      then: 주문 상태가 배송완료로 변경되고
+     *      when: 구매자가 구매확정 처리를 하면
+     *      then: 주문 상태가 구매확정으로 변경되고
+     *      when: 구매확정된 주문을 환불처리를 시도하면
+     *      then: 구매확정된 주문이라 환불처리가 불가능하고
+     *      when: 구매확정된 주문을 교환처리를 시도하면
+     *      then: 구매확정된 주문이라 교환처리가 불가능하다.
      */
     @Test
     @DisplayName("주문 상태 변경 시나리오")
@@ -103,9 +111,38 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         ExtractableResponse<Response> 출고중_에서_배송중_변경_결과 = 주문_상태_변경_요청(출고중_주문, OrderStatus.DELIVERY);
         assertThat(출고중_에서_배송중_변경_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        // then : 주문 상태가 배송중으로 변경된다
+        // then : 주문 상태가 배송중으로 변경되고
         OrderResponse 배송중_주문 = 출고중_에서_배송중_변경_결과.as(OrderResponse.class);
         assertThat(배송중_주문.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY.getStatusName());
+
+        // when: 배송이 완료되어 배송완료 처리를 하면
+        ExtractableResponse<Response> 배송중_에서_배송완료_변경_결과 = 주문_상태_변경_요청(배송중_주문, OrderStatus.END);
+        assertThat(배송중_에서_배송완료_변경_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then: 주문 상태가 배송완료로 변경되고
+        OrderResponse 배송완료_주문 = 배송중_에서_배송완료_변경_결과.as(OrderResponse.class);
+        assertThat(배송완료_주문.getOrderStatusName()).isEqualTo(OrderStatus.END.getStatusName());
+
+        // when: 구매자가 구매확정 처리를 하면
+        ExtractableResponse<Response> 배송완료_에서_구매확정_변경_결과 = 주문_상태_변경_요청(배송완료_주문, OrderStatus.FINISH);
+        assertThat(배송완료_에서_구매확정_변경_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then: 주문 상태가 구매확정으로 변경되고
+        OrderResponse 구매확정_주문 = 배송완료_에서_구매확정_변경_결과.as(OrderResponse.class);
+        assertThat(구매확정_주문.getOrderStatusName()).isEqualTo(OrderStatus.FINISH.getStatusName());
+
+        // when: 구매확정된 주문을 환불처리를 시도하면
+        ExtractableResponse<Response> 구매확정_에서_환불요청_변경_결과 = 주문_상태_변경_요청(구매확정_주문, OrderStatus.RETURN_REQ);
+
+        // then: 구매확정된 주문이라 환불처리가 불가능하고
+        assertThat(구매확정_에서_환불요청_변경_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+        // when: 구매확정된 주문을 교환처리를 시도하면
+        ExtractableResponse<Response> 구매확정_에서_교환요청_변경_결과 = 주문_상태_변경_요청(구매확정_주문, OrderStatus.EXCHANGE_REQ);
+
+        // then: 구매확정된 주문이라 교환처리가 불가능하다.
+        assertThat(구매확정_에서_교환요청_변경_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+
     }
 
     public static ExtractableResponse<Response> 주문_상태_변경_요청(OrderResponse order, OrderStatus status) {

@@ -85,24 +85,38 @@ public class Order extends BaseEntity {
     }
 
     public void cancel() {
-        if(!this.orderStatus.equals(OrderStatus.READY)){
+        if(this.orderStatus != OrderStatus.READY){
             throw new IllegalArgumentException("준비 중인 주문만 취소 가능합니다.");
         }
         this.orderStatus = OrderStatus.CANCEL;
     }
 
     public void outing() {
-        if(!this.orderStatus.equals(OrderStatus.READY)){
+        if(this.orderStatus != OrderStatus.READY){
             throw new IllegalArgumentException("준비 중인 주문만 출고중으로 처리 가능합니다.");
         }
         this.orderStatus = OrderStatus.OUTING;
     }
 
     public void delivery() {
-        if(!this.orderStatus.equals(OrderStatus.OUTING)){
+        if(this.orderStatus != OrderStatus.OUTING){
             throw new IllegalArgumentException("출고 중인 주문만 배송중으로 처리 가능합니다.");
         }
         this.orderStatus = OrderStatus.DELIVERY;
+    }
+
+    public void end() {
+        if(this.orderStatus != OrderStatus.DELIVERY) {
+            throw new IllegalArgumentException("배송 준비중인 주문만 배송완료 처리가 가능합니다.");
+        }
+        this.orderStatus = OrderStatus.END;
+    }
+
+    public void finish() {
+        if(this.orderStatus != OrderStatus.END) {
+            throw new IllegalArgumentException("배송이 완료된 주문만 구매확정 처리가 가능합니다.");
+        }
+        this.orderStatus = OrderStatus.FINISH;
     }
 
     public void changeStatus(OrderStatus orderStatus) {
@@ -114,6 +128,12 @@ public class Order extends BaseEntity {
         }
         if(OrderStatus.DELIVERY.equals(orderStatus)){
             delivery();
+        }
+        if(OrderStatus.END.equals(orderStatus)){
+            end();
+        }
+        if(OrderStatus.FINISH.equals(orderStatus)){
+            finish();
         }
     }
 
