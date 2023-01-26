@@ -45,6 +45,9 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Delivery> deliveries = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Payment> payments = new ArrayList<>();
+
     @Builder
     public User(String userName, String loginId, String password, String telNo) {
         this.userName = userName;
@@ -77,5 +80,13 @@ public class User extends BaseEntity {
 
     public void removeDelivery(Delivery delivery){
         this.getDeliveries().remove(delivery);
+    }
+
+    public void addPayment(Payment payment) {
+        this.getPayments().add(payment);
+    }
+
+    public void removePayment(Payment payment) {
+        this.getPayments().remove(payment);
     }
 }
