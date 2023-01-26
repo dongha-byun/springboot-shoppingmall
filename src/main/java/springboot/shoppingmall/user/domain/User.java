@@ -2,6 +2,7 @@ package springboot.shoppingmall.user.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -83,10 +84,14 @@ public class User extends BaseEntity {
     }
 
     public void addPayment(Payment payment) {
-        this.getPayments().add(payment);
+        this.payments.add(payment);
     }
 
-    public void removePayment(Payment payment) {
-        this.getPayments().remove(payment);
+    public void removePayment(Long paymentId) {
+        List<Payment> payments = this.payments.stream()
+                .filter(payment -> !payment.getId().equals(paymentId))
+                .collect(Collectors.toList());
+        this.payments.clear();
+        this.payments.addAll(payments);
     }
 }

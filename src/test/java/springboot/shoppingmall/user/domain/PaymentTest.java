@@ -34,13 +34,13 @@ class PaymentTest {
     @DisplayName("결제수단 삭제 테스트")
     void removeTest() {
         // given
-        Payment payment1 = new Payment(PayType.CREDIT_CARD, CardCompany.SH, "2134", "3456", "2341", "1232", "09", "27", "323")
+        Payment payment1 = new Payment(100000L, PayType.CREDIT_CARD, CardCompany.SH, "2134", "3456", "2341", "1232", "09", "27", "323")
                 .byUser(user);
-        Payment payment2  = new Payment(PayType.CHECK_CARD, CardCompany.SS, "1234", "1122", "3311", "2233", "10", "27", "112")
+        Payment payment2  = new Payment(100001L, PayType.CHECK_CARD, CardCompany.SS, "1234", "1122", "3311", "2233", "10", "27", "112")
                 .byUser(user);
 
         // when
-        user.removePayment(payment1);
+        user.removePayment(payment1.getId());
 
         // then
         assertThat(user.getPayments()).hasSize(1);

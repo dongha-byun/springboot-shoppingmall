@@ -46,6 +46,20 @@ public class Payment extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    public Payment(Long id, PayType type, CardCompany cardCom, String cardNo1, String cardNo2, String cardNo3, String cardNo4,
+                   String expireMM, String expireYY, String cvc) {
+        this.id = id;
+        this.type = type;
+        this.cardCom = cardCom;
+        this.cardNo1 = cardNo1;
+        this.cardNo2 = cardNo2;
+        this.cardNo3 = cardNo3;
+        this.cardNo4 = cardNo4;
+        this.expireMM = expireMM;
+        this.expireYY = expireYY;
+        this.cvc = cvc;
+    }
+
     @Builder
     public Payment(PayType type, CardCompany cardCom, String cardNo1, String cardNo2, String cardNo3, String cardNo4,
                    String expireMM, String expireYY, String cvc) {
