@@ -1,9 +1,8 @@
 package springboot.shoppingmall.product.service;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,20 +11,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
-import springboot.shoppingmall.category.dto.CategoryRequest;
-import springboot.shoppingmall.category.dto.CategoryResponse;
-import springboot.shoppingmall.category.service.CategoryService;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.product.dto.ProductRequest;
 import springboot.shoppingmall.product.dto.ProductResponse;
 
 @Transactional
 @SpringBootTest
-public class ProductServiceTest {
+class ProductQueryServiceTest {
 
     @Autowired
-    ProductService productService;
+    ProductQueryService productQueryService;
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -43,16 +38,17 @@ public class ProductServiceTest {
     }
 
     @Test
-    @DisplayName("상품 추가 테스트")
-    void saveTest(){
-
+    @DisplayName("카테고리 별 상품목록 조회 테스트")
+    void findProductsByCategoryTest(){
         // given
-        ProductRequest productRequest = new ProductRequest("청바지", 20000, 100, category.getId(), subCategory.getId());
+        productRepository.save(new Product("청바지", 12000, 10, category, subCategory));
+        productRepository.save(new Product("청바지", 12000, 10, category, subCategory));
 
         // when
-        ProductResponse productResponse = productService.saveProduct(productRequest);
+        List<ProductResponse> products = productQueryService.findProductsByCategory(category.getId(),
+                subCategory.getId());
 
         // then
-        assertThat(productResponse.getId()).isNotNull();
+        assertThat(products).hasSize(2);
     }
 }

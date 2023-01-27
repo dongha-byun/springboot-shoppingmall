@@ -1,13 +1,10 @@
 package springboot.shoppingmall.product.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
-import springboot.shoppingmall.category.dto.CategoryResponse;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.dto.ProductRequest;
 import springboot.shoppingmall.product.dto.ProductResponse;
@@ -39,13 +36,5 @@ public class ProductService {
                 .orElseThrow(
                         () -> new IllegalArgumentException("존재하지 않는 상품입니다.")
                 ));
-    }
-
-    public List<ProductResponse> findProductsByCategory(Long categoryId, Long subCategoryId) {
-        Category category = getCategory(categoryId);
-        Category subCategory = getCategory(subCategoryId);
-        return productRepository.findProductsByCategoryAndSubCategory(category, subCategory).stream()
-                .map(ProductResponse::of)
-                .collect(Collectors.toList());
     }
 }
