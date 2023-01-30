@@ -1,5 +1,6 @@
 package springboot.shoppingmall.product.domain;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -40,6 +41,8 @@ public class Product extends BaseEntity {
 
     private double score;
 
+    private LocalDateTime registerDate;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
@@ -59,15 +62,20 @@ public class Product extends BaseEntity {
 
     @Builder
     public Product(String name, int price, int count, Category category, Category subCategory) {
-        this(null, name, price, count, 0.0, category, subCategory);
+        this(null, name, price, count, 0.0, LocalDateTime.now(), category, subCategory);
     }
 
-    public Product(Long id, String name, int price, int count, double score, Category category, Category subCategory) {
+    public Product(String name, int price, int count, double score, LocalDateTime registerDate, Category category, Category subCategory) {
+        this(null, name, price, count, score, registerDate, category, subCategory);
+    }
+
+    public Product(Long id, String name, int price, int count, double score, LocalDateTime registerDate, Category category, Category subCategory) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.count = count;
         this.score = score;
+        this.registerDate = registerDate;
         this.category = category;
         this.subCategory = subCategory;
     }
