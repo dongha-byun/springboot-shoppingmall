@@ -47,7 +47,6 @@ public class ProductAcceptanceTest extends AcceptanceTest {
     @DisplayName("신규 상품 등록")
     void saveProduct(){
         // given
-        ProductRequest productRequest = new ProductRequest("한돈 돼지고기", 10000, 100, 식품.getId(), 육류.getId());
 
         // when
         ExtractableResponse<Response> 상품_등록_요청_결과 = 상품_등록_요청("한돈 돼지고기", 10000, 100 , 식품.getId(), 육류.getId());

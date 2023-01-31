@@ -1,16 +1,16 @@
 package springboot.shoppingmall.product.query.repository;
 
 import static springboot.shoppingmall.product.domain.QProduct.*;
+import static springboot.shoppingmall.product.query.ProductQueryOrderType.*;
 
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.domain.QProduct;
 import springboot.shoppingmall.product.query.ProductQueryOrderType;
 
 @RequiredArgsConstructor
@@ -20,22 +20,35 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
 
     @Override
     public List<Product> queryProducts(Category category, Category subCategory) {
-        return jpaQueryFactory.selectFrom(product)
-                .where(
-                        product.category.eq(category).and(
-                                product.subCategory.eq(subCategory)
-                        )
-                )
+        return defaultQueryProductsByCategory(category, subCategory)
                 .fetch();
     }
 
     @Override
     public List<Product> queryProducts(Category category, Category subCategory, ProductQueryOrderType orderType) {
+        return defaultQueryProductsByCategory(category, subCategory)
+                .orderBy(orderBy(SCORE))
+                .fetch();
+    }
+
+    @Override
+    public List<Product> searchProducts(Category category, Category subCategory, String searchKeyword) {
+        return defaultQueryProductsByCategory(category, subCategory)
+                .where(
+                        containSearchKeyword(searchKeyword)
+                ).orderBy()
+                .fetch();
+    }
+
+    private BooleanExpression containSearchKeyword(String searchText) {
+        return product.name.contains(searchText);
+    }
+
+    private JPAQuery<Product> defaultQueryProductsByCategory(Category category, Category subCategory) {
         return jpaQueryFactory.selectFrom(product)
                 .where(
                         allCategoryEq(category, subCategory)
-                ).orderBy(orderBy(orderType))
-                .fetch();
+                );
     }
 
     private BooleanExpression allCategoryEq(Category category, Category subCategory) {
@@ -51,16 +64,20 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
     }
 
     private OrderSpecifier orderBy(ProductQueryOrderType orderType) {
-        if(orderType == ProductQueryOrderType.SCORE) {
+        if(orderType == SCORE) {
             return product.score.desc();
         }
 
-        if(orderType == ProductQueryOrderType.RECENT) {
+        if(orderType == RECENT) {
             return product.registerDate.desc();
         }
 
-        if(orderType == ProductQueryOrderType.PRICE) {
+        if(orderType == PRICE) {
             return product.price.asc();
+        }
+
+        if(orderType == SELL) {
+            return product.salesVolume.desc();
         }
 
         return null;

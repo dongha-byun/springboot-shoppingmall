@@ -40,8 +40,34 @@ public class ProductQueryAcceptanceTest extends AcceptanceTest {
      *      then: 평점이 높은 순 부터 낮은 순으로 상품이 조회된다.
      */
     @Test
-    @DisplayName("상품 정렬 테스트")
-    void productQuerySortTest() {
+    @DisplayName("상품 정렬 테스트 - 평점 높은 순")
+    void sort_products_by_score() {
+        // given
+        상품_등록_요청("육류1", 15000, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류2", 15000, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류3", 15000, 20, 식품.getId(), 육류.getId());
+
+        // when
+        ExtractableResponse<Response> 높은_평점순_목록_조회_결과 = 상품_목록_조회_요청(식품, 육류, ProductQueryOrderType.SCORE);
+
+        // then
+        assertThat(높은_평점순_목록_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(높은_평점순_목록_조회_결과.jsonPath().getList("name")).containsExactly(
+                "육류2", "육류1", "육류3"
+        );
+    }
+
+    /**
+     * Feature: 상품목록 정렬 테스트
+     *  Background:
+     *      given: 하나의 카테고리에 여러 개의 등록된 상품들이 있음
+     *  Scenario: 상품 목록 정렬
+     *      when: "최신 순" 으로 목록을 조회하면
+     *      then: 상품 등록일자가 최신인 상품 먼저 조회된다.
+     */
+    @Test
+    @DisplayName("상품 정렬 테스트 - 최신 순")
+    void sort_products_by_date() {
         // given
         상품_등록_요청("육류1", 15000, 20, 식품.getId(), 육류.getId());
         상품_등록_요청("육류2", 15000, 20, 식품.getId(), 육류.getId());

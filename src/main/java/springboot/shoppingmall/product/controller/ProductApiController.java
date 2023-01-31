@@ -39,11 +39,4 @@ public class ProductApiController {
         ProductResponse productResponse = productService.findProduct(id);
         return ResponseEntity.ok(productResponse);
     }
-
-    @GetMapping("/products")
-    public ResponseEntity<List<ProductResponse>> getProducts(@RequestParam("categoryId") Long categoryId,
-                                                             @RequestParam("subCategoryId") Long subCategoryId){
-        List<ProductResponse> products = productService.findProductsByCategory(categoryId, subCategoryId);
-        return ResponseEntity.ok(products);
-    }
 }

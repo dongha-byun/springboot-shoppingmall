@@ -41,6 +41,8 @@ public class Product extends BaseEntity {
 
     private double score;
 
+    private int salesVolume;
+
     private LocalDateTime registerDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -62,19 +64,20 @@ public class Product extends BaseEntity {
 
     @Builder
     public Product(String name, int price, int count, Category category, Category subCategory) {
-        this(null, name, price, count, 0.0, LocalDateTime.now(), category, subCategory);
+        this(null, name, price, count, 0.0, 0, LocalDateTime.now(), category, subCategory);
     }
 
-    public Product(String name, int price, int count, double score, LocalDateTime registerDate, Category category, Category subCategory) {
-        this(null, name, price, count, score, registerDate, category, subCategory);
+    public Product(String name, int price, int count, double score, int salesVolume,LocalDateTime registerDate, Category category, Category subCategory) {
+        this(null, name, price, count, score, salesVolume, registerDate, category, subCategory);
     }
 
-    public Product(Long id, String name, int price, int count, double score, LocalDateTime registerDate, Category category, Category subCategory) {
+    public Product(Long id, String name, int price, int count, double score, int salesVolume, LocalDateTime registerDate, Category category, Category subCategory) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.count = count;
         this.score = score;
+        this.salesVolume = salesVolume;
         this.registerDate = registerDate;
         this.category = category;
         this.subCategory = subCategory;
@@ -92,5 +95,9 @@ public class Product extends BaseEntity {
                 .orElseThrow(
                         () -> new IllegalArgumentException("문의 글이 존재하지 않습니다.")
                 );
+    }
+
+    public void increaseSalesVolume(){
+        this.salesVolume++;
     }
 }

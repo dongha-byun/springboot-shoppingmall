@@ -57,3 +57,10 @@ spring:
     hibernate:
       ddl-auto: create
 
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql: trace

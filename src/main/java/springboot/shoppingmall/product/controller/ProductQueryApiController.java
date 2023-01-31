@@ -17,19 +17,21 @@ public class ProductQueryApiController {
 
     private final ProductQueryService productQueryService;
 
-//    @GetMapping("/products")
-//    public ResponseEntity<List<ProductResponse>> findAllProducts(@RequestParam("categoryId") Long categoryId,
-//                                                                 @RequestParam("subCategoryId") Long subCategoryId){
-//        List<ProductResponse> products = productQueryService.findProductsByCategory(categoryId, subCategoryId);
-//        return ResponseEntity.ok(products);
-//    }
 
     @GetMapping("/products")
     public ResponseEntity<List<ProductResponse>> queryProductsBySort(@RequestParam("categoryId") Long categoryId,
                                                                      @RequestParam("subCategoryId") Long subCategoryId,
                                                                      @RequestParam("order") String orderType){
-        log.info("{} : {} : {}", categoryId, subCategoryId, orderType);
         List<ProductResponse> products = productQueryService.findProductsByCategory(categoryId, subCategoryId);
+        return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/search-products")
+    public ResponseEntity<List<ProductResponse>> searchProducts(@RequestParam("categoryId") Long categoryId,
+                                                                @RequestParam("subCategoryId") Long subCategoryId,
+                                                                @RequestParam("searchKeyword") String searchKeyword) {
+        List<ProductResponse> products =
+                productQueryService.searchProducts(categoryId, subCategoryId, searchKeyword);
         return ResponseEntity.ok(products);
     }
 }
