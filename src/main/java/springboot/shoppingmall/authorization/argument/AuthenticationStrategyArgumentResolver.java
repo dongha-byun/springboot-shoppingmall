@@ -37,6 +37,15 @@ public class AuthenticationStrategyArgumentResolver implements HandlerMethodArgu
             throw new IllegalArgumentException();
         }
 
+        if(parameter.getParameterAnnotation(AuthenticationStrategy.class) == null) {
+            throw new IllegalArgumentException();
+        }
+
+        boolean required = parameter.getParameterAnnotation(AuthenticationStrategy.class).required();
+        if(!required){
+            return new AuthorizedUser();
+        }
+
         String token = parsingToken(request);
         return authService.getAuthorizedUser(token);
     }

@@ -26,7 +26,7 @@ public class ProductApiController {
     private final ProductService productService;
 
     @PostMapping("/products")
-    public ResponseEntity<ProductResponse> createProduct(@AuthenticationStrategy AuthorizedUser authorizedUser,
+    public ResponseEntity<ProductResponse> createProduct(@AuthenticationStrategy AuthorizedUser user,
                                                          @Validated @RequestBody ProductRequest productRequest,
                                                          BindingResult bindingResult){
 
@@ -35,7 +35,8 @@ public class ProductApiController {
     }
 
     @GetMapping("/products/{id}")
-    public ResponseEntity<ProductResponse> getProduct(@PathVariable("id") Long id){
+    public ResponseEntity<ProductResponse> getProduct(@AuthenticationStrategy(required = false) AuthorizedUser user,
+                                                      @PathVariable("id") Long id){
         ProductResponse productResponse = productService.findProduct(id);
         return ResponseEntity.ok(productResponse);
     }
