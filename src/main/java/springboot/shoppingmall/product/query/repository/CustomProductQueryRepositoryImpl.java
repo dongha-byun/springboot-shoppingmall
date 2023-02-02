@@ -19,15 +19,9 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Product> queryProducts(Category category, Category subCategory) {
-        return defaultQueryProductsByCategory(category, subCategory)
-                .fetch();
-    }
-
-    @Override
     public List<Product> queryProducts(Category category, Category subCategory, ProductQueryOrderType orderType) {
         return defaultQueryProductsByCategory(category, subCategory)
-                .orderBy(orderBy(SCORE))
+                .orderBy(orderBy(orderType))
                 .fetch();
     }
 
@@ -36,8 +30,7 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
         return defaultQueryProductsByCategory(category, subCategory)
                 .where(
                         containSearchKeyword(searchKeyword)
-                ).orderBy()
-                .fetch();
+                ).fetch();
     }
 
     private BooleanExpression containSearchKeyword(String searchText) {

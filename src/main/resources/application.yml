@@ -27,17 +27,18 @@ spring:
     hibernate:
       ddl-auto: create
 
-#api 서버 포트
-server:
-  port: 10000
-
 logging:
   level:
     org:
       hibernate:
         type:
           descriptor:
-            sql: trace
+            sql:
+              BasicBinder: trace
+
+#api 서버 포트
+server:
+  port: 10000
 
 ---
 spring:

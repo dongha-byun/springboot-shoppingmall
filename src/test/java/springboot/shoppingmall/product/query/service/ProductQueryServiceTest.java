@@ -1,4 +1,4 @@
-package springboot.shoppingmall.product.service;
+package springboot.shoppingmall.product.query.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static springboot.shoppingmall.product.query.ProductQueryOrderType.*;
@@ -16,7 +16,7 @@ import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.product.dto.ProductResponse;
+import springboot.shoppingmall.product.query.dto.ProductQueryResponse;
 
 @Transactional
 @SpringBootTest
@@ -39,23 +39,12 @@ class ProductQueryServiceTest {
         category = categoryRepository.save(new Category("의류"));
         subCategory = categoryRepository.save(new Category("바지").changeParent(category));
 
-        productRepository.save(new Product("청바지", 12000, 10, 2.0, 5, LocalDateTime.of(2022, 12, 23, 12, 0, 0), category, subCategory));
-        productRepository.save(new Product("면바지", 17900, 10, 1.7, 2, LocalDateTime.of(2022, 12, 23, 12, 10, 0), category, subCategory));
-        productRepository.save(new Product("조거팬츠", 23100, 10, 2.7, 7, LocalDateTime.of(2022, 12, 22, 12, 20, 0), category, subCategory));
-        productRepository.save(new Product("반바지", 6900, 10, 3.7, 4, LocalDateTime.of(2022, 12, 23, 11, 10, 0), category, subCategory));
-    }
-
-    @Test
-    @DisplayName("카테고리 별 상품목록 조회 테스트")
-    void findProductsByCategoryTest(){
-        // given
-
-        // when
-        List<ProductResponse> products = productQueryService.findProductsByCategory(category.getId(),
-                subCategory.getId());
-
-        // then
-        assertThat(products).hasSize(4);
+        // "면바지", "청바지", "반바지", "조거팬츠"
+        LocalDateTime now = LocalDateTime.now();
+        productRepository.save(new Product("청바지", 12000, 10, 2.0, 5, now.plusDays(5), category, subCategory));
+        productRepository.save(new Product("면바지", 17900, 10, 1.7, 2, now.plusDays(7), category, subCategory));
+        productRepository.save(new Product("조거팬츠", 23100, 10, 2.7, 7, now, category, subCategory));
+        productRepository.save(new Product("반바지", 6900, 10, 3.7, 4, now.plusDays(2), category, subCategory));
     }
 
     @Test
@@ -64,14 +53,14 @@ class ProductQueryServiceTest {
         // given
 
         // when
-        List<ProductResponse> scoreOrderProducts = productQueryService.findProductByOrder(
+        List<ProductQueryResponse> scoreOrderProducts = productQueryService.findProductByOrder(
                 category.getId(), subCategory.getId(), SCORE);
 
         // then
         assertThat(scoreOrderProducts).hasSize(4);
 
         List<String> names = scoreOrderProducts.stream()
-                .map(ProductResponse::getName).collect(Collectors.toList());
+                .map(ProductQueryResponse::getName).collect(Collectors.toList());
         assertThat(names).containsExactly(
                 "반바지", "조거팬츠", "청바지", "면바지"
         );
@@ -83,14 +72,14 @@ class ProductQueryServiceTest {
         // given
 
         // when
-        List<ProductResponse> recentOrderProducts = productQueryService.findProductByOrder(category.getId(),
+        List<ProductQueryResponse> recentOrderProducts = productQueryService.findProductByOrder(category.getId(),
                 subCategory.getId(), RECENT);
 
         // then
         assertThat(recentOrderProducts).hasSize(4);
 
         List<String> names = recentOrderProducts.stream()
-                .map(ProductResponse::getName).collect(Collectors.toList());
+                .map(ProductQueryResponse::getName).collect(Collectors.toList());
         assertThat(names).containsExactly(
                 "면바지", "청바지", "반바지", "조거팬츠"
         );
@@ -102,14 +91,14 @@ class ProductQueryServiceTest {
         // given
 
         // when
-        List<ProductResponse> priceOrderProducts = productQueryService.findProductByOrder(category.getId(),
+        List<ProductQueryResponse> priceOrderProducts = productQueryService.findProductByOrder(category.getId(),
                 subCategory.getId(), PRICE);
 
         // then
         assertThat(priceOrderProducts).hasSize(4);
 
         List<String> names = priceOrderProducts.stream()
-                .map(ProductResponse::getName).collect(Collectors.toList());
+                .map(ProductQueryResponse::getName).collect(Collectors.toList());
         assertThat(names).containsExactly(
                 "반바지", "청바지", "면바지", "조거팬츠"
         );
@@ -121,14 +110,14 @@ class ProductQueryServiceTest {
         // given
 
         // when
-        List<ProductResponse> salesOrderProducts = productQueryService.findProductByOrder(category.getId(),
+        List<ProductQueryResponse> salesOrderProducts = productQueryService.findProductByOrder(category.getId(),
                 subCategory.getId(), SELL);
 
         // then
         assertThat(salesOrderProducts).hasSize(4);
 
         List<String> names = salesOrderProducts.stream()
-                .map(ProductResponse::getName).collect(Collectors.toList());
+                .map(ProductQueryResponse::getName).collect(Collectors.toList());
         assertThat(names).containsExactly(
                 "조거팬츠","청바지","반바지","면바지"
         );
@@ -140,11 +129,11 @@ class ProductQueryServiceTest {
         // given
 
         // when
-        List<ProductResponse> products = productQueryService.searchProducts(category.getId(), subCategory.getId(), "바지");
+        List<ProductQueryResponse> products = productQueryService.searchProducts(category.getId(), subCategory.getId(), "바지");
 
         // then
         List<String> names = products.stream()
-                .map(ProductResponse::getName)
+                .map(ProductQueryResponse::getName)
                 .collect(Collectors.toList());
         assertThat(names).contains(
                 "청바지","반바지","면바지"

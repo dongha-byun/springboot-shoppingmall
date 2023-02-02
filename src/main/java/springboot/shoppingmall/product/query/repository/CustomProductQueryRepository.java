@@ -6,8 +6,6 @@ import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.query.ProductQueryOrderType;
 
 public interface CustomProductQueryRepository {
-
-    List<Product> queryProducts(Category category, Category subCategory);
     List<Product> queryProducts(Category category, Category subCategory, ProductQueryOrderType orderType);
 
     List<Product> searchProducts(Category category, Category subCategory, String searchKeyword);

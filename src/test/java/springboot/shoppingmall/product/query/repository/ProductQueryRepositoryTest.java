@@ -53,24 +53,6 @@ class ProductQueryRepositoryTest {
     }
 
     @Test
-    @DisplayName("상품 목록 조회 테스트")
-    void findProductsByCategory() {
-        // given
-
-        // when
-        List<Product> products = productQueryRepository.queryProducts(category, subCategory);
-
-        // then
-        assertThat(products).hasSize(3);
-
-        List<String> names = products.stream()
-                .map(Product::getName).collect(Collectors.toList());
-        assertThat(names).contains(
-                "생선1", "생선2", "생선3"
-        );
-    }
-
-    @Test
     @DisplayName("상품 목록 조회 테스트 - 평점 높은 순")
     void sort_product_by_score() {
         // given
