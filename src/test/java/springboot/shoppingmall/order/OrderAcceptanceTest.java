@@ -9,14 +9,16 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceProductTest;
+import springboot.shoppingmall.TestOrderConfig;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.dto.ProductResponse;
 import springboot.shoppingmall.user.dto.DeliveryResponse;
-
+@Import({TestOrderConfig.class})
 public class OrderAcceptanceTest extends AcceptanceProductTest {
 
     /**
@@ -153,7 +155,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers(createAuthorizationHeader(로그인정보))
                 .body(params)
-                .when().post("/orders/{id}/change-status", order.getId())
+                .when().put("/orders/{id}/status", order.getId())
                 .then().log().all()
                 .extract();
     }
