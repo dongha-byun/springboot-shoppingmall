@@ -3,12 +3,16 @@ package springboot.shoppingmall.order.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.assertj.core.api.ThrowableAssertAlternative;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.TestOrderConfig;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.domain.Order;
@@ -22,6 +26,7 @@ import springboot.shoppingmall.user.domain.Delivery;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserRepository;
 
+@Import(TestOrderConfig.class)
 @Transactional
 @SpringBootTest
 class OrderServiceTest {
@@ -94,32 +99,25 @@ class OrderServiceTest {
     @DisplayName("준비 중 상태가 아닌 주문은 취소할 수 없다.")
     void cancelExceptionTest() {
         // given
-        Order outingOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.OUTING));
-        Order cancelOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.CANCEL));
-        Order checkingOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.CHECKING));
-        Order endOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.END));
-        Order exchangeReqOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.EXCHANGE_REQ));
-        Order finishOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.FINISH));
-        Order returnEndOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.RETURN_END));
-        Order returnReqOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.RETURN_REQ));
+        Order outingOrder = 특정_주문상태_데이터_생성(OrderStatus.OUTING);
+        Order cancelOrder = 특정_주문상태_데이터_생성(OrderStatus.CANCEL);
+        Order checkingOrder = 특정_주문상태_데이터_생성(OrderStatus.CHECKING);
+        Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.END);
+        Order exchangeReqOrder = 특정_주문상태_데이터_생성(OrderStatus.EXCHANGE_REQ);
+        Order finishOrder = 특정_주문상태_데이터_생성(OrderStatus.FINISH);
+        Order returnEndOrder = 특정_주문상태_데이터_생성(OrderStatus.RETURN_END);
+        Order returnReqOrder = 특정_주문상태_데이터_생성(OrderStatus.RETURN_REQ);
 
         // when & then
         assertAll(
-                () -> assertThatIllegalArgumentException().isThrownBy(
-                        () -> orderService.changeOrderStatus(outingOrder.getId(), OrderStatus.CANCEL.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(
-                        () -> orderService.changeOrderStatus(cancelOrder.getId(), OrderStatus.CANCEL.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(
-                        () -> orderService.changeOrderStatus(checkingOrder.getId(), OrderStatus.CANCEL.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(endOrder.getId(), OrderStatus.CANCEL.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(
-                        () -> orderService.changeOrderStatus(exchangeReqOrder.getId(), OrderStatus.CANCEL.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(
-                        () -> orderService.changeOrderStatus(finishOrder.getId(), OrderStatus.CANCEL.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(
-                        () -> orderService.changeOrderStatus(returnEndOrder.getId(), OrderStatus.CANCEL.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(
-                        () -> orderService.changeOrderStatus(returnReqOrder.getId(), OrderStatus.CANCEL.name()))
+                () -> 주문_상태_변경_실패_검증(outingOrder, OrderStatus.CANCEL),
+                () -> 주문_상태_변경_실패_검증(cancelOrder, OrderStatus.CANCEL),
+                () -> 주문_상태_변경_실패_검증(checkingOrder, OrderStatus.CANCEL),
+                () -> 주문_상태_변경_실패_검증(endOrder, OrderStatus.CANCEL),
+                () -> 주문_상태_변경_실패_검증(exchangeReqOrder, OrderStatus.CANCEL),
+                () -> 주문_상태_변경_실패_검증(finishOrder, OrderStatus.CANCEL),
+                () -> 주문_상태_변경_실패_검증(returnEndOrder, OrderStatus.CANCEL),
+                () -> 주문_상태_변경_실패_검증(returnReqOrder, OrderStatus.CANCEL)
         );
     }
 
@@ -127,7 +125,7 @@ class OrderServiceTest {
     @DisplayName("주문 접수 테스트 - 준비중인 주문을 접수하면 출고중 상태로 변경된다.")
     void outingTest(){
         // given
-        Order order = orderRepository.save(new Order(user, product, 2, delivery, OrderStatus.READY));
+        Order order = 특정_주문상태_데이터_생성(OrderStatus.READY);
 
         // when
         OrderResponse orderResponse = orderService.changeOrderStatus(order.getId(), OrderStatus.OUTING.name());
@@ -140,25 +138,25 @@ class OrderServiceTest {
     @DisplayName("준비 중 상태가 아닌 주문은 접수할 수 없다.")
     void outingExceptionTest() {
         // given
-        Order outingOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.OUTING));
-        Order cancelOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.CANCEL));
-        Order checkingOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.CHECKING));
-        Order endOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.END));
-        Order exchangeReqOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.EXCHANGE_REQ));
-        Order finishOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.FINISH));
-        Order returnEndOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.RETURN_END));
-        Order returnReqOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.RETURN_REQ));
+        Order outingOrder = 특정_주문상태_데이터_생성(OrderStatus.OUTING);
+        Order cancelOrder = 특정_주문상태_데이터_생성(OrderStatus.CANCEL);
+        Order checkingOrder = 특정_주문상태_데이터_생성(OrderStatus.CHECKING);
+        Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.END);
+        Order exchangeReqOrder = 특정_주문상태_데이터_생성(OrderStatus.EXCHANGE_REQ);
+        Order finishOrder = 특정_주문상태_데이터_생성(OrderStatus.FINISH);
+        Order returnEndOrder = 특정_주문상태_데이터_생성(OrderStatus.RETURN_END);
+        Order returnReqOrder = 특정_주문상태_데이터_생성(OrderStatus.RETURN_REQ);
 
         // when & then
         assertAll(
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(outingOrder.getId(), OrderStatus.OUTING.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(cancelOrder.getId(), OrderStatus.OUTING.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(checkingOrder.getId(), OrderStatus.OUTING.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(endOrder.getId(), OrderStatus.OUTING.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(exchangeReqOrder.getId(), OrderStatus.OUTING.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(finishOrder.getId(), OrderStatus.OUTING.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(returnEndOrder.getId(), OrderStatus.OUTING.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(returnReqOrder.getId(), OrderStatus.OUTING.name()))
+                () -> 주문_상태_변경_실패_검증(outingOrder, OrderStatus.OUTING),
+                () -> 주문_상태_변경_실패_검증(cancelOrder, OrderStatus.OUTING),
+                () -> 주문_상태_변경_실패_검증(checkingOrder, OrderStatus.OUTING),
+                () -> 주문_상태_변경_실패_검증(endOrder, OrderStatus.OUTING),
+                () -> 주문_상태_변경_실패_검증(exchangeReqOrder, OrderStatus.OUTING),
+                () -> 주문_상태_변경_실패_검증(finishOrder, OrderStatus.OUTING),
+                () -> 주문_상태_변경_실패_검증(returnEndOrder, OrderStatus.OUTING),
+                () -> 주문_상태_변경_실패_검증(returnReqOrder, OrderStatus.OUTING)
         );
     }
 
@@ -166,7 +164,7 @@ class OrderServiceTest {
     @DisplayName("배송중 상태 변경 테스트")
     void deliveryTest(){
         // given
-        Order order = orderRepository.save(new Order(user, product, 2, delivery, OrderStatus.OUTING));
+        Order order = 특정_주문상태_데이터_생성(OrderStatus.OUTING);
 
         // when
         OrderResponse orderResponse = orderService.changeOrderStatus(order.getId(), OrderStatus.DELIVERY.name());
@@ -179,37 +177,34 @@ class OrderServiceTest {
     @DisplayName("배송중 상태 변경 테스트 - 출고중 상태인 주문만 배송 중으로 변경 가능하다.")
     void deliveryExceptionTest(){
         // given
-        Order readyOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.READY));
-        Order cancelOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.CANCEL));
-        Order checkingOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.CHECKING));
-        Order endOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.END));
-        Order exchangeReqOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.EXCHANGE_REQ));
-        Order finishOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.FINISH));
-        Order returnEndOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.RETURN_END));
-        Order returnReqOrder = orderRepository.save(new Order(user, product, 3, delivery, OrderStatus.RETURN_REQ));
+        Order readyOrder = 특정_주문상태_데이터_생성(OrderStatus.READY);
+        Order cancelOrder = 특정_주문상태_데이터_생성(OrderStatus.CANCEL);
+        Order checkingOrder = 특정_주문상태_데이터_생성(OrderStatus.CHECKING);
+        Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.END);
+        Order exchangeReqOrder = 특정_주문상태_데이터_생성(OrderStatus.EXCHANGE_REQ);
+        Order finishOrder = 특정_주문상태_데이터_생성(OrderStatus.FINISH);
+        Order returnEndOrder = 특정_주문상태_데이터_생성(OrderStatus.RETURN_END);
+        Order returnReqOrder = 특정_주문상태_데이터_생성(OrderStatus.RETURN_REQ);
 
         // when & then
         assertAll(
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(readyOrder.getId(), OrderStatus.DELIVERY.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(cancelOrder.getId(), OrderStatus.DELIVERY.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(checkingOrder.getId(), OrderStatus.DELIVERY.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(endOrder.getId(), OrderStatus.DELIVERY.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(exchangeReqOrder.getId(), OrderStatus.DELIVERY.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(finishOrder.getId(), OrderStatus.DELIVERY.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(returnEndOrder.getId(), OrderStatus.DELIVERY.name())),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> orderService.changeOrderStatus(returnReqOrder.getId(), OrderStatus.DELIVERY.name()))
+                () -> 주문_상태_변경_실패_검증(readyOrder, OrderStatus.DELIVERY),
+                () -> 주문_상태_변경_실패_검증(cancelOrder, OrderStatus.DELIVERY),
+                () -> 주문_상태_변경_실패_검증(checkingOrder, OrderStatus.DELIVERY),
+                () -> 주문_상태_변경_실패_검증(endOrder, OrderStatus.DELIVERY),
+                () -> 주문_상태_변경_실패_검증(exchangeReqOrder, OrderStatus.DELIVERY),
+                () -> 주문_상태_변경_실패_검증(finishOrder, OrderStatus.DELIVERY),
+                () -> 주문_상태_변경_실패_검증(returnEndOrder, OrderStatus.DELIVERY),
+                () -> 주문_상태_변경_실패_검증(returnReqOrder, OrderStatus.DELIVERY)
         );
     }
 
-    @Test
-    @DisplayName("송장번호로 주문정보 조회하기")
-    void findOrderByInvoiceNumber() {
-        // given
+    private ThrowableAssertAlternative<IllegalArgumentException> 주문_상태_변경_실패_검증(Order order, OrderStatus status) {
+        return assertThatIllegalArgumentException().isThrownBy(
+                () -> orderService.changeOrderStatus(order.getId(), status.name()));
+    }
 
-
-        // when
-
-        // then
-
+    private Order 특정_주문상태_데이터_생성(OrderStatus status) {
+        return orderRepository.save(new Order(user, product, 2, delivery, status));
     }
 }

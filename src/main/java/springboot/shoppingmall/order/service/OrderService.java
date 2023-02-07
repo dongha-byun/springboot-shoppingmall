@@ -16,7 +16,6 @@ import springboot.shoppingmall.user.domain.Delivery;
 import springboot.shoppingmall.user.domain.DeliveryRepository;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserFinder;
-import springboot.shoppingmall.user.domain.UserRepository;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -55,7 +54,7 @@ public class OrderService {
             // 여기서 송장번호 발부
             OrderDeliveryInvoiceResponse deliveryInvoice = orderDeliveryInterfaceService.createInvoiceNumber(order);
             order.changeInvoiceNumber(deliveryInvoice.getInvoiceNumber());
-            return OrderResponse.of(order, deliveryInvoice);
+            //return OrderResponse.of(order, deliveryInvoice);
         }
 
         return OrderResponse.of(order);
