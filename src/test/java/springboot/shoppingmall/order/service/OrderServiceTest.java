@@ -207,4 +207,36 @@ class OrderServiceTest {
     private Order 특정_주문상태_데이터_생성(OrderStatus status) {
         return orderRepository.save(new Order(user, product, 2, delivery, status));
     }
+
+    @Test
+    @DisplayName("배송된 주문을 환불요청 한다.")
+    void requestReturnOrderTest() {
+        // given
+        Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.END);
+        String returnReason = "환불 요청 합니다.";
+
+        // when
+        orderService.requestReturnOrder(endOrder.getId(), returnReason);
+
+        // then
+        Order findOrder = orderRepository.findById(endOrder.getId()).get();
+        assertThat(findOrder.getOrderStatus()).isEqualTo(OrderStatus.RETURN_REQ);
+        assertThat(findOrder.getReturnReason()).isEqualTo(returnReason);
+    }
+
+    @Test
+    @DisplayName("배송된 주문을 교환요청 한다.")
+    void requestExchangeOrderTest() {
+        // given
+        Order order = 특정_주문상태_데이터_생성(OrderStatus.END);
+        String exchangeReason = "교환 요청 합니다.";
+
+        // when
+        orderService.requestExchangeOrder(order.getId(), exchangeReason);
+
+        // then
+        Order findOrder = orderRepository.findById(order.getId()).get();
+        assertThat(findOrder.getOrderStatus()).isEqualTo(OrderStatus.EXCHANGE_REQ);
+        assertThat(findOrder.getExchangeReason()).isEqualTo(exchangeReason);
+    }
 }

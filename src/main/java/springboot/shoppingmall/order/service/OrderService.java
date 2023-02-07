@@ -60,6 +60,7 @@ public class OrderService {
         return OrderResponse.of(order);
     }
 
+
     private Delivery getDeliveryById(Long deliveryId) {
         return deliveryRepository.findById(deliveryId)
                 .orElseThrow(IllegalArgumentException::new);
@@ -68,5 +69,17 @@ public class OrderService {
     private Product findProductById(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(IllegalArgumentException::new);
+    }
+
+    @Transactional
+    public void requestReturnOrder(Long orderId, String returnReason) {
+        Order order = orderFinder.findOrderById(orderId);
+        order.requestReturn(returnReason);
+    }
+
+    @Transactional
+    public void requestExchangeOrder(Long orderId, String exchangeReason) {
+        Order order = orderFinder.findOrderById(orderId);
+        order.requestExchange(exchangeReason);
     }
 }

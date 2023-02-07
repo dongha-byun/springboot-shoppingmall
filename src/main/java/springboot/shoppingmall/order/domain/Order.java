@@ -56,6 +56,9 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
+    private String returnReason;
+    private String exchangeReason;
+
     public Order(User user, Product product, int quantity, Delivery delivery, OrderStatus orderStatus){
         this(user, product, quantity, delivery, orderStatus, null);
     }
@@ -119,20 +122,36 @@ public class Order extends BaseEntity {
         this.orderStatus = OrderStatus.FINISH;
     }
 
+    public void requestReturn(String returnReason) {
+        if(this.orderStatus != OrderStatus.END) {
+            throw new IllegalArgumentException("배송이 완료된 주문만 환불 신청이 가능합니다.");
+        }
+        this.orderStatus = OrderStatus.RETURN_REQ;
+        this.returnReason = returnReason;
+    }
+
+    public void requestExchange(String exchangeReason) {
+        if(this.orderStatus != OrderStatus.END) {
+            throw new IllegalArgumentException("배송이 완료된 주문만 교환 신청이 가능합니다.");
+        }
+        this.orderStatus = OrderStatus.EXCHANGE_REQ;
+        this.exchangeReason = exchangeReason;
+    }
+
     public void changeStatus(OrderStatus orderStatus) {
-        if(OrderStatus.OUTING.equals(orderStatus)){
+        if(OrderStatus.OUTING == orderStatus){
             outing();
         }
-        if(OrderStatus.CANCEL.equals(orderStatus)){
+        if(OrderStatus.CANCEL == orderStatus){
             cancel();
         }
-        if(OrderStatus.DELIVERY.equals(orderStatus)){
+        if(OrderStatus.DELIVERY == orderStatus){
             delivery();
         }
-        if(OrderStatus.END.equals(orderStatus)){
+        if(OrderStatus.END == orderStatus){
             end();
         }
-        if(OrderStatus.FINISH.equals(orderStatus)){
+        if(OrderStatus.FINISH == orderStatus){
             finish();
         }
     }
