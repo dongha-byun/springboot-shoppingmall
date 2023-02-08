@@ -8,15 +8,16 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+import javax.persistence.EntityManager;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.query.ProductQueryOrderType;
 
-@RequiredArgsConstructor
 public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepository{
-
     private final JPAQueryFactory jpaQueryFactory;
+    public CustomProductQueryRepositoryImpl(EntityManager em) {
+        this.jpaQueryFactory = new JPAQueryFactory(em);
+    }
 
     @Override
     public List<Product> queryProducts(Category category, Category subCategory, ProductQueryOrderType orderType) {

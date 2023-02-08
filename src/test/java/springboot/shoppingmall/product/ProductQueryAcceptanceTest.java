@@ -52,8 +52,8 @@ public class ProductQueryAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(높은_평점순_목록_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(높은_평점순_목록_조회_결과.jsonPath().getList("name")).containsExactly(
-                "육류2", "육류1", "육류3"
+        assertThat(높은_평점순_목록_조회_결과.jsonPath().getList("data.name")).containsExactly(
+                "육류1", "육류2", "육류3"
         );
     }
 
@@ -83,7 +83,7 @@ public class ProductQueryAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> 상품_목록_조회_요청(CategoryResponse category, CategoryResponse subCategory, ProductQueryOrderType sortType) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/products?categoryId={categoryId}&subCategoryId={subCategoryId}&order={order}", category.getId(),
+                .when().get("/products?categoryId={categoryId}&subCategoryId={subCategoryId}&orderType={orderType}", category.getId(),
                         subCategory.getId(),
                         sortType.name())
                 .then().log().all()

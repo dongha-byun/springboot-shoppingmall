@@ -209,6 +209,20 @@ class OrderServiceTest {
     }
 
     @Test
+    @DisplayName("배송된 주문을 구매확정 처리 한다.")
+    void finishOrderTest() {
+        // given
+        Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.END);
+
+        // when
+        orderService.changeOrderStatus(endOrder.getId(), OrderStatus.FINISH.name());
+
+        // then
+        assertThat(endOrder.getOrderStatus()).isEqualTo(OrderStatus.FINISH);
+
+    }
+
+    @Test
     @DisplayName("배송된 주문을 환불요청 한다.")
     void requestReturnOrderTest() {
         // given

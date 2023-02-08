@@ -29,7 +29,7 @@ public class OrderHistoryAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setUp() {
-        super.beforeEach();
+        super.acceptance_beforeEach();
 
         CategoryResponse 상위_카테고리 = 카테고리_등록("상위 카테고리", null).as(CategoryResponse.class);
         CategoryResponse 하위_카테고리 = 카테고리_등록("하위 카테고리", 상위_카테고리.getId()).as(CategoryResponse.class);

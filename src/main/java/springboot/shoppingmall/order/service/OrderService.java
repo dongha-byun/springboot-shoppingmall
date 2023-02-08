@@ -40,6 +40,7 @@ public class OrderService {
         return OrderResponse.of(newOrder);
     }
 
+    @Transactional
     public OrderResponse changeStatusEnd(String invoiceNumber) {
         Order order = orderFinder.findOrderByInvoiceNumber(invoiceNumber);
         return changeOrderStatus(order.getId(), OrderStatus.END.name());
@@ -72,14 +73,18 @@ public class OrderService {
     }
 
     @Transactional
-    public void requestReturnOrder(Long orderId, String returnReason) {
+    public OrderResponse requestReturnOrder(Long orderId, String returnReason) {
         Order order = orderFinder.findOrderById(orderId);
         order.requestReturn(returnReason);
+
+        return OrderResponse.of(order);
     }
 
     @Transactional
-    public void requestExchangeOrder(Long orderId, String exchangeReason) {
+    public OrderResponse requestExchangeOrder(Long orderId, String exchangeReason) {
         Order order = orderFinder.findOrderById(orderId);
         order.requestExchange(exchangeReason);
+
+        return OrderResponse.of(order);
     }
 }
