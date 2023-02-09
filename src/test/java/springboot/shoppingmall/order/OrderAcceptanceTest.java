@@ -12,6 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,7 +32,6 @@ import springboot.shoppingmall.user.domain.DeliveryRepository;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserRepository;
 import springboot.shoppingmall.user.dto.DeliveryResponse;
-@Import({TestOrderConfig.class})
 public class OrderAcceptanceTest extends AcceptanceProductTest {
 
     @Autowired
@@ -57,6 +58,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
 
         Order order = orderRepository.save(new Order(user, product, 2, delivery, OrderStatus.END));
         배송완료_주문 = OrderResponse.of(order);
+
     }
 
     /**
@@ -164,7 +166,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
      *      given: 구매자 정보로 로그인 되어있음
      *      And: 배송완료된 주문이 존재함
      *
-     *  Scenario: 주문 상태 변경 시나리오
+     *  Scenario: 주문 구매확정 시나리오
      *      when: 구매자가 구매확정 처리를 하면
      *      then: 주문 상태가 구매확정으로 변경되고
      *      when: 구매확정된 주문을 환불처리를 시도하면
@@ -173,7 +175,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
      *      then: 구매확정된 주문이라 교환처리가 불가능하다.
      */
     @Test
-    @DisplayName("주문 구매확정 시나리오")
+    @DisplayName("주문 구매확정 테스트")
     void finishOrderTest(){
         // given
 
@@ -246,6 +248,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         OrderResponse 환불된_주문 = 배송완료_에서_환불요청_변경_결과.as(OrderResponse.class);
         assertThat(환불된_주문.getOrderStatusName()).isEqualTo(OrderStatus.RETURN_REQ.getStatusName());
     }
+
 
     private ExtractableResponse<Response> 주문_환불_요청(OrderResponse order, String returnReason) {
         Map<String, String> params = new HashMap<>();

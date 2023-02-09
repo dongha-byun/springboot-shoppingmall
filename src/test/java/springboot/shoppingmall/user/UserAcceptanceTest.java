@@ -32,7 +32,7 @@ public class UserAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 회원가입("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     /**

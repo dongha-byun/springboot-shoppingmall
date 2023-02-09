@@ -9,12 +9,12 @@ import springboot.shoppingmall.user.domain.User;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {
-
+    private Long id;
     private String name;
     private String telNo;
     private String loginId;
 
     public static UserResponse of(User user){
-        return new UserResponse(user.getUserName(), user.getTelNo() ,user.getLoginId());
+        return new UserResponse(user.getId(), user.getUserName(), user.getTelNo() ,user.getLoginId());
     }
 }

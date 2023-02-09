@@ -11,9 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.db.DatabaseCleanUtil;
+import springboot.shoppingmall.user.dto.UserResponse;
 
+@Import(TestOrderConfig.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
     @LocalServerPort
@@ -24,6 +27,7 @@ public class AcceptanceTest {
 
     String LOGIN_ID = "acceptanceTester";
     String PASSWORD = "test1!";
+    public UserResponse 인수테스터1;
     public static TokenResponse 로그인정보;
 
     @BeforeEach
@@ -33,7 +37,7 @@ public class AcceptanceTest {
         }
         databaseCleanUtil.cleanUp();
 
-        회원가입("인수테스터1", LOGIN_ID, PASSWORD, PASSWORD, "010-1234-1234");
+        인수테스터1 = 회원가입("인수테스터1", LOGIN_ID, PASSWORD, PASSWORD, "010-1234-1234").as(UserResponse.class);
         로그인정보 = 로그인(LOGIN_ID, PASSWORD).as(TokenResponse.class);
     }
 

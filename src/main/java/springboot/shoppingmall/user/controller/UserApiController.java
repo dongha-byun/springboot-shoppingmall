@@ -1,5 +1,6 @@
 package springboot.shoppingmall.user.controller;
 
+import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +26,11 @@ import springboot.shoppingmall.user.service.UserService;
 @Slf4j
 public class UserApiController {
     private final UserService userService;
+
     @PostMapping("/sign-up")
-    public ResponseEntity signUp(@RequestBody SignUpRequest signUpRequest){
-        userService.signUp(signUpRequest);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<UserResponse> signUp(@RequestBody SignUpRequest signUpRequest){
+        UserResponse userResponse = userService.signUp(signUpRequest);
+        return ResponseEntity.created(URI.create("/user/"+userResponse.getId())).body(userResponse);
     }
 
     @GetMapping("/find-id")

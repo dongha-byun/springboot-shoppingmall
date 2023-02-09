@@ -20,9 +20,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     @Transactional
-    public Long signUp(SignUpRequest signUpRequest){
+    public UserResponse signUp(SignUpRequest signUpRequest){
         User user = userRepository.save(SignUpRequest.to(signUpRequest));
-        return user.getId();
+        return UserResponse.of(user);
     }
 
     public UserResponse findUser(Long id){

@@ -30,10 +30,9 @@ class UserServiceTest {
         SignUpRequest signUpRequest = new SignUpRequest("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
 
         // when
-        Long id = userService.signUp(signUpRequest);
+        UserResponse userResponse = userService.signUp(signUpRequest);
 
         // then
-        UserResponse userResponse = userService.findUser(id);
         assertAll(
                 () -> assertThat(userResponse.getName()).isEqualTo("변동하"),
                 () -> assertThat(userResponse.getLoginId()).isEqualTo("dongha"),
