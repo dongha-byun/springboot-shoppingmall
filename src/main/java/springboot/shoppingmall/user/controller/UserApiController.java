@@ -17,6 +17,7 @@ import springboot.shoppingmall.user.dto.FindIdResponse;
 import springboot.shoppingmall.user.dto.FindPwRequest;
 import springboot.shoppingmall.user.dto.FindPwResponse;
 import springboot.shoppingmall.user.dto.SignUpRequest;
+import springboot.shoppingmall.user.dto.UserEditRequest;
 import springboot.shoppingmall.user.dto.UserRequest;
 import springboot.shoppingmall.user.dto.UserResponse;
 import springboot.shoppingmall.user.service.UserService;
@@ -53,9 +54,9 @@ public class UserApiController {
     }
 
     @PutMapping("/user")
-    public ResponseEntity updateUser(@AuthenticationStrategy AuthorizedUser user,
-                                     @RequestBody UserRequest userRequest){
-        userService.editUser(user.getId(), userRequest);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<UserResponse> updateUser(@AuthenticationStrategy AuthorizedUser user,
+                                                   @RequestBody UserEditRequest userRequest){
+        UserResponse userResponse = userService.editUser(user.getId(), userRequest);
+        return ResponseEntity.ok(userResponse);
     }
 }

@@ -8,11 +8,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.user.domain.User;
+import springboot.shoppingmall.user.domain.UserRepository;
 import springboot.shoppingmall.user.dto.FindIdRequest;
 import springboot.shoppingmall.user.dto.FindIdResponse;
 import springboot.shoppingmall.user.dto.FindPwRequest;
 import springboot.shoppingmall.user.dto.FindPwResponse;
 import springboot.shoppingmall.user.dto.SignUpRequest;
+import springboot.shoppingmall.user.dto.UserEditRequest;
+import springboot.shoppingmall.user.dto.UserRequest;
 import springboot.shoppingmall.user.dto.UserResponse;
 import springboot.shoppingmall.user.service.UserService;
 
@@ -22,6 +26,9 @@ class UserServiceTest {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Test
     @DisplayName("회원가입 성공")
@@ -68,4 +75,21 @@ class UserServiceTest {
         assertThat(response.getLoginId()).isEqualTo("dongha");
     }
 
+    @Test
+    @DisplayName("사용자 정보 변경 테스트")
+    void editUserTest() {
+        // given
+        User user = userRepository.save(new User("사용자1", "user1", "user1!", "010-1111-2222"));
+
+        // when
+        UserEditRequest userEditRequest = new UserEditRequest("user2@", "010-2222-4444");
+        userService.editUser(user.getId(), userEditRequest);
+
+        // then
+        User findUser = userRepository.findById(user.getId()).orElseThrow();
+        assertThat(findUser.getUserName()).isEqualTo("사용자1");
+        assertThat(findUser.getLoginId()).isEqualTo("user1");
+        assertThat(findUser.getPassword()).isEqualTo("user2@");
+        assertThat(findUser.getTelNo()).isEqualTo("010-2222-4444");
+    }
 }
