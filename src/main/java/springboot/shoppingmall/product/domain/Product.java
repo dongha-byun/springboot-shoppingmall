@@ -100,4 +100,12 @@ public class Product extends BaseEntity {
     public void increaseSalesVolume(){
         this.salesVolume++;
     }
+
+    public void addReview(ProductReview productReview) {
+        this.reviews.add(productReview);
+    }
+
+    public void removeReview(ProductReview productReview) {
+        this.reviews.remove(productReview);
+    }
 }
