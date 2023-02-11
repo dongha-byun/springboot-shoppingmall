@@ -50,7 +50,13 @@ public class ProductReview extends BaseEntity {
         this.score = score;
     }
 
-    public ProductReview byUser(User user) {
+    public ProductReview(String content, int score, Product product, User user) {
+        this(content, score);
+        byProduct(product);
+        byUser(user);
+    }
+
+    public ProductReview byUser(@NotNull User user) {
         this.user = user;
         return this;
     }
@@ -61,4 +67,7 @@ public class ProductReview extends BaseEntity {
         return this;
     }
 
+    public String getWriteName() {
+        return user.getUserName();
+    }
 }

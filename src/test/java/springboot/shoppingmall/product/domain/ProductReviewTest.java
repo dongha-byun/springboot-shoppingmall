@@ -2,6 +2,8 @@ package springboot.shoppingmall.product.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import springboot.shoppingmall.category.domain.Category;
@@ -47,6 +49,41 @@ class ProductReviewTest {
         assertThat(product.getReviews()).hasSize(1);
         assertThat(product.getReviews()).containsExactly(
                 review2
+        );
+    }
+
+    @Test
+    @DisplayName("상품 리뷰 목록 조회 테스트")
+    void findAllReviewByProduct() {
+        // given
+        User user1 = new User("사용자1", "user1", "user1!", "010-2222-3333");
+        User user2 = new User("사용자2", "user2", "user2@", "010-4444-5555");
+        Product product = new Product("상품 1", 12000, 20, new Category("상위 카테고리"), new Category("하위 카테고리"));
+        ProductReview productReview1 = new ProductReview("리뷰 입니다.", 4, product, user1);
+        ProductReview productReview2 = new ProductReview("리뷰 2 입니다.", 5, product, user2);
+
+        // when
+        List<ProductReview> reviews = product.getReviews();
+
+        // then
+        assertThat(reviews).hasSize(2);
+
+        List<String> contents = reviews.stream()
+                .map(ProductReview::getContent).collect(Collectors.toList());
+        assertThat(contents).containsExactly(
+                productReview1.getContent(), productReview2.getContent()
+        );
+
+        List<Integer> scores = reviews.stream()
+                .map(ProductReview::getScore).collect(Collectors.toList());
+        assertThat(scores).containsExactly(
+                productReview1.getScore(), productReview2.getScore()
+        );
+
+        List<User> users = reviews.stream()
+                .map(ProductReview::getUser).collect(Collectors.toList());
+        assertThat(users).containsExactly(
+                user1, user2
         );
     }
 }
