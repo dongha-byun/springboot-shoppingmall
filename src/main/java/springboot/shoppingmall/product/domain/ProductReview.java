@@ -50,6 +50,7 @@ public class ProductReview extends BaseEntity {
         this.score = score;
     }
 
+    @Builder
     public ProductReview(String content, int score, Product product, User user) {
         this(content, score);
         byProduct(product);
@@ -69,5 +70,9 @@ public class ProductReview extends BaseEntity {
 
     public String getWriteName() {
         return user.getUserName();
+    }
+
+    public String getProductName() {
+        return product.getName();
     }
 }
