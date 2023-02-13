@@ -1,6 +1,8 @@
 # jpa 설정 부분
+
 spring:
-  profiles: default
+  profiles:
+    active: local
   datasource:
     url: jdbc:h2:tcp://localhost/~/byun/h2/dbfile/h2_214/project/shoppingmall
     username: sa
@@ -64,4 +66,5 @@ logging:
       hibernate:
         type:
           descriptor:
-            sql: trace
+            sql:
+              BasicBinder: trace
