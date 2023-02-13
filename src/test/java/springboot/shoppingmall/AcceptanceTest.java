@@ -25,10 +25,17 @@ public class AcceptanceTest {
     @Autowired
     DatabaseCleanUtil databaseCleanUtil;
 
-    String LOGIN_ID = "acceptanceTester";
-    String PASSWORD = "test1!";
+    String LOGIN_ID_1 = "acceptanceTester";
+    String PASSWORD_1 = "test1!";
+
+    String LOGIN_ID_2 = "acceptanceTester2";
+    String PASSWORD_2 = "test2@";
+
     public UserResponse 인수테스터1;
+    public UserResponse 인수테스터2;
+
     public static TokenResponse 로그인정보;
+    public static TokenResponse 로그인정보2;
 
     @BeforeEach
     public void acceptance_beforeEach(){
@@ -37,8 +44,11 @@ public class AcceptanceTest {
         }
         databaseCleanUtil.cleanUp();
 
-        인수테스터1 = 회원가입("인수테스터1", LOGIN_ID, PASSWORD, PASSWORD, "010-1234-1234").as(UserResponse.class);
-        로그인정보 = 로그인(LOGIN_ID, PASSWORD).as(TokenResponse.class);
+        인수테스터1 = 회원가입("인수테스터1", LOGIN_ID_1, PASSWORD_1, PASSWORD_1, "010-1234-1234").as(UserResponse.class);
+        로그인정보 = 로그인(LOGIN_ID_1, PASSWORD_1).as(TokenResponse.class);
+
+        인수테스터2 = 회원가입("인수테스터2", LOGIN_ID_2, PASSWORD_2, PASSWORD_2, "010-1111-4444").as(UserResponse.class);
+        로그인정보2 = 로그인(LOGIN_ID_2, PASSWORD_2).as(TokenResponse.class);
     }
 
     public static Map<String, String> createAuthorizationHeader(TokenResponse tokenResponse){

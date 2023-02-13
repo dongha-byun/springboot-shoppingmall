@@ -43,6 +43,10 @@ public class ProductReviewService {
         User user = userFinder.findUserById(userId);
         Product product = productFinder.findProductById(productId);
 
+        if(reviewRepository.existsByUserAndProduct(user, product)) {
+            throw new IllegalArgumentException("이미 작성된 리뷰가 있습니다.");
+        }
+
         ProductReview productReview = ProductReview.builder()
                 .content(productReviewRequest.getContent())
                 .score(productReviewRequest.getScore())

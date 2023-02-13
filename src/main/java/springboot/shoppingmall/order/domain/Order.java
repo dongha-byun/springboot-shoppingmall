@@ -166,4 +166,8 @@ public class Order extends BaseEntity {
         }
         this.invoiceNumber = invoiceNumber;
     }
+
+    public boolean isEnd() {
+        return OrderStatus.END == this.orderStatus;
+    }
 }

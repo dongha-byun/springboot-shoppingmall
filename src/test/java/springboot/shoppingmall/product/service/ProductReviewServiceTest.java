@@ -60,6 +60,24 @@ class ProductReviewServiceTest {
     }
 
     @Test
+    @DisplayName("사용자는 이미 리뷰를 등록한 상품에 추가로 리뷰를 등록할 수 없다.")
+    void createReviewTest_fail() {
+        // given
+        User user = userRepository.save(new User("사용자1", "user1", "user1!", "010-2222-3333"));
+        Category category = categoryRepository.save(new Category("상위 카테고리"));
+        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
+        Product product = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
+
+        ProductReviewRequest productReviewRequest = new ProductReviewRequest("리뷰 등록 합니다.", 3);
+        service.createProductReview(user.getId(), product.getId(), productReviewRequest);
+
+        // when & then
+        assertThatThrownBy(
+                () -> service.createProductReview(user.getId(), product.getId(), productReviewRequest)
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     @DisplayName("상품 별 리뷰 목록 조회 테스트")
     void findAllReviewByProduct() {
         // given

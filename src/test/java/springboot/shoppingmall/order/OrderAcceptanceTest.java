@@ -58,7 +58,6 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
 
         Order order = orderRepository.save(new Order(user, product, 2, delivery, OrderStatus.END));
         배송완료_주문 = OrderResponse.of(order);
-
     }
 
     /**

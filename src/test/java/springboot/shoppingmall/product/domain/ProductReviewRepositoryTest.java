@@ -51,4 +51,41 @@ class ProductReviewRepositoryTest {
                 review1, review2
         );
     }
+
+    @Test
+    @DisplayName("사용자가 상품에 리뷰를 작성한 적이 있다.")
+    void exists_user_and_product_true() {
+        // given
+        User user = userRepository.save(new User("사용자1", "user1", "user1!", "010-2222-3333"));
+        Category category = categoryRepository.save(new Category("상위 카테고리"));
+        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
+        Product product1 = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
+
+        productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user));
+
+        // when
+        boolean isExists = productReviewRepository.existsByUserAndProduct(user, product1);
+
+        // then
+        assertThat(isExists).isTrue();
+    }
+
+    @Test
+    @DisplayName("사용자가 상품에 리뷰를 작성한 적이 없다.")
+    void exists_user_and_product_false() {
+        // given
+        User user = userRepository.save(new User("사용자1", "user1", "user1!", "010-2222-3333"));
+        Category category = categoryRepository.save(new Category("상위 카테고리"));
+        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
+        Product product1 = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
+        Product product2 = productRepository.save(new Product("상품 2", 5000, 10, category, subCategory));
+
+        productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user));
+
+        // when
+        boolean isExists = productReviewRepository.existsByUserAndProduct(user, product2);
+
+        // then
+        assertThat(isExists).isFalse();
+    }
 }
