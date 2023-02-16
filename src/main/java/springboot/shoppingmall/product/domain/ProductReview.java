@@ -1,6 +1,7 @@
 package springboot.shoppingmall.product.domain;
 
 import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -40,9 +41,12 @@ public class ProductReview extends BaseEntity {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id")
+//    private User user;
+
+    @Column(name = "user_id")
+    private Long userId;
 
     public ProductReview(String content, int score) {
         this.writeDate = LocalDateTime.now();
@@ -50,15 +54,27 @@ public class ProductReview extends BaseEntity {
         this.score = score;
     }
 
+//    public ProductReview(String content, int score, Product product, User user) {
+//        this(content, score);
+//        byProduct(product);
+//        byUser(user);
+//    }
+
     @Builder
-    public ProductReview(String content, int score, Product product, User user) {
+    public ProductReview(String content, int score, Product product, Long userId) {
         this(content, score);
+        byUser(userId);
         byProduct(product);
-        byUser(user);
+
     }
 
-    public ProductReview byUser(@NotNull User user) {
-        this.user = user;
+//    public ProductReview byUser(@NotNull User user) {
+//        this.user = user;
+//        return this;
+//    }
+
+    public ProductReview byUser(@NotNull Long userId) {
+        this.userId = userId;
         return this;
     }
 
@@ -68,9 +84,9 @@ public class ProductReview extends BaseEntity {
         return this;
     }
 
-    public String getWriteName() {
-        return user.getUserName();
-    }
+//    public String getWriteName() {
+//        return user.getUserName();
+//    }
 
     public String getProductName() {
         return product.getName();

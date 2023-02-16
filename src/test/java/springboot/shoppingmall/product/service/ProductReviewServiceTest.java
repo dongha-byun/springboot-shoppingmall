@@ -87,8 +87,8 @@ class ProductReviewServiceTest {
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
 
-        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product, user1));
-        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product, user2));
+        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product, user1.getId()));
+        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product, user2.getId()));
 
         // when
         List<ProductReviewResponse> reviews = service.findAllReview(product.getId());
@@ -112,14 +112,14 @@ class ProductReviewServiceTest {
         Product product1 = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
         Product product2 = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
 
-        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user));
-        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product2, user));
+        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId()));
+        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product2, user.getId()));
 
         // when
         service.deleteProductReview(user.getId(), review1.getId());
 
         // then
-        List<ProductReview> reviews = productReviewRepository.findAllByUser(user);
+        List<ProductReview> reviews = productReviewRepository.findAllByUserId(user.getId());
         assertThat(reviews).hasSize(1);
         assertThat(reviews).containsExactly(review2);
         assertThat(reviews).doesNotContain(review1);
@@ -135,8 +135,8 @@ class ProductReviewServiceTest {
         Product product1 = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
         Product product2 = productRepository.save(new Product("상품 2", 42100, 15, category, subCategory));
 
-        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user));
-        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product2, user));
+        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId()));
+        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product2, user.getId()));
 
         // when
         List<ProductUserReviewResponse> reviews = service.findAllUserReview(user.getId());

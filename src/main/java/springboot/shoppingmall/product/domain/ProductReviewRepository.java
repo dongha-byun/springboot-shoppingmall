@@ -2,11 +2,10 @@ package springboot.shoppingmall.product.domain;
 
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
-import springboot.shoppingmall.user.domain.User;
 
-public interface ProductReviewRepository extends JpaRepository<ProductReview, Long> {
+public interface ProductReviewRepository extends JpaRepository<ProductReview, Long>, CustomProductReviewRepository {
 
-    List<ProductReview> findAllByUser(User user);
+    List<ProductReview> findAllByUserId(Long userId);
 
-    boolean existsByUserAndProduct(User user, Product product);
+    boolean existsByUserIdAndProduct(Long userId, Product product);
 }

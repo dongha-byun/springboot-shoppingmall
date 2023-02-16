@@ -39,11 +39,11 @@ class ProductReviewRepositoryTest {
         Product product1 = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
         Product product2 = productRepository.save(new Product("상품 2", 15000, 10, category, subCategory));
 
-        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user));
-        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product2, user));
+        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId()));
+        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product2, user.getId()));
 
         // when
-        List<ProductReview> reviews = productReviewRepository.findAllByUser(user);
+        List<ProductReview> reviews = productReviewRepository.findAllByUserId(user.getId());
 
         // then
         assertThat(reviews).hasSize(2);
@@ -61,10 +61,10 @@ class ProductReviewRepositoryTest {
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product1 = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
 
-        productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user));
+        productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId()));
 
         // when
-        boolean isExists = productReviewRepository.existsByUserAndProduct(user, product1);
+        boolean isExists = productReviewRepository.existsByUserIdAndProduct(user.getId(), product1);
 
         // then
         assertThat(isExists).isTrue();
@@ -80,10 +80,10 @@ class ProductReviewRepositoryTest {
         Product product1 = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
         Product product2 = productRepository.save(new Product("상품 2", 5000, 10, category, subCategory));
 
-        productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user));
+        productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId()));
 
         // when
-        boolean isExists = productReviewRepository.existsByUserAndProduct(user, product2);
+        boolean isExists = productReviewRepository.existsByUserIdAndProduct(user.getId(), product2);
 
         // then
         assertThat(isExists).isFalse();

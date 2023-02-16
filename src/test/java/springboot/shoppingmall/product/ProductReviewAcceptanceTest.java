@@ -88,6 +88,8 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         ProductUserReviewResponse 작성된_리뷰 = 리뷰_작성_요청_결과.as(ProductUserReviewResponse.class);
         assertThat(작성된_리뷰.getId()).isNotNull();
         assertThat(작성된_리뷰.getProductName()).isEqualTo(상품.getName());
+        assertThat(작성된_리뷰.getContent()).isEqualTo("리뷰 작성 합니다.");
+        assertThat(작성된_리뷰.getWriteDate()).isNotNull();
     }
 
     /**
@@ -147,6 +149,9 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         assertThat(리뷰_목록_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(리뷰_목록_조회_결과.jsonPath().getList("content")).containsExactly(
                 content1, content2
+        );
+        assertThat(리뷰_목록_조회_결과.jsonPath().getList("userName")).containsExactly(
+                "인수테스터1", "인수테스터2"
         );
     }
 

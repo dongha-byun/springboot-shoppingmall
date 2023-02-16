@@ -16,6 +16,7 @@ public class ProductReviewResponse {
     private String userName;
 
     public static ProductReviewResponse of(ProductReview review) {
-        return new ProductReviewResponse(review.getId(), review.getContent(), review.getWriteDate(), review.getWriteName());
+        // return new ProductReviewResponse(review.getId(), review.getContent(), review.getWriteDate(), review.getWriteName());
+        return new ProductReviewResponse(review.getId(), review.getContent(), review.getWriteDate(), null);
     }
 }

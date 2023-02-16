@@ -21,7 +21,7 @@ class ProductReviewTest {
         ProductReview productReview2 = new ProductReview("리뷰 2 입니다.", 5);
 
         // when
-        ProductReview review1 = productReview1.byProduct(product).byUser(user);
+        ProductReview review1 = productReview1.byProduct(product).byUser(user.getId());
         ProductReview review2 = productReview2.byProduct(product);
 
         // then
@@ -59,8 +59,8 @@ class ProductReviewTest {
         User user1 = new User("사용자1", "user1", "user1!", "010-2222-3333");
         User user2 = new User("사용자2", "user2", "user2@", "010-4444-5555");
         Product product = new Product("상품 1", 12000, 20, new Category("상위 카테고리"), new Category("하위 카테고리"));
-        ProductReview productReview1 = new ProductReview("리뷰 입니다.", 4, product, user1);
-        ProductReview productReview2 = new ProductReview("리뷰 2 입니다.", 5, product, user2);
+        ProductReview productReview1 = new ProductReview("리뷰 입니다.", 4, product, user1.getId());
+        ProductReview productReview2 = new ProductReview("리뷰 2 입니다.", 5, product, user2.getId());
 
         // when
         List<ProductReview> reviews = product.getReviews();
@@ -80,10 +80,10 @@ class ProductReviewTest {
                 productReview1.getScore(), productReview2.getScore()
         );
 
-        List<User> users = reviews.stream()
-                .map(ProductReview::getUser).collect(Collectors.toList());
+        List<Long> users = reviews.stream()
+                .map(ProductReview::getUserId).collect(Collectors.toList());
         assertThat(users).containsExactly(
-                user1, user2
+                user1.getId(), user2.getId()
         );
     }
 }
