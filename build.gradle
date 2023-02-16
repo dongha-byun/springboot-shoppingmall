@@ -30,24 +30,29 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// RestAssured
+	testImplementation 'io.rest-assured:rest-assured'
+
 	implementation 'com.google.guava:guava:31.1-jre'
 
+	// JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-	compileOnly 'org.projectlombok:lombok'
-
+	// h2
 	runtimeOnly 'com.h2database:h2'
 
 	// mysql
 	implementation 'mysql:mysql-connector-java'
 
-	annotationProcessor 'org.projectlombok:lombok'
-
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'io.rest-assured:rest-assured'
-
+	// RestDoc
 	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
 
@@ -84,11 +89,7 @@ bootJar {
 	}
 }
 
-// QueryDSL
-sourceSets {
-	main {
-		java {
-			srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated"]
-		}
-	}
+// QueryDSL 적용, 자동 생성된 Q 클래스 gradle 로 clean 처리
+clean {
+	delete file('src/main/generated')
 }
