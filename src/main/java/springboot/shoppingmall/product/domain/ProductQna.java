@@ -15,7 +15,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,23 +41,22 @@ public class ProductQna extends BaseEntity {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "writer_id", nullable = false)
-    private User writer;
-
+    @Column(name = "writer_id", nullable = false)
+    private Long writerId;
+    
     @OneToOne(mappedBy = "productQna", cascade = CascadeType.ALL, orphanRemoval = true)
     private ProductQnaAnswer answer;
 
     @Builder
-    public ProductQna(String content, Product product, User writer) {
-        this(null, content, product, writer);
+    public ProductQna(String content, Product product, Long writerId) {
+        this(null, content, product, writerId);
     }
 
-    public ProductQna(Long id, String content, Product product, User writer) {
+    public ProductQna(Long id, String content, Product product, Long writerId) {
         this.id = id;
         this.content = content;
         this.writeDate = LocalDateTime.now();
-        this.writer = writer;
+        this.writerId = writerId;
         this.product = product;
         if(product != null){
             product.addQna(this);

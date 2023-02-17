@@ -9,11 +9,9 @@ import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductQna;
 import springboot.shoppingmall.product.domain.ProductQnaRepository;
 import springboot.shoppingmall.product.domain.ProductRepository;
+import springboot.shoppingmall.product.dto.ProductQnaDto;
 import springboot.shoppingmall.product.dto.ProductQnaRequest;
 import springboot.shoppingmall.product.dto.ProductQnaResponse;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserFinder;
-import springboot.shoppingmall.user.domain.UserRepository;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -21,25 +19,23 @@ import springboot.shoppingmall.user.domain.UserRepository;
 public class ProductQnaService {
 
     private final ProductQnaRepository productQnaRepository;
-    private final UserFinder userFinder;
     private final ProductRepository productRepository;
 
     @Transactional
     public ProductQnaResponse createQna(Long userId, Long productId, ProductQnaRequest productQnaRequest) {
-        User writer = userFinder.findUserById(userId);
         Product product = findProductById(productId);
         ProductQna productQna = productQnaRepository.save(ProductQna.builder()
                 .content(productQnaRequest.getContent())
                 .product(product)
-                .writer(writer)
+                .writerId(userId)
                 .build());
 
         return ProductQnaResponse.of(productQna);
     }
 
     public List<ProductQnaResponse> findQnaAllByProduct(Long productId){
-        Product product = findProductById(productId);
-        return product.getQna().stream()
+        List<ProductQnaDto> qnaDtos = productQnaRepository.findAllProductQna(productId);
+        return qnaDtos.stream()
                 .map(ProductQnaResponse::of)
                 .collect(Collectors.toList());
     }

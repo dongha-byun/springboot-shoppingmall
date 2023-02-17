@@ -30,8 +30,15 @@ public class ProductQnaResponse {
 
     public static ProductQnaResponse of(ProductQna productQna) {
         return new ProductQnaResponse(productQna.getId(), productQna.getContent(),
-                MaskingUtil.maskString(productQna.getWriter().getUserName()),
+                null,
                 productQna.getWriteDate().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)),
                 ProductQnaAnswerResponse.of(productQna.getAnswer()));
+    }
+
+    public static ProductQnaResponse of(ProductQnaDto dto) {
+        return new ProductQnaResponse(dto.getId(), dto.getContent(),
+                dto.getUserName(),
+                dto.getWriteDate().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)),
+                null);
     }
 }
