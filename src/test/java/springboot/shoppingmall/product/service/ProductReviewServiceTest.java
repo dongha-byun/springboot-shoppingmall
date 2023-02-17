@@ -92,13 +92,16 @@ class ProductReviewServiceTest {
 
         // when
         List<ProductReviewResponse> reviews = service.findAllReview(product.getId());
+        List<String> contents = reviews.stream().map(ProductReviewResponse::getContent).collect(Collectors.toList());
+        List<Long> ids = reviews.stream().map(ProductReviewResponse::getId).collect(Collectors.toList());
 
         // then
         assertThat(reviews).hasSize(2);
-        List<String> contents = reviews.stream()
-                .map(ProductReviewResponse::getContent).collect(Collectors.toList());
         assertThat(contents).containsExactly(
-                review1.getContent(), review2.getContent()
+                review2.getContent(), review1.getContent()
+        );
+        assertThat(ids).containsExactly(
+                review2.getId(), review1.getId()
         );
     }
 
