@@ -16,9 +16,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.Nullable;
 import springboot.shoppingmall.BaseEntity;
-import springboot.shoppingmall.user.domain.User;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -41,10 +39,6 @@ public class ProductReview extends BaseEntity {
     @JoinColumn(name = "product_id")
     private Product product;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id")
-//    private User user;
-
     @Column(name = "user_id")
     private Long userId;
 
@@ -54,12 +48,6 @@ public class ProductReview extends BaseEntity {
         this.score = score;
     }
 
-//    public ProductReview(String content, int score, Product product, User user) {
-//        this(content, score);
-//        byProduct(product);
-//        byUser(user);
-//    }
-
     @Builder
     public ProductReview(String content, int score, Product product, Long userId) {
         this(content, score);
@@ -67,11 +55,6 @@ public class ProductReview extends BaseEntity {
         byProduct(product);
 
     }
-
-//    public ProductReview byUser(@NotNull User user) {
-//        this.user = user;
-//        return this;
-//    }
 
     public ProductReview byUser(@NotNull Long userId) {
         this.userId = userId;
@@ -83,10 +66,6 @@ public class ProductReview extends BaseEntity {
         product.addReview(this);
         return this;
     }
-
-//    public String getWriteName() {
-//        return user.getUserName();
-//    }
 
     public String getProductName() {
         return product.getName();

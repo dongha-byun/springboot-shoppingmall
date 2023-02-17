@@ -13,8 +13,6 @@ import springboot.shoppingmall.product.dto.ProductReviewDto;
 import springboot.shoppingmall.product.dto.ProductReviewRequest;
 import springboot.shoppingmall.product.dto.ProductReviewResponse;
 import springboot.shoppingmall.product.dto.ProductUserReviewResponse;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserFinder;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -22,14 +20,8 @@ import springboot.shoppingmall.user.domain.UserFinder;
 public class ProductReviewService {
     private final ProductReviewRepository reviewRepository;
     private final ProductFinder productFinder;
-    private final UserFinder userFinder;
 
     public List<ProductReviewResponse> findAllReview(Long productId) {
-//        Product product = productFinder.findProductById(productId);
-//
-//        return product.getReviews().stream()
-//                .map(ProductReviewResponse::of).collect(Collectors.toList());
-
         List<ProductReviewDto> reviewDtos = reviewRepository.findAllProductReview(productId);
         return reviewDtos.stream()
                 .map(
@@ -68,12 +60,11 @@ public class ProductReviewService {
 
     @Transactional
     public void deleteProductReview(Long userId, Long reviewId) {
-        User user = userFinder.findUserById(userId);
         ProductReview productReview = reviewRepository.findById(reviewId)
                 .orElseThrow(
                         () -> new IllegalArgumentException("존재하지 않는 리뷰 입니다.")
                 );
-        if(!productReview.getUserId().equals(user.getId())) {
+        if(!productReview.getUserId().equals(userId)) {
             throw new IllegalArgumentException("고객님께서 등록하신 리뷰가 아니라 삭제가 불가능 합니다.");
         }
         reviewRepository.delete(productReview);

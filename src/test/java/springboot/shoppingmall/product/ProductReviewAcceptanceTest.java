@@ -148,10 +148,10 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         // then
         assertThat(리뷰_목록_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(리뷰_목록_조회_결과.jsonPath().getList("content")).containsExactly(
-                content1, content2
+                content2, content1
         );
         assertThat(리뷰_목록_조회_결과.jsonPath().getList("userName")).containsExactly(
-                "인수테스터1", "인수테스터2"
+                "인수테스터2", "인수테스터1"
         );
     }
 
