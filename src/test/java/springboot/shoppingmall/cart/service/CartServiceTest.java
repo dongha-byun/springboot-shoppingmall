@@ -1,11 +1,8 @@
-package springboot.shoppingmall.user.service;
+package springboot.shoppingmall.cart.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
-import org.aspectj.lang.annotation.Before;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,18 +13,17 @@ import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.user.domain.Basket;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserRepository;
-import springboot.shoppingmall.user.dto.BasketRequest;
-import springboot.shoppingmall.user.dto.BasketResponse;
+import springboot.shoppingmall.cart.web.CartRequest;
+import springboot.shoppingmall.cart.web.CartResponse;
 
 @Transactional
 @SpringBootTest
-class BasketServiceTest {
+class CartServiceTest {
 
     @Autowired
-    BasketService basketService;
+    CartService cartService;
 
     @Autowired
     UserRepository userRepository;
@@ -60,43 +56,43 @@ class BasketServiceTest {
 
     @Test
     @DisplayName("장바구니 추가 테스트")
-    void createBasketTest(){
+    void createCartTest(){
         // given
-        BasketRequest basketRequest = new BasketRequest(2, product.getId());
+        CartRequest cartRequest = new CartRequest(2, product.getId());
 
         // when
-        BasketResponse basketResponse = basketService.create(saveUser.getId(), basketRequest);
+        CartResponse cartResponse = cartService.create(saveUser.getId(), cartRequest);
 
         // then
-        assertThat(basketResponse.getId()).isNotNull();
-        assertThat(basketResponse.getQuantity()).isEqualTo(2);
-        assertThat(basketResponse.getProduct().getId()).isEqualTo(product.getId());
+        assertThat(cartResponse.getId()).isNotNull();
+        assertThat(cartResponse.getQuantity()).isEqualTo(2);
+        assertThat(cartResponse.getProduct().getId()).isEqualTo(product.getId());
     }
 
     @Test
     @DisplayName("장바구니 목록 조회 테스트")
     void findAllTest(){
         // given
-        basketService.create(saveUser.getId(), new BasketRequest(2, product.getId()));
-        basketService.create(saveUser.getId(), new BasketRequest(1, product2.getId()));
-        basketService.create(saveUser.getId(), new BasketRequest(5, product3.getId()));
+        cartService.create(saveUser.getId(), new CartRequest(2, product.getId()));
+        cartService.create(saveUser.getId(), new CartRequest(1, product2.getId()));
+        cartService.create(saveUser.getId(), new CartRequest(5, product3.getId()));
 
         // when
-        List<BasketResponse> baskets = basketService.findAllByUser(saveUser.getId());
+        List<CartResponse> carts = cartService.findAllByUser(saveUser.getId());
 
         // then
-        assertThat(baskets).hasSize(3);
+        assertThat(carts).hasSize(3);
     }
 
     @Test
     @DisplayName("장바구니 목록 제거 테스트")
     void deleteTest(){
         // given
-        BasketResponse basketResponse = basketService.create(saveUser.getId(), new BasketRequest(2, product.getId()));
-        basketService.create(saveUser.getId(), new BasketRequest(1, product2.getId()));
+        CartResponse cartResponse = cartService.create(saveUser.getId(), new CartRequest(2, product.getId()));
+        cartService.create(saveUser.getId(), new CartRequest(1, product2.getId()));
 
         // when
-        basketService.delete(saveUser.getId(), basketResponse.getId());
+        cartService.delete(saveUser.getId(), cartResponse.getId());
 
         // then
         assertThat(saveUser.getBaskets()).hasSize(1);

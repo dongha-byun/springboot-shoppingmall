@@ -1,4 +1,4 @@
-package springboot.shoppingmall.user;
+package springboot.shoppingmall.cart;
 
 import static org.assertj.core.api.Assertions.*;
 import static springboot.shoppingmall.category.CategoryAcceptanceTest.카테고리_등록;
@@ -18,9 +18,9 @@ import springboot.shoppingmall.AcceptanceTest;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.category.dto.CategoryResponse;
 import springboot.shoppingmall.product.dto.ProductResponse;
-import springboot.shoppingmall.user.dto.BasketResponse;
+import springboot.shoppingmall.cart.web.CartResponse;
 
-public class BasketAcceptanceTest extends AcceptanceTest {
+public class CartAcceptanceTest extends AcceptanceTest {
     ProductResponse 상품1;
     ProductResponse 상품2;
 
@@ -60,7 +60,7 @@ public class BasketAcceptanceTest extends AcceptanceTest {
         assertThat(장바구니_추가_요청_결과_2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when 2.
-        BasketResponse 장바구니_상품_1 = 장바구니_추가_요청_결과_1.as(BasketResponse.class);
+        CartResponse 장바구니_상품_1 = 장바구니_추가_요청_결과_1.as(CartResponse.class);
         ExtractableResponse<Response> 장바구니_삭제_요청_결과 = 장바구니_삭제_요청(로그인정보, 장바구니_상품_1);
         assertThat(장바구니_삭제_요청_결과.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
@@ -69,11 +69,11 @@ public class BasketAcceptanceTest extends AcceptanceTest {
         assertThat(장바구니_목록_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    private ExtractableResponse<Response> 장바구니_삭제_요청(TokenResponse token, BasketResponse basketResponse) {
+    private ExtractableResponse<Response> 장바구니_삭제_요청(TokenResponse token, CartResponse cartResponse) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers(createAuthorizationHeader(token))
-                .when().delete("/baskets/{id}", basketResponse.getId())
+                .when().delete("/carts/{id}", cartResponse.getId())
                 .then().log().all()
                 .extract();
     }
@@ -82,7 +82,7 @@ public class BasketAcceptanceTest extends AcceptanceTest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers(createAuthorizationHeader(token))
-                .when().get("/baskets")
+                .when().get("/carts")
                 .then().log().all()
                 .extract();
     }
@@ -96,7 +96,7 @@ public class BasketAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers(createAuthorizationHeader(token))
                 .body(body)
-                .when().post("/baskets")
+                .when().post("/carts")
                 .then().log().all()
                 .extract();
     }

@@ -1,5 +1,6 @@
-package springboot.shoppingmall.user.domain;
+package springboot.shoppingmall.cart.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,32 +14,32 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.BaseEntity;
-import springboot.shoppingmall.product.domain.Product;
+import springboot.shoppingmall.user.domain.User;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(name = "basket")
 @Entity
-public class Basket extends BaseEntity {
+public class Cart extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private int quantity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @Column(name = "product_id", nullable = false, unique = true)
+    private Long productId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Builder
-    public Basket(int quantity, Product product, User user) {
+    public Cart(int quantity, Long productId, User user) {
         this.quantity = quantity;
-        this.product = product;
+        this.productId = productId;
         this.user = user;
 
         if(user != null){
