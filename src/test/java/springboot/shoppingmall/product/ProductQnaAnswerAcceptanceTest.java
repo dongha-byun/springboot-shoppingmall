@@ -81,7 +81,7 @@ public class ProductQnaAnswerAcceptanceTest extends AcceptanceTest {
         assertThat(답변이_포함된_문의_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
         ProductQnaResponse productQnaResponse = 답변이_포함된_문의_조회_결과.as(ProductQnaResponse.class);
         assertThat(productQnaResponse.getId()).isNotNull();
-        assertThat(productQnaResponse.getAnswer().getContent()).contains("답변은 아래와 같습니다. 감사합니다. ");
+        assertThat(productQnaResponse.getAnswer().getAnswer()).contains("답변은 아래와 같습니다. 감사합니다. ");
 
     }
 

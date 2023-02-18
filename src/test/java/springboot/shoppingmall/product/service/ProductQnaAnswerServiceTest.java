@@ -63,6 +63,6 @@ public class ProductQnaAnswerServiceTest {
 
         // then
         assertThat(qnaAnswer).isNotNull();
-        assertThat(qnaAnswer.getContent()).contains("답변 드립니다. 감사합니다");
+        assertThat(qnaAnswer.getAnswer()).contains("답변 드립니다. 감사합니다");
     }
 }

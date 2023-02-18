@@ -39,6 +39,6 @@ public class ProductQnaResponse {
         return new ProductQnaResponse(dto.getId(), dto.getContent(),
                 dto.getUserName(),
                 dto.getWriteDate().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)),
-                null);
+                ProductQnaAnswerResponse.of(dto.getAnswer()));
     }
 }
