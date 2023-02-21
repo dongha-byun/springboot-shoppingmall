@@ -66,7 +66,7 @@ class CartServiceTest {
         // then
         assertThat(cartResponse.getId()).isNotNull();
         assertThat(cartResponse.getQuantity()).isEqualTo(2);
-        assertThat(cartResponse.getProduct().getId()).isEqualTo(product.getId());
+        assertThat(cartResponse.getProductId()).isEqualTo(product.getId());
     }
 
     @Test
@@ -95,7 +95,8 @@ class CartServiceTest {
         cartService.delete(saveUser.getId(), cartResponse.getId());
 
         // then
-        assertThat(saveUser.getBaskets()).hasSize(1);
+        List<CartResponse> carts = cartService.findAllByUser(saveUser.getId());
+        assertThat(carts).hasSize(1);
     }
 
 }

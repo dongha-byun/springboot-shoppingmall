@@ -32,18 +32,13 @@ public class Cart extends BaseEntity {
     @Column(name = "product_id", nullable = false, unique = true)
     private Long productId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
     @Builder
-    public Cart(int quantity, Long productId, User user) {
+    public Cart(int quantity, Long productId, Long userId) {
         this.quantity = quantity;
         this.productId = productId;
-        this.user = user;
-
-        if(user != null){
-            user.addBasket(this);
-        }
+        this.userId = userId;
     }
 }

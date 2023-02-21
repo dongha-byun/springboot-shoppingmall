@@ -11,13 +11,13 @@ import springboot.shoppingmall.cart.domain.Cart;
 @AllArgsConstructor
 public class CartResponse {
     private Long id;
-    private ProductResponse product;
+    private Long productId;
     private int quantity;
 
     public static CartResponse of(Cart saveCart) {
         return new CartResponse(
                 saveCart.getId(),
-                null,
+                saveCart.getProductId(),
                 saveCart.getQuantity()
         );
     }
