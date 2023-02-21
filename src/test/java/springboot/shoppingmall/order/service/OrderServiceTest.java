@@ -9,7 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.TestOrderConfig;
@@ -64,7 +63,7 @@ class OrderServiceTest {
     }
 
     @Test
-    @DisplayName("주문 생성 테스트")
+    @DisplayName("주문 준비중 테스트")
     void createTest() {
         // given
         OrderRequest orderRequest = new OrderRequest(product.getId(), 3, 3000, delivery.getId());
@@ -103,10 +102,10 @@ class OrderServiceTest {
         Order cancelOrder = 특정_주문상태_데이터_생성(OrderStatus.CANCEL);
         Order checkingOrder = 특정_주문상태_데이터_생성(OrderStatus.CHECKING);
         Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.END);
-        Order exchangeReqOrder = 특정_주문상태_데이터_생성(OrderStatus.EXCHANGE_REQ);
+        Order exchangeReqOrder = 특정_주문상태_데이터_생성(OrderStatus.EXCHANGE);
         Order finishOrder = 특정_주문상태_데이터_생성(OrderStatus.FINISH);
-        Order returnEndOrder = 특정_주문상태_데이터_생성(OrderStatus.RETURN_END);
-        Order returnReqOrder = 특정_주문상태_데이터_생성(OrderStatus.RETURN_REQ);
+        Order returnEndOrder = 특정_주문상태_데이터_생성(OrderStatus.REFUND_END);
+        Order returnReqOrder = 특정_주문상태_데이터_생성(OrderStatus.REFUND);
 
         // when & then
         assertAll(
@@ -142,10 +141,10 @@ class OrderServiceTest {
         Order cancelOrder = 특정_주문상태_데이터_생성(OrderStatus.CANCEL);
         Order checkingOrder = 특정_주문상태_데이터_생성(OrderStatus.CHECKING);
         Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.END);
-        Order exchangeReqOrder = 특정_주문상태_데이터_생성(OrderStatus.EXCHANGE_REQ);
+        Order exchangeReqOrder = 특정_주문상태_데이터_생성(OrderStatus.EXCHANGE);
         Order finishOrder = 특정_주문상태_데이터_생성(OrderStatus.FINISH);
-        Order returnEndOrder = 특정_주문상태_데이터_생성(OrderStatus.RETURN_END);
-        Order returnReqOrder = 특정_주문상태_데이터_생성(OrderStatus.RETURN_REQ);
+        Order returnEndOrder = 특정_주문상태_데이터_생성(OrderStatus.REFUND_END);
+        Order returnReqOrder = 특정_주문상태_데이터_생성(OrderStatus.REFUND);
 
         // when & then
         assertAll(
@@ -181,10 +180,10 @@ class OrderServiceTest {
         Order cancelOrder = 특정_주문상태_데이터_생성(OrderStatus.CANCEL);
         Order checkingOrder = 특정_주문상태_데이터_생성(OrderStatus.CHECKING);
         Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.END);
-        Order exchangeReqOrder = 특정_주문상태_데이터_생성(OrderStatus.EXCHANGE_REQ);
+        Order exchangeReqOrder = 특정_주문상태_데이터_생성(OrderStatus.EXCHANGE);
         Order finishOrder = 특정_주문상태_데이터_생성(OrderStatus.FINISH);
-        Order returnEndOrder = 특정_주문상태_데이터_생성(OrderStatus.RETURN_END);
-        Order returnReqOrder = 특정_주문상태_데이터_생성(OrderStatus.RETURN_REQ);
+        Order returnEndOrder = 특정_주문상태_데이터_생성(OrderStatus.REFUND_END);
+        Order returnReqOrder = 특정_주문상태_데이터_생성(OrderStatus.REFUND);
 
         // when & then
         assertAll(
@@ -205,7 +204,7 @@ class OrderServiceTest {
     }
 
     private Order 특정_주문상태_데이터_생성(OrderStatus status) {
-        return orderRepository.save(new Order(user, product, 2, delivery, status));
+        return orderRepository.save(new Order(user.getId(), product, 2, delivery, status));
     }
 
     @Test
@@ -227,15 +226,15 @@ class OrderServiceTest {
     void requestReturnOrderTest() {
         // given
         Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.END);
-        String returnReason = "환불 요청 합니다.";
+        String refundReason = "환불 요청 합니다.";
 
         // when
-        orderService.requestReturnOrder(endOrder.getId(), returnReason);
+        orderService.refund(endOrder.getId(), refundReason);
 
         // then
         Order findOrder = orderRepository.findById(endOrder.getId()).get();
-        assertThat(findOrder.getOrderStatus()).isEqualTo(OrderStatus.RETURN_REQ);
-        assertThat(findOrder.getReturnReason()).isEqualTo(returnReason);
+        assertThat(findOrder.getOrderStatus()).isEqualTo(OrderStatus.REFUND);
+        assertThat(findOrder.getRefundReason()).isEqualTo(refundReason);
     }
 
     @Test
@@ -246,11 +245,11 @@ class OrderServiceTest {
         String exchangeReason = "교환 요청 합니다.";
 
         // when
-        orderService.requestExchangeOrder(order.getId(), exchangeReason);
+        orderService.exchange(order.getId(), exchangeReason);
 
         // then
         Order findOrder = orderRepository.findById(order.getId()).get();
-        assertThat(findOrder.getOrderStatus()).isEqualTo(OrderStatus.EXCHANGE_REQ);
+        assertThat(findOrder.getOrderStatus()).isEqualTo(OrderStatus.EXCHANGE);
         assertThat(findOrder.getExchangeReason()).isEqualTo(exchangeReason);
     }
 }

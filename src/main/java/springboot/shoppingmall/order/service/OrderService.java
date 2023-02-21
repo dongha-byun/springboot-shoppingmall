@@ -33,13 +33,14 @@ public class OrderService {
     public OrderResponse createOrder(Long userId, OrderRequest orderRequest) {
         User user = userFinder.findUserById(userId);
         Product product = findProductById(orderRequest.getProductId());
-        Delivery delivery = getDeliveryById(orderRequest.getDeliveryId());
+        Delivery delivery = findDeliveryById(orderRequest.getDeliveryId());
 
-        Order newOrder = orderRepository.save(Order.createOrder(user, product, orderRequest.getQuantity(), delivery));
+        Order newOrder = orderRepository.save(Order.createOrder(user.getId(), product, orderRequest.getQuantity(), delivery));
 
         return OrderResponse.of(newOrder);
     }
 
+    // 배송완료 처리 - 택배사에서 호출하는 로직
     @Transactional
     public OrderResponse changeStatusEnd(String invoiceNumber) {
         Order order = orderFinder.findOrderByInvoiceNumber(invoiceNumber);
@@ -61,8 +62,74 @@ public class OrderService {
         return OrderResponse.of(order);
     }
 
+    // 주문취소
+    @Transactional
+    public OrderResponse cancel(Long orderId) {
+        Order order = orderFinder.findOrderById(orderId);
+        order.cancel();
 
-    private Delivery getDeliveryById(Long deliveryId) {
+        return OrderResponse.of(order);
+    }
+
+    // 출고중
+    @Transactional
+    public OrderResponse outing(Long orderId) {
+        Order order = orderFinder.findOrderById(orderId);
+        order.outing();
+
+        OrderDeliveryInvoiceResponse deliveryInvoice = orderDeliveryInterfaceService.createInvoiceNumber(order);
+        order.changeInvoiceNumber(deliveryInvoice.getInvoiceNumber());
+
+        return OrderResponse.of(order);
+    }
+
+    // 구매확정
+    @Transactional
+    public OrderResponse finish(Long orderId) {
+        Order order = orderFinder.findOrderById(orderId);
+        order.finish();
+
+        return OrderResponse.of(order);
+    }
+
+    // 검수중
+    @Transactional
+    public OrderResponse checking(Long orderId) {
+        Order order = orderFinder.findOrderById(orderId);
+        order.checking();
+
+        return OrderResponse.of(order);
+    }
+
+    // 환불
+    @Transactional
+    public OrderResponse refund(Long orderId, String returnReason) {
+        Order order = orderFinder.findOrderById(orderId);
+        order.refund(returnReason);
+
+        return OrderResponse.of(order);
+    }
+
+    // 환불 완료
+    @Transactional
+    public OrderResponse refundEnd(Long orderId) {
+        Order order = orderFinder.findOrderById(orderId);
+        order.refundEnd();
+
+        return OrderResponse.of(order);
+    }
+
+    // 교환
+    @Transactional
+    public OrderResponse exchange(Long orderId, String exchangeReason) {
+        Order order = orderFinder.findOrderById(orderId);
+        order.exchange(exchangeReason);
+
+        return OrderResponse.of(order);
+    }
+
+
+    private Delivery findDeliveryById(Long deliveryId) {
         return deliveryRepository.findById(deliveryId)
                 .orElseThrow(IllegalArgumentException::new);
     }
@@ -70,21 +137,5 @@ public class OrderService {
     private Product findProductById(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(IllegalArgumentException::new);
-    }
-
-    @Transactional
-    public OrderResponse requestReturnOrder(Long orderId, String returnReason) {
-        Order order = orderFinder.findOrderById(orderId);
-        order.requestReturn(returnReason);
-
-        return OrderResponse.of(order);
-    }
-
-    @Transactional
-    public OrderResponse requestExchangeOrder(Long orderId, String exchangeReason) {
-        Order order = orderFinder.findOrderById(orderId);
-        order.requestExchange(exchangeReason);
-
-        return OrderResponse.of(order);
     }
 }

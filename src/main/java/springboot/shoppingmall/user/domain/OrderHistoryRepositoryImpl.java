@@ -1,7 +1,6 @@
 package springboot.shoppingmall.user.domain;
 
 import static springboot.shoppingmall.order.domain.QOrder.*;
-import static springboot.shoppingmall.user.domain.QUser.*;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -25,7 +24,7 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository{
                 )
                 .from(order)
                 .where(
-                        order.user.eq(user)
+                        order.userId.eq(user.getId())
                 )
                 .fetch();
     }

@@ -62,8 +62,8 @@ class OrderHistoryRepositoryTest {
                 .count(22)
                 .build());
 
-        Order order1 = Order.createOrder(user, product, 2, delivery);
-        Order order2 = Order.createOrder(user, product, 3, delivery);
+        Order order1 = Order.createOrder(user.getId(), product, 2, delivery);
+        Order order2 = Order.createOrder(user.getId(), product, 3, delivery);
         orderRepository.save(order1);
         orderRepository.save(order2);
 
