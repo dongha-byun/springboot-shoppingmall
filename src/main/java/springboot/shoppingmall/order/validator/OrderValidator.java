@@ -12,7 +12,7 @@ public class OrderValidator {
 
     public void validateOrderIsEnd(Long orderId) {
         Order order = orderFinder.findOrderById(orderId);
-        if(!order.isEnd()) {
+        if(!order.isDeliveryEnd()) {
             throw new IllegalArgumentException("배송 완료된 주문이 아닙니다.");
         }
     }

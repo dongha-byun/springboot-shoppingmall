@@ -10,10 +10,10 @@ public enum OrderStatus {
     CANCEL("주문 취소"),
     OUTING("상품 출고"),
     DELIVERY("배송중"),
-    END("배송완료"),
-    RETURN_REQ("환불 요청"),
-    RETURN_END("환불 완료"),
-    EXCHANGE_REQ("교환 요청"),
+    DELIVERY_END("배송완료"),
+    REFUND("환불 요청"),
+    REFUND_END("환불 완료"),
+    EXCHANGE("교환 요청"),
     CHECKING("상품 검수중"),
     FINISH("구매 확정");
 

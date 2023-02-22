@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderReturnRequest {
-    private String returnReason;
+public class OrderRefundRequest {
+    private String refundReason;
 }

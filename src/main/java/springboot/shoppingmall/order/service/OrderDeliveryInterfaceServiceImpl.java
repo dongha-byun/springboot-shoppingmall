@@ -14,10 +14,8 @@ import springboot.shoppingmall.user.domain.Delivery;
 public class OrderDeliveryInterfaceServiceImpl implements OrderDeliveryInterfaceService{
 
     private final WebClient webClient;
-
-    @Autowired
     public OrderDeliveryInterfaceServiceImpl() {
-        this.webClient = WebClient.create("http://localhost:10000");
+        this.webClient = WebClient.create("http://localhost:10010");
     }
 
     @Override

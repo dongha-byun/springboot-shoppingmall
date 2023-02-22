@@ -101,7 +101,7 @@ class OrderServiceTest {
         Order outingOrder = 특정_주문상태_데이터_생성(OrderStatus.OUTING);
         Order cancelOrder = 특정_주문상태_데이터_생성(OrderStatus.CANCEL);
         Order checkingOrder = 특정_주문상태_데이터_생성(OrderStatus.CHECKING);
-        Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.END);
+        Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.DELIVERY_END);
         Order exchangeReqOrder = 특정_주문상태_데이터_생성(OrderStatus.EXCHANGE);
         Order finishOrder = 특정_주문상태_데이터_생성(OrderStatus.FINISH);
         Order returnEndOrder = 특정_주문상태_데이터_생성(OrderStatus.REFUND_END);
@@ -140,7 +140,7 @@ class OrderServiceTest {
         Order outingOrder = 특정_주문상태_데이터_생성(OrderStatus.OUTING);
         Order cancelOrder = 특정_주문상태_데이터_생성(OrderStatus.CANCEL);
         Order checkingOrder = 특정_주문상태_데이터_생성(OrderStatus.CHECKING);
-        Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.END);
+        Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.DELIVERY_END);
         Order exchangeReqOrder = 특정_주문상태_데이터_생성(OrderStatus.EXCHANGE);
         Order finishOrder = 특정_주문상태_데이터_생성(OrderStatus.FINISH);
         Order returnEndOrder = 특정_주문상태_데이터_생성(OrderStatus.REFUND_END);
@@ -179,7 +179,7 @@ class OrderServiceTest {
         Order readyOrder = 특정_주문상태_데이터_생성(OrderStatus.READY);
         Order cancelOrder = 특정_주문상태_데이터_생성(OrderStatus.CANCEL);
         Order checkingOrder = 특정_주문상태_데이터_생성(OrderStatus.CHECKING);
-        Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.END);
+        Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.DELIVERY_END);
         Order exchangeReqOrder = 특정_주문상태_데이터_생성(OrderStatus.EXCHANGE);
         Order finishOrder = 특정_주문상태_데이터_생성(OrderStatus.FINISH);
         Order returnEndOrder = 특정_주문상태_데이터_생성(OrderStatus.REFUND_END);
@@ -211,7 +211,7 @@ class OrderServiceTest {
     @DisplayName("배송된 주문을 구매확정 처리 한다.")
     void finishOrderTest() {
         // given
-        Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.END);
+        Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.DELIVERY_END);
 
         // when
         orderService.changeOrderStatus(endOrder.getId(), OrderStatus.FINISH.name());
@@ -225,7 +225,7 @@ class OrderServiceTest {
     @DisplayName("배송된 주문을 환불요청 한다.")
     void requestReturnOrderTest() {
         // given
-        Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.END);
+        Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.DELIVERY_END);
         String refundReason = "환불 요청 합니다.";
 
         // when
@@ -241,7 +241,7 @@ class OrderServiceTest {
     @DisplayName("배송된 주문을 교환요청 한다.")
     void requestExchangeOrderTest() {
         // given
-        Order order = 특정_주문상태_데이터_생성(OrderStatus.END);
+        Order order = 특정_주문상태_데이터_생성(OrderStatus.DELIVERY_END);
         String exchangeReason = "교환 요청 합니다.";
 
         // when

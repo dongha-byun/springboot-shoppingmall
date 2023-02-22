@@ -107,15 +107,15 @@ public class Order extends BaseEntity {
         this.orderStatus = OrderStatus.DELIVERY;
     }
 
-    public void end() {
+    public void deliveryEnd() {
         if(this.orderStatus != OrderStatus.DELIVERY) {
             throw new IllegalArgumentException("배송 준비중인 주문만 배송완료 처리가 가능합니다.");
         }
-        this.orderStatus = OrderStatus.END;
+        this.orderStatus = OrderStatus.DELIVERY_END;
     }
 
     public void finish() {
-        if(this.orderStatus != OrderStatus.END) {
+        if(this.orderStatus != OrderStatus.DELIVERY_END) {
             throw new IllegalArgumentException("배송이 완료된 주문만 구매확정 처리가 가능합니다.");
         }
         this.orderStatus = OrderStatus.FINISH;
@@ -126,7 +126,7 @@ public class Order extends BaseEntity {
             throw new IllegalArgumentException("환불 사유는 필수입니다.");
         }
 
-        if(this.orderStatus != OrderStatus.END) {
+        if(this.orderStatus != OrderStatus.DELIVERY_END) {
             throw new IllegalArgumentException("배송이 완료된 주문만 환불 신청이 가능합니다.");
         }
 
@@ -139,7 +139,7 @@ public class Order extends BaseEntity {
             throw new IllegalArgumentException("교환 사유는 필수입니다.");
         }
 
-        if(this.orderStatus != OrderStatus.END) {
+        if(this.orderStatus != OrderStatus.DELIVERY_END) {
             throw new IllegalArgumentException("배송이 완료된 주문만 교환 신청이 가능합니다.");
         }
         this.orderStatus = OrderStatus.EXCHANGE;
@@ -156,8 +156,8 @@ public class Order extends BaseEntity {
         if(OrderStatus.DELIVERY == orderStatus){
             delivery();
         }
-        if(OrderStatus.END == orderStatus){
-            end();
+        if(OrderStatus.DELIVERY_END == orderStatus){
+            deliveryEnd();
         }
         if(OrderStatus.FINISH == orderStatus){
             finish();
@@ -175,8 +175,8 @@ public class Order extends BaseEntity {
         this.invoiceNumber = invoiceNumber;
     }
 
-    public boolean isEnd() {
-        return OrderStatus.END == this.orderStatus;
+    public boolean isDeliveryEnd() {
+        return OrderStatus.DELIVERY_END == this.orderStatus;
     }
 
     public void refundEnd() {

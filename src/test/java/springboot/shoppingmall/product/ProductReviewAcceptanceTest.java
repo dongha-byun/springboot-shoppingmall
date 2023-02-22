@@ -57,9 +57,9 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         User user = userRepository.findById(인수테스터1.getId()).orElseThrow();
         Delivery delivery = deliveryRepository.findById(배송지.getId()).orElseThrow();
 
-        Order order = orderRepository.save(new Order(user, product, 2, delivery, OrderStatus.END));
-        Order order2 = orderRepository.save(new Order(user, product2, 2, delivery, OrderStatus.END));
-        Order deliveryOrder = orderRepository.save(new Order(user, product, 2, delivery, OrderStatus.DELIVERY));
+        Order order = orderRepository.save(new Order(user.getId(), product, 2, delivery, OrderStatus.DELIVERY_END));
+        Order order2 = orderRepository.save(new Order(user.getId(), product2, 2, delivery, OrderStatus.DELIVERY_END));
+        Order deliveryOrder = orderRepository.save(new Order(user.getId(), product, 2, delivery, OrderStatus.DELIVERY));
         배송완료_주문 = OrderResponse.of(order);
         배송완료_주문2 = OrderResponse.of(order2);
 

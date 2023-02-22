@@ -44,7 +44,7 @@ public class OrderService {
     @Transactional
     public OrderResponse changeStatusEnd(String invoiceNumber) {
         Order order = orderFinder.findOrderByInvoiceNumber(invoiceNumber);
-        return changeOrderStatus(order.getId(), OrderStatus.END.name());
+        return changeOrderStatus(order.getId(), OrderStatus.DELIVERY_END.name());
     }
 
     @Transactional
