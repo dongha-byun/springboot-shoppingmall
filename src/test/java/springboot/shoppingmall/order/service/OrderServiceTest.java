@@ -88,7 +88,7 @@ class OrderServiceTest {
         OrderResponse orderResponse = orderService.createOrder(user.getId(), orderRequest);
 
         // when
-        OrderResponse cancelOrder = orderService.changeOrderStatus(orderResponse.getId(), OrderStatus.CANCEL.name());
+        OrderResponse cancelOrder = orderService.cancel(orderResponse.getId());
 
         // then
         assertThat(cancelOrder.getOrderStatusName()).isEqualTo(OrderStatus.CANCEL.getStatusName());
@@ -127,7 +127,7 @@ class OrderServiceTest {
         Order order = 특정_주문상태_데이터_생성(OrderStatus.READY);
 
         // when
-        OrderResponse orderResponse = orderService.changeOrderStatus(order.getId(), OrderStatus.OUTING.name());
+        OrderResponse orderResponse = orderService.outing(order.getId());
 
         // then
         assertThat(orderResponse.getOrderStatusName()).isEqualTo(OrderStatus.OUTING.getStatusName());
@@ -159,45 +159,6 @@ class OrderServiceTest {
         );
     }
 
-    @Test
-    @DisplayName("배송중 상태 변경 테스트")
-    void deliveryTest(){
-        // given
-        Order order = 특정_주문상태_데이터_생성(OrderStatus.OUTING);
-
-        // when
-        OrderResponse orderResponse = orderService.changeOrderStatus(order.getId(), OrderStatus.DELIVERY.name());
-
-        // then
-        assertThat(orderResponse.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY.getStatusName());
-    }
-
-    @Test
-    @DisplayName("배송중 상태 변경 테스트 - 출고중 상태인 주문만 배송 중으로 변경 가능하다.")
-    void deliveryExceptionTest(){
-        // given
-        Order readyOrder = 특정_주문상태_데이터_생성(OrderStatus.READY);
-        Order cancelOrder = 특정_주문상태_데이터_생성(OrderStatus.CANCEL);
-        Order checkingOrder = 특정_주문상태_데이터_생성(OrderStatus.CHECKING);
-        Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.DELIVERY_END);
-        Order exchangeReqOrder = 특정_주문상태_데이터_생성(OrderStatus.EXCHANGE);
-        Order finishOrder = 특정_주문상태_데이터_생성(OrderStatus.FINISH);
-        Order returnEndOrder = 특정_주문상태_데이터_생성(OrderStatus.REFUND_END);
-        Order returnReqOrder = 특정_주문상태_데이터_생성(OrderStatus.REFUND);
-
-        // when & then
-        assertAll(
-                () -> 주문_상태_변경_실패_검증(readyOrder, OrderStatus.DELIVERY),
-                () -> 주문_상태_변경_실패_검증(cancelOrder, OrderStatus.DELIVERY),
-                () -> 주문_상태_변경_실패_검증(checkingOrder, OrderStatus.DELIVERY),
-                () -> 주문_상태_변경_실패_검증(endOrder, OrderStatus.DELIVERY),
-                () -> 주문_상태_변경_실패_검증(exchangeReqOrder, OrderStatus.DELIVERY),
-                () -> 주문_상태_변경_실패_검증(finishOrder, OrderStatus.DELIVERY),
-                () -> 주문_상태_변경_실패_검증(returnEndOrder, OrderStatus.DELIVERY),
-                () -> 주문_상태_변경_실패_검증(returnReqOrder, OrderStatus.DELIVERY)
-        );
-    }
-
     private ThrowableAssertAlternative<IllegalArgumentException> 주문_상태_변경_실패_검증(Order order, OrderStatus status) {
         return assertThatIllegalArgumentException().isThrownBy(
                 () -> orderService.changeOrderStatus(order.getId(), status.name()));
@@ -214,7 +175,7 @@ class OrderServiceTest {
         Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.DELIVERY_END);
 
         // when
-        orderService.changeOrderStatus(endOrder.getId(), OrderStatus.FINISH.name());
+        orderService.finish(endOrder.getId());
 
         // then
         assertThat(endOrder.getOrderStatus()).isEqualTo(OrderStatus.FINISH);

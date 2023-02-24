@@ -40,13 +40,6 @@ public class OrderService {
         return OrderResponse.of(newOrder);
     }
 
-    // 배송완료 처리 - 택배사에서 호출하는 로직
-    @Transactional
-    public OrderResponse changeStatusEnd(String invoiceNumber) {
-        Order order = orderFinder.findOrderByInvoiceNumber(invoiceNumber);
-        return changeOrderStatus(order.getId(), OrderStatus.DELIVERY_END.name());
-    }
-
     @Transactional
     public OrderResponse changeOrderStatus(Long orderId, String changeStatus){
         Order order = orderFinder.findOrderById(orderId);
