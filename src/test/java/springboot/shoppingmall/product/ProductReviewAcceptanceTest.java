@@ -111,6 +111,24 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
     }
 
     /**
+     *  given: 사용자가 로그인 되어있음
+     *  And: 배송이 완료된 주문이 있음
+     *  when: 리뷰 내용을 적지 않고 리뷰 등록을 시도하면
+     *  then: 리뷰 등록에 실패한다.
+     */
+    @Test
+    @DisplayName("리뷰 내용 없이 리뷰를 작성할 수 없다.")
+    void create_review_test_fail_by_no_content() {
+        // given - before each
+
+        // when
+        ExtractableResponse<Response> 리뷰_작성_요청_결과 = 리뷰_작성_요청(배송완료_주문, 상품, 로그인정보, "", 4);
+
+        // then
+        assertThat(리뷰_작성_요청_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
      *  given: 이미 등록된 리뷰가 있음
      *  when: 리뷰를 등록을 요청하면
      *  then: 이미 작성된 리뷰가 있어서 리뷰가 등록되지 않는다.
@@ -158,7 +176,7 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
     /**
      * given: 작성한 리뷰가 있음
      * when: 리뷰 삭제를 시도하면
-     * then:
+     * then: 리뷰가 삭제된다.
      */
     @Test
     @DisplayName("내가 작성한 리뷰 삭제")
