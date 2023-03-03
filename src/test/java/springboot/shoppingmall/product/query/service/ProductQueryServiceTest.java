@@ -41,10 +41,20 @@ class ProductQueryServiceTest {
 
         // "면바지", "청바지", "반바지", "조거팬츠"
         LocalDateTime now = LocalDateTime.now();
-        productRepository.save(new Product("청바지", 12000, 10, 2.0, 5, now.plusDays(5), category, subCategory));
-        productRepository.save(new Product("면바지", 17900, 10, 1.7, 2, now.plusDays(7), category, subCategory));
         productRepository.save(new Product("조거팬츠", 23100, 10, 2.7, 7, now, category, subCategory));
-        productRepository.save(new Product("반바지", 6900, 10, 3.7, 4, now.plusDays(2), category, subCategory));
+        productRepository.save(new Product("반바지", 6900, 10, 3.7, 4, now.plusDays(1), category, subCategory));
+        productRepository.save(new Product("반바지 2", 6900, 10, 3.7, 4, now.plusDays(2), category, subCategory));
+        productRepository.save(new Product("반바지 3", 6900, 10, 3.7, 4, now.plusDays(3), category, subCategory));
+        productRepository.save(new Product("반바지 4", 6900, 10, 3.7, 4, now.plusDays(4), category, subCategory));
+        productRepository.save(new Product("반바지 5", 6900, 10, 3.7, 4, now.plusDays(5), category, subCategory));
+        productRepository.save(new Product("반바지 6", 6900, 10, 3.7, 4, now.plusDays(6), category, subCategory));
+        productRepository.save(new Product("반바지 7", 6900, 10, 3.7, 4, now.plusDays(7), category, subCategory));
+        productRepository.save(new Product("반바지 8", 6900, 10, 3.7, 4, now.plusDays(8), category, subCategory));
+        productRepository.save(new Product("청바지", 12000, 10, 2.0, 5, now.plusDays(9), category, subCategory));
+        productRepository.save(new Product("면바지", 17900, 10, 1.7, 2, now.plusDays(10), category, subCategory));
+        productRepository.save(new Product("면바지 2", 17900, 10, 1.7, 2, now.plusDays(11), category, subCategory));
+        productRepository.save(new Product("면바지 3", 17900, 10, 1.7, 2, now.plusDays(12), category, subCategory));
+        productRepository.save(new Product("면바지 4", 17900, 10, 1.7, 2, now.plusDays(13), category, subCategory));
     }
 
     @Test
@@ -57,12 +67,14 @@ class ProductQueryServiceTest {
                 category.getId(), subCategory.getId(), SCORE);
 
         // then
-        assertThat(scoreOrderProducts).hasSize(4);
+        assertThat(scoreOrderProducts).hasSize(14);
 
         List<String> names = scoreOrderProducts.stream()
                 .map(ProductQueryResponse::getName).collect(Collectors.toList());
         assertThat(names).containsExactly(
-                "반바지", "조거팬츠", "청바지", "면바지"
+                "반바지","반바지 2","반바지 3","반바지 4","반바지 5","반바지 6","반바지 7","반바지 8",
+                "조거팬츠", "청바지",
+                "면바지", "면바지 2","면바지 3","면바지 4"
         );
     }
 
@@ -76,12 +88,15 @@ class ProductQueryServiceTest {
                 subCategory.getId(), RECENT);
 
         // then
-        assertThat(recentOrderProducts).hasSize(4);
+        assertThat(recentOrderProducts).hasSize(14);
 
         List<String> names = recentOrderProducts.stream()
                 .map(ProductQueryResponse::getName).collect(Collectors.toList());
         assertThat(names).containsExactly(
-                "면바지", "청바지", "반바지", "조거팬츠"
+                "면바지 4", "면바지 3","면바지 2","면바지",
+                "청바지",
+                "반바지 8","반바지 7","반바지 6","반바지 5","반바지 4","반바지 3","반바지 2","반바지",
+                "조거팬츠"
         );
     }
 
@@ -95,12 +110,15 @@ class ProductQueryServiceTest {
                 subCategory.getId(), PRICE);
 
         // then
-        assertThat(priceOrderProducts).hasSize(4);
+        assertThat(priceOrderProducts).hasSize(14);
 
         List<String> names = priceOrderProducts.stream()
                 .map(ProductQueryResponse::getName).collect(Collectors.toList());
         assertThat(names).containsExactly(
-                "반바지", "청바지", "면바지", "조거팬츠"
+                "반바지","반바지 2","반바지 3","반바지 4","반바지 5","반바지 6","반바지 7","반바지 8",
+                "청바지",
+                "면바지", "면바지 2","면바지 3","면바지 4",
+                "조거팬츠"
         );
     }
 
@@ -114,12 +132,15 @@ class ProductQueryServiceTest {
                 subCategory.getId(), SELL);
 
         // then
-        assertThat(salesOrderProducts).hasSize(4);
+        assertThat(salesOrderProducts).hasSize(14);
 
         List<String> names = salesOrderProducts.stream()
                 .map(ProductQueryResponse::getName).collect(Collectors.toList());
+        assertThat(names).hasSize(14);
         assertThat(names).containsExactly(
-                "조거팬츠","청바지","반바지","면바지"
+                "조거팬츠","청바지",
+                "반바지","반바지 2","반바지 3","반바지 4","반바지 5","반바지 6","반바지 7","반바지 8",
+                "면바지","면바지 2","면바지 3","면바지 4"
         );
     }
 
@@ -137,6 +158,26 @@ class ProductQueryServiceTest {
                 .collect(Collectors.toList());
         assertThat(names).contains(
                 "청바지","반바지","면바지"
+        );
+    }
+
+    @Test
+    @DisplayName("상품 페이징 테스트 - limit 10 offset 10")
+    void paging_test() {
+        // given
+
+        // when
+        // 10번째 부터 10개 조회 -> 11 ~ 14 번째 상품 조회
+        List<ProductQueryResponse> products = productQueryService.findProductByOrder(category.getId(),
+                subCategory.getId(), RECENT,  10, 10);
+
+        // then
+        assertThat(products).hasSize(4);
+        List<String> names = products.stream()
+                .map(ProductQueryResponse::getName)
+                .collect(Collectors.toList());
+        assertThat(names).containsExactly(
+                "반바지 3", "반바지 2", "반바지", "조거팬츠"
         );
     }
 }

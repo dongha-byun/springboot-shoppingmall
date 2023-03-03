@@ -28,6 +28,15 @@ public class ProductQueryService {
                 .collect(Collectors.toList());
     }
 
+    public List<ProductQueryResponse> findProductByOrder(Long categoryId, Long subCategoryId, ProductQueryOrderType orderType,
+                                                         int limit, int offset) {
+        Category category = getCategory(categoryId);
+        Category subCategory = getCategory(subCategoryId);
+        return productQueryRepository.queryProducts(category, subCategory, orderType, limit, offset).stream()
+                .map(ProductQueryResponse::of)
+                .collect(Collectors.toList());
+    }
+
     public List<ProductQueryResponse> searchProducts(Long categoryId, Long subCategoryId, String searchKeyword) {
         Category category = getCategory(categoryId);
         Category subCategory = getCategory(subCategoryId);

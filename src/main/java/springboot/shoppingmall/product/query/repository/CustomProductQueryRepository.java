@@ -9,4 +9,6 @@ public interface CustomProductQueryRepository {
     List<Product> queryProducts(Category category, Category subCategory, ProductQueryOrderType orderType);
 
     List<Product> searchProducts(Category category, Category subCategory, String searchKeyword);
+
+    List<Product> queryProducts(Category category, Category subCategory, ProductQueryOrderType recent, int limit, int offset);
 }
