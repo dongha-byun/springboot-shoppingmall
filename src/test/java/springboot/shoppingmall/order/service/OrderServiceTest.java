@@ -179,6 +179,7 @@ class OrderServiceTest {
 
         // then
         assertThat(endOrder.getOrderStatus()).isEqualTo(OrderStatus.FINISH);
+        assertThat(endOrder.getProduct().getSalesVolume()).isEqualTo(1);
 
     }
 

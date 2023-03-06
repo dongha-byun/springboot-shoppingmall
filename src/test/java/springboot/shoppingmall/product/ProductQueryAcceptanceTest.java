@@ -80,6 +80,32 @@ public class ProductQueryAcceptanceTest extends AcceptanceTest {
         assertThat(높은_평점순_목록_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    /**
+     * Feature: 상품목록 정렬 테스트
+     *  Background:
+     *      given: 하나의 카테고리에 여러 개의 등록된 상품들이 있음
+     *  Scenario: 상품 목록 정렬
+     *      when: "낮은 가격 순" 으로 목록을 조회하면
+     *      then: 상품 가격이 낮은 상품 먼저 조회된다.
+     */
+    @Test
+    @DisplayName("상품 정렬 테스트 - 낮은 가격 순")
+    void sort_products_by_price() {
+        // given
+        상품_등록_요청("육류1", 13000, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류2", 15000, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류3", 19000, 20, 식품.getId(), 육류.getId());
+
+        // when
+        ExtractableResponse<Response> 낮은_가격순_목록_조회_결과 = 상품_목록_조회_요청(식품, 육류, ProductQueryOrderType.PRICE);
+
+        // then
+        assertThat(낮은_가격순_목록_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(낮은_가격순_목록_조회_결과.jsonPath().getList("data.name")).containsExactly(
+                "육류1", "육류2", "육류3"
+        );
+    }
+
     private ExtractableResponse<Response> 상품_목록_조회_요청(CategoryResponse category, CategoryResponse subCategory, ProductQueryOrderType sortType) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

@@ -82,6 +82,10 @@ public class OrderService {
         Order order = orderFinder.findOrderById(orderId);
         order.finish();
 
+        // 구매확정 시, 상품 판매 수량이 증가한다.
+        Product product = order.getProduct();
+        product.increaseSalesVolume();
+
         return OrderResponse.of(order);
     }
 

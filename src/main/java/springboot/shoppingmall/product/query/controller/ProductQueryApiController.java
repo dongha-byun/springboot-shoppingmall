@@ -24,7 +24,7 @@ public class ProductQueryApiController {
     @GetMapping("/products")
     public ResponseEntity<PagingDataResponse<List<ProductQueryResponse>>> queryProductsBySort(@RequestParam("categoryId") Long categoryId,
                                                                                              @RequestParam("subCategoryId") Long subCategoryId,
-                                                                                             @RequestParam("orderType") String orderType){
+                                                                                             @RequestParam(name = "orderType", defaultValue = "RECENT") String orderType){
         log.info("categoryId={}, subCategoryId={}, orderType={}", categoryId, subCategoryId, orderType);
         List<ProductQueryResponse> products = productQueryService.findProductByOrder(categoryId,
                 subCategoryId, ProductQueryOrderType.valueOf(orderType));
