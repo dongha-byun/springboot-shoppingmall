@@ -16,9 +16,7 @@ import springboot.shoppingmall.user.dto.FindPwRequest;
 import springboot.shoppingmall.user.dto.FindPwResponse;
 import springboot.shoppingmall.user.dto.SignUpRequest;
 import springboot.shoppingmall.user.dto.UserEditRequest;
-import springboot.shoppingmall.user.dto.UserRequest;
 import springboot.shoppingmall.user.dto.UserResponse;
-import springboot.shoppingmall.user.service.UserService;
 
 @Transactional
 @SpringBootTest
@@ -34,7 +32,7 @@ class UserServiceTest {
     @DisplayName("회원가입 성공")
     void signUpTest(){
         // given
-        SignUpRequest signUpRequest = new SignUpRequest("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
+        SignUpRequest signUpRequest = new SignUpRequest("변동하", "test_dong_ha", "dongha1!", "dongha1!", "010-1234-1234");
 
         // when
         UserResponse userResponse = userService.signUp(signUpRequest);
@@ -42,7 +40,7 @@ class UserServiceTest {
         // then
         assertAll(
                 () -> assertThat(userResponse.getName()).isEqualTo("변동하"),
-                () -> assertThat(userResponse.getLoginId()).isEqualTo("dongha"),
+                () -> assertThat(userResponse.getLoginId()).isEqualTo("test_dong_ha"),
                 () -> assertThat(userResponse.getTelNo()).isEqualTo("010-1234-1234")
         );
     }
@@ -51,28 +49,28 @@ class UserServiceTest {
     @DisplayName("아이디 조회 성공")
     void findId(){
         // given
-        SignUpRequest signUpRequest = new SignUpRequest("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
+        SignUpRequest signUpRequest = new SignUpRequest("변동하", "test_dong_ha", "dongha1!", "dongha1!", "010-1234-1234");
         userService.signUp(signUpRequest);
 
         // when
-        FindIdResponse response = userService.findId(new FindIdRequest("변동하", "010-1234-1234"));
+        FindIdResponse response = userService.findId("변동하", "010-1234-1234");
 
         // then
-        assertThat(response.getLoginId()).isEqualTo("dongha");
+        assertThat(response.getLoginId()).isEqualTo("te**********");
     }
 
     @Test
     @DisplayName("비밀번호 조회 성공")
     void findPw(){
         // given
-        SignUpRequest signUpRequest = new SignUpRequest("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
+        SignUpRequest signUpRequest = new SignUpRequest("변동하", "test_dong_ha", "dongha1!", "dongha1!", "010-1234-1234");
         userService.signUp(signUpRequest);
 
         // when
         FindPwResponse response = userService.findPw(new FindPwRequest("변동하", "010-1234-1234", "dongha"));
 
         // then
-        assertThat(response.getLoginId()).isEqualTo("dongha");
+        assertThat(response.getLoginId()).isEqualTo("test_dong_ha");
     }
 
     @Test

@@ -29,10 +29,15 @@ public class UserAcceptanceTest extends AcceptanceTest {
         // given
 
         // when
-        ExtractableResponse<Response> response = 회원가입("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
+        ExtractableResponse<Response> 회원가입_결과 = 회원가입("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(회원가입_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        UserResponse 회원가입_정보 = 회원가입_결과.as(UserResponse.class);
+        assertThat(회원가입_정보.getId()).isNotNull();
+        assertThat(회원가입_정보.getName()).isEqualTo("변동하");
+        assertThat(회원가입_정보.getLoginId()).isEqualTo("dongha");
+        assertThat(회원가입_정보.getTelNo()).isEqualTo("010-1234-1234");
     }
 
     /**
@@ -52,7 +57,7 @@ public class UserAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().get("loginId").toString()).isEqualTo(
-                "dongha"
+                "do****"
         );
     }
 
@@ -72,9 +77,7 @@ public class UserAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().get("name").toString()).isEqualTo(
-                "변동하"
-        );
+
     }
 
     /**

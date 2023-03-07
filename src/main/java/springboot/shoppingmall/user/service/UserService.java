@@ -13,9 +13,9 @@ import springboot.shoppingmall.user.dto.FindPwRequest;
 import springboot.shoppingmall.user.dto.FindPwResponse;
 import springboot.shoppingmall.user.dto.SignUpRequest;
 import springboot.shoppingmall.user.dto.UserEditRequest;
-import springboot.shoppingmall.user.dto.UserRequest;
 import springboot.shoppingmall.user.dto.UserResponse;
 import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.utils.MaskingUtil;
 
 @Transactional(readOnly = true)
 @Service
@@ -34,9 +34,11 @@ public class UserService {
         User user = userFinder.findUserById(id);
         return UserResponse.of(user);
     }
-    public FindIdResponse findId(FindIdRequest findIdRequest) {
-        User user = userRepository.findLoginIdByNameAndTelNo(findIdRequest);
-        return FindIdResponse.of(user);
+    public FindIdResponse findId(String name, String telNo) {
+        User user = userRepository.findLoginIdByNameAndTelNo(name, telNo);
+        String maskingLoginId = MaskingUtil.maskingLoginId(user.getLoginId());
+
+        return new FindIdResponse(maskingLoginId);
     }
     public FindPwResponse findPw(FindPwRequest findPwRequest) {
         User user = userRepository.findUserByNameAndTelNoAndLoginId(findPwRequest);

@@ -11,13 +11,13 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
     private final EntityManager em;
 
     @Override
-    public User findLoginIdByNameAndTelNo(FindIdRequest findIdRequest) {
+    public User findLoginIdByNameAndTelNo(String name, String telNo) {
         return em.createQuery("select u from User u "
                 + "where 1=1 "
                 + "and u.userName = :userName "
                 + "and u.telNo = :telNo", User.class)
-                .setParameter("userName", findIdRequest.getName())
-                .setParameter("telNo", findIdRequest.getTelNo())
+                .setParameter("userName", name)
+                .setParameter("telNo", telNo)
                 .getSingleResult();
     }
 
