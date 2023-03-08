@@ -40,8 +40,8 @@ public class UserService {
 
         return new FindIdResponse(maskingLoginId);
     }
-    public FindPwResponse findPw(FindPwRequest findPwRequest) {
-        User user = userRepository.findUserByNameAndTelNoAndLoginId(findPwRequest);
+    public FindPwResponse findPw(String name, String telNo, String loginId) {
+        User user = userRepository.findUserByNameAndTelNoAndLoginId(name, telNo, loginId);
         return FindPwResponse.of(user);
     }
 

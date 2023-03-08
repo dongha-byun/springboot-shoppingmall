@@ -67,7 +67,7 @@ class UserServiceTest {
         userService.signUp(signUpRequest);
 
         // when
-        FindPwResponse response = userService.findPw(new FindPwRequest("변동하", "010-1234-1234", "dongha"));
+        FindPwResponse response = userService.findPw("변동하", "010-1234-1234", "test_dong_ha");
 
         // then
         assertThat(response.getLoginId()).isEqualTo("test_dong_ha");

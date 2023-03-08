@@ -22,15 +22,15 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
     }
 
     @Override
-    public User findUserByNameAndTelNoAndLoginId(FindPwRequest findPwRequest) {
+    public User findUserByNameAndTelNoAndLoginId(String name, String telNo, String loginId) {
         return em.createQuery("select u from User u "
                         + "where 1=1 "
                         + "and u.userName = :userName "
                         + "and u.loginId = :loginId "
                         + "and u.telNo = :telNo", User.class)
-                .setParameter("userName", findPwRequest.getName())
-                .setParameter("telNo", findPwRequest.getTelNo())
-                .setParameter("loginId", findPwRequest.getLoginId())
+                .setParameter("userName", name)
+                .setParameter("telNo", telNo)
+                .setParameter("loginId", loginId)
                 .getSingleResult();
     }
 }

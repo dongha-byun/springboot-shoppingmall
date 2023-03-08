@@ -5,5 +5,5 @@ import springboot.shoppingmall.user.dto.FindPwRequest;
 
 public interface CustomUserRepository {
     User findLoginIdByNameAndTelNo(String name, String telNo);
-    User findUserByNameAndTelNoAndLoginId(FindPwRequest findPwRequest);
+    User findUserByNameAndTelNoAndLoginId(String name, String telNo, String loginId);
 }

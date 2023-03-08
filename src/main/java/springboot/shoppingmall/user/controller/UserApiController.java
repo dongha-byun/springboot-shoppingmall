@@ -36,14 +36,15 @@ public class UserApiController {
 
     @GetMapping("/find-id")
     public ResponseEntity<FindIdResponse> findId(@RequestBody FindIdRequest findIdRequest){
-        FindIdResponse response = userService.findId(findIdRequest);
+        FindIdResponse response = userService.findId(findIdRequest.getName(), findIdRequest.getTelNo());
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/find-pw")
     public ResponseEntity<FindPwResponse> findPw(@RequestBody FindPwRequest findPwRequest){
-        FindPwResponse response = userService.findPw(findPwRequest);
+        FindPwResponse response = userService.findPw(findPwRequest.getName(), findPwRequest.getTelNo(),
+                findPwRequest.getLoginId());
         return ResponseEntity.ok(response);
     }
 
