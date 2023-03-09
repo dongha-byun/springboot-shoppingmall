@@ -152,4 +152,39 @@ class ProductReviewServiceTest {
                 review1.getContent(), review2.getContent()
         );
     }
+
+    @Test
+    @DisplayName("리뷰 등록 시, 상품의 평점도 갱신된다.")
+    void refresh_product_score_test() {
+
+        // 상품 리뷰가 등록되면
+        // 상품 평점이 갱신된다.
+
+        // given
+        User user1 = userRepository.save(new User("사용자1", "user1", "user1!", "010-1111-3333"));
+        User user2 = userRepository.save(new User("사용자2", "user2", "user2!", "010-2222-3333"));
+        User user3 = userRepository.save(new User("사용자3", "user3", "user3!", "010-3333-3333"));
+        User user4 = userRepository.save(new User("사용자4", "user4", "user4!", "010-4444-3333"));
+        User user5 = userRepository.save(new User("사용자5", "user5", "user5!", "010-5555-3333"));
+
+        Category category = categoryRepository.save(new Category("상위 카테고리"));
+        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
+        Product product = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
+
+        // when & then
+        service.createProductReview(user1.getId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 1", 5));
+        assertThat(product.getScore()).isEqualTo(5.0);
+
+        service.createProductReview(user2.getId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 2", 4));
+        assertThat(product.getScore()).isEqualTo(4.5);
+
+        service.createProductReview(user3.getId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 3", 2));
+        assertThat(product.getScore()).isEqualTo(3.7);
+
+        service.createProductReview(user4.getId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 4", 2));
+        assertThat(product.getScore()).isEqualTo(3.3);
+
+        service.createProductReview(user5.getId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 5", 4));
+        assertThat(product.getScore()).isEqualTo(3.4);
+    }
 }

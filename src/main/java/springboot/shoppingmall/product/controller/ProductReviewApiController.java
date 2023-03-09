@@ -20,6 +20,7 @@ import springboot.shoppingmall.order.validator.OrderValidator;
 import springboot.shoppingmall.product.dto.ProductReviewRequest;
 import springboot.shoppingmall.product.dto.ProductReviewResponse;
 import springboot.shoppingmall.product.dto.ProductUserReviewResponse;
+import springboot.shoppingmall.product.exception.ContentNotBlankException;
 import springboot.shoppingmall.product.service.ProductReviewService;
 
 @RequiredArgsConstructor
@@ -29,6 +30,10 @@ public class ProductReviewApiController {
     private final ProductReviewService productReviewService;
     private final OrderValidator orderValidator;
 
+    @ExceptionHandler(ContentNotBlankException.class)
+    public ResponseEntity<ProductUserReviewResponse> handleNotBlankException(ContentNotBlankException exception) {
+        return ResponseEntity.badRequest().build();
+    }
 
     @PostMapping("/orders/{orderId}/products/{productId}/reviews")
     public ResponseEntity<ProductUserReviewResponse> createReview(@AuthenticationStrategy AuthorizedUser user,
@@ -38,11 +43,12 @@ public class ProductReviewApiController {
                                                                   BindingResult bindingResult) {
 
         if(bindingResult.hasErrors()){
-            return ResponseEntity.badRequest().build();
+            throw new ContentNotBlankException();
         }
 
         // 여기서 주문이 완료 됐다는 걸 검증하는게 나을까?
         // 트랜잭션이 발생하는 건 아니니까 크게 상관 없을거 같은데...
+        // 컨트롤러에선 파라미터에 대한 검증만 하고 서비스에서 논리적 검증 정도는 처리할 수 있게 하자!
         orderValidator.validateOrderIsEnd(orderId);
 
         ProductUserReviewResponse reviewResponse = productReviewService.createProductReview(user.getId(), productId, reviewRequest);

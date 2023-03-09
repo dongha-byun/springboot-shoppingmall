@@ -25,8 +25,8 @@ class ProductReviewTest {
         ProductReview review2 = productReview2.byProduct(product);
 
         // then
-        assertThat(product.getReviews()).hasSize(2);
-        assertThat(product.getReviews()).containsExactly(
+        assertThat(product.getReviews().getCount()).isEqualTo(2);
+        assertThat(product.getReviews().getReviews()).containsExactly(
                 review1, review2
         );
     }
@@ -46,8 +46,8 @@ class ProductReviewTest {
         product.removeReview(review1);
 
         // then
-        assertThat(product.getReviews()).hasSize(1);
-        assertThat(product.getReviews()).containsExactly(
+        assertThat(product.getReviews().getCount()).isEqualTo(1);
+        assertThat(product.getReviews().getReviews()).containsExactly(
                 review2
         );
     }
@@ -63,7 +63,7 @@ class ProductReviewTest {
         ProductReview productReview2 = new ProductReview("리뷰 2 입니다.", 5, product, user2.getId());
 
         // when
-        List<ProductReview> reviews = product.getReviews();
+        List<ProductReview> reviews = product.getReviews().getReviews();
 
         // then
         assertThat(reviews).hasSize(2);

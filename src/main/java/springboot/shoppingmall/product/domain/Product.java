@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -53,8 +54,8 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "sub_category_id")
     private Category subCategory;
 
-    @OneToMany(mappedBy = "product")
-    private final List<ProductReview> reviews = new ArrayList<>();
+    @Embedded
+    private final ProductReviews reviews = new ProductReviews();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<ProductQna> qna = new ArrayList<>();
@@ -102,10 +103,14 @@ public class Product extends BaseEntity {
     }
 
     public void addReview(ProductReview productReview) {
-        this.reviews.add(productReview);
+        this.reviews.addReview(productReview);
     }
 
     public void removeReview(ProductReview productReview) {
-        this.reviews.remove(productReview);
+        this.reviews.removeReview(productReview);
+    }
+
+    public void refreshScore() {
+        this.score = reviews.getAverageScore();
     }
 }

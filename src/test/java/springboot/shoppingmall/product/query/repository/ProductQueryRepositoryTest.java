@@ -43,7 +43,7 @@ class ProductQueryRepositoryTest {
     void setUp() {
         category = categoryRepository.save(new Category("식품 분류"));
         subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
-        now = LocalDateTime.of(2022, 12, 22, 19, 30, 0);
+        now = LocalDateTime.now();
         생선1 = productRepository.save(
                 new Product("생선1", 1000, 10, 1.0, 10, now, category, subCategory));
         생선2 = productRepository.save(
@@ -83,7 +83,7 @@ class ProductQueryRepositoryTest {
         List<String> names = products.stream()
                 .map(Product::getName).collect(Collectors.toList());
         assertThat(names).containsExactly(
-                "생선1", "생선2", "생선3"
+                "생선3", "생선2", "생선1"
         );
     }
 
@@ -93,7 +93,7 @@ class ProductQueryRepositoryTest {
         // given
 
         // when
-        List<Product> products = productQueryRepository.queryProducts(category, subCategory, RECENT);
+        List<Product> products = productQueryRepository.queryProducts(category, subCategory, PRICE);
 
         // then
         assertThat(products).hasSize(3);

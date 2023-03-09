@@ -55,6 +55,10 @@ public class ProductReviewService {
                 .build();
 
         ProductReview savedReview = reviewRepository.save(productReview);
+
+        // 평점 총합 / 리뷰 갯수 -> 평점 갱신
+        product.refreshScore();
+
         return ProductUserReviewResponse.of(savedReview);
     }
 
