@@ -1,6 +1,7 @@
 package springboot.shoppingmall.product.domain;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -69,5 +70,9 @@ public class ProductReview extends BaseEntity {
 
     public String getProductName() {
         return product.getName();
+    }
+
+    public boolean isWriter(Long userId) {
+        return Objects.equals(this.userId, userId);
     }
 }

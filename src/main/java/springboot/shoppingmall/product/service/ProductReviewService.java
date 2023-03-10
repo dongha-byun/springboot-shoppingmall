@@ -68,7 +68,7 @@ public class ProductReviewService {
                 .orElseThrow(
                         () -> new IllegalArgumentException("존재하지 않는 리뷰 입니다.")
                 );
-        if(!productReview.getUserId().equals(userId)) {
+        if(!productReview.isWriter(userId)) {
             throw new IllegalArgumentException("고객님께서 등록하신 리뷰가 아니라 삭제가 불가능 합니다.");
         }
         reviewRepository.delete(productReview);

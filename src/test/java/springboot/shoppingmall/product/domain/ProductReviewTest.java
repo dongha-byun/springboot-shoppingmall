@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.user.domain.User;
 
@@ -85,5 +87,24 @@ class ProductReviewTest {
         assertThat(users).containsExactly(
                 user1.getId(), user2.getId()
         );
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1, true",
+            "2, false",
+            "3, false"
+    })
+    @DisplayName("상품 리뷰를 작성한 사용자가 맞는지 틀린지 확인")
+    void is_writer_test(Long userId, boolean result) {
+        // given
+        Product product = new Product("상품 1", 12000, 20, new Category("상위 카테고리"), new Category("하위 카테고리"));
+        ProductReview productReview = new ProductReview("리뷰 등록 합니다.", 3, product, 1L);
+
+        // when
+        boolean isWriter = productReview.isWriter(userId);
+
+        // then
+        assertThat(isWriter).isEqualTo(result);
     }
 }
