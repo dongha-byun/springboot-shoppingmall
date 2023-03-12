@@ -109,14 +109,14 @@ class OrderServiceTest {
 
         // when & then
         assertAll(
-                () -> 주문_상태_변경_실패_검증(outingOrder, OrderStatus.CANCEL),
-                () -> 주문_상태_변경_실패_검증(cancelOrder, OrderStatus.CANCEL),
-                () -> 주문_상태_변경_실패_검증(checkingOrder, OrderStatus.CANCEL),
-                () -> 주문_상태_변경_실패_검증(endOrder, OrderStatus.CANCEL),
-                () -> 주문_상태_변경_실패_검증(exchangeReqOrder, OrderStatus.CANCEL),
-                () -> 주문_상태_변경_실패_검증(finishOrder, OrderStatus.CANCEL),
-                () -> 주문_상태_변경_실패_검증(returnEndOrder, OrderStatus.CANCEL),
-                () -> 주문_상태_변경_실패_검증(returnReqOrder, OrderStatus.CANCEL)
+                () -> 주문취소_변경_실패_검증(outingOrder),
+                () -> 주문취소_변경_실패_검증(cancelOrder),
+                () -> 주문취소_변경_실패_검증(checkingOrder),
+                () -> 주문취소_변경_실패_검증(endOrder),
+                () -> 주문취소_변경_실패_검증(exchangeReqOrder),
+                () -> 주문취소_변경_실패_검증(finishOrder),
+                () -> 주문취소_변경_실패_검증(returnEndOrder),
+                () -> 주문취소_변경_실패_검증(returnReqOrder)
         );
     }
 
@@ -148,20 +148,27 @@ class OrderServiceTest {
 
         // when & then
         assertAll(
-                () -> 주문_상태_변경_실패_검증(outingOrder, OrderStatus.OUTING),
-                () -> 주문_상태_변경_실패_검증(cancelOrder, OrderStatus.OUTING),
-                () -> 주문_상태_변경_실패_검증(checkingOrder, OrderStatus.OUTING),
-                () -> 주문_상태_변경_실패_검증(endOrder, OrderStatus.OUTING),
-                () -> 주문_상태_변경_실패_검증(exchangeReqOrder, OrderStatus.OUTING),
-                () -> 주문_상태_변경_실패_검증(finishOrder, OrderStatus.OUTING),
-                () -> 주문_상태_변경_실패_검증(returnEndOrder, OrderStatus.OUTING),
-                () -> 주문_상태_변경_실패_검증(returnReqOrder, OrderStatus.OUTING)
+                () -> 출고중_변경_실패_검증(outingOrder),
+                () -> 출고중_변경_실패_검증(cancelOrder),
+                () -> 출고중_변경_실패_검증(checkingOrder),
+                () -> 출고중_변경_실패_검증(endOrder),
+                () -> 출고중_변경_실패_검증(exchangeReqOrder),
+                () -> 출고중_변경_실패_검증(finishOrder),
+                () -> 출고중_변경_실패_검증(returnEndOrder),
+                () -> 출고중_변경_실패_검증(returnReqOrder)
         );
     }
 
-    private ThrowableAssertAlternative<IllegalArgumentException> 주문_상태_변경_실패_검증(Order order, OrderStatus status) {
+    private ThrowableAssertAlternative<IllegalArgumentException> 주문취소_변경_실패_검증(Order order) {
         return assertThatIllegalArgumentException().isThrownBy(
-                () -> orderService.changeOrderStatus(order.getId(), status.name()));
+                () -> orderService.cancel(order.getId())
+        );
+    }
+
+    private ThrowableAssertAlternative<IllegalArgumentException> 출고중_변경_실패_검증(Order order) {
+        return assertThatIllegalArgumentException().isThrownBy(
+                () -> orderService.outing(order.getId())
+        );
     }
 
     private Order 특정_주문상태_데이터_생성(OrderStatus status) {

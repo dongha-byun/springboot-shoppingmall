@@ -90,11 +90,11 @@ class ProductReviewTest {
     }
 
     @ParameterizedTest
-    @CsvSource({
-            "1, true",
-            "2, false",
-            "3, false"
-    })
+    @CsvSource(value = {
+            "1:true",
+            "2:false",
+            "3:false"
+    }, delimiterString = ":")
     @DisplayName("상품 리뷰를 작성한 사용자가 맞는지 틀린지 확인")
     void is_writer_test(Long userId, boolean result) {
         // given

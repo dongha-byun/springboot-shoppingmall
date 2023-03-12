@@ -40,21 +40,6 @@ public class OrderService {
         return OrderResponse.of(newOrder);
     }
 
-    @Transactional
-    public OrderResponse changeOrderStatus(Long orderId, String changeStatus){
-        Order order = orderFinder.findOrderById(orderId);
-        order.changeStatus(OrderStatus.valueOf(changeStatus));
-
-        if(order.isOuting()){
-            // 여기서 송장번호 발부
-            OrderDeliveryInvoiceResponse deliveryInvoice = orderDeliveryInterfaceService.createInvoiceNumber(order);
-            order.changeInvoiceNumber(deliveryInvoice.getInvoiceNumber());
-            //return OrderResponse.of(order, deliveryInvoice);
-        }
-
-        return OrderResponse.of(order);
-    }
-
     // 주문취소
     @Transactional
     public OrderResponse cancel(Long orderId) {
