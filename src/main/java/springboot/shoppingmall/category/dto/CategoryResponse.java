@@ -1,6 +1,7 @@
 package springboot.shoppingmall.category.dto;
 
-import java.util.ArrayList;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
@@ -9,12 +10,13 @@ import lombok.NoArgsConstructor;
 import springboot.shoppingmall.category.domain.Category;
 
 @Data
+@JsonInclude(Include.NON_NULL)
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class CategoryResponse {
 
     private Long id;
     private String name;
-    private List<CategoryResponse> subCategories = new ArrayList<>();
+    private List<CategoryResponse> subCategories;
 
     public CategoryResponse(Long id, String name) {
         this.id = id;
@@ -24,7 +26,9 @@ public class CategoryResponse {
     public CategoryResponse(Long id, String name, List<CategoryResponse> subCategories) {
         this.id = id;
         this.name = name;
-        this.subCategories = subCategories;
+        if(!subCategories.isEmpty()) {
+            this.subCategories = subCategories;
+        }
     }
 
     public static CategoryResponse of(Category category) {
