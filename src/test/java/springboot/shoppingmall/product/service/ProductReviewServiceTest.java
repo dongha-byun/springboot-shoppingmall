@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ import springboot.shoppingmall.user.domain.UserRepository;
 @Transactional
 @SpringBootTest
 class ProductReviewServiceTest {
+
+    @Autowired
+    EntityManager em;
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -118,14 +122,24 @@ class ProductReviewServiceTest {
         ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId()));
         ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product2, user.getId()));
 
+        em.flush();
+        em.clear();
+
         // when
         service.deleteProductReview(user.getId(), review1.getId());
+
+        em.flush();
+        em.clear();
 
         // then
         List<ProductReview> reviews = productReviewRepository.findAllByUserId(user.getId());
         assertThat(reviews).hasSize(1);
-        assertThat(reviews).containsExactly(review2);
-        assertThat(reviews).doesNotContain(review1);
+
+        List<Long> ids = reviews.stream()
+                .map(ProductReview::getId)
+                .collect(Collectors.toList());
+        assertThat(ids).containsExactly(review2.getId());
+        assertThat(ids).doesNotContain(review1.getId());
     }
 
     @Test
