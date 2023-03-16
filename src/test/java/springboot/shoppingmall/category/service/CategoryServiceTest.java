@@ -77,10 +77,40 @@ public class CategoryServiceTest {
         List<CategoryResponse> categories = categoryService.findCategories();
 
         // then
+        // 상위 카테고리 조회
+        assertThat(categories).hasSize(2);
         List<Long> categoryIds = categories.stream()
                 .map(CategoryResponse::getId).collect(Collectors.toList());
         assertThat(categoryIds).contains(
                 categoryResponse1.getId(), categoryResponse2.getId()
+        );
+
+        // 1번 째 카테고리의 하위 카테고리 목록 조회
+        CategoryResponse resultCategory1 = categories.stream()
+                .filter(categoryResponse -> categoryResponse.getId().equals(categoryResponse1.getId()))
+                .findAny()
+                .orElseThrow();
+        assertThat(resultCategory1.getSubCategories()).hasSize(2);
+
+        List<String> category1SubNames = resultCategory1.getSubCategories()
+                .stream()
+                .map(CategoryResponse::getName).collect(Collectors.toList());
+        assertThat(category1SubNames).containsExactly(
+                "하위 카테고리 1-1", "하위 카테고리 1-2"
+        );
+
+        // 2번 째 카테고리의 하위 카테고리 목록 조회
+        CategoryResponse resultCategory2 = categories.stream()
+                .filter(categoryResponse -> categoryResponse.getId().equals(categoryResponse2.getId()))
+                .findAny()
+                .orElseThrow();
+        assertThat(resultCategory2.getSubCategories()).hasSize(3);
+
+        List<String> category2SubNames = resultCategory2.getSubCategories()
+                .stream()
+                .map(CategoryResponse::getName).collect(Collectors.toList());
+        assertThat(category2SubNames).containsExactly(
+                "하위 카테고리 2-1", "하위 카테고리 2-2", "하위 카테고리 2-3"
         );
     }
 }

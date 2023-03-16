@@ -38,6 +38,13 @@ public class CategoryResponse {
                         .collect(Collectors.toList()));
     }
 
+    public static CategoryResponse of(CategoryDto categoryDto, List<CategoryDto> subCategoriesDto) {
+        return new CategoryResponse(categoryDto.getId(), categoryDto.getName(),
+                subCategoriesDto.stream()
+                        .map(subCategoryDto -> new CategoryResponse(subCategoryDto.getId(), subCategoryDto.getName()))
+                        .collect(Collectors.toList()));
+    }
+
     public List<CategoryResponse> getSubCategories() {
         return subCategories;
     }
