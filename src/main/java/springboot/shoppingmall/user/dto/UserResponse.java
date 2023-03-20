@@ -15,6 +15,6 @@ public class UserResponse {
     private String loginId;
 
     public static UserResponse of(User user){
-        return new UserResponse(user.getId(), user.getUserName(), user.getTelNo() ,user.getLoginId());
+        return new UserResponse(user.getId(), user.getUserName(), user.telNo() ,user.getLoginId());
     }
 }

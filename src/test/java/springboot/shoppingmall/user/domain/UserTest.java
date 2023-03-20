@@ -22,6 +22,6 @@ class UserTest {
         assertThat(user.getUserName()).isEqualTo("사용자1");
         assertThat(user.getLoginId()).isEqualTo("user1");
         assertThat(user.getPassword()).isEqualTo("user2@");
-        assertThat(user.getTelNo()).isEqualTo("010-2222-3333");
+        assertThat(user.telNo()).isEqualTo("010-2222-3333");
     }
 }

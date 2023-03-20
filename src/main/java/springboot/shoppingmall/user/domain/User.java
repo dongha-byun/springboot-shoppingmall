@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,7 +17,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.BaseEntity;
-import springboot.shoppingmall.user.dto.UserRequest;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -37,11 +37,8 @@ public class User extends BaseEntity {
     @Column(length = 400, nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String telNo;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Basket> baskets = new ArrayList<>();
+    @Embedded
+    private TelNo telNo;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Delivery> deliveries = new ArrayList<>();
@@ -54,7 +51,7 @@ public class User extends BaseEntity {
         this.userName = userName;
         this.loginId = loginId;
         this.password = password;
-        this.telNo = telNo;
+        this.telNo = new TelNo(telNo);
     }
 
     public void updateUser(User user) {
@@ -64,14 +61,6 @@ public class User extends BaseEntity {
 
     public boolean isEqualPassword(String password) {
         return this.password.equals(password);
-    }
-
-    public void addBasket(Basket basket){
-        this.getBaskets().add(basket);
-    }
-
-    public void removeBasket(Basket basket) {
-        this.getBaskets().remove(basket);
     }
 
     public void addDelivery(Delivery delivery){
@@ -92,5 +81,9 @@ public class User extends BaseEntity {
                 .collect(Collectors.toList());
         this.payments.clear();
         this.payments.addAll(payments);
+    }
+
+    public String telNo() {
+        return this.telNo.getTelNo();
     }
 }
