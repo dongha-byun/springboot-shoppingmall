@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
@@ -14,6 +15,7 @@ import springboot.shoppingmall.user.domain.User;
 
 @Component
 @RequiredArgsConstructor
+@Profile("local")
 public class DataInitializer {
 
     private final InitService initService;
@@ -42,7 +44,7 @@ public class DataInitializer {
                 List<Category> subCategories = category.getSubCategories();
                 for (Category subCategory : subCategories) {
                     Long subCategoryId = subCategory.getId();
-                    for(int i=1; i<=10; i++){
+                    for(int i=1; i<=100; i++){
                         em.persist(new Product("상품_"+categoryId+"_"+subCategoryId+"_"+i, 1234000, 321, category, subCategory));
                     }
                 }
