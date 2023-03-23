@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
-import springboot.shoppingmall.providers.web.ProviderResponse;
 
 public class ProviderAcceptanceTest extends AcceptanceTest {
 
@@ -42,10 +41,12 @@ public class ProviderAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(판매_승인요청_등록_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ProviderResponse 판매_승인요청_결과 = 판매_승인요청_등록_결과.as(ProviderResponse.class);
+        assertThat(판매_승인요청_등록_결과.jsonPath().getString("message")).contains(
+                "승인 신청이 완료되었습니다."
+        );
 
-        assertThat(판매_승인요청_결과.getId()).isNotNull();
-        assertThat(판매_승인요청_결과.isApproved()).isFalse();
+        assertThat(판매_승인요청_등록_결과.jsonPath().getLong("data.id")).isNotNull();
+        assertThat(판매_승인요청_등록_결과.jsonPath().getBoolean("data.approved")).isFalse();
     }
 
     /**
@@ -57,10 +58,11 @@ public class ProviderAcceptanceTest extends AcceptanceTest {
     @DisplayName("판매 승인 요청 시, 회사명은 필수입니다.")
     void create_fail_test_no_name() {
         // given
+        String name = "";
 
         // when
-        ExtractableResponse<Response> 판매_승인요청_등록_결과 = 판매_승인요청_등록_요청("", ceoName, corporateRegistrationNumber,
-                telNo, address, loginId, password, confirmPassword);
+        ExtractableResponse<Response> 판매_승인요청_등록_결과 = 판매_승인요청_등록_요청(name, ceoName,
+                corporateRegistrationNumber, telNo, address, loginId, password, confirmPassword);
 
         // then
         assertThat(판매_승인요청_등록_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -78,10 +80,11 @@ public class ProviderAcceptanceTest extends AcceptanceTest {
     @DisplayName("판매 승인 요청 시, 사업자 번호는 필수입니다.")
     void create_fail_test_no_corporate_registration_number() {
         // given
+        String corporateRegistrationNumber = "";
 
         // when
-        ExtractableResponse<Response> 판매_승인요청_등록_결과 = 판매_승인요청_등록_요청(name, ceoName, "",
-                telNo, address, loginId, password, confirmPassword);
+        ExtractableResponse<Response> 판매_승인요청_등록_결과 = 판매_승인요청_등록_요청(name, ceoName,
+                corporateRegistrationNumber, telNo, address, loginId, password, confirmPassword);
 
         // then
         assertThat(판매_승인요청_등록_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -99,10 +102,11 @@ public class ProviderAcceptanceTest extends AcceptanceTest {
     @DisplayName("판매 승인 요청 시, 대표번호는 필수입니다.")
     void create_fail_test_no_tel_no() {
         // given
+        String telNo = "";
 
         // when
         ExtractableResponse<Response> 판매_승인요청_등록_결과 = 판매_승인요청_등록_요청(name, ceoName, corporateRegistrationNumber,
-                "", address, loginId, password, confirmPassword);
+                telNo, address, loginId, password, confirmPassword);
 
         // then
         assertThat(판매_승인요청_등록_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -120,16 +124,41 @@ public class ProviderAcceptanceTest extends AcceptanceTest {
     @DisplayName("판매 승인 요청 시, 사업장 주소는 필수입니다.")
     void create_fail_test_no_address() {
         // given
+        String address = "";
 
         // when
         ExtractableResponse<Response> 판매_승인요청_등록_결과 = 판매_승인요청_등록_요청(name, ceoName, corporateRegistrationNumber,
-                telNo, "", loginId, password, confirmPassword);
+                telNo, address, loginId, password, confirmPassword);
 
         // then
         assertThat(판매_승인요청_등록_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(판매_승인요청_등록_결과.jsonPath().getString("message")).contains(
                 "사업장 주소는 필수항목 입니다."
         );
+    }
+
+    /**
+     * given: 판매자 정보에서 비밀번호와 비밀번호 확인을 다르게 입력하고
+     * when: 판매 자격승인 신청을 하면
+     * then: 판매 자격승인 신청에 실패한다.
+     */
+    @Test
+    @DisplayName("비밀번호가 다르면 판매 승인 요청이 불가합니다.")
+    void create_fail_test_not_equal_password() {
+        // given
+        String password = "1q2w3e4r!";
+        String confirmPassword = "1q2w3e4r@";
+
+        // when
+        ExtractableResponse<Response> 판매_승인요청_등록_결과 = 판매_승인요청_등록_요청(name, ceoName, corporateRegistrationNumber,
+                telNo, address, loginId, password, confirmPassword);
+
+        // then
+        assertThat(판매_승인요청_등록_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(판매_승인요청_등록_결과.jsonPath().getString("message")).contains(
+                messageProvider.getMessage("provider.validation.notEqualPassword")
+        );
+
     }
 
     private ExtractableResponse<Response> 판매_승인요청_등록_요청(String name, String ceoName,

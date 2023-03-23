@@ -14,6 +14,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.db.DatabaseCleanUtil;
+import springboot.shoppingmall.message.MessageProvider;
 import springboot.shoppingmall.user.dto.UserResponse;
 
 @Import(TestOrderConfig.class)
@@ -22,6 +23,8 @@ public class AcceptanceTest {
     @LocalServerPort
     int port;
 
+    @Autowired
+    public MessageProvider messageProvider;
     @Autowired
     DatabaseCleanUtil databaseCleanUtil;
 
