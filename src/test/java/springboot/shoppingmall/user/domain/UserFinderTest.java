@@ -17,15 +17,30 @@ class UserFinderTest {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    UserFinder userFinder;
+
     @Test
     @DisplayName("사용자 조회 테스트")
     void findUserTest(){
         // given
         User saveUser = userRepository.save(new User("임시사용자1", "tempUser1", "tempUser1!", "010-1234-1234"));
-        UserFinder userFinder = new UserFinder(userRepository);
 
         // when
         User findUser = userFinder.findUserById(saveUser.getId());
+
+        // then
+        assertThat(findUser).isEqualTo(saveUser);
+    }
+
+    @Test
+    @DisplayName("로그인 아이디로 회원 조회")
+    void find_user_by_login_id() {
+        // given
+        User saveUser = userRepository.save(new User("임시사용자1", "tempUser1", "tempUser1!", "010-1234-1234"));
+
+        // when
+        User findUser = userFinder.findUserByLoginId(saveUser.getLoginId());
 
         // then
         assertThat(findUser).isEqualTo(saveUser);

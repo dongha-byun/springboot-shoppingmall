@@ -8,20 +8,31 @@ import springboot.shoppingmall.authorization.domain.RefreshToken;
 import springboot.shoppingmall.authorization.domain.RefreshTokenRepository;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.authorization.exception.ExpireTokenException;
+import springboot.shoppingmall.authorization.exception.TryLoginLockedUserException;
+import springboot.shoppingmall.authorization.exception.WrongPasswordException;
 import springboot.shoppingmall.user.domain.User;
+import springboot.shoppingmall.user.domain.UserFinder;
 import springboot.shoppingmall.user.domain.UserRepository;
-import springboot.shoppingmall.authorization.dto.LoginRequest;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserRepository userRepository;
+    private final UserFinder userFinder;
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
-    public TokenResponse login(LoginRequest loginRequest, String accessIp) {
-        User loginUser = getLoginUser(loginRequest);
+    public TokenResponse login(String loginId, String password, String accessIp) throws WrongPasswordException {
+        User loginUser = userFinder.findUserByLoginId(loginId);
+        if(loginUser.isLocked()) {
+            throw new TryLoginLockedUserException("해당 계정은 로그인 실패 횟수 5회를 초과하여 로그인 할 수 없습니다. 관리자에게 문의해주세요.");
+        }
+
+        if(!loginUser.isEqualPassword(password)) {
+            int loginFailCount = loginUser.increaseLoginFailCount();
+            throw new WrongPasswordException("비밀번호가 틀렸습니다. 5회 이상 실패하시는 경우, 로그인하실 수 없습니다. (현재 " + loginFailCount + " / 5)");
+        }
+
         String accessToken = jwtTokenProvider.createAccessToken(loginUser, accessIp);
         String refreshToken = jwtTokenProvider.createRefreshToken(loginUser, accessIp);
 
@@ -40,7 +51,7 @@ public class AuthService {
 
     @Transactional
     public TokenResponse logout(Long id){
-        User user = findUserById(id);
+        User user = userFinder.findUserById(id);
         refreshTokenRepository.deleteByUser(user);
         String expireToken = jwtTokenProvider.createExpireToken();
         return new TokenResponse(expireToken);
@@ -52,26 +63,13 @@ public class AuthService {
         }
 
         Long userId = jwtTokenProvider.getUserId(token);
-        User user = findUserById(userId);
+        User user = userFinder.findUserById(userId);
         return new AuthorizedUser(user.getId(), user.getLoginId());
-    }
-
-    private User getLoginUser(LoginRequest loginRequest) {
-        return userRepository.findUserByLoginId(loginRequest.getLoginId())
-                .filter(user -> user.isEqualPassword(loginRequest.getPassword()))
-                .orElseThrow(
-                        () -> new IllegalArgumentException("회원 조회 실패")
-                );
-    }
-
-    private User findUserById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new);
     }
 
     public TokenResponse reCreateAccessToken(String token, String accessIp){
         Long userId = jwtTokenProvider.getUserId(token);
-        User user = findUserById(userId);
+        User user = userFinder.findUserById(userId);
         String refreshToken = findRefreshTokenByUser(user).getRefreshToken();
         if(!jwtTokenProvider.validateExpireToken(refreshToken)){
             throw new ExpireTokenException("인증 만료됨");

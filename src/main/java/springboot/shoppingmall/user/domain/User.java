@@ -40,18 +40,34 @@ public class User extends BaseEntity {
     @Embedded
     private TelNo telNo;
 
+    @Column(name = "login_fail_count")
+    private int loginFailCount = 0;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Delivery> deliveries = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments = new ArrayList<>();
+    private boolean isLock = false;
 
     @Builder
     public User(String userName, String loginId, String password, String telNo) {
+        this(userName, loginId, password, telNo, 0);
+    }
+
+    @Builder
+    public User(String userName, String loginId, String password, String telNo, int loginFailCount) {
+        this(userName, loginId, password, telNo, loginFailCount, false);
+    }
+
+    @Builder
+    public User(String userName, String loginId, String password, String telNo, int loginFailCount, boolean isLock) {
         this.userName = userName;
         this.loginId = loginId;
         this.password = password;
         this.telNo = new TelNo(telNo);
+        this.loginFailCount = loginFailCount;
+        this.isLock = isLock;
     }
 
     public void updateUser(User user) {
@@ -85,5 +101,17 @@ public class User extends BaseEntity {
 
     public String telNo() {
         return this.telNo.getTelNo();
+    }
+
+    public int increaseLoginFailCount() {
+        this.loginFailCount++;
+        if(this.loginFailCount >= 5) {
+            this.isLock = true;
+        }
+        return this.loginFailCount;
+    }
+
+    public boolean isLocked() {
+        return this.isLock;
     }
 }
