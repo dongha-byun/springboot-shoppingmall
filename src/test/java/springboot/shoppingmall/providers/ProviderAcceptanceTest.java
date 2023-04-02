@@ -20,7 +20,6 @@ public class ProviderAcceptanceTest extends AcceptanceTest {
     String corporateRegistrationNumber = "110-43-22334";
     String telNo = "157-6789";
     String address = "서울시 영등포구 당산동";
-
     String loginId = "danger_architect";
     String password = "1q2w3e4r!";
     String confirmPassword = "1q2w3e4r!";
@@ -161,7 +160,7 @@ public class ProviderAcceptanceTest extends AcceptanceTest {
 
     }
 
-    private ExtractableResponse<Response> 판매_승인요청_등록_요청(String name, String ceoName,
+    public static ExtractableResponse<Response> 판매_승인요청_등록_요청(String name, String ceoName,
                                                         String corporateRegistrationNumber, String telNo,
                                                         String address, String loginId,
                                                         String password, String confirmPassword) {
