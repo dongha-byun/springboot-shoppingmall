@@ -50,4 +50,8 @@ public class Provider extends BaseEntity {
     public void approve() {
         this.isApproved = true;
     }
+
+    public void stop() {
+        this.isApproved = false;
+    }
 }

@@ -37,10 +37,7 @@ public class AdminApproveProviderAcceptanceTest extends AcceptanceTest {
                 .getLong("data.id");
 
         // when
-        ExtractableResponse<Response> 판매_승인_결과 = RestAssured.given().log().all()
-                .when().put("/admin/provider/{providerId}/approve", providerId)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> 판매_승인_결과 = 판매_승인_요청(providerId);
 
         // then
         assertThat(판매_승인_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -49,6 +46,43 @@ public class AdminApproveProviderAcceptanceTest extends AcceptanceTest {
         );
         assertThat(판매_승인_결과.jsonPath().getLong("data.id")).isEqualTo(providerId);
         assertThat(판매_승인_결과.jsonPath().getBoolean("data.approved")).isTrue();
+    }
 
+    /**
+     *  given: 판매자가 회원가입을 통해 자격 신청을 해놓음
+     *  And: 판매자의 판매 자격이 승인되어 있음
+     *  when: 로그인한 관리자가 판매자의 자격을 정지시키면
+     *  then: 판매자는 상품을 판매할 수 없게된다.
+     */
+    @Test
+    @DisplayName("관리자는 판매자의 판매자격을 중지시킬 수 있다.")
+    void stop_provider_test() {
+        // given
+        Long providerId = 판매_승인요청_등록_요청(name, ceoName, corporateRegistrationNumber, telNo, address,
+                loginId, password, confirmPassword)
+                .jsonPath()
+                .getLong("data.id");
+        ExtractableResponse<Response> 판매_승인_결과 = 판매_승인_요청(providerId);
+
+        // when
+        ExtractableResponse<Response> 판매_자격정지_결과 = RestAssured.given().log().all()
+                .when().put("/admin/provider/{providerId}/stop", providerId)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(판매_자격정지_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(판매_자격정지_결과.jsonPath().getString("message")).contains(
+                "해당 판매자의 판매 자격이 중지되었습니다."
+        );
+        assertThat(판매_자격정지_결과.jsonPath().getLong("data.id")).isEqualTo(providerId);
+        assertThat(판매_자격정지_결과.jsonPath().getBoolean("data.approved")).isFalse();
+    }
+
+    private ExtractableResponse<Response> 판매_승인_요청(Long providerId) {
+        return RestAssured.given().log().all()
+                .when().put("/admin/provider/{providerId}/approve", providerId)
+                .then().log().all()
+                .extract();
     }
 }

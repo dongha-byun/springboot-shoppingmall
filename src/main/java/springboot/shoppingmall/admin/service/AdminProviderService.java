@@ -6,21 +6,25 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.providers.domain.Provider;
-import springboot.shoppingmall.providers.domain.ProviderRepository;
+import springboot.shoppingmall.providers.domain.ProviderFinder;
 import springboot.shoppingmall.providers.dto.ProviderDto;
 
 @RequiredArgsConstructor
 @Service
 public class AdminProviderService {
-    private final ProviderRepository providerRepository;
+    private final ProviderFinder providerFinder;
 
     @Transactional
     public ProviderDto approveProvider(Long providerId) {
-        Provider provider = providerRepository.findById(providerId)
-                .orElseThrow(
-                        () -> new IllegalArgumentException("판매자 조회 오류")
-                );
+        Provider provider = providerFinder.findById(providerId);
         provider.approve();
+        return of(provider);
+    }
+
+    @Transactional
+    public ProviderDto stopProvider(Long providerId) {
+        Provider provider = providerFinder.findById(providerId);
+        provider.stop();
         return of(provider);
     }
 }

@@ -1,7 +1,6 @@
 package springboot.shoppingmall.admin.web;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,4 +20,12 @@ public class AdminProviderController {
         ProviderApproveResponse response = new ProviderApproveResponse(providerDto.getId(), providerDto.isApproved());
         return ResponseEntity.ok(new APIResult<>("판매자격 승인이 완료되었습니다.", response));
     }
+
+    @PutMapping("/admin/provider/{providerId}/stop")
+    public ResponseEntity<APIResult<ProviderApproveResponse>> stopProvider(@PathVariable("providerId") Long providerId) {
+        ProviderDto providerDto = adminProviderService.stopProvider(providerId);
+        ProviderApproveResponse response = new ProviderApproveResponse(providerDto.getId(), providerDto.isApproved());
+        return ResponseEntity.ok(new APIResult<>("해당 판매자의 판매 자격이 중지되었습니다.", response));
+    }
+
 }
