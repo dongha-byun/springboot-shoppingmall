@@ -43,20 +43,6 @@ class CategoryQueryRepositoryTest {
         subCategory5 = categoryRepository.save(new Category("하위 카테고리 5").changeParent(category2));
     }
 
-    //@Test
-    @DisplayName("카테고리 쿼리 테스트")
-    void findCategoryAll(){
-        // given
-
-        List<CategoryQueryDto> categoryAll = categoryQueryRepository.findCategoryAll();
-        List<String> categoryNames = categoryAll.stream()
-                .map(CategoryQueryDto::getParentName).collect(Collectors.toList());
-
-        assertThat(categoryNames).contains(
-                "상위 카테고리", "상위 카테고리 2"
-        );
-    }
-
     @Test
     @DisplayName("상위 카테고리 조회 - dto 버전")
     void find_parent_dto_test() {

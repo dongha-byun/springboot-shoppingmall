@@ -6,6 +6,7 @@ import static springboot.shoppingmall.user.UserAcceptanceTest.회원가입;
 import io.restassured.RestAssured;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,6 +53,11 @@ public class AcceptanceTest {
 
         인수테스터2 = 회원가입("인수테스터2", LOGIN_ID_2, PASSWORD_2, PASSWORD_2, "010-1111-4444").as(UserResponse.class);
         로그인정보2 = 로그인(LOGIN_ID_2, PASSWORD_2).as(TokenResponse.class);
+    }
+
+    @AfterEach
+    public void acceptance_afterEach() {
+        databaseCleanUtil.cleanUp();
     }
 
     public static Map<String, String> createAuthorizationHeader(TokenResponse tokenResponse){
