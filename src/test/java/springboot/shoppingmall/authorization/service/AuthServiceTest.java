@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.authorization.AuthorizedUser;
 import springboot.shoppingmall.authorization.TestJwtTokenExpireDurationStrategy;
 import springboot.shoppingmall.authorization.domain.RefreshTokenRepository;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
@@ -85,6 +86,21 @@ class AuthServiceTest {
         // then
         assertThat(jwtTokenProvider.validateExpireToken(token.getAccessToken()))
                 .isTrue();
+    }
+
+    @Test
+    @DisplayName("로그인된 사용자의 인가 처리")
+    void authorize_test() throws WrongPasswordException {
+        // given
+        User user = userRepository.save(new User("테스터", "test", "test1!", "010-1111-2222"));
+        TokenResponse tokenResponse = authService.login("test", "test1!", "127.0.0.1");
+
+        // when
+        AuthorizedUser authorizedUser = authService.getAuthorizedUser(tokenResponse.getAccessToken(), "127.0.0.1");
+
+        // then
+        assertThat(authorizedUser.getId()).isEqualTo(user.getId());
+        assertThat(authorizedUser.getLoginId()).isEqualTo(user.getLoginId());
     }
 
     @Test

@@ -47,7 +47,7 @@ public class AuthenticationStrategyArgumentResolver implements HandlerMethodArgu
         }
 
         String token = parsingToken(request);
-        return authService.getAuthorizedUser(token);
+        return authService.getAuthorizedUser(token, request.getRemoteHost());
     }
 
 }

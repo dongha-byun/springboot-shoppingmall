@@ -4,11 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
-import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -23,15 +20,18 @@ public class JwtTokenProvider {
 
     private final JwtTokenExpireDurationStrategy expireDateStrategy;
     //private String secretKey = "secret_key_of_dong_ha_do_not_snap_this";
-    private Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     // jwt 토큰 생성
     public String createAccessToken(User user, String accessIp) {
+        Claims claims = Jwts.claims().setSubject(user.getId().toString());
+        claims.put("access_ip", accessIp);
+
         Date now = new Date();
 
         long accessTokenValidTime = expireDateStrategy.getAccessTokenExpireDuration(); // 30 * 60 * 1000L; // 30분
         return Jwts.builder()
-                .setSubject(String.valueOf(user.getId()))
+                .setClaims(claims)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(now.getTime() + accessTokenValidTime))
                 .signWith(key)
@@ -54,19 +54,14 @@ public class JwtTokenProvider {
     }
 
     public Long getUserId(String token){
-        if(!validateExpireToken(token)){
-            throw new ExpireTokenException("토큰이 만료되었습니다.");
-        }
-        String subject = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+        String subject = getBodyOfToken(token).getSubject();
         return Long.valueOf(subject);
     }
 
     // jwt 토큰 유효성 체크
     public boolean validateExpireToken(String jwtToken){
         try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(key).build()
-                    .parseClaimsJws(jwtToken).getBody();
+            Claims claims = getBodyOfToken(jwtToken);
             return !claims.getExpiration().before(new Date());
         }catch (Exception e){
             return false;
@@ -78,5 +73,18 @@ public class JwtTokenProvider {
                 .setExpiration(new Date())
                 .signWith(key)
                 .compact();
+    }
+
+    public boolean validateIpToken(String accessToken, String accessIp) {
+        Claims claims = getBodyOfToken(accessToken);
+        String tokenIp = (String) claims.get("access_ip");
+
+        return accessIp.equals(tokenIp);
+    }
+
+    private Claims getBodyOfToken(String accessToken) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key).build()
+                .parseClaimsJws(accessToken).getBody();
     }
 }

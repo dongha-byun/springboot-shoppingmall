@@ -2,17 +2,18 @@ package springboot.shoppingmall.authorization;
 
 import static org.assertj.core.api.Assertions.*;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.authorization.exception.ExpireTokenException;
 import springboot.shoppingmall.authorization.service.JwtTokenProvider;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserRepository;
 
+@Transactional
 @SpringBootTest
 class JwtTokenProviderTest {
 
@@ -37,7 +38,6 @@ class JwtTokenProviderTest {
     void createTokenTest(){
         // given
 
-
         // when
         String accessToken = jwtTokenProvider.createAccessToken(user, "127.0.0.1");
 
@@ -58,11 +58,18 @@ class JwtTokenProviderTest {
         // given
         String accessToken = jwtTokenProvider.createAccessToken(user, "127.0.0.1");
         Thread.sleep(1000);
-        assertThat(jwtTokenProvider.validateExpireToken(accessToken)).isFalse();
 
         // when & then
-        assertThatThrownBy(
-                () -> jwtTokenProvider.getUserId(accessToken)
-        ).isInstanceOf(ExpireTokenException.class);
+        assertThat(jwtTokenProvider.validateExpireToken(accessToken)).isFalse();
+    }
+
+    @Test
+    @DisplayName("토큰 Ip 비교 테스트")
+    void validate_token_by_ip() {
+        // given
+        String accessToken = jwtTokenProvider.createAccessToken(user, "127.0.0.1");
+
+        // when & then
+        assertThat(jwtTokenProvider.validateIpToken(accessToken, "127.0.0.2")).isFalse();
     }
 }

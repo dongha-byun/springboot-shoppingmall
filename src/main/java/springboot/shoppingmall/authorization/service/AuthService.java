@@ -12,7 +12,6 @@ import springboot.shoppingmall.authorization.exception.TryLoginLockedUserExcepti
 import springboot.shoppingmall.authorization.exception.WrongPasswordException;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserFinder;
-import springboot.shoppingmall.user.domain.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -57,9 +56,13 @@ public class AuthService {
         return new TokenResponse(expireToken);
     }
 
-    public AuthorizedUser getAuthorizedUser(String token){
+    public AuthorizedUser getAuthorizedUser(String token, String ip){
         if(!jwtTokenProvider.validateExpireToken(token)){
             throw new ExpireTokenException("인증 기한이 만료되었습니다.");
+        }
+
+        if(!jwtTokenProvider.validateIpToken(token, ip)) {
+            throw new IllegalStateException("최초에 로그인한 IP와 다른 IP 에서 접속하셨습니다. 보안을 위해 로그아웃 됩니다.");
         }
 
         Long userId = jwtTokenProvider.getUserId(token);
