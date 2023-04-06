@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.authorization.exception.ExpireTokenException;
 import springboot.shoppingmall.authorization.service.JwtTokenProvider;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserRepository;
@@ -39,7 +38,7 @@ class JwtTokenProviderTest {
         // given
 
         // when
-        String accessToken = jwtTokenProvider.createAccessToken(user, "127.0.0.1");
+        String accessToken = jwtTokenProvider.createAccessToken(user.getId(), "127.0.0.1");
 
         // then
         assertThat(accessToken).isNotNull();
@@ -56,7 +55,7 @@ class JwtTokenProviderTest {
         // 재발급 받은게 유효한지 체크한다.
 
         // given
-        String accessToken = jwtTokenProvider.createAccessToken(user, "127.0.0.1");
+        String accessToken = jwtTokenProvider.createAccessToken(user.getId(), "127.0.0.1");
         Thread.sleep(1000);
 
         // when & then
@@ -67,7 +66,7 @@ class JwtTokenProviderTest {
     @DisplayName("토큰 Ip 비교 테스트")
     void validate_token_by_ip() {
         // given
-        String accessToken = jwtTokenProvider.createAccessToken(user, "127.0.0.1");
+        String accessToken = jwtTokenProvider.createAccessToken(user.getId(), "127.0.0.1");
 
         // when & then
         assertThat(jwtTokenProvider.validateIpToken(accessToken, "127.0.0.2")).isFalse();

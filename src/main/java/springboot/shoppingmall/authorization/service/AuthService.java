@@ -32,8 +32,8 @@ public class AuthService {
             throw new WrongPasswordException("비밀번호가 틀렸습니다. 5회 이상 실패하시는 경우, 로그인하실 수 없습니다. (현재 " + loginFailCount + " / 5)");
         }
 
-        String accessToken = jwtTokenProvider.createAccessToken(loginUser, accessIp);
-        String refreshToken = jwtTokenProvider.createRefreshToken(loginUser, accessIp);
+        String accessToken = jwtTokenProvider.createAccessToken(loginUser.getId(), accessIp);
+        String refreshToken = jwtTokenProvider.createRefreshToken(loginUser.getId(), accessIp);
 
         saveRefreshToken(loginUser, refreshToken);
 
@@ -78,7 +78,7 @@ public class AuthService {
             throw new ExpireTokenException("인증 만료됨");
         }
 
-        String accessToken = jwtTokenProvider.createAccessToken(user, accessIp);
+        String accessToken = jwtTokenProvider.createAccessToken(userId, accessIp);
         return new TokenResponse(accessToken, refreshToken);
     }
 

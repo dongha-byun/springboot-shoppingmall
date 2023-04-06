@@ -1,5 +1,7 @@
 package springboot.shoppingmall.authorization.service;
 
+import static springboot.shoppingmall.authorization.AuthorizationConstants.CLAIM_ACCESS_IP;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -9,46 +11,39 @@ import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import springboot.shoppingmall.authorization.exception.ExpireTokenException;
-import springboot.shoppingmall.user.domain.User;
 
 
 @Slf4j
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
-
     private final JwtTokenExpireDurationStrategy expireDateStrategy;
     //private String secretKey = "secret_key_of_dong_ha_do_not_snap_this";
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     // jwt 토큰 생성
-    public String createAccessToken(User user, String accessIp) {
-        Claims claims = Jwts.claims().setSubject(user.getId().toString());
-        claims.put("access_ip", accessIp);
-
-        Date now = new Date();
+    public String createAccessToken(Long userId, String accessIp) {
+        Claims claims = Jwts.claims().setSubject(userId.toString());
+        claims.put(CLAIM_ACCESS_IP, accessIp);
 
         long accessTokenValidTime = expireDateStrategy.getAccessTokenExpireDuration(); // 30 * 60 * 1000L; // 30분
+        return generateToken(claims, accessTokenValidTime);
+    }
+
+    public String createRefreshToken(Long userId, String accessIp){
+        Claims claims = Jwts.claims().setSubject(userId.toString());
+        claims.put(CLAIM_ACCESS_IP, accessIp);
+
+        long refreshTokenValidTime = expireDateStrategy.getRefreshTokenExpireDuration(); // 14 * 24 * 60 * 60 * 1000L // 14일
+        return generateToken(claims, refreshTokenValidTime);
+    }
+
+    private String generateToken(Claims claims, long accessTokenValidTime) {
+        Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(now.getTime() + accessTokenValidTime))
-                .signWith(key)
-                .compact();
-    }
-
-    public String createRefreshToken(User user, String accessIp){
-        Claims claims = Jwts.claims().setSubject(user.getId().toString());
-        claims.put("access_ip", accessIp);
-
-        Date now = new Date();
-
-        long refreshTokenValidTime = expireDateStrategy.getRefreshTokenExpireDuration(); // 14 * 24 * 60 * 60 * 1000L // 14일
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(now.getTime() + refreshTokenValidTime))
                 .signWith(key)
                 .compact();
     }
@@ -77,7 +72,7 @@ public class JwtTokenProvider {
 
     public boolean validateIpToken(String accessToken, String accessIp) {
         Claims claims = getBodyOfToken(accessToken);
-        String tokenIp = (String) claims.get("access_ip");
+        String tokenIp = (String) claims.get(CLAIM_ACCESS_IP);
 
         return accessIp.equals(tokenIp);
     }
@@ -85,6 +80,6 @@ public class JwtTokenProvider {
     private Claims getBodyOfToken(String accessToken) {
         return Jwts.parserBuilder()
                 .setSigningKey(key).build()
-                .parseClaimsJws(accessToken).getBody();
+                . parseClaimsJws(accessToken).getBody();
     }
 }
