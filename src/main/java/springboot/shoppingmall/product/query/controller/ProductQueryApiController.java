@@ -22,13 +22,18 @@ public class ProductQueryApiController {
 
 
     @GetMapping("/products")
-    public ResponseEntity<PagingDataResponse<List<ProductQueryResponse>>> queryProductsBySort(@RequestParam("categoryId") Long categoryId,
-                                                                                             @RequestParam("subCategoryId") Long subCategoryId,
-                                                                                             @RequestParam(name = "orderType", defaultValue = "RECENT") String orderType){
-        log.info("categoryId={}, subCategoryId={}, orderType={}", categoryId, subCategoryId, orderType);
+    public ResponseEntity<PagingDataResponse<List<ProductQueryResponse>>> queryProductsBySort(
+            @RequestParam("categoryId") Long categoryId,
+            @RequestParam("subCategoryId") Long subCategoryId,
+            @RequestParam(name = "orderType", defaultValue = "RECENT") String orderType,
+            @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
+            @RequestParam(name = "offset", defaultValue = "0", required = false) int offset){
+
         List<ProductQueryResponse> products = productQueryService.findProductByOrder(categoryId,
-                subCategoryId, ProductQueryOrderType.valueOf(orderType));
-        return ResponseEntity.ok(new PagingDataResponse<>(products.size(), products));
+                subCategoryId, ProductQueryOrderType.valueOf(orderType), limit, offset);
+        int totalCount = productQueryService.getTotalCount(categoryId, subCategoryId);
+
+        return ResponseEntity.ok(new PagingDataResponse<>(totalCount, products));
     }
 
     @GetMapping("/search-products")

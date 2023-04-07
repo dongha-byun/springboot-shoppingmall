@@ -11,6 +11,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
@@ -138,18 +142,7 @@ class ProductQueryRepositoryTest {
     @DisplayName("상품 페이징 테스트 - 7개 중 뒤에 3개 조회(limit : 3 / offset : 4)")
     void paging_test() {
         // given
-        productRepository.save(
-                new Product("생선4", 1500, 12, 3.0, 15, now.plusDays(3),
-                        category, subCategory));
-        productRepository.save(
-                new Product("생선5", 1500, 12, 3.0, 15, now.plusDays(4),
-                        category, subCategory));
-        productRepository.save(
-                new Product("생선6", 1500, 12, 3.0, 15, now.plusDays(5),
-                        category, subCategory));
-        productRepository.save(
-                new Product("생선7", 1500, 12, 3.0, 15, now.plusDays(6),
-                        category, subCategory));
+        saveMoreProducts();
 
         // when
         // 7 개 중 뒤에 3개 조회이므로, 가장 나중에 등록된 3개가 최신순으로 조회되면 됨
@@ -163,5 +156,32 @@ class ProductQueryRepositoryTest {
         assertThat(ids).containsExactly(
                 생선3.getId(), 생선2.getId(), 생선1.getId()
         );
+    }
+
+    @Test
+    @DisplayName("총 상품 갯수 조회")
+    void total_count_test() {
+        // given
+
+        // when
+        int totalCount = productQueryRepository.countByCategoryAndSubCategory(category, subCategory);
+
+        // then
+        assertThat(totalCount).isEqualTo(3);
+    }
+
+    private void saveMoreProducts() {
+        productRepository.save(
+                new Product("생선4", 1500, 12, 3.0, 15, now.plusDays(3),
+                        category, subCategory));
+        productRepository.save(
+                new Product("생선5", 1500, 12, 3.0, 15, now.plusDays(4),
+                        category, subCategory));
+        productRepository.save(
+                new Product("생선6", 1500, 12, 3.0, 15, now.plusDays(5),
+                        category, subCategory));
+        productRepository.save(
+                new Product("생선7", 1500, 12, 3.0, 15, now.plusDays(6),
+                        category, subCategory));
     }
 }

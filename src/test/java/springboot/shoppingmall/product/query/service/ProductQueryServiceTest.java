@@ -180,4 +180,16 @@ class ProductQueryServiceTest {
                 "반바지 3", "반바지 2", "반바지", "조거팬츠"
         );
     }
+
+    @Test
+    @DisplayName("총 상품 갯수 조회")
+    void total_count_test() {
+        // given
+
+        // when
+        int totalCount = productQueryService.getTotalCount(category.getId(), subCategory.getId());
+
+        // then
+        assertThat(totalCount).isEqualTo(14);
+    }
 }

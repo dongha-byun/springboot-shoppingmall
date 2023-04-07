@@ -106,12 +106,58 @@ public class ProductQueryAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    /**
+     *  given: 상품들이 등록되어 있음.
+     *  when: 특정 페이지의 목록을 조회하면
+     *  then: 해당 페이지에 맞는 상품목록을 조회한다.
+     */
+    @Test
+    @DisplayName("상품 목록 조회 테스트 - 페이징")
+    void paging_products_test() {
+        // given
+        상품_등록_요청("육류01", 10000, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류02", 15000, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류03", 19000, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류04", 21000, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류05", 21900, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류06", 31200, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류07", 31500, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류08", 41100, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류09", 59900, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류10", 69100, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류11", 88000, 20, 식품.getId(), 육류.getId());
+
+        // when
+        ExtractableResponse<Response> 페이지_요청_결과 = 상품_목록_조회_요청_페이징(식품, 육류, ProductQueryOrderType.PRICE, 1, 10);
+
+        // then
+        assertThat(페이지_요청_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(페이지_요청_결과.jsonPath().getString("data[0].name")).isEqualTo("육류11");
+        assertThat(페이지_요청_결과.jsonPath().getInt("totalCount")).isEqualTo(11);
+    }
+
     private ExtractableResponse<Response> 상품_목록_조회_요청(CategoryResponse category, CategoryResponse subCategory, ProductQueryOrderType sortType) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/products?categoryId={categoryId}&subCategoryId={subCategoryId}&orderType={orderType}", category.getId(),
+                .when().get("/products?categoryId={categoryId}&subCategoryId={subCategoryId}&orderType={orderType}",
+                        category.getId(),
                         subCategory.getId(),
                         sortType.name())
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 상품_목록_조회_요청_페이징(CategoryResponse category, CategoryResponse subCategory,
+                                                          ProductQueryOrderType sortType, int limit, int offset) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/products?categoryId={categoryId}&subCategoryId={subCategoryId}&orderType={orderType}&limit={limit}&offset={offset}",
+                        category.getId(),
+                        subCategory.getId(),
+                        sortType.name(),
+                        limit,
+                        offset
+                )
                 .then().log().all()
                 .extract();
     }

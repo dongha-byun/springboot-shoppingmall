@@ -37,6 +37,12 @@ public class ProductQueryService {
                 .collect(Collectors.toList());
     }
 
+    public int getTotalCount(Long categoryId, Long subCategoryId) {
+        Category category = getCategory(categoryId);
+        Category subCategory = getCategory(subCategoryId);
+        return productQueryRepository.countByCategoryAndSubCategory(category, subCategory);
+    }
+
     public List<ProductQueryResponse> searchProducts(Long categoryId, Long subCategoryId, String searchKeyword) {
         Category category = getCategory(categoryId);
         Category subCategory = getCategory(subCategoryId);
