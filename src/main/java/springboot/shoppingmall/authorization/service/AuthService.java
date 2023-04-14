@@ -8,6 +8,7 @@ import springboot.shoppingmall.authorization.domain.RefreshToken;
 import springboot.shoppingmall.authorization.domain.RefreshTokenRepository;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.authorization.exception.ExpireTokenException;
+import springboot.shoppingmall.authorization.exception.NotExistsRefreshTokenException;
 import springboot.shoppingmall.authorization.exception.TryLoginLockedUserException;
 import springboot.shoppingmall.authorization.exception.WrongPasswordException;
 import springboot.shoppingmall.user.domain.User;
@@ -49,11 +50,9 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenResponse logout(Long id){
+    public void logout(Long id){
         User user = userFinder.findUserById(id);
         refreshTokenRepository.deleteByUser(user);
-        String expireToken = jwtTokenProvider.createExpireToken();
-        return new TokenResponse(expireToken);
     }
 
     public AuthorizedUser getAuthorizedUser(String token, String ip){
@@ -85,7 +84,7 @@ public class AuthService {
     private RefreshToken findRefreshTokenByUser(User user) {
         return refreshTokenRepository.findByUser(user)
                 .orElseThrow(
-                        () -> new ExpireTokenException("인증 만료됨")
+                        () -> new NotExistsRefreshTokenException("not exists refresh token. please retry login.")
                 );
     }
 }

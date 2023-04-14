@@ -7,7 +7,7 @@ public class ManualJwtTokenExpireDurationStrategy implements JwtTokenExpireDurat
 
     @Override
     public long getAccessTokenExpireDuration() {
-        return 5 * 1000L; // 30 minute
+        return 5 * 60 * 1000L; // 5 minute
     }
 
     @Override

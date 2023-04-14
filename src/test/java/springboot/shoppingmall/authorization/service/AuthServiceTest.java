@@ -2,6 +2,7 @@ package springboot.shoppingmall.authorization.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Optional;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.authorization.AuthorizedUser;
 import springboot.shoppingmall.authorization.TestJwtTokenExpireDurationStrategy;
+import springboot.shoppingmall.authorization.domain.RefreshToken;
 import springboot.shoppingmall.authorization.domain.RefreshTokenRepository;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.authorization.exception.TryLoginLockedUserException;
@@ -66,11 +68,11 @@ class AuthServiceTest {
         authService.login("test", "test1!", "127.0.0.1");
 
         // when
-        TokenResponse expireToken = authService.logout(saveUser.getId());
+        authService.logout(saveUser.getId());
 
         // then
-        assertThat(jwtTokenProvider.validateExpireToken(expireToken.getAccessToken()))
-                .isFalse();
+        Optional<RefreshToken> token = refreshTokenRepository.findByUser(saveUser);
+        assertThat(token.isPresent()).isFalse();
     }
 
     @Test

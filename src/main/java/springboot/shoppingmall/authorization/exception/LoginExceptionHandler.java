@@ -18,4 +18,10 @@ public class LoginExceptionHandler {
         LoginFailResult loginFailResult = new LoginFailResult(e.getMessage());
         return ResponseEntity.badRequest().body(loginFailResult);
     }
+
+    @ExceptionHandler(NotExistsRefreshTokenException.class)
+    public ResponseEntity<LoginFailResult> notExistsRefreshTokenException(NotExistsRefreshTokenException e) {
+        LoginFailResult loginFailResult = new LoginFailResult(ErrorCode.NOT_EXISTS_REFRESH_TOKEN);
+        return ResponseEntity.badRequest().body(loginFailResult);
+    }
 }
