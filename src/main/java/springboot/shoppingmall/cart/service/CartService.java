@@ -9,17 +9,25 @@ import springboot.shoppingmall.cart.domain.Cart;
 import springboot.shoppingmall.cart.domain.CartRepository;
 import springboot.shoppingmall.cart.web.CartRequest;
 import springboot.shoppingmall.cart.web.CartResponse;
+import springboot.shoppingmall.product.domain.Product;
+import springboot.shoppingmall.product.domain.ProductFinder;
+import springboot.shoppingmall.user.domain.User;
+import springboot.shoppingmall.user.domain.UserFinder;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
 public class CartService {
     private final CartRepository cartRepository;
+    private final UserFinder userFinder;
+    private final ProductFinder productFinder;
 
     @Transactional
     public CartResponse create(Long userId, CartRequest cartRequest) {
+        Product product = productFinder.findProductById(cartRequest.getProductId());
+        User user = userFinder.findUserById(userId);
         Cart saveCart = cartRepository.save(
-                new Cart(cartRequest.getQuantity(), cartRequest.getProductId(), userId)
+                new Cart(cartRequest.getQuantity(), product, user)
         );
         return CartResponse.of(saveCart);
     }

@@ -69,6 +69,32 @@ public class CartAcceptanceTest extends AcceptanceTest {
         assertThat(장바구니_목록_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    /**
+     *  given: 기존에 장바구니에 상품이 등록되어 있음
+     *  And: 사용자가 로그인되어 있음
+     *  when: 사용자가 장바구니 목록을 조회하면
+     *  then: 장바구니 목록이 조회된다.
+     */
+    @Test
+    @DisplayName("장바구니 목록 조회 테스트")
+    void cart_list_test() {
+        // given
+        장바구니_추가_요청(로그인정보, 상품1, 3);
+        장바구니_추가_요청(로그인정보, 상품2, 1);
+
+        // when
+        ExtractableResponse<Response> 장바구니_목록_조회_요청 = 장바구니_목록_조회_요청(로그인정보);
+
+        // then
+        assertThat(장바구니_목록_조회_요청.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(장바구니_목록_조회_요청.jsonPath().getList("productName", String.class)).contains(
+                상품1.getName(), 상품2.getName()
+        );
+        assertThat(장바구니_목록_조회_요청.jsonPath().getList("price", Integer.class)).contains(
+                상품1.getPrice(), 상품2.getPrice()
+        );
+    }
+
     private ExtractableResponse<Response> 장바구니_삭제_요청(TokenResponse token, CartResponse cartResponse) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

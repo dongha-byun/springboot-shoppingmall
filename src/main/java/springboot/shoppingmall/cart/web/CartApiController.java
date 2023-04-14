@@ -36,6 +36,6 @@ public class CartApiController {
     @GetMapping("/carts")
     public ResponseEntity<List<CartResponse>> findAllCarts(@AuthenticationStrategy AuthorizedUser user){
         List<CartResponse> carts = cartService.findAllByUser(user.getId());
-        return ResponseEntity.ok(carts);
+        return ResponseEntity.ok().body(carts);
     }
 }

@@ -3,7 +3,6 @@ package springboot.shoppingmall.cart.web;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.product.dto.ProductResponse;
 import springboot.shoppingmall.cart.domain.Cart;
 
 @Getter
@@ -12,13 +11,17 @@ import springboot.shoppingmall.cart.domain.Cart;
 public class CartResponse {
     private Long id;
     private Long productId;
+    private String productName;
+    private int price;
     private int quantity;
 
-    public static CartResponse of(Cart saveCart) {
+    public static CartResponse of(Cart cart) {
         return new CartResponse(
-                saveCart.getId(),
-                saveCart.getProductId(),
-                saveCart.getQuantity()
+                cart.getId(),
+                cart.getProduct().getId(),
+                cart.getProduct().getName(),
+                cart.getProduct().getPrice(),
+                cart.getQuantity()
         );
     }
 }

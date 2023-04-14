@@ -14,11 +14,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.BaseEntity;
+import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.user.domain.User;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "basket")
+@Table(name = "carts")
 @Entity
 public class Cart extends BaseEntity {
 
@@ -29,16 +30,18 @@ public class Cart extends BaseEntity {
     @Column(nullable = false)
     private int quantity;
 
-    @Column(name = "product_id", nullable = false, unique = true)
-    private Long productId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private Product product;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Builder
-    public Cart(int quantity, Long productId, Long userId) {
+    public Cart(int quantity, Product product, User user) {
         this.quantity = quantity;
-        this.productId = productId;
-        this.userId = userId;
+        this.product = product;
+        this.user = user;
     }
 }
