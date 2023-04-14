@@ -6,8 +6,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import java.security.Key;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -18,8 +19,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider {
     private final JwtTokenExpireDurationStrategy expireDateStrategy;
-    //private String secretKey = "secret_key_of_dong_ha_do_not_snap_this";
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final SecretKey secretKey = Keys.hmacShaKeyFor("secret_key_of_dong_ha_do_not_snap_this".getBytes(StandardCharsets.UTF_8));
 
     // jwt 토큰 생성
     public String createAccessToken(Long userId, String accessIp) {
@@ -44,7 +44,7 @@ public class JwtTokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(now.getTime() + accessTokenValidTime))
-                .signWith(key)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -66,7 +66,7 @@ public class JwtTokenProvider {
     public String createExpireToken(){
         return Jwts.builder()
                 .setExpiration(new Date())
-                .signWith(key)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -79,7 +79,7 @@ public class JwtTokenProvider {
 
     private Claims getBodyOfToken(String accessToken) {
         return Jwts.parserBuilder()
-                .setSigningKey(key).build()
+                .setSigningKey(secretKey).build()
                 . parseClaimsJws(accessToken).getBody();
     }
 }
