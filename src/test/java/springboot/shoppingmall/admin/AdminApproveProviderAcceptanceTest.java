@@ -79,7 +79,7 @@ public class AdminApproveProviderAcceptanceTest extends AcceptanceTest {
         assertThat(판매_자격정지_결과.jsonPath().getBoolean("data.approved")).isFalse();
     }
 
-    private ExtractableResponse<Response> 판매_승인_요청(Long providerId) {
+    public static ExtractableResponse<Response> 판매_승인_요청(Long providerId) {
         return RestAssured.given().log().all()
                 .when().put("/admin/provider/{providerId}/approve", providerId)
                 .then().log().all()
