@@ -79,6 +79,43 @@ public class AdminApproveProviderAcceptanceTest extends AcceptanceTest {
         assertThat(판매_자격정지_결과.jsonPath().getBoolean("data.approved")).isFalse();
     }
 
+    /**
+     *  given: 판매자격 승인 요청을 한 판매업체가 다수 존재함
+     *  when: 판매자격 승인 요청을 한 판매업체의 목록을 조회하면
+     *  then: 판매자격 승인을 요쳥한 판매업체들의 목록이 모두 조회된다.
+     */
+    @Test
+    @DisplayName("판매자격 승인 요청을 한 판매업체 목록을 조회한다.")
+    void find_all_partners() {
+        // given
+        for(int i=1; i<=5; i++) {
+            판매_승인요청_등록_요청("판매업체"+i, "대표님"+i, "110-22-33221"+i
+                    , "02-3432-123"+i, "서울시 영등포구"
+                    , "partner"+i, "partner1!", "partner1!");
+        }
+
+        // then
+        ExtractableResponse<Response> 판매자격_승인_요청_목록_요청_결과 = RestAssured.given().log().all()
+                .when().get("/admin/partners")
+                .then().log().all()
+                .extract();
+
+        // when
+        assertThat(판매자격_승인_요청_목록_요청_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(판매자격_승인_요청_목록_요청_결과.jsonPath().getList("name")).containsExactly(
+                "판매업체1", "판매업체2", "판매업체3", "판매업체4", "판매업체5"
+        );
+        assertThat(판매자격_승인_요청_목록_요청_결과.jsonPath().getList("ceoName")).containsExactly(
+                "대표님1", "대표님2", "대표님3", "대표님4", "대표님5"
+        );
+        assertThat(판매자격_승인_요청_목록_요청_결과.jsonPath().getList("telNo")).containsExactly(
+                "02-3432-1231", "02-3432-1232", "02-3432-1233", "02-3432-1234", "02-3432-1235"
+        );
+        assertThat(판매자격_승인_요청_목록_요청_결과.jsonPath().getList("corporateRegistrationNumber")).containsExactly(
+                "110-22-332211", "110-22-332212", "110-22-332213", "110-22-332214", "110-22-332215"
+        );
+    }
+
     public static ExtractableResponse<Response> 판매_승인_요청(Long providerId) {
         return RestAssured.given().log().all()
                 .when().put("/admin/provider/{providerId}/approve", providerId)

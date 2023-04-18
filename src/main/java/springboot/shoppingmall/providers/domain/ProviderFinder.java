@@ -1,5 +1,6 @@
 package springboot.shoppingmall.providers.domain;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,5 +15,9 @@ public class ProviderFinder {
                 .orElseThrow(
                         () -> new IllegalArgumentException("판매자 조회 오류")
                 );
+    }
+
+    public List<Provider> findAll() {
+        return repository.findAll();
     }
 }

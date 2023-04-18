@@ -2,6 +2,8 @@ package springboot.shoppingmall.admin.service;
 
 import static springboot.shoppingmall.providers.dto.ProviderDto.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +15,13 @@ import springboot.shoppingmall.providers.dto.ProviderDto;
 @Service
 public class AdminProviderService {
     private final ProviderFinder providerFinder;
+
+    public List<ProviderDto> findAllPartners() {
+        return providerFinder.findAll()
+                .stream()
+                .map(ProviderDto::of)
+                .collect(Collectors.toList());
+    }
 
     @Transactional
     public ProviderDto approveProvider(Long providerId) {
