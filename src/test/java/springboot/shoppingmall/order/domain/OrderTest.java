@@ -17,7 +17,10 @@ public class OrderTest {
 
     @BeforeEach
     void beforeEach() {
-        product = new Product(1L, "상품1", 12000, 22, 0.0, 0, LocalDateTime.now(), new Category("상위 카테고리"), new Category("하위 카테고리"));
+        product = new Product(
+                1L, "상품1", 12000, 22, 0.0, 0
+                , LocalDateTime.now(), new Category("상위 카테고리"), new Category("하위 카테고리"), 100L
+        );
         delivery = Delivery.builder()
                 .nickName("수령지 1").receiverName("수령인 1").zipCode("10010")
                 .address("서울시 동작구 사당동").detailAddress("101호").requestMessage("도착 시 연락주세요.").build();

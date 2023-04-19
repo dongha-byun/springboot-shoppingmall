@@ -15,11 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
 import springboot.shoppingmall.category.dto.CategoryResponse;
-import springboot.shoppingmall.product.dto.ProductRequest;
 import springboot.shoppingmall.product.dto.ProductResponse;
 
 public class ProductAcceptanceTest extends AcceptanceTest {
-
     CategoryResponse 식품;
     CategoryResponse 육류;
     CategoryResponse 생선;
@@ -37,6 +35,7 @@ public class ProductAcceptanceTest extends AcceptanceTest {
      * Feature: 상품을 등록한다.
      *  background
      *      given: 카테고리가 미리 등록되어 있음
+     *      and : 판매자격이 승인된 판매자 계정이 로그인되어 있음
      *
      *  Scenario: 상품을 등록한다.
      *      given: 상품정보를 입력하고
@@ -50,10 +49,12 @@ public class ProductAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> 상품_등록_요청_결과 = 상품_등록_요청("한돈 돼지고기", 10000, 100 , 식품.getId(), 육류.getId());
+        ProductResponse 상품 = 상품_등록_요청_결과.as(ProductResponse.class);
 
         // then
-        ExtractableResponse<Response> 상품_조회_요청_결과 = 상품_조회_요청(상품_등록_요청_결과);
+        ExtractableResponse<Response> 상품_조회_요청_결과 = 상품_조회_요청(상품.getId());
         assertThat(상품_조회_요청_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(상품_조회_요청_결과.jsonPath().getLong("partnerId")).isNotNull();
     }
 
     public static ExtractableResponse<Response> 상품_등록_요청(String productName, int price, int count, Long categoryId, Long subCategoryId) {
@@ -67,20 +68,18 @@ public class ProductAcceptanceTest extends AcceptanceTest {
 
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .headers(createAuthorizationHeader(로그인정보))
+                .headers(createAuthorizationHeader(판매자_로그인토큰))
                 .body(params)
                 .when().post("/products")
                 .then().log().all()
                 .extract();
     }
 
-    private ExtractableResponse<Response> 상품_조회_요청(ExtractableResponse<Response> response) {
-        ProductResponse productResponse = response.as(ProductResponse.class);
-
+    private ExtractableResponse<Response> 상품_조회_요청(Long productId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers(createAuthorizationHeader(로그인정보))
-                .when().get("/products/{id}", productResponse.getId())
+                .when().get("/products/{id}", productId)
                 .then().log().all()
                 .extract();
     }

@@ -20,7 +20,7 @@ public class ProductRequest {
     @NotNull
     private Long subCategoryId;
 
-    public static Product toProduct(ProductRequest productRequest, Category category, Category subCategory){
-        return new Product(productRequest.getName(), productRequest.getPrice(), productRequest.getCount(), category, subCategory);
+    public static Product toProduct(ProductRequest productRequest, Category category, Category subCategory, Long partnerId){
+        return new Product(productRequest.getName(), productRequest.getPrice(), productRequest.getCount(), category, subCategory, partnerId);
     }
 }

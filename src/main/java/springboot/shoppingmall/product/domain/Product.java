@@ -54,6 +54,9 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "sub_category_id")
     private Category subCategory;
 
+    @Column(name = "partner_id")
+    private Long partnerId;
+
     @Embedded
     private final ProductReviews reviews = new ProductReviews();
 
@@ -63,16 +66,24 @@ public class Product extends BaseEntity {
     @OneToMany(mappedBy = "product")
     private final List<ProductDetail> details = new ArrayList<>();
 
-    @Builder
     public Product(String name, int price, int count, Category category, Category subCategory) {
-        this(null, name, price, count, 0.0, 0, LocalDateTime.now(), category, subCategory);
+        this(name, price, count, 0.0, 0, LocalDateTime.now(), category, subCategory);
     }
 
     public Product(String name, int price, int count, double score, int salesVolume,LocalDateTime registerDate, Category category, Category subCategory) {
-        this(null, name, price, count, score, salesVolume, registerDate, category, subCategory);
+        this(null, name, price, count, score, salesVolume, registerDate, category, subCategory, null);
     }
 
-    public Product(Long id, String name, int price, int count, double score, int salesVolume, LocalDateTime registerDate, Category category, Category subCategory) {
+    @Builder
+    public Product(String name, int price, int count, Category category, Category subCategory, Long partnerId) {
+        this(null, name, price, count, 0.0, 0, LocalDateTime.now(), category, subCategory, partnerId);
+    }
+
+    public Product(String name, int price, int count, double score, int salesVolume,LocalDateTime registerDate, Category category, Category subCategory, Long partnerId) {
+        this(null, name, price, count, score, salesVolume, registerDate, category, subCategory, partnerId);
+    }
+
+    public Product(Long id, String name, int price, int count, double score, int salesVolume, LocalDateTime registerDate, Category category, Category subCategory, Long partnerId) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -82,6 +93,7 @@ public class Product extends BaseEntity {
         this.registerDate = registerDate;
         this.category = category;
         this.subCategory = subCategory;
+        this.partnerId = partnerId;
     }
 
     public void addQna(ProductQna productQna){

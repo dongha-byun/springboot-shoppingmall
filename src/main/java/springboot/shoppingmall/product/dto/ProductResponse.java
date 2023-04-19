@@ -15,9 +15,12 @@ public class ProductResponse {
     private int price;
     private CategoryResponse category;
     private CategoryResponse subCategory;
+    private Long partnerId;
 
     public static ProductResponse of(Product product){
-        return new ProductResponse(product.getId(), product.getName(), product.getPrice(),
-                CategoryResponse.of(product.getCategory()), CategoryResponse.of(product.getSubCategory()));
+        return new ProductResponse(product.getId(), product.getName(), product.getPrice()
+                , CategoryResponse.of(product.getCategory()), CategoryResponse.of(product.getSubCategory())
+                , product.getPartnerId()
+        );
     }
 }

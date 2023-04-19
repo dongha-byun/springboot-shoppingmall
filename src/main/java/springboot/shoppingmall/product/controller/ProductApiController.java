@@ -18,6 +18,8 @@ import springboot.shoppingmall.authorization.AuthorizedUser;
 import springboot.shoppingmall.product.dto.ProductRequest;
 import springboot.shoppingmall.product.dto.ProductResponse;
 import springboot.shoppingmall.product.service.ProductService;
+import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
+import springboot.shoppingmall.providers.authentication.LoginPartner;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,11 +28,11 @@ public class ProductApiController {
     private final ProductService productService;
 
     @PostMapping("/products")
-    public ResponseEntity<ProductResponse> createProduct(@AuthenticationStrategy AuthorizedUser user,
+    public ResponseEntity<ProductResponse> createProduct(@LoginPartner AuthorizedPartner partner,
                                                          @Validated @RequestBody ProductRequest productRequest,
                                                          BindingResult bindingResult){
 
-        ProductResponse productResponse = productService.saveProduct(productRequest);
+        ProductResponse productResponse = productService.saveProduct(partner.getId(), productRequest);
         return ResponseEntity.created(URI.create("/products/"+productResponse.getId())).body(productResponse);
     }
 

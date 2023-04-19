@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.product.domain.Product;
+import springboot.shoppingmall.providers.domain.Provider;
 import springboot.shoppingmall.user.domain.User;
 
 @Component
@@ -33,19 +34,31 @@ public class DataInitializer {
 
         @Transactional
         public void init(){
+            Provider provider1 = new Provider(
+                    "부실건설", "변부실", "서울시 영등포구", "02-1234-2222"
+                    , "110-33-444222", "qntlfrjstjf", "qntlfrjstjf1"
+            );
+            Provider provider2 = new Provider(
+                    "파산은행", "김파산", "부산광역시 사상구", "051-333-2222"
+                    , "251-89-698111", "vktksdmsgod", "vktksdmsgod1"
+            );
+            em.persist(provider1);
+            em.persist(provider2);
+
             insertUser();
             List<Category> categories = insertCategory();
-            insertProducts(categories);
+            insertProducts(categories, provider1, provider2);
         }
 
-        private void insertProducts(List<Category> categories) {
+        private void insertProducts(List<Category> categories, Provider... providers) {
             for (Category category : categories) {
                 Long categoryId = category.getId();
                 List<Category> subCategories = category.getSubCategories();
                 for (Category subCategory : subCategories) {
                     Long subCategoryId = subCategory.getId();
                     for(int i=1; i<=100; i++){
-                        em.persist(new Product("상품_"+categoryId+"_"+subCategoryId+"_"+i, 1234000, 321, category, subCategory));
+                        em.persist(new Product("상품_"+categoryId+"_"+subCategoryId+"_"+i, 190 * i
+                                , 321, category, subCategory, providers[i%2].getId()));
                     }
                 }
             }
