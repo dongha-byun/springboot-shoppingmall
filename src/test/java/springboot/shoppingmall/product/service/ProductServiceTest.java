@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
-import springboot.shoppingmall.product.dto.ProductRequest;
+import springboot.shoppingmall.product.dto.ProductDto;
 import springboot.shoppingmall.product.dto.ProductResponse;
 
 @Transactional
@@ -35,12 +35,14 @@ public class ProductServiceTest {
     @Test
     @DisplayName("상품 추가 테스트")
     void saveTest(){
-
         // given
-        ProductRequest productRequest = new ProductRequest("청바지", 20000, 100, category.getId(), subCategory.getId());
+        ProductDto dto =
+                new ProductDto("청바지", 20000, 100, "상품 설명입니다."
+                        , category.getId(), subCategory.getId(), 100L
+                        , "저장 시 적용될 파일명", "화면에 보여질 파일명(원래 파일명)");
 
         // when
-        ProductResponse productResponse = productService.saveProduct(100L, productRequest);
+        ProductResponse productResponse = productService.saveProduct(100L, dto);
 
         // then
         assertThat(productResponse.getId()).isNotNull();

@@ -74,10 +74,13 @@ public class ProductQueryAcceptanceTest extends AcceptanceTest {
         상품_등록_요청("육류3", 15000, 20, 식품.getId(), 육류.getId());
 
         // when
-        ExtractableResponse<Response> 높은_평점순_목록_조회_결과 = 상품_목록_조회_요청(식품, 육류, ProductQueryOrderType.SCORE);
+        ExtractableResponse<Response> 높은_평점순_목록_조회_결과 = 상품_목록_조회_요청(식품, 육류, ProductQueryOrderType.RECENT);
 
         // then
         assertThat(높은_평점순_목록_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(높은_평점순_목록_조회_결과.jsonPath().getList("data.name")).containsExactly(
+                "육류3", "육류2", "육류1"
+        );
     }
 
     /**
@@ -151,6 +154,7 @@ public class ProductQueryAcceptanceTest extends AcceptanceTest {
                                                           ProductQueryOrderType sortType, int limit, int offset) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/products?categoryId={categoryId}&subCategoryId={subCategoryId}&orderType={orderType}&limit={limit}&offset={offset}",
                         category.getId(),
                         subCategory.getId(),

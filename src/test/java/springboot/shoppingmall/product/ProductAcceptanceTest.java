@@ -3,9 +3,19 @@ package springboot.shoppingmall.product;
 import static org.assertj.core.api.Assertions.*;
 import static springboot.shoppingmall.category.CategoryAcceptanceTest.*;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
+import io.restassured.builder.MultiPartSpecBuilder;
+import io.restassured.config.EncoderConfig;
+import io.restassured.mapper.ObjectMapperType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.specification.MultiPartSpecification;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +23,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MimeType;
+import org.springframework.util.MultiValueMap;
 import springboot.shoppingmall.AcceptanceTest;
 import springboot.shoppingmall.category.dto.CategoryResponse;
+import springboot.shoppingmall.product.dto.ProductRequest;
 import springboot.shoppingmall.product.dto.ProductResponse;
 
 public class ProductAcceptanceTest extends AcceptanceTest {
@@ -48,7 +63,7 @@ public class ProductAcceptanceTest extends AcceptanceTest {
         // given
 
         // when
-        ExtractableResponse<Response> 상품_등록_요청_결과 = 상품_등록_요청("한돈 돼지고기", 10000, 100 , 식품.getId(), 육류.getId());
+        ExtractableResponse<Response> 상품_등록_요청_결과 = 상품_등록_요청_이미지_포함("한돈 돼지고기", 10000, 100 , 식품.getId(), 육류.getId());
         ProductResponse 상품 = 상품_등록_요청_결과.as(ProductResponse.class);
 
         // then
@@ -57,22 +72,48 @@ public class ProductAcceptanceTest extends AcceptanceTest {
         assertThat(상품_조회_요청_결과.jsonPath().getLong("partnerId")).isNotNull();
     }
 
-    public static ExtractableResponse<Response> 상품_등록_요청(String productName, int price, int count, Long categoryId, Long subCategoryId) {
+    public static ExtractableResponse<Response> 상품_등록_요청_이미지_포함(String productName, int price, int count, Long categoryId, Long subCategoryId) {
+        MultiPartSpecification data = getDataOfMultipart(productName, price, count,
+                categoryId, subCategoryId);
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", productName);
-        params.put("price", price);
-        params.put("count", count);
-        params.put("categoryId", categoryId);
-        params.put("subCategoryId", subCategoryId);
-
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .headers(createAuthorizationHeader(판매자_로그인토큰))
-                .body(params)
+                .multiPart(data)
+                .multiPart("file", "test.png", "image content".getBytes(StandardCharsets.UTF_8))
+                .when()
+                .post("/products")
+                .then()
+                .log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 상품_등록_요청(String productName, int price, int count, Long categoryId, Long subCategoryId) {
+        MultiPartSpecification data = getDataOfMultipart(productName, price, count,
+                categoryId, subCategoryId);
+
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .headers(createAuthorizationHeader(판매자_로그인토큰))
+                .multiPart(data)
+                .multiPart("file", "test.png", "".getBytes(StandardCharsets.UTF_8))
                 .when().post("/products")
                 .then().log().all()
                 .extract();
+    }
+
+    private static MultiPartSpecification getDataOfMultipart(String productName, int price, int count,
+                                                                    Long categoryId, Long subCategoryId) {
+        ProductRequest productRequest = new ProductRequest(
+                productName, price, count, categoryId, subCategoryId, "상품 설명 입니다."
+        );
+        return new MultiPartSpecBuilder(productRequest, ObjectMapperType.JACKSON_2)
+                .controlName("data")
+                .mimeType(MediaType.APPLICATION_JSON_VALUE)
+                .charset("UTF-8")
+                .build();
     }
 
     private ExtractableResponse<Response> 상품_조회_요청(Long productId) {

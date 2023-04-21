@@ -16,11 +16,12 @@ public class ProductResponse {
     private CategoryResponse category;
     private CategoryResponse subCategory;
     private Long partnerId;
+    private String thumbnail;
 
     public static ProductResponse of(Product product){
         return new ProductResponse(product.getId(), product.getName(), product.getPrice()
                 , CategoryResponse.of(product.getCategory()), CategoryResponse.of(product.getSubCategory())
-                , product.getPartnerId()
+                , product.getPartnerId(), product.getThumbnail()
         );
     }
 }

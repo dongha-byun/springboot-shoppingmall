@@ -58,6 +58,9 @@ public class Product extends BaseEntity {
     private Long partnerId;
 
     @Embedded
+    private ProductThumbnail thumbnail;
+
+    @Embedded
     private final ProductReviews reviews = new ProductReviews();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -70,20 +73,39 @@ public class Product extends BaseEntity {
         this(name, price, count, 0.0, 0, LocalDateTime.now(), category, subCategory);
     }
 
-    public Product(String name, int price, int count, double score, int salesVolume,LocalDateTime registerDate, Category category, Category subCategory) {
-        this(null, name, price, count, score, salesVolume, registerDate, category, subCategory, null);
+    public Product(String name, int price, int count, double score, int salesVolume
+            , LocalDateTime registerDate, Category category, Category subCategory) {
+        this(null, name, price, count, score, salesVolume
+                , registerDate, category, subCategory, null, null, null);
     }
 
     @Builder
-    public Product(String name, int price, int count, Category category, Category subCategory, Long partnerId) {
-        this(null, name, price, count, 0.0, 0, LocalDateTime.now(), category, subCategory, partnerId);
+    public Product(String name, int price, int count, Category category, Category subCategory
+            , Long partnerId, String storedFileName, String viewFileName) {
+        this(null, name, price, count, 0.0, 0, LocalDateTime.now(), category, subCategory
+                , partnerId, storedFileName, viewFileName);
     }
 
-    public Product(String name, int price, int count, double score, int salesVolume,LocalDateTime registerDate, Category category, Category subCategory, Long partnerId) {
-        this(null, name, price, count, score, salesVolume, registerDate, category, subCategory, partnerId);
+    public Product(String name, int price, int count, double score, int salesVolume,LocalDateTime registerDate
+            , Category category, Category subCategory, Long partnerId) {
+        this(null, name, price, count, score, salesVolume, registerDate
+                , category, subCategory, partnerId, null, null);
     }
 
-    public Product(Long id, String name, int price, int count, double score, int salesVolume, LocalDateTime registerDate, Category category, Category subCategory, Long partnerId) {
+    public Product(String name, int price, int count, double score, int salesVolume, LocalDateTime registerDate
+            , Category category, Category subCategory, Long partnerId, String storedFileName, String viewFileName) {
+        this(null, name, price, count, score, salesVolume, registerDate
+                , category, subCategory, partnerId, storedFileName, viewFileName);
+    }
+
+    public Product(Long id, String name, int price, int count, double score, int salesVolume, LocalDateTime registerDate
+            , Category category, Category subCategory, Long partnerId) {
+        this(id, name, price, count, score, salesVolume, registerDate, category
+                , subCategory, partnerId, null, null);
+    }
+
+    public Product(Long id, String name, int price, int count, double score, int salesVolume, LocalDateTime registerDate
+            , Category category, Category subCategory, Long partnerId, String storedFileName, String viewFileName) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -94,6 +116,7 @@ public class Product extends BaseEntity {
         this.category = category;
         this.subCategory = subCategory;
         this.partnerId = partnerId;
+        this.thumbnail = new ProductThumbnail(storedFileName, viewFileName);
     }
 
     public void addQna(ProductQna productQna){
@@ -124,5 +147,12 @@ public class Product extends BaseEntity {
 
     public void refreshScore() {
         this.score = reviews.getAverageScore();
+    }
+
+    public String getThumbnail() {
+        if(this.thumbnail == null){
+            return "";
+        }
+        return this.thumbnail.getStoredFileName();
     }
 }
