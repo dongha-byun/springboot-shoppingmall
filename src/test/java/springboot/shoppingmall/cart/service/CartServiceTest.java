@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.cart.dto.CartDto;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.domain.Product;
@@ -78,7 +79,7 @@ class CartServiceTest {
         cartService.create(saveUser.getId(), new CartRequest(5, product3.getId()));
 
         // when
-        List<CartResponse> carts = cartService.findAllByUser(saveUser.getId());
+        List<CartDto> carts = cartService.findAllByUser(saveUser.getId());
 
         // then
         assertThat(carts).hasSize(3);
@@ -95,7 +96,7 @@ class CartServiceTest {
         cartService.delete(saveUser.getId(), cartResponse.getId());
 
         // then
-        List<CartResponse> carts = cartService.findAllByUser(saveUser.getId());
+        List<CartDto> carts = cartService.findAllByUser(saveUser.getId());
         assertThat(carts).hasSize(1);
     }
 
