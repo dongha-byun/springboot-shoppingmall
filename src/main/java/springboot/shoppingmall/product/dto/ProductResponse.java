@@ -13,13 +13,14 @@ public class ProductResponse {
     private Long id;
     private String name;
     private int price;
+    private int count;
     private CategoryResponse category;
     private CategoryResponse subCategory;
     private Long partnerId;
     private String thumbnail;
 
     public static ProductResponse of(Product product){
-        return new ProductResponse(product.getId(), product.getName(), product.getPrice()
+        return new ProductResponse(product.getId(), product.getName(), product.getPrice(), product.getCount()
                 , CategoryResponse.of(product.getCategory()), CategoryResponse.of(product.getSubCategory())
                 , product.getPartnerId(), product.getThumbnail()
         );

@@ -31,15 +31,15 @@ public class ProductTest {
     }
 
     @Test
-    @DisplayName("판매량 증가 테스트")
+    @DisplayName("판매량 증가 테스트 - 판매한 상품 갯수만큼 총 판매수량을 증가시킨다.")
     void increaseSalesVolumeTest() {
         // given
         Product product = new Product(1L, "상품1", 12000, 22, 0.0, 0, LocalDateTime.now(), new Category("상위 카테고리"), new Category("하위 카테고리"), 100L);
 
         // when
-        product.increaseSalesVolume();
+        product.increaseSalesVolume(3);
 
         // then
-        assertThat(product.getSalesVolume()).isEqualTo(1);
+        assertThat(product.getSalesVolume()).isEqualTo(3);
     }
 }

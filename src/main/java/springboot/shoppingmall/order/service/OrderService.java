@@ -6,11 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderFinder;
 import springboot.shoppingmall.order.domain.OrderRepository;
-import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
 import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.domain.Product;
+import springboot.shoppingmall.product.domain.ProductFinder;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.user.domain.Delivery;
 import springboot.shoppingmall.user.domain.DeliveryRepository;
@@ -24,7 +24,7 @@ public class OrderService {
 
     private final UserFinder userFinder;
     private final OrderFinder orderFinder;
-    private final ProductRepository productRepository;
+    private final ProductFinder productFinder;
     private final OrderRepository orderRepository;
     private final DeliveryRepository deliveryRepository;
     private final OrderDeliveryInterfaceService orderDeliveryInterfaceService;
@@ -32,10 +32,13 @@ public class OrderService {
     @Transactional
     public OrderResponse createOrder(Long userId, OrderRequest orderRequest) {
         User user = userFinder.findUserById(userId);
-        Product product = findProductById(orderRequest.getProductId());
+        Product product = productFinder.findProductById(orderRequest.getProductId());
         Delivery delivery = findDeliveryById(orderRequest.getDeliveryId());
 
         Order newOrder = orderRepository.save(Order.createOrder(user.getId(), product, orderRequest.getQuantity(), delivery));
+
+        // 상품 주문이 완료되면, 상품의 재고 수를 변경한다.
+        product.removeCount(newOrder.getQuantity());
 
         return OrderResponse.of(newOrder);
     }
@@ -45,6 +48,10 @@ public class OrderService {
     public OrderResponse cancel(Long orderId) {
         Order order = orderFinder.findOrderById(orderId);
         order.cancel();
+
+        // 주문된 상품이 주문 취소되면, 상품의 재고 수량을 다시 증가시킨다.
+        Product product = order.getProduct();
+        product.increaseCount(order.getQuantity());
 
         return OrderResponse.of(order);
     }
@@ -69,7 +76,7 @@ public class OrderService {
 
         // 구매확정 시, 상품 판매 수량이 증가한다.
         Product product = order.getProduct();
-        product.increaseSalesVolume();
+        product.increaseSalesVolume(order.getQuantity());
 
         return OrderResponse.of(order);
     }
@@ -98,6 +105,10 @@ public class OrderService {
         Order order = orderFinder.findOrderById(orderId);
         order.refundEnd();
 
+        // 환불 시, 주문 수량 만큼 수량을 증가시킨다.
+        Product product = order.getProduct();
+        product.increaseCount(order.getQuantity());
+
         return OrderResponse.of(order);
     }
 
@@ -116,8 +127,4 @@ public class OrderService {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    private Product findProductById(Long productId) {
-        return productRepository.findById(productId)
-                .orElseThrow(IllegalArgumentException::new);
-    }
 }

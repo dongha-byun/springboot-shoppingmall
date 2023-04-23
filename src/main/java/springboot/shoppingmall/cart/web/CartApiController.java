@@ -2,6 +2,7 @@ package springboot.shoppingmall.cart.web;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
+import springboot.shoppingmall.cart.dto.CartDto;
 import springboot.shoppingmall.cart.service.CartService;
 
 @RequiredArgsConstructor
@@ -34,8 +36,11 @@ public class CartApiController {
     }
 
     @GetMapping("/carts")
-    public ResponseEntity<List<CartResponse>> findAllCarts(@AuthenticationStrategy AuthorizedUser user){
-        List<CartResponse> carts = cartService.findAllByUser(user.getId());
-        return ResponseEntity.ok().body(carts);
+    public ResponseEntity<List<CartQueryResponse>> findAllCarts(@AuthenticationStrategy AuthorizedUser user){
+        List<CartDto> carts = cartService.findAllByUser(user.getId());
+        List<CartQueryResponse> cartQueryResponses = carts.stream()
+                .map(CartQueryResponse::of)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok().body(cartQueryResponses);
     }
 }

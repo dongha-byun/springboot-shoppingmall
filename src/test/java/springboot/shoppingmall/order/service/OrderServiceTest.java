@@ -45,6 +45,8 @@ class OrderServiceTest {
     @Autowired
     CategoryRepository categoryRepository;
 
+    int productCount = 10;
+
     @BeforeEach
     void beforeEach() {
         user = User.builder()
@@ -59,14 +61,15 @@ class OrderServiceTest {
 
         Category category = categoryRepository.save(new Category("상위 1"));
         Category subCategory = categoryRepository.save(new Category("하위 1").changeParent(category));
-        product = productRepository.save(new Product("상품 1", 22000, 10, category, subCategory));
+        product = productRepository.save(new Product("상품 1", 22000, productCount, category, subCategory));
     }
 
     @Test
     @DisplayName("주문 준비중 테스트")
     void createTest() {
         // given
-        OrderRequest orderRequest = new OrderRequest(product.getId(), 3, 3000, delivery.getId());
+        int quantity = 3;
+        OrderRequest orderRequest = new OrderRequest(product.getId(), quantity, 3000, delivery.getId());
 
         // when
         OrderResponse orderResponse = orderService.createOrder(user.getId(), orderRequest);
@@ -75,16 +78,21 @@ class OrderServiceTest {
         assertThat(orderResponse.getId()).isNotNull();
         assertThat(orderResponse.getOrderStatusName()).isEqualTo(OrderStatus.READY.getStatusName());
         assertThat(orderResponse.getProductName()).isEqualTo("상품 1");
-        assertThat(orderResponse.getQuantity()).isEqualTo(3);
+        assertThat(orderResponse.getQuantity()).isEqualTo(quantity);
         assertThat(orderResponse.getTotalPrice()).isEqualTo(66000);
         assertThat(orderResponse.getDelivery().getReceiverName()).isEqualTo("수령인 1");
+
+        // 상품 주문이 들어오면 수량을 1개 낮춘다.
+        assertThat(product.getCount()).isEqualTo(productCount - quantity);
+
     }
 
     @Test
     @DisplayName("주문 취소 테스트 - 준비중인 주문은 취소가 가능합니다.")
     void cancelTest() {
         // given
-        OrderRequest orderRequest = new OrderRequest(product.getId(), 3, 3000, delivery.getId());
+        int quantity = 3;
+        OrderRequest orderRequest = new OrderRequest(product.getId(), quantity, 3000, delivery.getId());
         OrderResponse orderResponse = orderService.createOrder(user.getId(), orderRequest);
 
         // when
@@ -92,6 +100,9 @@ class OrderServiceTest {
 
         // then
         assertThat(cancelOrder.getOrderStatusName()).isEqualTo(OrderStatus.CANCEL.getStatusName());
+
+        // 주문을 취소하면 상품 갯수를 원래대로 되돌린다.
+        assertThat(product.getCount()).isEqualTo(productCount);
     }
 
     @Test
@@ -159,22 +170,6 @@ class OrderServiceTest {
         );
     }
 
-    private ThrowableAssertAlternative<IllegalArgumentException> 주문취소_변경_실패_검증(Order order) {
-        return assertThatIllegalArgumentException().isThrownBy(
-                () -> orderService.cancel(order.getId())
-        );
-    }
-
-    private ThrowableAssertAlternative<IllegalArgumentException> 출고중_변경_실패_검증(Order order) {
-        return assertThatIllegalArgumentException().isThrownBy(
-                () -> orderService.outing(order.getId())
-        );
-    }
-
-    private Order 특정_주문상태_데이터_생성(OrderStatus status) {
-        return orderRepository.save(new Order(user.getId(), product, 2, delivery, status));
-    }
-
     @Test
     @DisplayName("배송된 주문을 구매확정 처리 한다.")
     void finishOrderTest() {
@@ -186,8 +181,20 @@ class OrderServiceTest {
 
         // then
         assertThat(endOrder.getOrderStatus()).isEqualTo(OrderStatus.FINISH);
-        assertThat(endOrder.getProduct().getSalesVolume()).isEqualTo(1);
+    }
 
+    @Test
+    @DisplayName("주문이 구매확정 처리가 되면 상품 판매 수량이 증가한다.")
+    void finish_order_increase_sales() {
+        // given
+        Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.DELIVERY_END);
+
+        // when
+        orderService.finish(endOrder.getId());
+
+        // then
+        assertThat(endOrder.getOrderStatus()).isEqualTo(OrderStatus.FINISH);
+        assertThat(product.getSalesVolume()).isEqualTo(endOrder.getQuantity());
     }
 
     @Test
@@ -221,4 +228,22 @@ class OrderServiceTest {
         assertThat(findOrder.getOrderStatus()).isEqualTo(OrderStatus.EXCHANGE);
         assertThat(findOrder.getExchangeReason()).isEqualTo(exchangeReason);
     }
+
+
+    private ThrowableAssertAlternative<IllegalArgumentException> 주문취소_변경_실패_검증(Order order) {
+        return assertThatIllegalArgumentException().isThrownBy(
+                () -> orderService.cancel(order.getId())
+        );
+    }
+
+    private ThrowableAssertAlternative<IllegalArgumentException> 출고중_변경_실패_검증(Order order) {
+        return assertThatIllegalArgumentException().isThrownBy(
+                () -> orderService.outing(order.getId())
+        );
+    }
+
+    private Order 특정_주문상태_데이터_생성(OrderStatus status) {
+        return orderRepository.save(new Order(user.getId(), product, 2, delivery, status));
+    }
+
 }

@@ -66,7 +66,7 @@ public class Product extends BaseEntity {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<ProductQna> qna = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<ProductDetail> details = new ArrayList<>();
 
     public Product(String name, int price, int count, Category category, Category subCategory) {
@@ -133,8 +133,8 @@ public class Product extends BaseEntity {
                 );
     }
 
-    public void increaseSalesVolume(){
-        this.salesVolume++;
+    public void increaseSalesVolume(int salesCount){
+        this.salesVolume += salesCount;
     }
 
     public void addReview(ProductReview productReview) {
@@ -154,5 +154,15 @@ public class Product extends BaseEntity {
             return "";
         }
         return this.thumbnail.getStoredFileName();
+    }
+
+    // 상품의 재고 수를 감소시킨다.
+    public void removeCount(int quantity) {
+        this.count -= quantity;
+    }
+
+
+    public void increaseCount(int quantity) {
+        this.count += quantity;
     }
 }
