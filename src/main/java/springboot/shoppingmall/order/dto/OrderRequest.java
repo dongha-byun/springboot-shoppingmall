@@ -11,5 +11,10 @@ public class OrderRequest {
     private Long productId;
     private int quantity;
     private int deliveryFee;
-    private Long deliveryId;
+    private String receiverName;
+    private String zipCode;
+    private String address;
+    private String detailAddress;
+    private String requestMessage;
+    private int totalPrice;
 }

@@ -54,7 +54,11 @@ class OrderValidatorTest {
         Product product = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
         Delivery delivery = deliveryRepository.save(new Delivery("배송지1", "수령인1", "10010", "주소", "상세주소", "요청사항", user));
 
-        Order savedOrder = orderRepository.save(new Order(user.getId(), product, 2, delivery, OrderStatus.DELIVERY_END));
+        Order savedOrder = orderRepository.save(
+                new Order(user.getId(), product, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
+                        , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
+                        , delivery.getRequestMessage())
+        );
 
         // when
         orderValidator.validateOrderIsEnd(savedOrder.getId());

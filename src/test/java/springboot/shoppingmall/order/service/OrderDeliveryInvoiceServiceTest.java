@@ -86,6 +86,8 @@ class OrderDeliveryInvoiceServiceTest {
     }
 
     private Order 특정_주문상태_데이터_생성(OrderStatus status) {
-        return orderRepository.save(new Order(user.getId(), product, 2, delivery, status, invoiceNumber));
+        return orderRepository.save(new Order(user.getId(), product, 2, status, delivery.getReceiverName()
+                , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
+                , delivery.getRequestMessage(), invoiceNumber));
     }
 }

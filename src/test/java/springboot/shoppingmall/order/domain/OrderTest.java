@@ -32,7 +32,9 @@ public class OrderTest {
         // given
 
         // when
-        Order order = Order.createOrder(1L, product, 2, delivery);
+        Order order = Order.createOrder(1L, product, 2, delivery.getReceiverName()
+                , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
+                , delivery.getRequestMessage());
 
         // then
         assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.READY);
@@ -42,7 +44,9 @@ public class OrderTest {
     @DisplayName("2. 상품 출고 - 준비중인 주문이 출고중 상태가 된다.")
     void outing_order() {
         // given
-        Order order = Order.createOrder(1L, product, 2, delivery);
+        Order order = Order.createOrder(1L, product, 2, delivery.getReceiverName()
+                , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
+                , delivery.getRequestMessage());
 
         // when
         order.outing();
@@ -56,7 +60,9 @@ public class OrderTest {
     @DisplayName("3. 구매확정 - 배송완료된 주문을 구매확정 처리한다.")
     void finish_order() {
         // given
-        Order order = new Order(1L, product, 2, delivery, OrderStatus.DELIVERY_END);
+        Order order = new Order(1L, product, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
+                , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
+                , delivery.getRequestMessage());
 
         // when
         order.finish();
@@ -69,7 +75,9 @@ public class OrderTest {
     @DisplayName("4. 환불신청 - 배송이 완료된 주문에 대해 환불을 신청할 수 있다.")
     void refund_order() {
         // given
-        Order order = new Order(1L, product, 2, delivery, OrderStatus.DELIVERY_END);
+        Order order = new Order(1L, product, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
+                , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
+                , delivery.getRequestMessage());
         String refundReason = "환불 요청 합니다. 배송이 잘못왔어요.";
 
         // when
@@ -84,7 +92,9 @@ public class OrderTest {
     @DisplayName("4-1. 환불신청 오류 - 환불사유가 없는 경우, 환불신청이 불가하다.")
     void refund_order_fail() {
         // given
-        Order order = new Order(1L, product, 2, delivery, OrderStatus.DELIVERY_END);
+        Order order = new Order(1L, product, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
+                , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
+                , delivery.getRequestMessage());
         String emptyReason = "";
 
         // when & then
@@ -97,7 +107,9 @@ public class OrderTest {
     @DisplayName("5. 교환신청 - 배송이 완료된 주문에 대해 교환을 신청할 수 있다.")
     void exchange_order() {
         // given
-        Order order = new Order(1L, product, 2, delivery, OrderStatus.DELIVERY_END);
+        Order order = new Order(1L, product, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
+                , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
+                , delivery.getRequestMessage());
         String exchangeReason = "교환 신청 합니다. 사이즈가 안맞아요.";
 
         // when
@@ -112,7 +124,9 @@ public class OrderTest {
     @DisplayName("5-1. 교환신청 오류 - 교환사유가 없는 경우, 교환신청이 불가하다.")
     void exchange_order_fail() {
         // given
-        Order order = new Order(1L, product, 2, delivery, OrderStatus.DELIVERY_END);
+        Order order = new Order(1L, product, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
+                , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
+                , delivery.getRequestMessage());
         String emptyReason = "";
 
         // when & then

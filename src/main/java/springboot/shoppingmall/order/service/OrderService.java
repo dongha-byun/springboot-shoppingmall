@@ -11,9 +11,6 @@ import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
-import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.user.domain.Delivery;
-import springboot.shoppingmall.user.domain.DeliveryRepository;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserFinder;
 
@@ -26,16 +23,18 @@ public class OrderService {
     private final OrderFinder orderFinder;
     private final ProductFinder productFinder;
     private final OrderRepository orderRepository;
-    private final DeliveryRepository deliveryRepository;
     private final OrderDeliveryInterfaceService orderDeliveryInterfaceService;
 
     @Transactional
     public OrderResponse createOrder(Long userId, OrderRequest orderRequest) {
         User user = userFinder.findUserById(userId);
         Product product = productFinder.findProductById(orderRequest.getProductId());
-        Delivery delivery = findDeliveryById(orderRequest.getDeliveryId());
 
-        Order newOrder = orderRepository.save(Order.createOrder(user.getId(), product, orderRequest.getQuantity(), delivery));
+        Order newOrder = orderRepository.save(
+                Order.createOrder(user.getId(), product, orderRequest.getQuantity()
+                , orderRequest.getReceiverName(), orderRequest.getZipCode(), orderRequest.getAddress()
+                , orderRequest.getDetailAddress(), orderRequest.getRequestMessage())
+        );
 
         // 상품 주문이 완료되면, 상품의 재고 수를 변경한다.
         product.removeCount(newOrder.getQuantity());
@@ -119,12 +118,6 @@ public class OrderService {
         order.exchange(exchangeReason);
 
         return OrderResponse.of(order);
-    }
-
-
-    private Delivery findDeliveryById(Long deliveryId) {
-        return deliveryRepository.findById(deliveryId)
-                .orElseThrow(IllegalArgumentException::new);
     }
 
 }

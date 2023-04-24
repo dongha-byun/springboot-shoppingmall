@@ -56,7 +56,11 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         User user = userRepository.findById(인수테스터1.getId()).orElseThrow();
         Delivery delivery = deliveryRepository.findById(배송지.getId()).orElseThrow();
 
-        Order order = orderRepository.save(new Order(user.getId(), product, 2, delivery, OrderStatus.DELIVERY_END));
+        Order order = orderRepository.save(
+                new Order(user.getId(), product, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
+                        , delivery.getZipCode(), delivery.getAddress()
+                        , delivery.getDetailAddress(), delivery.getRequestMessage())
+        );
         배송완료_주문 = OrderResponse.of(order);
     }
 

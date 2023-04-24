@@ -52,7 +52,11 @@ class OrderFinderTest {
     @DisplayName("id로 주문 조회 테스트")
     void findOrderById() {
         // given
-        Order order = orderRepository.save(new Order(user.getId(), product, 20, delivery, OrderStatus.READY));
+        Order order = orderRepository.save(
+                new Order(user.getId(), product, 20, OrderStatus.READY, delivery.getReceiverName()
+                        , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
+                        , delivery.getRequestMessage())
+        );
 
         // when
         Order findOrder = orderFinder.findOrderById(order.getId());
@@ -66,7 +70,11 @@ class OrderFinderTest {
     void findOrderByInvoiceNumber() {
         // given
         String invoiceNumber = "invoiceNumber1";
-        Order order = orderRepository.save(new Order(user.getId(), product, 20, delivery, OrderStatus.READY, invoiceNumber));
+        Order order = orderRepository.save(
+                new Order(user.getId(), product, 20, OrderStatus.READY, delivery.getReceiverName()
+                        , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
+                        , delivery.getRequestMessage(), invoiceNumber)
+        );
 
         // when
         Order findOrder = orderFinder.findOrderByInvoiceNumber(invoiceNumber);

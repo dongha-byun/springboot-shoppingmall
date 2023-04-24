@@ -69,7 +69,10 @@ class OrderServiceTest {
     void createTest() {
         // given
         int quantity = 3;
-        OrderRequest orderRequest = new OrderRequest(product.getId(), quantity, 3000, delivery.getId());
+        OrderRequest orderRequest
+                = new OrderRequest(product.getId(), quantity, 3000,
+                delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                delivery.getDetailAddress(), delivery.getRequestMessage(), 25000);
 
         // when
         OrderResponse orderResponse = orderService.createOrder(user.getId(), orderRequest);
@@ -80,7 +83,7 @@ class OrderServiceTest {
         assertThat(orderResponse.getProductName()).isEqualTo("상품 1");
         assertThat(orderResponse.getQuantity()).isEqualTo(quantity);
         assertThat(orderResponse.getTotalPrice()).isEqualTo(66000);
-        assertThat(orderResponse.getDelivery().getReceiverName()).isEqualTo("수령인 1");
+        assertThat(orderResponse.getReceiverName()).isEqualTo("수령인 1");
 
         // 상품 주문이 들어오면 수량을 1개 낮춘다.
         assertThat(product.getCount()).isEqualTo(productCount - quantity);
@@ -92,7 +95,9 @@ class OrderServiceTest {
     void cancelTest() {
         // given
         int quantity = 3;
-        OrderRequest orderRequest = new OrderRequest(product.getId(), quantity, 3000, delivery.getId());
+        OrderRequest orderRequest = new OrderRequest(product.getId(), quantity, 3000,
+                delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                delivery.getDetailAddress(), delivery.getRequestMessage(), 25000);
         OrderResponse orderResponse = orderService.createOrder(user.getId(), orderRequest);
 
         // when
@@ -243,7 +248,9 @@ class OrderServiceTest {
     }
 
     private Order 특정_주문상태_데이터_생성(OrderStatus status) {
-        return orderRepository.save(new Order(user.getId(), product, 2, delivery, status));
+        return orderRepository.save(new Order(user.getId(), product, 2, status, delivery.getReceiverName()
+                , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
+                , delivery.getRequestMessage()));
     }
 
 }

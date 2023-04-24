@@ -3,6 +3,7 @@ package springboot.shoppingmall.cart.service;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,9 @@ import springboot.shoppingmall.cart.web.CartResponse;
 @Transactional
 @SpringBootTest
 class CartServiceTest {
+
+    @Autowired
+    EntityManager em;
 
     @Autowired
     CartService cartService;

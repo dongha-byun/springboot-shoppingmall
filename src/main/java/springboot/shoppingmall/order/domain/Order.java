@@ -1,6 +1,5 @@
 package springboot.shoppingmall.order.domain;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,8 +18,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 import springboot.shoppingmall.BaseEntity;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.user.domain.Delivery;
-import springboot.shoppingmall.user.domain.User;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -48,9 +45,11 @@ public class Order extends BaseEntity {
 
     private int totalPrice;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "delivery_id")
-    private Delivery delivery;
+    private String receiverName;
+    private String zipCode;
+    private String address;
+    private String detailAddress;
+    private String requestMessage;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
@@ -58,30 +57,42 @@ public class Order extends BaseEntity {
     private String refundReason;
     private String exchangeReason;
 
-    public Order(Long userId, Product product, int quantity, Delivery delivery, OrderStatus orderStatus){
-        this(userId, product, quantity, delivery, orderStatus, null);
+    public Order(Long userId, Product product, int quantity, OrderStatus orderStatus, String receiverName,
+                 String zipCode, String address, String detailAddress, String requestMessage){
+        this(userId, product, quantity, orderStatus,
+                receiverName, zipCode, address, detailAddress, requestMessage, null);
     }
 
-    public Order(Long userId, Product product, int quantity, Delivery delivery, OrderStatus orderStatus, String invoiceNumber) {
+    public Order(Long userId, Product product, int quantity, OrderStatus orderStatus, String receiverName,
+                 String zipCode, String address, String detailAddress, String requestMessage, String invoiceNumber) {
         this.userId = userId;
         this.product = product;
         this.quantity = quantity;
         this.orderDate = LocalDateTime.now();
         this.orderStatus = orderStatus;
         this.totalPrice = product.getPrice() * quantity;
-        this.delivery = delivery;
+        this.receiverName = receiverName;
+        this.zipCode = zipCode;
+        this.address = address;
+        this.detailAddress = detailAddress;
+        this.requestMessage = requestMessage;
         this.invoiceNumber = invoiceNumber;
     }
 
-    public static Order createOrder(Long userId, Product product, int quantity, Delivery delivery){
+    public static Order createOrder(Long userId, Product product, int quantity, String receiverName,
+                                    String zipCode, String address, String detailAddress, String requestMessage){
         Order order = new Order();
         order.userId = userId;
         order.product = product;
         order.quantity = quantity;
         order.orderDate = LocalDateTime.now();
         order.orderStatus = OrderStatus.READY;
+        order.receiverName = receiverName;
+        order.zipCode = zipCode;
+        order.address = address;
+        order.detailAddress = detailAddress;
+        order.requestMessage = requestMessage;
         order.totalPrice = product.getPrice() * quantity;
-        order.delivery = delivery;
 
         return order;
     }

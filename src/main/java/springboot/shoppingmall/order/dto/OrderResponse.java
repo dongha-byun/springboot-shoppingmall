@@ -15,7 +15,11 @@ public class OrderResponse {
     private String productName;
     private int quantity;
     private int totalPrice;
-    private DeliveryResponse delivery;
+    private String receiverName;
+    private String zipCode;
+    private String address;
+    private String detailAddress;
+    private String requestMessage;
     private String invoiceNumber;
     private OrderDeliveryInvoiceResponse deliveryInvoice;
 
@@ -23,12 +27,14 @@ public class OrderResponse {
     public static OrderResponse of(Order order) {
         return new OrderResponse(order.getId(), order.getOrderStatus().getStatusName(),
                 order.getProduct().getName(), order.getQuantity(), order.getTotalPrice(),
-                DeliveryResponse.of(order.getDelivery()), order.getInvoiceNumber(), null);
+                order.getReceiverName(), order.getZipCode(), order.getAddress(),
+                order.getDetailAddress(), order.getRequestMessage(), order.getInvoiceNumber(), null);
     }
 
     public static OrderResponse of(Order order, OrderDeliveryInvoiceResponse deliveryInvoice) {
         return new OrderResponse(order.getId(), order.getOrderStatus().getStatusName(),
                 order.getProduct().getName(), order.getQuantity(), order.getTotalPrice(),
-                DeliveryResponse.of(order.getDelivery()), order.getInvoiceNumber(), deliveryInvoice);
+                order.getReceiverName(), order.getZipCode(), order.getAddress(),
+                order.getDetailAddress(), order.getRequestMessage(), order.getInvoiceNumber(), deliveryInvoice);
     }
 }
