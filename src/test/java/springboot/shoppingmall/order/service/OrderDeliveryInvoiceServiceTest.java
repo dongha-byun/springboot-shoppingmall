@@ -2,6 +2,7 @@ package springboot.shoppingmall.order.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -86,8 +87,9 @@ class OrderDeliveryInvoiceServiceTest {
     }
 
     private Order 특정_주문상태_데이터_생성(OrderStatus status) {
-        return orderRepository.save(new Order(user.getId(), product, 2, status, delivery.getReceiverName()
-                , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
+        return orderRepository.save(new Order(user.getId(), product, 2, LocalDateTime.now()
+                , status, product.getPrice() * 2
+                , delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
                 , delivery.getRequestMessage(), invoiceNumber));
     }
 }

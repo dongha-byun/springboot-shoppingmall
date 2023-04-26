@@ -9,12 +9,13 @@ import static springboot.shoppingmall.user.DeliveryAcceptanceTest.배송지_추�
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
-import java.util.Map;
-import org.assertj.core.api.Assertions;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
@@ -55,21 +56,32 @@ public class OrderHistoryAcceptanceTest extends AcceptanceTest {
     @DisplayName("주문 내역 조회 - 구매자")
     void orderHistoryTest(){
         // given
-        ExtractableResponse<Response> 주문_생성_결과 = 주문_생성_요청(상품, 3, 3000, 배송지);
+        LocalDateTime endLocalDateTime = LocalDateTime.now();
+        LocalDateTime startLocalDateTime = endLocalDateTime.minusMonths(3);
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        String startDate = startLocalDateTime.format(dateTimeFormatter);
+        String endDate = endLocalDateTime.format(dateTimeFormatter);
+
+        주문_생성_요청(상품, 3, 3000, 배송지);
 
         // when
-        ExtractableResponse<Response> 개인_주문_목록_조회_결과 = 개인_주문_목록_조회_요청();
+        ExtractableResponse<Response> 개인_주문_목록_조회_결과 = 개인_주문_목록_조회_요청(startDate, endDate);
 
         // then
         assertThat(개인_주문_목록_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(개인_주문_목록_조회_결과.jsonPath().getList("orderId")).hasSize(1);
     }
 
-    private ExtractableResponse<Response> 개인_주문_목록_조회_요청() {
+    private ExtractableResponse<Response> 개인_주문_목록_조회_요청(String startDate, String endDate) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers(createAuthorizationHeader(로그인정보))
-                .when().get("/user/orders")
+                .when().get("/user/orders"
+                                + "?startDate={startDate}"
+                                + "&endDate={endDate}",
+                        startDate,
+                        endDate)
                 .then().log().all()
                 .extract();
     }

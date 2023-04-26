@@ -7,26 +7,23 @@ import static org.mockito.Mockito.*;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.user.domain.OrderHistoryRepository;
 import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.user.domain.UserFinder;
 import springboot.shoppingmall.user.dto.OrderHistoryDto;
 
 @ExtendWith(MockitoExtension.class)
 class OrderHistoryServiceTest {
 
     @Mock
-    UserRepository userRepository;
+    UserFinder userFinder;
 
     @Mock
     OrderHistoryRepository orderHistoryRepository;
@@ -46,16 +43,16 @@ class OrderHistoryServiceTest {
     @Test
     @DisplayName("주문 내역 조회")
     void findOrderHistories(){
-        orderHistoryService = new OrderHistoryService(orderHistoryRepository, userRepository);
+        orderHistoryService = new OrderHistoryService(orderHistoryRepository, userFinder);
 
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
-        when(orderHistoryRepository.queryOrderHistory(any())).thenReturn(Arrays.asList(
+        when(userFinder.findUserById(any())).thenReturn(user);
+        when(orderHistoryRepository.queryOrderHistory(any(), any(), any())).thenReturn(Arrays.asList(
                 new OrderHistoryDto(100L, LocalDateTime.now(), OrderStatus.READY, "제품1", 23000),
                 new OrderHistoryDto(101L, LocalDateTime.now(), OrderStatus.READY, "제품2", 20000),
                 new OrderHistoryDto(102L, LocalDateTime.now(), OrderStatus.READY, "제품3", 13000)
         ));
 
-        List<OrderHistoryDto> orderHistory = orderHistoryService.findOrderHistory(user.getId());
+        List<OrderHistoryDto> orderHistory = orderHistoryService.findOrderHistory(user.getId(), LocalDateTime.now().minusMonths(3), LocalDateTime.now());
 
         assertThat(orderHistory).hasSize(3);
     }

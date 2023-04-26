@@ -59,18 +59,19 @@ public class Order extends BaseEntity {
 
     public Order(Long userId, Product product, int quantity, OrderStatus orderStatus, String receiverName,
                  String zipCode, String address, String detailAddress, String requestMessage){
-        this(userId, product, quantity, orderStatus,
+        this(userId, product, quantity, LocalDateTime.now(), orderStatus, quantity * product.getPrice(),
                 receiverName, zipCode, address, detailAddress, requestMessage, null);
     }
 
-    public Order(Long userId, Product product, int quantity, OrderStatus orderStatus, String receiverName,
-                 String zipCode, String address, String detailAddress, String requestMessage, String invoiceNumber) {
+    public Order(Long userId, Product product, int quantity, LocalDateTime orderDate, OrderStatus orderStatus,
+                 int totalPrice, String receiverName, String zipCode, String address, String detailAddress,
+                 String requestMessage, String invoiceNumber) {
         this.userId = userId;
         this.product = product;
         this.quantity = quantity;
-        this.orderDate = LocalDateTime.now();
+        this.orderDate = orderDate;
         this.orderStatus = orderStatus;
-        this.totalPrice = product.getPrice() * quantity;
+        this.totalPrice = totalPrice;
         this.receiverName = receiverName;
         this.zipCode = zipCode;
         this.address = address;
