@@ -9,11 +9,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryFinder;
-import springboot.shoppingmall.product.dto.ProductResponse;
 import springboot.shoppingmall.product.query.PagingDataResponse;
 import springboot.shoppingmall.product.query.ProductQueryOrderType;
 import springboot.shoppingmall.product.query.dto.ProductQueryResponse;
 import springboot.shoppingmall.product.query.service.ProductQueryService;
+import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
+import springboot.shoppingmall.providers.authentication.LoginPartner;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -62,5 +63,24 @@ public class ProductQueryApiController {
         List<ProductQueryResponse> products =
                 productQueryService.searchProducts(categoryId, subCategoryId, searchKeyword);
         return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/partners/products")
+    public ResponseEntity<PagingDataResponse<List<ProductQueryResponse>>> findAllPartnersProducts(
+            @LoginPartner AuthorizedPartner partner,
+            @RequestParam("categoryId") Long categoryId,
+            @RequestParam("subCategoryId") Long subCategoryId,
+            @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
+            @RequestParam(name = "offset", defaultValue = "0", required = false) int offset) {
+
+        Category category = categoryFinder.findById(categoryId);
+        Category subCategory = categoryFinder.findById(subCategoryId);
+        List<ProductQueryResponse> productQueryResponses = productQueryService.findPartnersProductsAll(partner.getId(),
+                categoryId, subCategoryId, limit, offset);
+        int count = productQueryService.countPartnersProducts(partner.getId(), categoryId, subCategoryId);
+
+        return ResponseEntity.ok().body(
+                new PagingDataResponse<>(count, category.getName(), subCategory.getName(),productQueryResponses)
+        );
     }
 }

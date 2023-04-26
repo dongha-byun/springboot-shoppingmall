@@ -13,10 +13,11 @@ public class ProductQueryResponse {
     private String name;
     private double score;
     private int price;
+    private int count;
     private String thumbnail;
 
     public static ProductQueryResponse of(Product product) {
-        return new ProductQueryResponse(product.getId(), product.getName()
-                , product.getScore(), product.getPrice(), product.getThumbnail());
+        return new ProductQueryResponse(product.getId(), product.getName(), product.getScore(),
+                product.getPrice(), product.getCount(), product.getThumbnail());
     }
 }

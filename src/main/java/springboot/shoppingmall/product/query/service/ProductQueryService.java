@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryFinder;
+import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.query.ProductQueryOrderType;
 import springboot.shoppingmall.product.query.dto.ProductQueryResponse;
 import springboot.shoppingmall.product.query.repository.ProductQueryRepository;
@@ -48,5 +49,20 @@ public class ProductQueryService {
         return productQueryRepository.searchProducts(category, subCategory, searchKeyword).stream()
                 .map(ProductQueryResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public List<ProductQueryResponse> findPartnersProductsAll(Long partnerId, Long categoryId, Long subCategoryId,
+                                                              int limit, int offset) {
+        Category category = categoryFinder.findById(categoryId);
+        Category subCategory = categoryFinder.findById(subCategoryId);
+        return productQueryRepository.queryPartnersProducts(partnerId, category, subCategory, limit, offset).stream()
+                .map(ProductQueryResponse::of)
+                .collect(Collectors.toList());
+    }
+
+    public int countPartnersProducts(Long partnerId, Long categoryId, Long subCategoryId) {
+        Category category = categoryFinder.findById(categoryId);
+        Category subCategory = categoryFinder.findById(subCategoryId);
+        return productQueryRepository.countByPartnerIdAndCategoryAndSubCategory(partnerId, category, subCategory);
     }
 }

@@ -11,10 +11,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
@@ -168,6 +164,62 @@ class ProductQueryRepositoryTest {
 
         // then
         assertThat(totalCount).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("판매자가 등록한 상품 목록조회")
+    void find_all_partners_products() {
+        // given
+        Long partnerId = 10L;
+        Product product1 = productRepository.save(
+                new Product("product1", 1500, 12, 3.0, 15, now.plusDays(3), category, subCategory, partnerId)
+        );
+        Product product2 = productRepository.save(
+                new Product("product2", 1500, 12, 3.0, 15, now.plusDays(2), category, subCategory, partnerId)
+        );
+        Product product3 = productRepository.save(
+                new Product("product3", 1500, 12, 3.0, 15, now.plusDays(1), category, subCategory, partnerId)
+        );
+        Product product4 = productRepository.save(
+                new Product("product4", 1500, 12, 3.0, 15, now, category, subCategory, partnerId)
+        );
+
+        // when
+        List<Product> products = productQueryRepository.queryPartnersProducts(partnerId, category, subCategory, 10, 0);
+
+        // then
+        assertThat(products).hasSize(4);
+        List<Long> ids = products.stream()
+                .map(Product::getId)
+                .collect(Collectors.toList());
+        assertThat(ids).containsExactly(
+                product1.getId(), product2.getId(), product3.getId(), product4.getId()
+        );
+    }
+
+    @Test
+    @DisplayName("판매자가 등록한 상품의 갯수 조회")
+    void count_partners_products() {
+        // given
+        Long partnerId = 10L;
+        productRepository.save(
+                new Product("product1", 1500, 12, 3.0, 15, now.plusDays(3), category, subCategory, partnerId)
+        );
+        productRepository.save(
+                new Product("product2", 1500, 12, 3.0, 15, now.plusDays(2), category, subCategory, partnerId)
+        );
+        productRepository.save(
+                new Product("product3", 1500, 12, 3.0, 15, now.plusDays(1), category, subCategory, partnerId)
+        );
+        productRepository.save(
+                new Product("product4", 1500, 12, 3.0, 15, now, category, subCategory, partnerId)
+        );
+
+        // when
+        int count = productQueryRepository.countByPartnerIdAndCategoryAndSubCategory(partnerId, category, subCategory);
+
+        // then
+        assertThat(count).isEqualTo(4);
     }
 
     private void saveMoreProducts() {

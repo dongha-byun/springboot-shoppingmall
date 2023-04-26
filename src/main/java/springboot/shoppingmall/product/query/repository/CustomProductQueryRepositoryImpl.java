@@ -44,6 +44,17 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
                 .fetch();
     }
 
+    @Override
+    public List<Product> queryPartnersProducts(Long partnerId, Category category, Category subCategory,
+                                               int limit, int offset) {
+        return defaultQueryProductsByCategory(category, subCategory)
+                .where(product.partnerId.eq(partnerId))
+                .orderBy(orderBy(RECENT))
+                .limit(limit)
+                .offset(offset)
+                .fetch();
+    }
+
     private BooleanExpression containSearchKeyword(String searchText) {
         return product.name.contains(searchText);
     }

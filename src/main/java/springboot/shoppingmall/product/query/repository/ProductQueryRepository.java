@@ -7,4 +7,5 @@ import springboot.shoppingmall.product.domain.Product;
 public interface ProductQueryRepository extends JpaRepository<Product, Long>, CustomProductQueryRepository {
 
     int countByCategoryAndSubCategory(Category category, Category subCategory);
+    int countByPartnerIdAndCategoryAndSubCategory(Long partnerId, Category category, Category subCategory);
 }
