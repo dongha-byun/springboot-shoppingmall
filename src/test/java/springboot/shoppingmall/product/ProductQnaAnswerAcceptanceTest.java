@@ -85,7 +85,7 @@ public class ProductQnaAnswerAcceptanceTest extends AcceptanceTest {
 
     }
 
-    private ExtractableResponse<Response> 문의_답변_등록_요청(ProductResponse productResponse, ProductQnaResponse qnaResponse, String content) {
+    public static ExtractableResponse<Response> 문의_답변_등록_요청(ProductResponse productResponse, ProductQnaResponse qnaResponse, String content) {
         Map<String, String> body = new HashMap<>();
         body.put("content", content);
 
