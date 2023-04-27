@@ -8,10 +8,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+    private static final String[] WHITE_LIST = {
+            "http://localhost:3000", "http://local.shoppingmall.com:3000",
+            "http://localhost:3001", "http://local.shoppingmall.com:3001"
+    };
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000", "http://local.shoppingmall.com:3000")
+                .allowedOrigins(WHITE_LIST)
                 .allowedMethods(
                         HttpMethod.GET.name(),
                         HttpMethod.POST.name(),
@@ -20,6 +25,5 @@ public class WebConfig implements WebMvcConfigurer {
                         HttpMethod.OPTIONS.name()
                 )
                 .maxAge(1800); // 30min
-
     }
 }
