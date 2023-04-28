@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static springboot.shoppingmall.admin.AdminApproveProviderAcceptanceTest.판매_승인_요청;
 import static springboot.shoppingmall.authorization.LoginAcceptanceTest.로그인;
 import static springboot.shoppingmall.providers.ProviderAcceptanceTest.판매_승인요청_등록_요청;
-import static springboot.shoppingmall.providers.ProviderLoginAcceptanceTest.판매자_로그인_요청;
+import static springboot.shoppingmall.providers.PartnersLoginAcceptanceTest.판매자_로그인_요청;
 import static springboot.shoppingmall.user.UserAcceptanceTest.회원가입;
 
 import io.restassured.RestAssured;

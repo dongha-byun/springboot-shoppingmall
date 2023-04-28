@@ -38,8 +38,9 @@ public class PartnersProductQnaRepositoryImpl implements PartnersProductQnaRepos
 //                .getResultList();
 
         return jpaQueryFactory.select(Projections.constructor(PartnersProductQnaDto.class,
-                        productQna.id, productQna.content,
-                        user.userName, productQna.writeDate, productQnaAnswer.id.isNotNull()))
+                        productQna.id, productQna.content, user.userName,
+                        productQna.product.name, productQna.product.thumbnail.storedFileName,
+                        productQna.writeDate, productQnaAnswer.id.isNotNull()))
                 .from(productQna)
                 .join(user).on(user.id.eq(productQna.writerId))
                 .leftJoin(productQnaAnswer).on(productQnaAnswer.productQna.eq(productQna))

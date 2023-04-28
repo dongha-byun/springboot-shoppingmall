@@ -60,11 +60,11 @@ class PartnersProductQnaRepositoryImplTest {
         Category subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
         LocalDateTime now = LocalDateTime.now();
         product1 = productRepository.save(
-                new Product("product1", 1000, 10, 1.0, 10, now, category, subCategory, partnerId));
+                new Product("product1", 1000, 10, 1.0, 10, now, category, subCategory, partnerId, "storedFileName1", "viewFileName1"));
         product2 = productRepository.save(
-                new Product("product2", 1200, 11, 1.5, 20, now.plusDays(1), category, subCategory, partnerId));
+                new Product("product2", 1200, 11, 1.5, 20, now.plusDays(1), category, subCategory, partnerId, "storedFileName2", "viewFileName2"));
         product3 = productRepository.save(
-                new Product("product3", 1500, 12, 3.0, 15, now.plusDays(2), category, subCategory, partnerId));
+                new Product("product3", 1500, 12, 3.0, 15, now.plusDays(2), category, subCategory, partnerId, "storedFileName3", "viewFileName3"));
     }
 
     @Test
@@ -107,6 +107,20 @@ class PartnersProductQnaRepositoryImplTest {
                 .collect(Collectors.toList());
         assertThat(isAnsweredList).containsExactly(
                 false, false, false
+        );
+
+        List<String> productNames = qnas.stream()
+                .map(PartnersProductQnaDto::getProductName)
+                .collect(Collectors.toList());
+        assertThat(productNames).containsExactly(
+                product1.getName(), product2.getName(), product3.getName()
+        );
+
+        List<String> imgFileNames = qnas.stream()
+                .map(PartnersProductQnaDto::getImgFileName)
+                .collect(Collectors.toList());
+        assertThat(imgFileNames).containsExactly(
+                product1.getThumbnail(), product2.getThumbnail(), product3.getThumbnail()
         );
     }
 
@@ -151,6 +165,20 @@ class PartnersProductQnaRepositoryImplTest {
         assertThat(isAnsweredList).containsExactly(
                 true, true
         );
+
+        List<String> productNames = qnas.stream()
+                .map(PartnersProductQnaDto::getProductName)
+                .collect(Collectors.toList());
+        assertThat(productNames).containsExactly(
+                product1.getName(), product3.getName()
+        );
+
+        List<String> imgFileNames = qnas.stream()
+                .map(PartnersProductQnaDto::getImgFileName)
+                .collect(Collectors.toList());
+        assertThat(imgFileNames).containsExactly(
+                product1.getThumbnail(), product3.getThumbnail()
+        );
     }
 
     @Test
@@ -193,6 +221,20 @@ class PartnersProductQnaRepositoryImplTest {
                 .collect(Collectors.toList());
         assertThat(isAnsweredList).containsExactly(
                 true, false, true
+        );
+
+        List<String> productNames = qnas.stream()
+                .map(PartnersProductQnaDto::getProductName)
+                .collect(Collectors.toList());
+        assertThat(productNames).containsExactly(
+                product1.getName(), product2.getName(), product3.getName()
+        );
+
+        List<String> imgFileNames = qnas.stream()
+                .map(PartnersProductQnaDto::getImgFileName)
+                .collect(Collectors.toList());
+        assertThat(imgFileNames).containsExactly(
+                product1.getThumbnail(), product2.getThumbnail(), product3.getThumbnail()
         );
     }
 }

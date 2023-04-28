@@ -52,6 +52,9 @@ public class PartnersProductQnaAcceptanceTest extends AcceptanceProductTest {
         assertThat(문의_목록_조회_결과.jsonPath().getList("data.answered")).containsExactly(
                 false, false
         );
+        assertThat(문의_목록_조회_결과.jsonPath().getList("data.productName")).containsExactly(
+                상품.getName(), 상품2.getName()
+        );
     }
 
     /**

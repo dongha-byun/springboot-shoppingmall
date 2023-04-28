@@ -31,7 +31,11 @@ public class Provider extends BaseEntity {
 
     public Provider(String name, String ceoName, String address, String telNo, String corporateRegistrationNumber, String loginId,
                     String password) {
-        this(null, name, ceoName, address, telNo, corporateRegistrationNumber, loginId, password, false);
+        this(name, ceoName, address, telNo, corporateRegistrationNumber, loginId, password, false);
+    }
+    public Provider(String name, String ceoName, String address, String telNo, String corporateRegistrationNumber, String loginId,
+                    String password, boolean isApproved) {
+        this(null, name, ceoName, address, telNo, corporateRegistrationNumber, loginId, password, isApproved);
     }
 
     @Builder
