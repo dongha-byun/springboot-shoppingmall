@@ -1,8 +1,6 @@
 package springboot.shoppingmall.providers;
 
 import static org.assertj.core.api.Assertions.*;
-import static springboot.shoppingmall.admin.AdminApproveProviderAcceptanceTest.*;
-import static springboot.shoppingmall.providers.ProviderAcceptanceTest.*;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -15,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
 
-public class ProviderLoginAcceptanceTest extends AcceptanceTest {
+public class PartnersLoginAcceptanceTest extends AcceptanceTest {
     /**
      *  given: 판매 자격 신청이 승인된 판매자 계정이 존재함.
      *  when: 판매 자격 신청이 완료된 계정으로 로그인을 시도하면
@@ -41,7 +39,7 @@ public class ProviderLoginAcceptanceTest extends AcceptanceTest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(param)
-                .when().get("/providers/login")
+                .when().post("/partners/login")
                 .then().log().all()
                 .extract();
     }

@@ -20,4 +20,9 @@ public class PagingDataResponse<T> {
     public PagingDataResponse(T data) {
         this.data = data;
     }
+
+    public PagingDataResponse(Integer totalCount, T data) {
+        this.totalCount = totalCount;
+        this.data = data;
+    }
 }
