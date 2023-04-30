@@ -7,23 +7,17 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceProductTest;
-import springboot.shoppingmall.TestOrderConfig;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.OrderResponse;
-import springboot.shoppingmall.order.service.OrderService;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.dto.ProductResponse;
@@ -87,6 +81,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         assertThat(주문_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(주문_생성_결과.jsonPath().getLong("id")).isNotNull();
         assertThat(주문_생성_결과.jsonPath().getString("orderStatusName")).isEqualTo(OrderStatus.READY.getStatusName());
+        assertThat(주문_생성_결과.jsonPath().getString("receiverName")).isEqualTo(배송지.getReceiverName());
     }
 
     /**
@@ -342,7 +337,11 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         params.put("productId", product.getId());
         params.put("quantity", quantity);
         params.put("deliveryFee", deliveryFee);
-        params.put("deliveryId", delivery.getId());
+        params.put("receiverName", delivery.getReceiverName());
+        params.put("zipCode", delivery.getZipCode());
+        params.put("address", delivery.getAddress());
+        params.put("detailAddress", delivery.getDetailAddress());
+        params.put("requestMessage", delivery.getRequestMessage());
 
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
