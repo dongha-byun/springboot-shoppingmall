@@ -15,6 +15,8 @@ import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
+import springboot.shoppingmall.providers.domain.Provider;
+import springboot.shoppingmall.providers.domain.ProviderRepository;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserRepository;
 import springboot.shoppingmall.cart.web.CartRequest;
@@ -29,6 +31,9 @@ class CartServiceTest {
 
     @Autowired
     CartService cartService;
+
+    @Autowired
+    ProviderRepository providerRepository;
 
     @Autowired
     UserRepository userRepository;
@@ -48,9 +53,24 @@ class CartServiceTest {
     void setUp(){
         Category category = categoryRepository.save(new Category("상위 1"));
         Category subCategory = categoryRepository.save(new Category("하위 1").changeParent(category));
-        product = productRepository.save(new Product("상품 1", 22000, 10, category, subCategory));
-        product2 = productRepository.save(new Product("상품 2", 32000, 5, category, subCategory));
-        product3 = productRepository.save(new Product("상품 3", 42000, 3, category, subCategory));
+
+        Provider provider = providerRepository.save(
+                new Provider("단절통신", "통신사대표", "서울시 영등포구 여의도2동", "02-3331-2321",
+                        "110-22-331223", "cut_communication", "cut_communication1!")
+        );
+
+        product = productRepository.save(
+                new Product("상품 1", 22000, 10, category, subCategory,
+                        provider.getId(), "product_stored_file_name1", "product_view_file_name1")
+        );
+        product2 = productRepository.save(
+                new Product("상품 2", 32000, 5, category, subCategory,
+                        provider.getId(), "product_stored_file_name1", "product_view_file_name1")
+        );
+        product3 = productRepository.save(
+                new Product("상품 3", 42000, 3, category, subCategory,
+                        provider.getId(), "product_stored_file_name1", "product_view_file_name1")
+        );
         saveUser = userRepository.save(User.builder()
                 .userName("테스터1")
                 .loginId("tester1")
@@ -82,6 +102,8 @@ class CartServiceTest {
         cartService.create(saveUser.getId(), new CartRequest(1, product2.getId()));
         cartService.create(saveUser.getId(), new CartRequest(5, product3.getId()));
 
+        em.flush();
+        em.clear();
         // when
         List<CartDto> carts = cartService.findAllByUser(saveUser.getId());
 
@@ -98,6 +120,9 @@ class CartServiceTest {
 
         // when
         cartService.delete(saveUser.getId(), cartResponse.getId());
+
+        em.flush();
+        em.clear();
 
         // then
         List<CartDto> carts = cartService.findAllByUser(saveUser.getId());
