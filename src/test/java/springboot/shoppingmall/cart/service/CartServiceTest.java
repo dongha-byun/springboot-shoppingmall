@@ -61,15 +61,18 @@ class CartServiceTest {
 
         product = productRepository.save(
                 new Product("상품 1", 22000, 10, category, subCategory,
-                        provider.getId(), "product_stored_file_name1", "product_view_file_name1")
+                        provider.getId(), "product_stored_file_name1", "product_view_file_name1",
+                        "상품 설명 입니다.")
         );
         product2 = productRepository.save(
                 new Product("상품 2", 32000, 5, category, subCategory,
-                        provider.getId(), "product_stored_file_name1", "product_view_file_name1")
+                        provider.getId(), "product_stored_file_name1", "product_view_file_name1",
+                        "상품 설명 입니다.")
         );
         product3 = productRepository.save(
                 new Product("상품 3", 42000, 3, category, subCategory,
-                        provider.getId(), "product_stored_file_name1", "product_view_file_name1")
+                        provider.getId(), "product_stored_file_name1", "product_view_file_name1",
+                        "상품 설명 입니다.")
         );
         saveUser = userRepository.save(User.builder()
                 .userName("테스터1")

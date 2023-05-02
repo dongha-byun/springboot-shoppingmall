@@ -14,7 +14,7 @@ import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.providers.domain.Provider;
 import springboot.shoppingmall.user.domain.User;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 @Profile("local")
 public class DataInitializer {
@@ -42,6 +42,10 @@ public class DataInitializer {
                     "파산은행", "김파산", "부산광역시 사상구", "051-333-2222"
                     , "251-89-698111", "vktksdmsgod", "vktksdmsgod1"
             );
+
+            provider1.approve();
+            provider2.approve();
+
             em.persist(provider1);
             em.persist(provider2);
 
@@ -57,8 +61,9 @@ public class DataInitializer {
                 for (Category subCategory : subCategories) {
                     Long subCategoryId = subCategory.getId();
                     for(int i=1; i<=100; i++){
-                        em.persist(new Product("상품_"+categoryId+"_"+subCategoryId+"_"+i, 190 * i
-                                , 321, category, subCategory, providers[i%2].getId()));
+                        em.persist(new Product("상품_"+categoryId+"_"+subCategoryId+"_"+i, 190 * i,
+                                321, category, subCategory, providers[i%2].getId(),
+                                null, null, i + "번째 상품 설명 입니다."));
                     }
                 }
             }

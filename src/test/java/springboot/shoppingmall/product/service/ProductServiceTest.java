@@ -46,5 +46,6 @@ public class ProductServiceTest {
 
         // then
         assertThat(productResponse.getId()).isNotNull();
+        assertThat(productResponse.getDetail()).contains("상품 설명입니다.");
     }
 }

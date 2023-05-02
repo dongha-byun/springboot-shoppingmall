@@ -70,6 +70,7 @@ public class ProductAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 상품_조회_요청_결과 = 상품_조회_요청(상품.getId());
         assertThat(상품_조회_요청_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(상품_조회_요청_결과.jsonPath().getLong("partnerId")).isNotNull();
+        assertThat(상품_조회_요청_결과.jsonPath().getString("detail")).isNotNull();
     }
 
     public static ExtractableResponse<Response> 상품_등록_요청_이미지_포함(String productName, int price, int count, Long categoryId, Long subCategoryId) {

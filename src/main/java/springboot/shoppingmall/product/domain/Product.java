@@ -3,6 +3,7 @@ package springboot.shoppingmall.product.domain;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -12,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -31,6 +33,9 @@ public class Product extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "product_code", nullable = false)
+    private String productCode;
 
     @Column(length = 100, nullable = false)
     private String name;
@@ -63,6 +68,9 @@ public class Product extends BaseEntity {
     @Embedded
     private final ProductReviews reviews = new ProductReviews();
 
+    @Lob
+    private String detail;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<ProductQna> qna = new ArrayList<>();
 
@@ -76,36 +84,38 @@ public class Product extends BaseEntity {
     public Product(String name, int price, int count, double score, int salesVolume
             , LocalDateTime registerDate, Category category, Category subCategory) {
         this(null, name, price, count, score, salesVolume
-                , registerDate, category, subCategory, null, null, null);
+                , registerDate, category, subCategory, null, null, null, null);
     }
 
     @Builder
     public Product(String name, int price, int count, Category category, Category subCategory
-            , Long partnerId, String storedFileName, String viewFileName) {
+            , Long partnerId, String storedFileName, String viewFileName, String detail) {
         this(null, name, price, count, 0.0, 0, LocalDateTime.now(), category, subCategory
-                , partnerId, storedFileName, viewFileName);
+                , partnerId, storedFileName, viewFileName, detail);
     }
 
     public Product(String name, int price, int count, double score, int salesVolume,LocalDateTime registerDate
             , Category category, Category subCategory, Long partnerId) {
         this(null, name, price, count, score, salesVolume, registerDate
-                , category, subCategory, partnerId, null, null);
+                , category, subCategory, partnerId, null, null, null);
     }
 
-    public Product(String name, int price, int count, double score, int salesVolume, LocalDateTime registerDate
-            , Category category, Category subCategory, Long partnerId, String storedFileName, String viewFileName) {
+    public Product(String name, int price, int count, double score, int salesVolume, LocalDateTime registerDate,
+                   Category category, Category subCategory, Long partnerId, String storedFileName, String viewFileName,
+                   String detail) {
         this(null, name, price, count, score, salesVolume, registerDate
-                , category, subCategory, partnerId, storedFileName, viewFileName);
+                , category, subCategory, partnerId, storedFileName, viewFileName, detail);
     }
 
-    public Product(Long id, String name, int price, int count, double score, int salesVolume, LocalDateTime registerDate
-            , Category category, Category subCategory, Long partnerId) {
+    public Product(Long id, String name, int price, int count, double score, int salesVolume,
+                   LocalDateTime registerDate, Category category, Category subCategory, Long partnerId, String detail) {
         this(id, name, price, count, score, salesVolume, registerDate, category
-                , subCategory, partnerId, null, null);
+                , subCategory, partnerId, null, null, detail);
     }
 
-    public Product(Long id, String name, int price, int count, double score, int salesVolume, LocalDateTime registerDate
-            , Category category, Category subCategory, Long partnerId, String storedFileName, String viewFileName) {
+    public Product(Long id, String name, int price, int count, double score, int salesVolume,
+                   LocalDateTime registerDate, Category category, Category subCategory, Long partnerId,
+                   String storedFileName, String viewFileName, String detail) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -117,6 +127,8 @@ public class Product extends BaseEntity {
         this.subCategory = subCategory;
         this.partnerId = partnerId;
         this.thumbnail = new ProductThumbnail(storedFileName, viewFileName);
+        this.productCode = UUID.randomUUID().toString();
+        this.detail = detail;
     }
 
     public void addQna(ProductQna productQna){

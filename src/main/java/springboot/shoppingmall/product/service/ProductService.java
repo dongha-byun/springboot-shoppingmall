@@ -11,6 +11,8 @@ import springboot.shoppingmall.product.dto.ProductDto;
 import springboot.shoppingmall.product.dto.ProductRequest;
 import springboot.shoppingmall.product.dto.ProductResponse;
 import springboot.shoppingmall.product.domain.ProductRepository;
+import springboot.shoppingmall.providers.domain.Provider;
+import springboot.shoppingmall.providers.domain.ProviderFinder;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +20,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryFinder categoryFinder;
     private final ProductFinder productFinder;
+    private final ProviderFinder providerFinder;
 
     @Transactional
     public ProductResponse saveProduct(Long partnerId, ProductDto productDto){
@@ -34,12 +37,15 @@ public class ProductService {
                         .partnerId(partnerId)
                         .storedFileName(productDto.getStoredThumbnailName())
                         .viewFileName(productDto.getViewThumbnailName())
+                        .detail(productDto.getDetail())
                         .build()
         );
         return ProductResponse.of(product);
     }
 
     public ProductResponse findProduct(Long id){
-        return ProductResponse.of(productFinder.findProductById(id));
+        Product product = productFinder.findProductById(id);
+        Provider provider = providerFinder.findById(product.getPartnerId());
+        return ProductResponse.of(product, provider);
     }
 }

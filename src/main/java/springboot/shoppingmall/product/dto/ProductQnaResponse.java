@@ -1,5 +1,7 @@
 package springboot.shoppingmall.product.dto;
 
+import static springboot.shoppingmall.product.domain.QProductQna.productQna;
+
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import lombok.AccessLevel;
@@ -7,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.product.domain.ProductQna;
+import springboot.shoppingmall.utils.DateUtils;
 import springboot.shoppingmall.utils.MaskingUtil;
 
 @Getter
@@ -31,14 +34,14 @@ public class ProductQnaResponse {
     public static ProductQnaResponse of(ProductQna productQna) {
         return new ProductQnaResponse(productQna.getId(), productQna.getContent(),
                 null,
-                productQna.getWriteDate().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)),
+                DateUtils.toStringOfLocalDateTIme(productQna.getWriteDate()),
                 ProductQnaAnswerResponse.of(productQna.getAnswer()));
     }
 
     public static ProductQnaResponse of(ProductQnaDto dto) {
         return new ProductQnaResponse(dto.getId(), dto.getContent(),
                 dto.getUserName(),
-                dto.getWriteDate().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)),
+                DateUtils.toStringOfLocalDateTIme(dto.getWriteDate()),
                 ProductQnaAnswerResponse.of(dto.getAnswer()));
     }
 }
