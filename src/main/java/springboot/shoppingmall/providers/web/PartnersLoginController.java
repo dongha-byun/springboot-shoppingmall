@@ -21,6 +21,6 @@ public class PartnersLoginController {
         ProviderDto dto = loginService.login(loginRequest.getLoginId(), loginRequest.getPassword());
         String accessToken = jwtTokenProvider.createRefreshToken(dto.getId(), "127.0.0.1");
 
-        return ResponseEntity.ok().body(new ProviderTokenResponse(accessToken));
+        return ResponseEntity.ok().body(new ProviderTokenResponse(accessToken, dto.getName()));
     }
 }

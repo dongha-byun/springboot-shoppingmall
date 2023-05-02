@@ -12,6 +12,7 @@ public class PartnersProductQnaQueryResponse {
     private Long id;
     private String content;
     private String writerName;
+    private Long productId;
     private String productName;
     private String imgFileName;
     private String writeDate;
@@ -20,7 +21,7 @@ public class PartnersProductQnaQueryResponse {
     public static PartnersProductQnaQueryResponse of(PartnersProductQnaDto dto) {
         return new PartnersProductQnaQueryResponse(
                 dto.getId(), dto.getContent(), dto.getWriterName(),
-                dto.getProductName(), dto.getImgFileName(),
+                dto.getProductId(), dto.getProductName(), dto.getImgFileName(),
                 DateUtils.toStringOfLocalDateTIme(dto.getWriteDate()) , dto.isAnswered()
         );
     }

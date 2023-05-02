@@ -18,28 +18,18 @@ import springboot.shoppingmall.product.query.dto.PartnersProductQnaDto;
 public class PartnersProductQnaRepositoryImpl implements PartnersProductQnaRepository{
 
     private final JPAQueryFactory jpaQueryFactory;
-    private final EntityManager em;
 
     public PartnersProductQnaRepositoryImpl(EntityManager entityManager) {
         this.jpaQueryFactory = new JPAQueryFactory(entityManager);
-        this.em = entityManager;
     }
 
     @Override
     public List<PartnersProductQnaDto> findPartnersProductQnaAll(Long partnerId,
                                                                  ProductQnaAnswerCompleteType completeType) {
-//        return em.createQuery("select new springboot.shoppingmall.product.query.dto.PartnersProductQnaDto(qna.id, qna.content, u.userName, qna.writeDate, false) "
-//                + "from ProductQna qna "
-//                + "join User u on qna.writerId=u.id "
-//                + "left join ProductQnaAnswer answer on qna.answer=answer "
-//                + "where qna.product.partnerId = :partnerId "
-//                + "order by qna.writeDate ", PartnersProductQnaDto.class)
-//                .setParameter("partnerId", partnerId)
-//                .getResultList();
 
         return jpaQueryFactory.select(Projections.constructor(PartnersProductQnaDto.class,
                         productQna.id, productQna.content, user.userName,
-                        productQna.product.name, productQna.product.thumbnail.storedFileName,
+                        productQna.product.id, productQna.product.name, productQna.product.thumbnail.storedFileName,
                         productQna.writeDate, productQnaAnswer.id.isNotNull()))
                 .from(productQna)
                 .join(user).on(user.id.eq(productQna.writerId))

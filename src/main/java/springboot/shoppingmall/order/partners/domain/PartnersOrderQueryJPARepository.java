@@ -9,11 +9,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.EntityManager;
-import lombok.extern.slf4j.Slf4j;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.partners.dto.PartnersOrderQueryDto;
 
-@Slf4j
 public class PartnersOrderQueryJPARepository implements PartnersOrderQueryRepository{
 
     private final JPAQueryFactory jpaQueryFactory;
@@ -25,9 +23,9 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
     @Override
     public List<PartnersOrderQueryDto> findPartnersOrders(Long partnerId, OrderStatus status, LocalDateTime startDate,
                                                           LocalDateTime endDate) {
-        List<PartnersOrderQueryDto> list = jpaQueryFactory.select(Projections.constructor(PartnersOrderQueryDto.class,
-                        order.id, order.orderDate, product.name, user.userName, user.telNo.telNo,
-                        order.receiverName, order.address, order.detailAddress))
+        return jpaQueryFactory.select(Projections.constructor(PartnersOrderQueryDto.class,
+                        order.id, order.orderCode, order.orderDate, product.productCode, product.name, order.quantity,
+                        user.userName, user.telNo.telNo, order.receiverName, order.address, order.detailAddress))
                 .from(order)
                 .join(product).on(product.id.eq(order.product.id))
                 .join(user).on(user.id.eq(order.userId))
@@ -36,8 +34,5 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 .and(order.orderStatus.eq(status))
                                 .and(order.orderDate.between(startDate, endDate))
                 ).fetch();
-
-        log.info("list's size={}", list.size());
-        return list;
     }
 }

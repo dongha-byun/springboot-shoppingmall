@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @Data
 public class ProviderTokenResponse {
     private String accessToken;
+    private String name;
 }
