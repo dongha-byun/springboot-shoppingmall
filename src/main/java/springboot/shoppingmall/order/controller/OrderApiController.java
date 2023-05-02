@@ -18,6 +18,8 @@ import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.order.dto.OrderRefundRequest;
 import springboot.shoppingmall.order.dto.OrderStatusChangeRequest;
 import springboot.shoppingmall.order.service.OrderService;
+import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
+import springboot.shoppingmall.providers.authentication.LoginPartner;
 
 /**
  * 서비스 내에서 호출되는 API 명세
@@ -43,7 +45,7 @@ public class OrderApiController {
     }
 
     @PutMapping("/orders/{id}/outing")
-    public ResponseEntity<OrderResponse> outingOrder(@AuthenticationStrategy AuthorizedUser user,
+    public ResponseEntity<OrderResponse> outingOrder(@LoginPartner AuthorizedPartner partner,
                                                      @PathVariable("id") Long orderId) {
         OrderResponse order = orderService.outing(orderId);
         return ResponseEntity.ok(order);

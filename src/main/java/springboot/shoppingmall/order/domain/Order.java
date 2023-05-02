@@ -1,6 +1,7 @@
 package springboot.shoppingmall.order.domain;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -28,6 +29,9 @@ public class Order extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "order_code", nullable = false)
+    private String orderCode;
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
@@ -66,6 +70,7 @@ public class Order extends BaseEntity {
     public Order(Long userId, Product product, int quantity, LocalDateTime orderDate, OrderStatus orderStatus,
                  int totalPrice, String receiverName, String zipCode, String address, String detailAddress,
                  String requestMessage, String invoiceNumber) {
+        this.orderCode = UUID.randomUUID().toString();
         this.userId = userId;
         this.product = product;
         this.quantity = quantity;
@@ -82,20 +87,8 @@ public class Order extends BaseEntity {
 
     public static Order createOrder(Long userId, Product product, int quantity, String receiverName,
                                     String zipCode, String address, String detailAddress, String requestMessage){
-        Order order = new Order();
-        order.userId = userId;
-        order.product = product;
-        order.quantity = quantity;
-        order.orderDate = LocalDateTime.now();
-        order.orderStatus = OrderStatus.READY;
-        order.receiverName = receiverName;
-        order.zipCode = zipCode;
-        order.address = address;
-        order.detailAddress = detailAddress;
-        order.requestMessage = requestMessage;
-        order.totalPrice = product.getPrice() * quantity;
-
-        return order;
+        return new Order(userId, product, quantity, OrderStatus.READY,
+                receiverName, zipCode, address, detailAddress, requestMessage);
     }
 
     public void cancel() {

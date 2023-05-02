@@ -9,7 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
@@ -18,6 +17,8 @@ import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
+import springboot.shoppingmall.providers.domain.Provider;
+import springboot.shoppingmall.providers.domain.ProviderRepository;
 import springboot.shoppingmall.user.dto.OrderHistoryDto;
 
 @Transactional
@@ -26,6 +27,8 @@ class OrderHistoryRepositoryTest {
 
     @Autowired
     OrderHistoryRepository orderHistoryRepository;
+    @Autowired
+    ProviderRepository providerRepository;
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -40,6 +43,7 @@ class OrderHistoryRepositoryTest {
     User user;
     Delivery delivery;
     Product product;
+    Provider partner;
     @BeforeEach
     void setup() {
         user = userRepository.save(User.builder().userName("테스터")
@@ -58,12 +62,15 @@ class OrderHistoryRepositoryTest {
         Category parent = categoryRepository.save(new Category("카테고리1"));
         Category child = categoryRepository.save(new Category("하위 카테고리1"));
 
-        product = productRepository.save(Product.builder().name("상품1")
-                .category(parent)
-                .subCategory(child)
-                .price(10000)
-                .count(22)
-                .build());
+        partner = providerRepository.save(
+                new Provider("테스트판매처", "테스터", "테스트시 테스트구 테스트동",
+                        "031-222-3121", "102-33-122333",
+                        "provider_test", "provider_test1!", true)
+        );
+        product = productRepository.save(
+                new Product("테스트상품", 12000, 300, parent, child,
+                        partner.getId(), "storedFileName", "viewFileName", "상품 설명 입니다.")
+        );
     }
 
     @Test

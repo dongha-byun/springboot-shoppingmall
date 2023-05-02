@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceProductTest;
+import springboot.shoppingmall.authorization.exception.ErrorCode;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
@@ -248,6 +249,43 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         assertThat(환불된_주문.getOrderStatusName()).isEqualTo(OrderStatus.REFUND.getStatusName());
     }
 
+    /**
+     *  given: 상품이 준비되어 있음
+     *  when: 상품의 남은 재고 수 보다 많은 수량을 주문을 시도하면
+     *  then: 수량이 너무 많아 주문에 실패한다.
+     */
+    @Test
+    @DisplayName("주문 실패 - 상품 재고 수량보다 많은 수를 주문하면 주문에 실패한다.")
+    void order_fail_with_over_quantity() {
+        // given
+
+        // when
+        Map<String, Object> params = new HashMap<>();
+        params.put("productId", 상품.getId());
+        params.put("quantity", 상품.getCount() + 1);
+        params.put("deliveryFee", 0);
+        params.put("receiverName", 배송지.getReceiverName());
+        params.put("zipCode", 배송지.getZipCode());
+        params.put("address", 배송지.getAddress());
+        params.put("detailAddress", 배송지.getDetailAddress());
+        params.put("requestMessage", 배송지.getRequestMessage());
+        params.put("totalPrice", 15000);
+
+        ExtractableResponse<Response> 주문_결과 = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers(createAuthorizationHeader(로그인정보))
+                .body(params)
+                .when().post("/orders")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(주문_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(주문_결과.jsonPath().getString("msg")).isEqualTo(
+                ErrorCode.OVER_QUANTITY.getMessage()
+        );
+    }
+
     public static ExtractableResponse<Response> 주문_주문취소_요청(OrderResponse order) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -260,7 +298,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
     public static ExtractableResponse<Response> 주문_출고중_요청(OrderResponse order) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .headers(createAuthorizationHeader(로그인정보))
+                .headers(createAuthorizationHeader(판매자_로그인토큰))
                 .when().put("/orders/{id}/outing", order.getId())
                 .then().log().all()
                 .extract();
