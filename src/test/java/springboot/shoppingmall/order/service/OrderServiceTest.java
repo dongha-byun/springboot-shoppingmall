@@ -19,8 +19,10 @@ import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
+import springboot.shoppingmall.order.exception.OverQuantityException;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
+import springboot.shoppingmall.product.dto.ProductRequest;
 import springboot.shoppingmall.user.domain.Delivery;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserRepository;
@@ -105,6 +107,7 @@ class OrderServiceTest {
 
         // then
         assertThat(cancelOrder.getOrderStatusName()).isEqualTo(OrderStatus.CANCEL.getStatusName());
+
 
         // 주문을 취소하면 상품 갯수를 원래대로 되돌린다.
         assertThat(product.getCount()).isEqualTo(productCount);
@@ -232,6 +235,23 @@ class OrderServiceTest {
         Order findOrder = orderRepository.findById(order.getId()).get();
         assertThat(findOrder.getOrderStatus()).isEqualTo(OrderStatus.EXCHANGE);
         assertThat(findOrder.getExchangeReason()).isEqualTo(exchangeReason);
+    }
+
+    @Test
+    @DisplayName("주문 실패 - 재고 수 보다 많은 양을 주문하면 주문에 실패한다.")
+    void order_fail_with_quantity_over() {
+        // given
+        int orderQuantity = product.getCount() + 1;
+        OrderRequest orderRequest = new OrderRequest(
+                product.getId(), orderQuantity, 0, "덩라",
+                "01234", "서울시 테스트구 테스트동", "덩라빌딩 301호",
+                "조심히 오세요.", 20000
+        );
+
+        // when & then
+        assertThatThrownBy(
+                () -> orderService.createOrder(user.getId(), orderRequest)
+        ).isInstanceOf(OverQuantityException.class);
     }
 
 

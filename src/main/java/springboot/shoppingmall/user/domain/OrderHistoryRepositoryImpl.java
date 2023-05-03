@@ -23,7 +23,8 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository{
         return jpaQueryFactory.select(
                         Projections.constructor(OrderHistoryDto.class,
                                 order.id, order.orderDate, order.orderStatus,
-                                order.product.name, order.totalPrice, provider.id, provider.name)
+                                order.product.id, order.product.name, order.totalPrice,
+                                provider.id, provider.name)
                 )
                 .from(order)
                 .join(provider).on(provider.id.eq(order.product.partnerId))

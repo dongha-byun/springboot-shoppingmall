@@ -9,6 +9,7 @@ import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
 import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
+import springboot.shoppingmall.order.exception.OverQuantityException;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
 import springboot.shoppingmall.user.domain.User;
@@ -29,6 +30,10 @@ public class OrderService {
     public OrderResponse createOrder(Long userId, OrderRequest orderRequest) {
         User user = userFinder.findUserById(userId);
         Product product = productFinder.findProductById(orderRequest.getProductId());
+
+        if(product.getCount() < orderRequest.getQuantity()){
+            throw new OverQuantityException("상품 재고 수가 부족합니다.");
+        }
 
         Order newOrder = orderRepository.save(
                 Order.createOrder(user.getId(), product, orderRequest.getQuantity()

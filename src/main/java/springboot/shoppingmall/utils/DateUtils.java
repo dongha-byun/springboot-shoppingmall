@@ -31,6 +31,9 @@ public abstract class DateUtils {
     }
 
     public static String toStringOfLocalDateTIme(LocalDateTime localDateTime, String format) {
+        if(localDateTime == null) {
+            return null;
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         return localDateTime.format(formatter);
     }

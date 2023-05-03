@@ -47,9 +47,9 @@ class OrderHistoryServiceTest {
 
         when(userFinder.findUserById(any())).thenReturn(user);
         when(orderHistoryRepository.queryOrderHistory(any(), any(), any())).thenReturn(Arrays.asList(
-                new OrderHistoryDto(100L, LocalDateTime.now(), OrderStatus.READY, "제품1", 23000, 11L, "판매처1"),
-                new OrderHistoryDto(101L, LocalDateTime.now(), OrderStatus.READY, "제품2", 20000, 11L, "판매처1"),
-                new OrderHistoryDto(102L, LocalDateTime.now(), OrderStatus.READY, "제품3", 13000, 11L, "판매처1")
+                new OrderHistoryDto(100L, LocalDateTime.now(), OrderStatus.READY, 1L,"제품1", 23000, 11L, "판매처1"),
+                new OrderHistoryDto(101L, LocalDateTime.now(), OrderStatus.READY, 2L,"제품2", 20000, 11L, "판매처1"),
+                new OrderHistoryDto(102L, LocalDateTime.now(), OrderStatus.READY, 3L,"제품3", 13000, 11L, "판매처1")
         ));
 
         List<OrderHistoryDto> orderHistory = orderHistoryService.findOrderHistory(user.getId(), LocalDateTime.now().minusMonths(3), LocalDateTime.now());

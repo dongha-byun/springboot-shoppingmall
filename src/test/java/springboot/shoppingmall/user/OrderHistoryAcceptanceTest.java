@@ -71,6 +71,10 @@ public class OrderHistoryAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(개인_주문_목록_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(개인_주문_목록_조회_결과.jsonPath().getList("orderId")).hasSize(1);
+        assertThat(개인_주문_목록_조회_결과.jsonPath().getList("productId")).hasSize(1);
+        assertThat(개인_주문_목록_조회_결과.jsonPath().getList("productId", Long.class)).containsExactly(
+                상품.getId()
+        );
     }
 
     private ExtractableResponse<Response> 개인_주문_목록_조회_요청(String startDate, String endDate) {

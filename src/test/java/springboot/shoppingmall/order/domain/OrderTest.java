@@ -18,8 +18,9 @@ public class OrderTest {
     @BeforeEach
     void beforeEach() {
         product = new Product(
-                1L, "상품1", 12000, 22, 0.0, 0
-                , LocalDateTime.now(), new Category("상위 카테고리"), new Category("하위 카테고리"), 100L
+                1L, "상품1", 12000, 22, 0.0, 0,
+                LocalDateTime.now(), new Category("상위 카테고리"), new Category("하위 카테고리"),
+                100L, "상품 설명 입니다."
         );
         delivery = Delivery.builder()
                 .nickName("수령지 1").receiverName("수령인 1").zipCode("10010")
