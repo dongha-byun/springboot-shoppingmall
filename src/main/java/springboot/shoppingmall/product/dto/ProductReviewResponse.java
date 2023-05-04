@@ -13,10 +13,11 @@ public class ProductReviewResponse {
     private Long id;
     private String content;
     private LocalDateTime writeDate;
-    private String userName;
+    private String writerLoginId;
 
     public static ProductReviewResponse of(ProductReview review) {
         // return new ProductReviewResponse(review.getId(), review.getContent(), review.getWriteDate(), review.getWriteName());
-        return new ProductReviewResponse(review.getId(), review.getContent(), review.getWriteDate(), null);
+        return new ProductReviewResponse(review.getId(), review.getContent(), review.getWriteDate(),
+                review.getWriterLoginId());
     }
 }

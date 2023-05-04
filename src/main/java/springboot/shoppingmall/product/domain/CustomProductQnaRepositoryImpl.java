@@ -25,7 +25,7 @@ public class CustomProductQnaRepositoryImpl implements CustomProductQnaRepositor
                         productQna.id,
                         productQna.content,
                         productQna.writeDate,
-                        user.userName,
+                        productQna.writerLoginId,
                         new QProductQnaAnswerDto(
                                 productQnaAnswer.id,
                                 productQnaAnswer.answer,
@@ -33,7 +33,6 @@ public class CustomProductQnaRepositoryImpl implements CustomProductQnaRepositor
                         )
                 ))
                 .from(productQna)
-                .innerJoin(user).on(user.id.eq(productQna.writerId))
                 .leftJoin(productQnaAnswer).on(productQnaAnswer.productQna.eq(productQna))
                 .where(productQna.product.id.eq(productId))
                 .orderBy(productQna.writeDate.desc())

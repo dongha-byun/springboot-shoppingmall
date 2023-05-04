@@ -1,5 +1,7 @@
 package springboot.shoppingmall.product.dto;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,18 +23,28 @@ public class ProductResponse {
     private String partnersName;
     private String thumbnail;
     private String detail;
+    private List<ProductQnaResponse> qnas;
+    private List<ProductReviewResponse> reviews;
 
     public static ProductResponse of(Product product){
-        return new ProductResponse(product.getId(), product.getName(), product.getPrice(), product.getCount()
-                , CategoryResponse.of(product.getCategory()), CategoryResponse.of(product.getSubCategory())
-                , product.getPartnerId(), null, product.getThumbnail(), product.getDetail()
+        return new ProductResponse(product.getId(), product.getName(), product.getPrice(), product.getCount(),
+                CategoryResponse.of(product.getCategory()), CategoryResponse.of(product.getSubCategory()),
+                product.getPartnerId(), null, product.getThumbnail(), product.getDetail(),
+                null, null
         );
     }
 
     public static ProductResponse of(Product product, Provider provider){
-        return new ProductResponse(product.getId(), product.getName(), product.getPrice(), product.getCount()
-                , CategoryResponse.of(product.getCategory()), CategoryResponse.of(product.getSubCategory())
-                , provider.getId(), provider.getName(), product.getThumbnail(), product.getDetail()
+        List<ProductQnaResponse> qnaResponses = product.getQna().stream()
+                .map(ProductQnaResponse::of)
+                .collect(Collectors.toList());
+        List<ProductReviewResponse> reviewResponses = product.getReviews().getReviews().stream()
+                .map(ProductReviewResponse::of)
+                .collect(Collectors.toList());
+        return new ProductResponse(product.getId(), product.getName(), product.getPrice(), product.getCount(),
+                CategoryResponse.of(product.getCategory()), CategoryResponse.of(product.getSubCategory()),
+                provider.getId(), provider.getName(), product.getThumbnail(), product.getDetail(),
+                qnaResponses, reviewResponses
         );
     }
 }

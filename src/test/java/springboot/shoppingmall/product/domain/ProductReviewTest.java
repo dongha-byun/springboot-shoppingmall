@@ -23,7 +23,7 @@ class ProductReviewTest {
         ProductReview productReview2 = new ProductReview("리뷰 2 입니다.", 5);
 
         // when
-        ProductReview review1 = productReview1.byProduct(product).byUser(user.getId());
+        ProductReview review1 = productReview1.byProduct(product).byUser(user.getId(), user.getLoginId());
         ProductReview review2 = productReview2.byProduct(product);
 
         // then
@@ -61,8 +61,8 @@ class ProductReviewTest {
         User user1 = new User("사용자1", "user1", "user1!", "010-2222-3333");
         User user2 = new User("사용자2", "user2", "user2@", "010-4444-5555");
         Product product = new Product("상품 1", 12000, 20, new Category("상위 카테고리"), new Category("하위 카테고리"));
-        ProductReview productReview1 = new ProductReview("리뷰 입니다.", 4, product, user1.getId());
-        ProductReview productReview2 = new ProductReview("리뷰 2 입니다.", 5, product, user2.getId());
+        ProductReview productReview1 = new ProductReview("리뷰 입니다.", 4, product, user1.getId(), user1.getLoginId());
+        ProductReview productReview2 = new ProductReview("리뷰 2 입니다.", 5, product, user2.getId(), user2.getLoginId());
 
         // when
         List<ProductReview> reviews = product.getReviews().getReviews();
@@ -99,7 +99,7 @@ class ProductReviewTest {
     void is_writer_test(Long userId, boolean result) {
         // given
         Product product = new Product("상품 1", 12000, 20, new Category("상위 카테고리"), new Category("하위 카테고리"));
-        ProductReview productReview = new ProductReview("리뷰 등록 합니다.", 3, product, 1L);
+        ProductReview productReview = new ProductReview("리뷰 등록 합니다.", 3, product, 1L, "writerLoginId");
 
         // when
         boolean isWriter = productReview.isWriter(userId);

@@ -55,7 +55,7 @@ class ProductReviewServiceTest {
 
         // when
         ProductReviewRequest productReviewRequest = new ProductReviewRequest("리뷰 등록 합니다.", 3);
-        ProductUserReviewResponse response = service.createProductReview(user.getId(), product.getId(), productReviewRequest);
+        ProductUserReviewResponse response = service.createProductReview(user.getId(), user.getLoginId(), product.getId(), productReviewRequest);
 
         // then
         assertThat(response.getId()).isNotNull();
@@ -73,11 +73,11 @@ class ProductReviewServiceTest {
         Product product = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
 
         ProductReviewRequest productReviewRequest = new ProductReviewRequest("리뷰 등록 합니다.", 3);
-        service.createProductReview(user.getId(), product.getId(), productReviewRequest);
+        service.createProductReview(user.getId(), user.getLoginId(), product.getId(), productReviewRequest);
 
         // when & then
         assertThatThrownBy(
-                () -> service.createProductReview(user.getId(), product.getId(), productReviewRequest)
+                () -> service.createProductReview(user.getId(), user.getLoginId(), product.getId(), productReviewRequest)
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -91,8 +91,8 @@ class ProductReviewServiceTest {
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
 
-        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product, user1.getId()));
-        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product, user2.getId()));
+        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product, user1.getId(), user1.getLoginId()));
+        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product, user2.getId(), user2.getLoginId()));
 
         // when
         List<ProductReviewResponse> reviews = service.findAllReview(product.getId());
@@ -119,8 +119,8 @@ class ProductReviewServiceTest {
         Product product1 = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
         Product product2 = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
 
-        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId()));
-        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product2, user.getId()));
+        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId(), user.getLoginId()));
+        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product2, user.getId(), user.getLoginId()));
 
         em.flush();
         em.clear();
@@ -152,8 +152,8 @@ class ProductReviewServiceTest {
         Product product1 = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
         Product product2 = productRepository.save(new Product("상품 2", 42100, 15, category, subCategory));
 
-        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId()));
-        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product2, user.getId()));
+        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId(), user.getLoginId()));
+        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product2, user.getId(), user.getLoginId()));
 
         // when
         List<ProductUserReviewResponse> reviews = service.findAllUserReview(user.getId());
@@ -186,19 +186,19 @@ class ProductReviewServiceTest {
         Product product = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
 
         // when & then
-        service.createProductReview(user1.getId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 1", 5));
+        service.createProductReview(user1.getId(), user1.getLoginId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 1", 5));
         assertThat(product.getScore()).isEqualTo(5.0);
 
-        service.createProductReview(user2.getId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 2", 4));
+        service.createProductReview(user2.getId(), user2.getLoginId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 2", 4));
         assertThat(product.getScore()).isEqualTo(4.5);
 
-        service.createProductReview(user3.getId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 3", 2));
+        service.createProductReview(user3.getId(), user3.getLoginId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 3", 2));
         assertThat(product.getScore()).isEqualTo(3.7);
 
-        service.createProductReview(user4.getId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 4", 2));
+        service.createProductReview(user4.getId(), user4.getLoginId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 4", 2));
         assertThat(product.getScore()).isEqualTo(3.3);
 
-        service.createProductReview(user5.getId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 5", 4));
+        service.createProductReview(user5.getId(), user5.getLoginId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 5", 4));
         assertThat(product.getScore()).isEqualTo(3.4);
     }
 }

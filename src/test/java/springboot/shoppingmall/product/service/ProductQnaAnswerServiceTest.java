@@ -56,7 +56,9 @@ public class ProductQnaAnswerServiceTest {
     @DisplayName("상품 문의의 답변을 추가한다.")
     void createTest(){
         // given
-        ProductQna productQna = productQnaRepository.save(new ProductQna("문의글 작성합니다.", product, saveUser.getId()));
+        ProductQna productQna = productQnaRepository.save(
+                new ProductQna("문의글 작성합니다.", product, saveUser.getId(), saveUser.getLoginId())
+        );
 
         // when
         ProductQnaAnswerResponse qnaAnswer = productQnaAnswerService.createQnaAnswer(productQna.getId(), "답변 드립니다. 감사합니다");

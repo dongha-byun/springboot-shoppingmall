@@ -39,8 +39,8 @@ class ProductReviewRepositoryTest {
         Product product1 = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
         Product product2 = productRepository.save(new Product("상품 2", 15000, 10, category, subCategory));
 
-        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId()));
-        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product2, user.getId()));
+        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId(), user.getLoginId()));
+        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product2, user.getId(), user.getLoginId()));
 
         // when
         List<ProductReview> reviews = productReviewRepository.findAllByUserId(user.getId());
@@ -61,7 +61,7 @@ class ProductReviewRepositoryTest {
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product1 = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
 
-        productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId()));
+        productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId(), user.getLoginId()));
 
         // when
         boolean isExists = productReviewRepository.existsByUserIdAndProduct(user.getId(), product1);
@@ -80,7 +80,7 @@ class ProductReviewRepositoryTest {
         Product product1 = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
         Product product2 = productRepository.save(new Product("상품 2", 5000, 10, category, subCategory));
 
-        productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId()));
+        productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId(), user.getLoginId()));
 
         // when
         boolean isExists = productReviewRepository.existsByUserIdAndProduct(user.getId(), product2);

@@ -87,13 +87,13 @@ class PartnersProductQnaRepositoryImplTest {
     void find_partners_product_qna_no_answer() {
         // given
         ProductQna qna1 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 1", product1, writer.getId())
+                new ProductQna("상품 문의 드립니다. 1", product1, writer.getId(), writer.getLoginId())
         );
         ProductQna qna2 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 2", product2, writer.getId())
+                new ProductQna("상품 문의 드립니다. 2", product2, writer.getId(), writer.getLoginId())
         );
         ProductQna qna3 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 3", product3, writer.getId())
+                new ProductQna("상품 문의 드립니다. 3", product3, writer.getId(), writer.getLoginId())
         );
 
         // when
@@ -144,13 +144,13 @@ class PartnersProductQnaRepositoryImplTest {
     void find_partners_product_qna_has_answer() {
         // given
         ProductQna qna1 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 1", product1, writer.getId())
+                new ProductQna("상품 문의 드립니다. 1", product1, writer.getId(), writer.getLoginId())
         );
         ProductQna qna2 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 2", product2, writer.getId())
+                new ProductQna("상품 문의 드립니다. 2", product2, writer.getId(), writer.getLoginId())
         );
         ProductQna qna3 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 3", product3, writer.getId())
+                new ProductQna("상품 문의 드립니다. 3", product3, writer.getId(), writer.getLoginId())
         );
 
         ProductQnaAnswer answerOfQna1 = answerRepository.save(
@@ -201,13 +201,13 @@ class PartnersProductQnaRepositoryImplTest {
     void find_partners_product_qna_all() {
         // given
         ProductQna qna1 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 1", product1, writer.getId())
+                new ProductQna("상품 문의 드립니다. 1", product1, writer.getId(), writer.getLoginId())
         );
         ProductQna qna2 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 2", product2, writer.getId())
+                new ProductQna("상품 문의 드립니다. 2", product2, writer.getId(), writer.getLoginId())
         );
         ProductQna qna3 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 3", product3, writer.getId())
+                new ProductQna("상품 문의 드립니다. 3", product3, writer.getId(), writer.getLoginId())
         );
 
         ProductQnaAnswer answerOfQna1 = answerRepository.save(

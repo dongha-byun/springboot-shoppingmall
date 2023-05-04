@@ -19,8 +19,8 @@ public class ProductTest {
                 LocalDateTime.now(), new Category("상위 카테고리"), new Category("하위 카테고리"), 101L,
                 "상품 설명 입니다."
         );
-        ProductQna productQna1 = new ProductQna(1L, "문의 입니다 1", product, user.getId());
-        ProductQna productQna2 = new ProductQna(2L, "문의 입니다 1", product, user.getId());
+        ProductQna productQna1 = new ProductQna(1L, "문의 입니다 1", product, user.getId(), user.getLoginId());
+        ProductQna productQna2 = new ProductQna(2L, "문의 입니다 1", product, user.getId(), user.getLoginId());
 
         // when
         ProductQna findQna1 = product.findQna(1L);

@@ -1,6 +1,7 @@
 package springboot.shoppingmall.product;
 
 import static org.assertj.core.api.Assertions.*;
+import static springboot.shoppingmall.product.ProductAcceptanceTest.상품_등록_요청;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -46,6 +47,7 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
 
     OrderResponse 배송완료_주문;
     OrderResponse 배송완료_주문2;
+    OrderResponse 배송완료_주문3;
     OrderResponse 배송이_완료되지_않은_주문;
 
     @BeforeEach
@@ -55,6 +57,7 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         Product product = productRepository.findById(상품.getId()).orElseThrow();
         Product product2 = productRepository.findById(상품2.getId()).orElseThrow();
         User user = userRepository.findById(인수테스터1.getId()).orElseThrow();
+        User user2 = userRepository.findById(인수테스터2.getId()).orElseThrow();
         Delivery delivery = deliveryRepository.findById(배송지.getId()).orElseThrow();
 
         Order order = orderRepository.save(
@@ -67,6 +70,11 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
                         , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
                         , delivery.getRequestMessage())
         );
+        Order order3 = orderRepository.save(
+                new Order(user2.getId(), product, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
+                        , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
+                        , delivery.getRequestMessage())
+        );
         Order deliveryOrder = orderRepository.save(
                 new Order(user.getId(), product, 2, OrderStatus.DELIVERY, delivery.getReceiverName()
                         , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
@@ -74,6 +82,7 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         );
         배송완료_주문 = OrderResponse.of(order);
         배송완료_주문2 = OrderResponse.of(order2);
+        배송완료_주문3 = OrderResponse.of(order3);
 
         배송이_완료되지_않은_주문 = OrderResponse.of(deliveryOrder);
     }
@@ -180,8 +189,39 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         assertThat(리뷰_목록_조회_결과.jsonPath().getList("content")).containsExactly(
                 content2, content1
         );
-        assertThat(리뷰_목록_조회_결과.jsonPath().getList("userName")).containsExactly(
-                "인수테스터2", "인수테스터1"
+        assertThat(리뷰_목록_조회_결과.jsonPath().getList("writerLoginId")).containsExactly(
+                인수테스터2.getLoginId(), 인수테스터1.getLoginId()
+        );
+    }
+
+    /**
+     *  given: 상품이 등록되어 있음
+     *  And: 해당 상품을 구매하고 배송 완료까지 됨
+     *  And: 리뷰를 작성했음
+     *  when: 상품 정보를 조회하면
+     *  then: 상품 정보에 등록된 리뷰 목록도 같이 조회된다.
+     */
+    @Test
+    @DisplayName("상품 정보 조회 - 리뷰도 같이 조회")
+    void find_product_with_reviews() {
+        // given
+        ProductUserReviewResponse 작성리뷰1 = 리뷰_작성_요청(배송완료_주문, 상품, 로그인정보,"리뷰1 입니다.", 3).as(ProductUserReviewResponse.class);
+        ProductUserReviewResponse 작성리뷰2 = 리뷰_작성_요청(배송완료_주문3,상품, 로그인정보2, "리뷰2 입니다.", 4).as(ProductUserReviewResponse.class);
+
+        // when
+        ExtractableResponse<Response> 상품_정보_조회 = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/products/{id}", 상품.getId())
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(상품_정보_조회.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(상품_정보_조회.jsonPath().getList("reviews.id", Long.class)).containsExactly(
+                작성리뷰1.getId(), 작성리뷰2.getId()
+        );
+        assertThat(상품_정보_조회.jsonPath().getList("reviews.writerLoginId", String.class)).containsExactly(
+                인수테스터1.getLoginId(), 인수테스터2.getLoginId()
         );
     }
 
@@ -246,7 +286,7 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 리뷰_작성_요청(OrderResponse order, ProductResponse product, TokenResponse token, String content, int score) {
+    public static ExtractableResponse<Response> 리뷰_작성_요청(OrderResponse order, ProductResponse product, TokenResponse token, String content, int score) {
         Map<String, Object> params = new HashMap<>();
         params.put("content", content);
         params.put("score", score);

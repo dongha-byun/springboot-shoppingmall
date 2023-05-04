@@ -51,7 +51,7 @@ public class ProductReviewApiController {
         // 컨트롤러에선 파라미터에 대한 검증만 하고 서비스에서 논리적 검증 정도는 처리할 수 있게 하자!
         orderValidator.validateOrderIsEnd(orderId);
 
-        ProductUserReviewResponse reviewResponse = productReviewService.createProductReview(user.getId(), productId, reviewRequest);
+        ProductUserReviewResponse reviewResponse = productReviewService.createProductReview(user.getId(), user.getLoginId(), productId, reviewRequest);
         return ResponseEntity.created(URI.create("/products/" + productId + "/reviews/" + reviewResponse.getId())).body(reviewResponse);
     }
 

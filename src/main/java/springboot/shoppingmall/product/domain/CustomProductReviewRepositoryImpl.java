@@ -27,11 +27,9 @@ public class CustomProductReviewRepositoryImpl implements CustomProductReviewRep
                                 productReview.id,
                                 productReview.content,
                                 productReview.writeDate,
-                                user.userName
+                                productReview.writerLoginId
                         )
                 ).from(productReview)
-                .leftJoin(user).on(user.id.eq(productReview.userId))
-                .where(productReview.product.id.eq(productId))
                 .orderBy(productReview.writeDate.desc())
                 .fetch();
     }

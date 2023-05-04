@@ -2,6 +2,8 @@ package springboot.shoppingmall.product;
 
 import static org.assertj.core.api.Assertions.*;
 import static springboot.shoppingmall.category.CategoryAcceptanceTest.*;
+import static springboot.shoppingmall.product.ProductQnaAcceptanceTest.*;
+import static springboot.shoppingmall.product.ProductReviewAcceptanceTest.*;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import javax.print.attribute.standard.Media;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,8 +32,10 @@ import org.springframework.util.MimeType;
 import org.springframework.util.MultiValueMap;
 import springboot.shoppingmall.AcceptanceTest;
 import springboot.shoppingmall.category.dto.CategoryResponse;
+import springboot.shoppingmall.product.dto.ProductQnaResponse;
 import springboot.shoppingmall.product.dto.ProductRequest;
 import springboot.shoppingmall.product.dto.ProductResponse;
+import springboot.shoppingmall.product.dto.ProductUserReviewResponse;
 
 public class ProductAcceptanceTest extends AcceptanceTest {
     CategoryResponse 식품;
@@ -71,6 +76,37 @@ public class ProductAcceptanceTest extends AcceptanceTest {
         assertThat(상품_조회_요청_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(상품_조회_요청_결과.jsonPath().getLong("partnerId")).isNotNull();
         assertThat(상품_조회_요청_결과.jsonPath().getString("detail")).isNotNull();
+    }
+
+    /**
+     *  given: 상품이 기존에 등록되어 있음
+     *  And: 상품에 대한 문의와 리뷰가 몇가지 등록되어 있음
+     *  when: 상품 정보를 조회하면
+     *  then: 상품의 기본 정보와 더불어 리뷰목록도 함께 조회한다.
+     */
+    @Test
+    @DisplayName("상품 정보 조회 - 문의 목록도 조회된다.")
+    void find_product_test() {
+        // given
+        ProductResponse 상품_1번 = 상품_등록_요청("1번 상품", 12000, 1000, 식품.getId(), 육류.getId()).as(ProductResponse.class);
+        ProductQnaResponse 문의1 = 문의_등록_요청(상품_1번, "1번 상품 문의입니다.").as(ProductQnaResponse.class);
+        ProductQnaResponse 문의2 = 문의_등록_요청(상품_1번, "2번 상품 문의입니다.").as(ProductQnaResponse.class);
+
+        // when
+        ExtractableResponse<Response> 상품_정보_조회 = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/products/{id}", 상품_1번.getId())
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(상품_정보_조회.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(상품_정보_조회.jsonPath().getList("qnas.id", Long.class)).containsExactly(
+                문의1.getId(), 문의2.getId()
+        );
+        assertThat(상품_정보_조회.jsonPath().getList("qnas.writerLoginId", String.class)).containsExactly(
+                인수테스터1.getLoginId(), 인수테스터1.getLoginId()
+        );
     }
 
     public static ExtractableResponse<Response> 상품_등록_요청_이미지_포함(String productName, int price, int count, Long categoryId, Long subCategoryId) {

@@ -27,7 +27,10 @@ public class ProductQnaApiController {
     public ResponseEntity<ProductQnaResponse> createQna(@AuthenticationStrategy AuthorizedUser user,
                                                         @PathVariable("id") Long productId,
                                                         @RequestBody ProductQnaRequest request){
-        ProductQnaResponse productQnaResponse = productQnaService.createQna(user.getId(), productId, request);
+        String loginId = user.getLoginId();
+
+        //ProductQnaResponse productQnaResponse = productQnaService.createQna(user.getId(), productId, request);
+        ProductQnaResponse productQnaResponse = productQnaService.createQna(user.getId(), loginId, productId, request);
         return ResponseEntity.created(URI.create("/qna/"+productQnaResponse.getId())).body(productQnaResponse);
     }
 

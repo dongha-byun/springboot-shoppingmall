@@ -28,7 +28,7 @@ public class ProductReviewService {
                         productReviewDto -> new ProductReviewResponse(productReviewDto.getId(),
                                 productReviewDto.getContent(),
                                 productReviewDto.getWriteDate(),
-                                productReviewDto.getUserName())
+                                productReviewDto.getWriterLoginId())
                 ).collect(Collectors.toList());
     }
 
@@ -40,7 +40,7 @@ public class ProductReviewService {
     }
 
     @Transactional
-    public ProductUserReviewResponse createProductReview(Long userId, Long productId, ProductReviewRequest productReviewRequest) {
+    public ProductUserReviewResponse createProductReview(Long userId, String loginId, Long productId, ProductReviewRequest productReviewRequest) {
         Product product = productFinder.findProductById(productId);
 
         if(reviewRepository.existsByUserIdAndProduct(userId, product)) {
@@ -52,6 +52,7 @@ public class ProductReviewService {
                 .score(productReviewRequest.getScore())
                 .product(product)
                 .userId(userId)
+                .writerLoginId(loginId)
                 .build();
 
         ProductReview savedReview = reviewRepository.save(productReview);

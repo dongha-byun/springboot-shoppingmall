@@ -44,14 +44,14 @@ class CustomProductReviewRepositoryImplTest {
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
 
-        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product, user1.getId()));
-        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product, user2.getId()));
+        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product, user1.getId(), user1.getLoginId()));
+        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product, user2.getId(), user2.getLoginId()));
 
         // when
         List<ProductReviewDto> reviewDtos = customProductReviewRepository.findAllProductReview(product.getId());
 
         List<String> contents = reviewDtos.stream().map(ProductReviewDto::getContent).collect(Collectors.toList());
-        List<String> userNames = reviewDtos.stream().map(ProductReviewDto::getUserName).collect(Collectors.toList());
+        List<String> loginIds = reviewDtos.stream().map(ProductReviewDto::getWriterLoginId).collect(Collectors.toList());
         List<Long> ids = reviewDtos.stream().map(ProductReviewDto::getId).collect(Collectors.toList());
 
         // then
@@ -62,8 +62,8 @@ class CustomProductReviewRepositoryImplTest {
         assertThat(contents).containsExactly(
                 "리뷰 2 입니다.", "리뷰 입니다."
         );
-        assertThat(userNames).containsExactly(
-                "사용자2", "사용자1"
+        assertThat(loginIds).containsExactly(
+                user2.getLoginId(), user1.getLoginId()
         );
     }
 
