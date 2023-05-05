@@ -110,11 +110,11 @@ class PartnersProductQnaRepositoryImplTest {
                 qna1.getId(), qna2.getId(), qna3.getId()
         );
 
-        List<String> writerNames = qnas.stream()
-                .map(PartnersProductQnaDto::getWriterName)
+        List<String> writerLoginIds = qnas.stream()
+                .map(PartnersProductQnaDto::getWriterLoginId)
                 .collect(Collectors.toList());
-        assertThat(writerNames).containsExactly(
-                "테스트문의작성자", "테스트문의작성자", "테스트문의작성자"
+        assertThat(writerLoginIds).containsExactly(
+                writer.getLoginId(), writer.getLoginId(), writer.getLoginId()
         );
 
         List<Boolean> isAnsweredList = qnas.stream()

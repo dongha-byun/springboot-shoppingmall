@@ -28,11 +28,10 @@ public class PartnersProductQnaRepositoryImpl implements PartnersProductQnaRepos
                                                                  ProductQnaAnswerCompleteType completeType) {
 
         return jpaQueryFactory.select(Projections.constructor(PartnersProductQnaDto.class,
-                        productQna.id, productQna.content, user.userName,
+                        productQna.id, productQna.content, productQna.writerLoginId,
                         productQna.product.id, productQna.product.name, productQna.product.thumbnail.storedFileName,
                         productQna.writeDate, productQnaAnswer.id.isNotNull()))
                 .from(productQna)
-                .join(user).on(user.id.eq(productQna.writerId))
                 .leftJoin(productQnaAnswer).on(productQnaAnswer.productQna.eq(productQna))
                 .where(
                         equalPartner(partnerId)
