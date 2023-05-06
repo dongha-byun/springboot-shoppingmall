@@ -47,13 +47,16 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
         // then
         assertThat(판매자_준비중_주문_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(판매자_준비중_주문_조회_결과.jsonPath().getList("data.productName", String.class)).containsExactly(
-                "상품 1", "상품 2"
+                상품.getName(), 상품2.getName()
         );
         assertThat(판매자_준비중_주문_조회_결과.jsonPath().getList("data.orderUserName", String.class)).containsExactly(
-                "인수테스터1", "인수테스터1"
+                인수테스터1.getName(), 인수테스터1.getName()
         );
         assertThat(판매자_준비중_주문_조회_결과.jsonPath().getList("data.receiverName", String.class)).containsExactly(
                 배송지.getReceiverName(), 배송지.getReceiverName()
+        );
+        assertThat(판매자_준비중_주문_조회_결과.jsonPath().getList("data.requestMessage", String.class)).containsExactly(
+                배송지.getRequestMessage(), 배송지.getRequestMessage()
         );
     }
 }

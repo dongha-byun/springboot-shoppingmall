@@ -28,7 +28,7 @@ public class PartnersOrderQueryResponse {
                 dto.getId(), dto.getOrderCode(), DateUtils.toStringOfLocalDateTIme(dto.getOrderDate()),
                 dto.getProductCode(), dto.getProductName(), dto.getQuantity(), dto.getOrderUserName(),
                 dto.getOrderUserTelNo(), dto.getReceiverName(), dto.getAddress(), dto.getDetailAddress(),
-                null
+                dto.getRequestMessage()
         );
     }
 }

@@ -19,13 +19,14 @@ public class PartnersOrderQueryDto {
     private String receiverName;
     private String address;
     private String detailAddress;
+    private String requestMessage;
     private String invoiceNumber;
     private LocalDateTime orderCancelDate;
 
     @QueryProjection
     public PartnersOrderQueryDto(Long id, String orderCode, LocalDateTime orderDate, String productCode,
                                  String productName, int quantity, String orderUserName, String orderUserTelNo,
-                                 String receiverName, String address, String detailAddress) {
+                                 String receiverName, String address, String detailAddress, String requestMessage) {
         this.id = id;
         this.orderCode = orderCode;
         this.orderDate = orderDate;
@@ -37,5 +38,6 @@ public class PartnersOrderQueryDto {
         this.receiverName = receiverName;
         this.address = address;
         this.detailAddress = detailAddress;
+        this.requestMessage = requestMessage;
     }
 }
