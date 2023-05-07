@@ -8,7 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryFinder;
 import springboot.shoppingmall.product.domain.Product;
+import springboot.shoppingmall.product.dto.ProductDto;
 import springboot.shoppingmall.product.query.ProductQueryOrderType;
+import springboot.shoppingmall.product.query.dto.ProductQueryDto;
 import springboot.shoppingmall.product.query.dto.ProductQueryResponse;
 import springboot.shoppingmall.product.query.repository.ProductQueryRepository;
 
@@ -64,5 +66,10 @@ public class ProductQueryService {
         Category category = categoryFinder.findById(categoryId);
         Category subCategory = categoryFinder.findById(subCategoryId);
         return productQueryRepository.countByPartnerIdAndCategoryAndSubCategory(partnerId, category, subCategory);
+    }
+
+    public List<ProductQueryDto> searchProducts(String searchKeyword, ProductQueryOrderType orderType,
+                                                int limit, int offset) {
+        return productQueryRepository.searchProducts(searchKeyword, orderType, limit, offset);
     }
 }

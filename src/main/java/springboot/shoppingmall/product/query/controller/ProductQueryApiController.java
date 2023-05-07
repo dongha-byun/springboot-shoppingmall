@@ -1,6 +1,8 @@
 package springboot.shoppingmall.product.query.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryFinder;
+import springboot.shoppingmall.product.dto.ProductDto;
 import springboot.shoppingmall.product.query.PagingDataResponse;
 import springboot.shoppingmall.product.query.ProductQueryOrderType;
+import springboot.shoppingmall.product.query.dto.ProductQueryDto;
 import springboot.shoppingmall.product.query.dto.ProductQueryResponse;
 import springboot.shoppingmall.product.query.service.ProductQueryService;
 import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
@@ -57,12 +61,35 @@ public class ProductQueryApiController {
     }
 
     @GetMapping("/search-products")
-    public ResponseEntity<List<ProductQueryResponse>> searchProducts(@RequestParam("categoryId") Long categoryId,
-                                                                     @RequestParam("subCategoryId") Long subCategoryId,
-                                                                     @RequestParam("searchKeyword") String searchKeyword) {
-        List<ProductQueryResponse> products =
-                productQueryService.searchProducts(categoryId, subCategoryId, searchKeyword);
-        return ResponseEntity.ok(products);
+    public ResponseEntity<PagingDataResponse<List<ProductQueryResponse>>> searchProducts(
+            @RequestParam("searchKeyword") String searchKeyword,
+            @RequestParam("orderType") String orderType,
+            @RequestParam("limit") int limit,
+            @RequestParam("offset") int offset
+    ) {
+        List<ProductQueryDto> products = productQueryService.searchProducts(
+                searchKeyword, ProductQueryOrderType.valueOf(orderType), limit, offset
+        );
+        List<ProductQueryResponse> responses = products.stream()
+                .map(ProductQueryResponse::of)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(new PagingDataResponse<>(responses));
+    }
+
+    @GetMapping("/search-products-more")
+    public ResponseEntity<PagingDataResponse<List<ProductQueryResponse>>> searchMoreProducts(
+            @RequestParam("searchKeyword") String searchKeyword,
+            @RequestParam("orderType") String orderType,
+            @RequestParam("limit") int limit,
+            @RequestParam("offset") int offset
+    ) {
+        List<ProductQueryDto> products = productQueryService.searchProducts(
+                searchKeyword, ProductQueryOrderType.valueOf(orderType), limit, offset
+        );
+        List<ProductQueryResponse> responses = products.stream()
+                .map(ProductQueryResponse::of)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(new PagingDataResponse<>(responses));
     }
 
     @GetMapping("/partners/products")

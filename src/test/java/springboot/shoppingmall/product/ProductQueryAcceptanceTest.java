@@ -182,6 +182,98 @@ public class ProductQueryAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    /**
+     *  given: 여러 개의 상품이 등록되어 있음
+     *  when: 상품명을 검색하면
+     *  then: 검색결과가 조회된다.
+     */
+    @Test
+    @DisplayName("상품명 검색 결과 조회 테스트")
+    void search_product_test() {
+        // given
+        상품_등록_요청("육류01", 10000, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류02", 19000, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류03", 21900, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류04", 31500, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류05", 59900, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류06", 88000, 20, 식품.getId(), 육류.getId());
+
+        상품_등록_요청("생선01", 15000, 20, 식품.getId(), 생선.getId());
+        상품_등록_요청("생선02", 21000, 20, 식품.getId(), 생선.getId());
+        상품_등록_요청("생선03", 31200, 20, 식품.getId(), 생선.getId());
+        상품_등록_요청("생선04", 41100, 20, 식품.getId(), 생선.getId());
+        상품_등록_요청("생선05", 69100, 20, 식품.getId(), 생선.getId());
+
+        // when
+        String searchKeyword = "육류";
+        ExtractableResponse<Response> 검색_결과 = RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/search-products"
+                        + "?searchKeyword={searchKeyword}"
+                        + "&orderType={orderType}"
+                        + "&limit={limit}"
+                        + "&offset={offset}",
+                        searchKeyword,
+                        ProductQueryOrderType.PRICE.name(),
+                        3,
+                        1)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(검색_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(검색_결과.jsonPath().getList("data.name")).containsExactly(
+                "육류02", "육류03", "육류04"
+        );
+    }
+
+    /**
+     *  given: 여러 개의 상품이 등록되어 있음
+     *  when: 상품명을 검색하고 더보기를 클릭하면
+     *  then: 추가로 검색결과가 조회된다.
+     */
+    @Test
+    @DisplayName("상품명 검색 결과 더보기 테스트")
+    void search_product_more_test() {
+        // given
+        상품_등록_요청("육류01", 10000, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류02", 19000, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류03", 21900, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류04", 31500, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류05", 59900, 20, 식품.getId(), 육류.getId());
+        상품_등록_요청("육류06", 88000, 20, 식품.getId(), 육류.getId());
+
+        상품_등록_요청("생선01", 15000, 20, 식품.getId(), 생선.getId());
+        상품_등록_요청("생선02", 21000, 20, 식품.getId(), 생선.getId());
+        상품_등록_요청("생선03", 31200, 20, 식품.getId(), 생선.getId());
+        상품_등록_요청("생선04", 41100, 20, 식품.getId(), 생선.getId());
+        상품_등록_요청("생선05", 69100, 20, 식품.getId(), 생선.getId());
+
+        // when
+        String searchKeyword = "육류";
+        ExtractableResponse<Response> 검색_결과 = RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/search-products-more"
+                                + "?searchKeyword={searchKeyword}"
+                                + "&orderType={orderType}"
+                                + "&limit={limit}"
+                                + "&offset={offset}",
+                        searchKeyword,
+                        ProductQueryOrderType.PRICE.name(),
+                        3,
+                        4)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(검색_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(검색_결과.jsonPath().getList("data.name")).containsExactly(
+                "육류05", "육류06"
+        );
+    }
+
     private ExtractableResponse<Response> 상품_목록_조회_요청(CategoryResponse category, CategoryResponse subCategory, ProductQueryOrderType sortType) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

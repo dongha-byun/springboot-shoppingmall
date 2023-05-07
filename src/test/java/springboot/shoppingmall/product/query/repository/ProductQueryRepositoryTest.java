@@ -16,6 +16,11 @@ import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
+import springboot.shoppingmall.product.dto.ProductDto;
+import springboot.shoppingmall.product.query.ProductQueryOrderType;
+import springboot.shoppingmall.product.query.dto.ProductQueryDto;
+import springboot.shoppingmall.providers.domain.Provider;
+import springboot.shoppingmall.providers.domain.ProviderRepository;
 
 @Transactional
 @SpringBootTest
@@ -30,6 +35,9 @@ class ProductQueryRepositoryTest {
     @Autowired
     ProductQueryRepository productQueryRepository;
 
+    @Autowired
+    ProviderRepository providerRepository;
+
     Category category;
     Category subCategory;
 
@@ -38,18 +46,26 @@ class ProductQueryRepositoryTest {
     Product 생선3;
 
     LocalDateTime now;
+    Provider partners;
 
     @BeforeEach
     void setUp() {
+        partners = providerRepository.save(
+                new Provider("테스트판매사", "테스트대표", "테스트시 테스트구 테스트동", "031-444-1234", "110-22-334411",
+                        "test_partner", "test_partner1!", true)
+        );
         category = categoryRepository.save(new Category("식품 분류"));
         subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
         now = LocalDateTime.now();
         생선1 = productRepository.save(
-                new Product("생선1", 1000, 10, 1.0, 10, now, category, subCategory));
+                new Product("생선1", 1000, 10, 1.0, 10, now, category, subCategory, partners.getId())
+        );
         생선2 = productRepository.save(
-                new Product("생선2", 1200, 11, 1.5, 20, now.plusDays(1), category, subCategory));
+                new Product("생선2", 1200, 11, 1.5, 20, now.plusDays(1), category, subCategory, partners.getId())
+        );
         생선3 = productRepository.save(
-                new Product("생선3", 1500, 12, 3.0, 15, now.plusDays(2), category, subCategory));
+                new Product("생선3", 1500, 12, 3.0, 15, now.plusDays(2), category, subCategory, partners.getId())
+        );
     }
 
     @Test
@@ -127,11 +143,18 @@ class ProductQueryRepositoryTest {
         // given
 
         // when
-        List<Product> products = productQueryRepository.searchProducts(category, subCategory, "선1");
+        List<ProductQueryDto> productDtos =
+                productQueryRepository.searchProducts("생선", RECENT, 10, 0);
 
         // then
-        assertThat(products).hasSize(1);
-        assertThat(products.get(0).getName()).isEqualTo("생선1");
+        assertThat(productDtos).hasSize(3);
+        List<Long> ids = productDtos.stream()
+                .map(ProductQueryDto::getId)
+                .collect(Collectors.toList());
+        assertThat(ids).containsExactly(
+                생선3.getId(), 생선2.getId(), 생선1.getId()
+        );
+
     }
 
     @Test
