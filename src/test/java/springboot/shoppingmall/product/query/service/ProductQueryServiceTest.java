@@ -58,98 +58,112 @@ class ProductQueryServiceTest {
                 new Product(
                         "조거팬츠", 23100, 10, 2.7, 7, now,
                         category, subCategory, partners.getId(),
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                        partners.generateProductCode()
                 )
         );
         productRepository.save(
                 new Product(
                         "반바지", 6900, 10, 3.7, 4, now.plusDays(1),
                         category, subCategory, partners.getId(),
-                        "storedFileName2", "viewFileName2", "상품 설명 입니다."
+                        "storedFileName2", "viewFileName2", "상품 설명 입니다.",
+                        partners.generateProductCode()
                 )
         );
         productRepository.save(
                 new Product(
                         "반바지 2", 6900, 10, 3.7, 4, now.plusDays(2),
                         category, subCategory, partners.getId(),
-                        "storedFileName3", "viewFileName3", "상품 설명 입니다."
+                        "storedFileName3", "viewFileName3", "상품 설명 입니다.",
+                        partners.generateProductCode()
                 )
         );
         productRepository.save(
                 new Product(
                         "반바지 3", 6900, 10, 3.7, 4, now.plusDays(3),
                         category, subCategory, partners.getId(),
-                        "storedFileName4", "viewFileName4", "상품 설명 입니다."
+                        "storedFileName4", "viewFileName4", "상품 설명 입니다.",
+                        partners.generateProductCode()
                 )
         );
         productRepository.save(
                 new Product(
                         "반바지 4", 6900, 10, 3.7, 4, now.plusDays(4),
                         category, subCategory, partners.getId(),
-                        "storedFileName5", "viewFileName5", "상품 설명 입니다."
+                        "storedFileName5", "viewFileName5", "상품 설명 입니다.",
+                        partners.generateProductCode()
                 )
         );
         productRepository.save(
                 new Product(
                         "반바지 5", 6900, 10, 3.7, 4, now.plusDays(5),
                         category, subCategory, partners.getId(),
-                        "storedFileName6", "viewFileName6", "상품 설명 입니다."
+                        "storedFileName6", "viewFileName6", "상품 설명 입니다.",
+                        partners.generateProductCode()
                 )
         );
         productRepository.save(
                 new Product(
                         "반바지 6", 6900, 10, 3.7, 4, now.plusDays(6),
                         category, subCategory, partners.getId(),
-                        "storedFileName7", "viewFileName7", "상품 설명 입니다."
+                        "storedFileName7", "viewFileName7", "상품 설명 입니다.",
+                        partners.generateProductCode()
                 )
         );
         productRepository.save(
                 new Product(
                         "반바지 7", 6900, 10, 3.7, 4, now.plusDays(7),
                         category, subCategory, partners.getId(),
-                        "storedFileName8", "viewFileName8", "상품 설명 입니다."
+                        "storedFileName8", "viewFileName8", "상품 설명 입니다.",
+                        partners.generateProductCode()
                 )
         );
         productRepository.save(
                 new Product(
                         "반바지 8", 6900, 10, 3.7, 4, now.plusDays(8),
                         category, subCategory, partners.getId(),
-                        "storedFileName9", "viewFileName9", "상품 설명 입니다."
+                        "storedFileName9", "viewFileName9", "상품 설명 입니다.",
+                        partners.generateProductCode()
                 )
         );
         productRepository.save(
                 new Product(
                         "청바지", 12000, 10, 2.0, 5, now.plusDays(9),
                         category, subCategory, partners.getId(),
-                        "storedFileName10", "viewFileName10", "상품 설명 입니다."
+                        "storedFileName10", "viewFileName10", "상품 설명 입니다.",
+                        partners.generateProductCode()
                 )
         );
         productRepository.save(
                 new Product(
                         "면바지", 17900, 10, 1.7, 2, now.plusDays(10),
                         category, subCategory, partners.getId(),
-                        "storedFileName11", "viewFileName11", "상품 설명 입니다."
+                        "storedFileName11", "viewFileName11", "상품 설명 입니다.",
+                        partners.generateProductCode()
                 )
         );
         productRepository.save(
                 new Product(
                         "면바지 2", 17900, 10, 1.7, 2, now.plusDays(11),
                         category, subCategory, partners.getId(),
-                        "storedFileName12", "viewFileName12", "상품 설명 입니다."
+                        "storedFileName12", "viewFileName12", "상품 설명 입니다.",
+                        partners.generateProductCode()
                 )
         );
         productRepository.save(
                 new Product(
                         "면바지 3", 17900, 10, 1.7, 2, now.plusDays(12),
                         category, subCategory, partners.getId(),
-                        "storedFileName13", "viewFileName13", "상품 설명 입니다."
+                        "storedFileName13", "viewFileName13", "상품 설명 입니다.",
+                        partners.generateProductCode()
                 )
         );
         productRepository.save(
                 new Product(
                         "면바지 4", 17900, 10, 1.7, 2, now.plusDays(13),
                         category, subCategory, partners.getId(),
-                        "storedFileName14", "viewFileName14", "상품 설명 입니다."
+                        "storedFileName14", "viewFileName14", "상품 설명 입니다.",
+                        partners.generateProductCode()
                 )
         );
     }

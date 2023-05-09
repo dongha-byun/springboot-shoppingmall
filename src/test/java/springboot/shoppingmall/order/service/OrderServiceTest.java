@@ -68,7 +68,8 @@ class OrderServiceTest {
                 new Product(
                         "상품 1", 22000, productCount, 1.0, 0, LocalDateTime.now(),
                         category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                        "test-product-code"
                 )
         );
     }

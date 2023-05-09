@@ -20,7 +20,8 @@ public class OrderTest {
         product = new Product(
                 1L, "상품1", 12000, 22, 0.0, 0,
                 LocalDateTime.now(), new Category("상위 카테고리"), new Category("하위 카테고리"),
-                100L, "stored_file_name", "view_file_name", "상품 설명 입니다."
+                100L, "stored_file_name", "view_file_name", "상품 설명 입니다.",
+                "test-product-code"
         );
         delivery = Delivery.builder()
                 .nickName("수령지 1").receiverName("수령인 1").zipCode("10010")

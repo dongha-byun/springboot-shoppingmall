@@ -8,7 +8,6 @@ import springboot.shoppingmall.category.domain.CategoryFinder;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
 import springboot.shoppingmall.product.dto.ProductDto;
-import springboot.shoppingmall.product.dto.ProductRequest;
 import springboot.shoppingmall.product.dto.ProductResponse;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.providers.domain.Provider;
@@ -26,6 +25,7 @@ public class ProductService {
     public ProductResponse saveProduct(Long partnerId, ProductDto productDto){
         Category category = categoryFinder.findById(productDto.getCategoryId());
         Category subCategory = categoryFinder.findById(productDto.getSubCategoryId());
+        Provider provider = providerFinder.findById(partnerId);
 
         Product product = productRepository.save(
                 Product.builder()
@@ -38,6 +38,7 @@ public class ProductService {
                         .storedFileName(productDto.getStoredThumbnailName())
                         .viewFileName(productDto.getViewThumbnailName())
                         .detail(productDto.getDetail())
+                        .productCode(provider.generateProductCode())
                         .build()
         );
         return ProductResponse.of(product);

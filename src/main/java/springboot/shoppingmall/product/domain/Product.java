@@ -79,21 +79,21 @@ public class Product extends BaseEntity {
 
     @Builder
     public Product(String name, int price, int count, Category category, Category subCategory
-            , Long partnerId, String storedFileName, String viewFileName, String detail) {
-        this(null, name, price, count, 0.0, 0, LocalDateTime.now(), category, subCategory
-                , partnerId, storedFileName, viewFileName, detail);
+            , Long partnerId, String storedFileName, String viewFileName, String detail, String productCode) {
+        this(null, name, price, count, 0.0, 0, LocalDateTime.now(), category, subCategory,
+                partnerId, storedFileName, viewFileName, detail, productCode);
     }
 
     public Product(String name, int price, int count, double score, int salesVolume,
                    LocalDateTime registerDate, Category category, Category subCategory, Long partnerId,
-                   String storedFileName, String viewFileName, String detail) {
-        this(null, name, price, count, score, salesVolume, registerDate
-                , category, subCategory, partnerId, storedFileName, viewFileName, detail);
+                   String storedFileName, String viewFileName, String detail, String productCode) {
+        this(null, name, price, count, score, salesVolume, registerDate, category, subCategory,
+                partnerId, storedFileName, viewFileName, detail, productCode);
     }
 
     public Product(Long id, String name, int price, int count, double score, int salesVolume,
                    LocalDateTime registerDate, Category category, Category subCategory, Long partnerId,
-                   String storedFileName, String viewFileName, String detail) {
+                   String storedFileName, String viewFileName, String detail, String productCode) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -105,7 +105,7 @@ public class Product extends BaseEntity {
         this.subCategory = subCategory;
         this.partnerId = partnerId;
         this.thumbnail = new ProductThumbnail(storedFileName, viewFileName);
-        this.productCode = UUID.randomUUID().toString();
+        this.productCode = productCode;
         this.detail = detail;
     }
 

@@ -76,6 +76,7 @@ public class ProductAcceptanceTest extends AcceptanceTest {
         assertThat(상품_조회_요청_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(상품_조회_요청_결과.jsonPath().getLong("partnerId")).isNotNull();
         assertThat(상품_조회_요청_결과.jsonPath().getString("detail")).isNotNull();
+        assertThat(상품_조회_요청_결과.jsonPath().getString("productCode")).isNotNull();
     }
 
     /**

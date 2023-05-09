@@ -63,7 +63,7 @@ class CartQueryRepositoryImplTest {
 
         product1 = productRepository.save(
                 new Product("상품 1", 12000, 10, category, subCategory
-                        , provider.getId(), "stored1", "real2", "상품 설명 입니다.")
+                        , provider.getId(), "stored1", "real2", "상품 설명 입니다.", "test-product-code")
         );
 
         cart1 = cartRepository.save(new Cart(3, product1, user1));
@@ -94,8 +94,9 @@ class CartQueryRepositoryImplTest {
     void find_all_cart_dto() {
         // given
         Product product2 = productRepository.save(
-                new Product("상품 2", 13000, 5, category, subCategory
-                        , provider.getId(), "stored2", "real2", "상품 설명 입니다.")
+                new Product("상품 2", 13000, 5, category, subCategory,
+                        provider.getId(), "stored2", "real2", "상품 설명 입니다.",
+                        "test-product-code")
         );
         Cart cart2 = cartRepository.save(new Cart(5, product2, user1));
 

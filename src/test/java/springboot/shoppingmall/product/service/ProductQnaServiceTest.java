@@ -46,7 +46,8 @@ class ProductQnaServiceTest {
                 new Product(
                         "상품 1", 22000, 10, 1.0, 10, LocalDateTime.now(),
                         category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                        "test-product-code"
                 )
         );
         saveUser = userRepository.save(User.builder()

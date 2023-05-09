@@ -50,7 +50,8 @@ class OrderFinderTest {
                 new Product(
                         "상품1", 1000, 2, 1.0, 10, now,
                         category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                        "test-product-code"
                 )
         );
         delivery = deliveryRepository.save(new Delivery("닉네임", "수령인", "10010", "수령지주소", "수령지상세주소", "요구사항", user));

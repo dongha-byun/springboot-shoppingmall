@@ -56,7 +56,8 @@ class OrderValidatorTest {
                 new Product(
                         "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
                         category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                        "test-product-code"
                 )
         );
         Delivery delivery = deliveryRepository.save(new Delivery("배송지1", "수령인1", "10010", "주소", "상세주소", "요청사항", user));

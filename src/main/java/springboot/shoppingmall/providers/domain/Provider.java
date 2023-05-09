@@ -28,6 +28,7 @@ public class Provider extends BaseEntity {
     private String loginId;
     private String password;
     private boolean isApproved;
+    private int productSequence;
 
     public Provider(String name, String ceoName, String address, String telNo, String corporateRegistrationNumber, String loginId,
                     String password) {
@@ -51,6 +52,7 @@ public class Provider extends BaseEntity {
         this.loginId = loginId;
         this.password = password;
         this.isApproved = isApproved;
+        this.productSequence = 0;
     }
 
     public void approve() {
@@ -59,5 +61,14 @@ public class Provider extends BaseEntity {
 
     public void stop() {
         this.isApproved = false;
+    }
+
+    public int getLastSequence() {
+        return ++this.productSequence;
+    }
+
+    public String generateProductCode() {
+        return this.corporateRegistrationNumber.replace("-", "")
+                + String.format("%06d", getLastSequence());
     }
 }

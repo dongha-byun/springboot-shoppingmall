@@ -61,7 +61,8 @@ class OrderDeliveryInvoiceServiceTest {
                 new Product(
                         "상품1", 1000, 2, 1.0, 10, LocalDateTime.now(),
                         category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                        "test-product-code"
                 )
         );
     }

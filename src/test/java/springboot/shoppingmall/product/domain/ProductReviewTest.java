@@ -22,7 +22,8 @@ class ProductReviewTest {
         Product product = new Product(
                 "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
                 new Category("상위 카테고리"), new Category("하위 카테고리"), 10L,
-                "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                "test-product-code"
         );
         ProductReview productReview1 = new ProductReview("리뷰 입니다.", 4);
         ProductReview productReview2 = new ProductReview("리뷰 2 입니다.", 5);
@@ -45,7 +46,8 @@ class ProductReviewTest {
         Product product = new Product(
                 "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
                 new Category("상위 카테고리"), new Category("하위 카테고리"), 10L,
-                "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                "test-product-code"
         );
         ProductReview productReview1 = new ProductReview("리뷰 입니다.", 4);
         ProductReview productReview2 = new ProductReview("리뷰 2 입니다.", 5);
@@ -72,7 +74,8 @@ class ProductReviewTest {
         Product product = new Product(
                 "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
                 new Category("상위 카테고리"), new Category("하위 카테고리"), 10L,
-                "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                "test-product-code"
         );
         ProductReview productReview1 = new ProductReview("리뷰 입니다.", 4, product, user1.getId(), user1.getLoginId());
         ProductReview productReview2 = new ProductReview("리뷰 2 입니다.", 5, product, user2.getId(), user2.getLoginId());
@@ -114,7 +117,8 @@ class ProductReviewTest {
         Product product = new Product(
                 "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
                 new Category("상위 카테고리"), new Category("하위 카테고리"), 10L,
-                "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                "test-product-code"
         );
         ProductReview productReview = new ProductReview("리뷰 등록 합니다.", 3, product, 1L, "writerLoginId");
 

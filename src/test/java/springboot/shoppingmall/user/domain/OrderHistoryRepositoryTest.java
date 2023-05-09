@@ -69,7 +69,8 @@ class OrderHistoryRepositoryTest {
         );
         product = productRepository.save(
                 new Product("테스트상품", 12000, 300, parent, child,
-                        partner.getId(), "storedFileName", "viewFileName", "상품 설명 입니다.")
+                        partner.getId(), "storedFileName", "viewFileName", "상품 설명 입니다.",
+                        "test-product-code")
         );
     }
 

@@ -47,7 +47,8 @@ class CustomProductReviewRepositoryImplTest {
                 new Product(
                         "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
                         category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                        "test-product-code"
                 )
         );
 
