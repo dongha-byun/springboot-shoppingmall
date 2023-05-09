@@ -77,16 +77,6 @@ public class Product extends BaseEntity {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<ProductDetail> details = new ArrayList<>();
 
-    public Product(String name, int price, int count, Category category, Category subCategory) {
-        this(name, price, count, 0.0, 0, LocalDateTime.now(), category, subCategory);
-    }
-
-    public Product(String name, int price, int count, double score, int salesVolume
-            , LocalDateTime registerDate, Category category, Category subCategory) {
-        this(null, name, price, count, score, salesVolume
-                , registerDate, category, subCategory, null, null, null, null);
-    }
-
     @Builder
     public Product(String name, int price, int count, Category category, Category subCategory
             , Long partnerId, String storedFileName, String viewFileName, String detail) {
@@ -94,23 +84,11 @@ public class Product extends BaseEntity {
                 , partnerId, storedFileName, viewFileName, detail);
     }
 
-    public Product(String name, int price, int count, double score, int salesVolume,LocalDateTime registerDate
-            , Category category, Category subCategory, Long partnerId) {
-        this(null, name, price, count, score, salesVolume, registerDate
-                , category, subCategory, partnerId, null, null, null);
-    }
-
-    public Product(String name, int price, int count, double score, int salesVolume, LocalDateTime registerDate,
-                   Category category, Category subCategory, Long partnerId, String storedFileName, String viewFileName,
-                   String detail) {
+    public Product(String name, int price, int count, double score, int salesVolume,
+                   LocalDateTime registerDate, Category category, Category subCategory, Long partnerId,
+                   String storedFileName, String viewFileName, String detail) {
         this(null, name, price, count, score, salesVolume, registerDate
                 , category, subCategory, partnerId, storedFileName, viewFileName, detail);
-    }
-
-    public Product(Long id, String name, int price, int count, double score, int salesVolume,
-                   LocalDateTime registerDate, Category category, Category subCategory, Long partnerId, String detail) {
-        this(id, name, price, count, score, salesVolume, registerDate, category
-                , subCategory, partnerId, null, null, detail);
     }
 
     public Product(Long id, String name, int price, int count, double score, int salesVolume,

@@ -2,6 +2,7 @@ package springboot.shoppingmall.product.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +43,13 @@ class CustomProductQnaRepositoryImplTest {
         User user2 = userRepository.save(new User("사용자2", "user2", "user2!", "010-4444-3333"));
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
+        Product product = productRepository.save(
+                new Product(
+                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
+                        category, subCategory, 10L,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                )
+        );
 
         ProductQna qna1 = productQnaRepository.save(new ProductQna("문의 드립니다. 1", product, user1.getId(), user1.getLoginId()));
         ProductQna qna2 = productQnaRepository.save(new ProductQna("문의 드립니다. 2", product, user2.getId(),

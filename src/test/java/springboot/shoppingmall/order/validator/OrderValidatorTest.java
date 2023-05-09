@@ -3,6 +3,7 @@ package springboot.shoppingmall.order.validator;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,13 @@ class OrderValidatorTest {
         User user = userRepository.save(new User("사용자1", "user1", "user1!", "010-2222-3333"));
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
+        Product product = productRepository.save(
+                new Product(
+                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
+                        category, subCategory, 10L,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                )
+        );
         Delivery delivery = deliveryRepository.save(new Delivery("배송지1", "수령인1", "10010", "주소", "상세주소", "요청사항", user));
 
         Order savedOrder = orderRepository.save(

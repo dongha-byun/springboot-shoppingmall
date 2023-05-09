@@ -2,6 +2,7 @@ package springboot.shoppingmall.product.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
@@ -51,7 +52,13 @@ class ProductReviewServiceTest {
         User user = userRepository.save(new User("사용자1", "user1", "user1!", "010-2222-3333"));
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
+        Product product = productRepository.save(
+                new Product(
+                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
+                        category, subCategory, 10L,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                )
+        );
 
         // when
         ProductReviewRequest productReviewRequest = new ProductReviewRequest("리뷰 등록 합니다.", 3);
@@ -70,7 +77,13 @@ class ProductReviewServiceTest {
         User user = userRepository.save(new User("사용자1", "user1", "user1!", "010-2222-3333"));
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
+        Product product = productRepository.save(
+                new Product(
+                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
+                        category, subCategory, 10L,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                )
+        );
 
         ProductReviewRequest productReviewRequest = new ProductReviewRequest("리뷰 등록 합니다.", 3);
         service.createProductReview(user.getId(), user.getLoginId(), product.getId(), productReviewRequest);
@@ -89,7 +102,13 @@ class ProductReviewServiceTest {
         User user2 = userRepository.save(new User("사용자2", "user2", "user1!", "010-2222-3333"));
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
+        Product product = productRepository.save(
+                new Product(
+                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
+                        category, subCategory, 10L,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                )
+        );
 
         ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product, user1.getId(), user1.getLoginId()));
         ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product, user2.getId(), user2.getLoginId()));
@@ -116,8 +135,20 @@ class ProductReviewServiceTest {
         User user = userRepository.save(new User("사용자1", "user1", "user1!", "010-2222-3333"));
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product1 = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
-        Product product2 = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
+        Product product1 = productRepository.save(
+                new Product(
+                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
+                        category, subCategory, 10L,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                )
+        );
+        Product product2 = productRepository.save(
+                new Product(
+                        "상품 2", 12000, 20, 1.0, 10, LocalDateTime.now(),
+                        category, subCategory, 10L,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                )
+        );
 
         ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId(), user.getLoginId()));
         ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product2, user.getId(), user.getLoginId()));
@@ -149,8 +180,20 @@ class ProductReviewServiceTest {
         User user = userRepository.save(new User("사용자1", "user1", "user1!", "010-2222-3333"));
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product1 = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
-        Product product2 = productRepository.save(new Product("상품 2", 42100, 15, category, subCategory));
+        Product product1 = productRepository.save(
+                new Product(
+                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
+                        category, subCategory, 10L,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                )
+        );
+        Product product2 = productRepository.save(
+                new Product(
+                        "상품 2", 42100, 15, 1.0, 10, LocalDateTime.now(),
+                        category, subCategory, 10L,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                )
+        );
 
         ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId(), user.getLoginId()));
         ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product2, user.getId(), user.getLoginId()));
@@ -183,7 +226,13 @@ class ProductReviewServiceTest {
 
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product = productRepository.save(new Product("상품 1", 12000, 20, category, subCategory));
+        Product product = productRepository.save(
+                new Product(
+                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
+                        category, subCategory, 10L,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                )
+        );
 
         // when & then
         service.createProductReview(user1.getId(), user1.getLoginId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 1", 5));

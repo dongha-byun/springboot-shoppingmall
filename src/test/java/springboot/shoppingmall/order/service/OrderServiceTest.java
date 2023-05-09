@@ -3,6 +3,7 @@ package springboot.shoppingmall.order.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import org.assertj.core.api.ThrowableAssertAlternative;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -63,7 +64,13 @@ class OrderServiceTest {
 
         Category category = categoryRepository.save(new Category("상위 1"));
         Category subCategory = categoryRepository.save(new Category("하위 1").changeParent(category));
-        product = productRepository.save(new Product("상품 1", 22000, productCount, category, subCategory));
+        product = productRepository.save(
+                new Product(
+                        "상품 1", 22000, productCount, 1.0, 0, LocalDateTime.now(),
+                        category, subCategory, 10L,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                )
+        );
     }
 
     @Test

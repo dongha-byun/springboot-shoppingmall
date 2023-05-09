@@ -45,7 +45,14 @@ class OrderFinderTest {
         user = userRepository.save(new User("테스트유저", "testUser", "testUser!", "010-1234-1234"));
         Category category = categoryRepository.save(new Category("의류"));
         Category subCategory = categoryRepository.save(new Category("바지").changeParent(category));
-        product = productRepository.save(new Product("상품1", 1000, 2, category, subCategory));
+        LocalDateTime now = LocalDateTime.now();
+        product = productRepository.save(
+                new Product(
+                        "상품1", 1000, 2, 1.0, 10, now,
+                        category, subCategory, 10L,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                )
+        );
         delivery = deliveryRepository.save(new Delivery("닉네임", "수령인", "10010", "수령지주소", "수령지상세주소", "요구사항", user));
     }
 

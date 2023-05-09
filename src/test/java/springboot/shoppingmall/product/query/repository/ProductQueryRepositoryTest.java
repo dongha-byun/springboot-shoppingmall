@@ -58,13 +58,25 @@ class ProductQueryRepositoryTest {
         subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
         now = LocalDateTime.now();
         생선1 = productRepository.save(
-                new Product("생선1", 1000, 10, 1.0, 10, now, category, subCategory, partners.getId())
+                new Product(
+                        "생선1", 1000, 10, 1.0, 10, now,
+                        category, subCategory, partners.getId(),
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                )
         );
         생선2 = productRepository.save(
-                new Product("생선2", 1200, 11, 1.5, 20, now.plusDays(1), category, subCategory, partners.getId())
+                new Product(
+                        "생선2", 1200, 11, 1.5, 20, now.plusDays(1),
+                        category, subCategory, partners.getId(),
+                        "storedFileName2", "viewFileName2", "상품 설명 입니다."
+                )
         );
         생선3 = productRepository.save(
-                new Product("생선3", 1500, 12, 3.0, 15, now.plusDays(2), category, subCategory, partners.getId())
+                new Product(
+                        "생선3", 1500, 12, 3.0, 15, now.plusDays(2),
+                        category, subCategory, partners.getId(),
+                        "storedFileName3", "viewFileName3", "상품 설명 입니다."
+                )
         );
     }
 
@@ -195,16 +207,32 @@ class ProductQueryRepositoryTest {
         // given
         Long partnerId = 10L;
         Product product1 = productRepository.save(
-                new Product("product1", 1500, 12, 3.0, 15, now.plusDays(3), category, subCategory, partnerId)
+                new Product(
+                        "product1", 1500, 12, 3.0, 15, now.plusDays(3),
+                        category, subCategory, partnerId,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                )
         );
         Product product2 = productRepository.save(
-                new Product("product2", 1500, 12, 3.0, 15, now.plusDays(2), category, subCategory, partnerId)
+                new Product(
+                        "product2", 1500, 12, 3.0, 15, now.plusDays(2),
+                        category, subCategory, partnerId,
+                        "storedFileName2", "viewFileName2", "상품 설명 입니다."
+                )
         );
         Product product3 = productRepository.save(
-                new Product("product3", 1500, 12, 3.0, 15, now.plusDays(1), category, subCategory, partnerId)
+                new Product(
+                        "product3", 1500, 12, 3.0, 15, now.plusDays(1),
+                        category, subCategory, partnerId,
+                        "storedFileName3", "viewFileName3", "상품 설명 입니다."
+                )
         );
         Product product4 = productRepository.save(
-                new Product("product4", 1500, 12, 3.0, 15, now, category, subCategory, partnerId)
+                new Product(
+                        "product4", 1500, 12, 3.0, 15, now,
+                        category, subCategory, partnerId,
+                        "storedFileName4", "viewFileName4", "상품 설명 입니다."
+                )
         );
 
         // when
@@ -226,16 +254,31 @@ class ProductQueryRepositoryTest {
         // given
         Long partnerId = 10L;
         productRepository.save(
-                new Product("product1", 1500, 12, 3.0, 15, now.plusDays(3), category, subCategory, partnerId)
+                new Product("product1", 1500, 12, 3.0, 15, now.plusDays(3),
+                        category, subCategory, partnerId,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                )
         );
         productRepository.save(
-                new Product("product2", 1500, 12, 3.0, 15, now.plusDays(2), category, subCategory, partnerId)
+                new Product(
+                        "product2", 1500, 12, 3.0, 15, now.plusDays(2),
+                        category, subCategory, partnerId,
+                        "storedFileName2", "viewFileName2", "상품 설명 입니다."
+                )
         );
         productRepository.save(
-                new Product("product3", 1500, 12, 3.0, 15, now.plusDays(1), category, subCategory, partnerId)
+                new Product(
+                        "product3", 1500, 12, 3.0, 15, now.plusDays(1),
+                        category, subCategory, partnerId,
+                        "storedFileName3", "viewFileName3", "상품 설명 입니다."
+                )
         );
         productRepository.save(
-                new Product("product4", 1500, 12, 3.0, 15, now, category, subCategory, partnerId)
+                new Product(
+                        "product4", 1500, 12, 3.0, 15, now,
+                        category, subCategory, partnerId,
+                        "storedFileName4", "viewFileName4", "상품 설명 입니다."
+                )
         );
 
         // when
@@ -247,16 +290,32 @@ class ProductQueryRepositoryTest {
 
     private void saveMoreProducts() {
         productRepository.save(
-                new Product("생선4", 1500, 12, 3.0, 15, now.plusDays(3),
-                        category, subCategory));
+                new Product(
+                        "생선4", 1500, 12, 3.0, 15, now.plusDays(3),
+                        category, subCategory, partners.getId(),
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                )
+        );
         productRepository.save(
-                new Product("생선5", 1500, 12, 3.0, 15, now.plusDays(4),
-                        category, subCategory));
+                new Product(
+                        "생선5", 1500, 12, 3.0, 15, now.plusDays(4),
+                        category, subCategory, partners.getId(),
+                        "storedFileName2", "viewFileName2", "상품 설명 입니다."
+                )
+        );
         productRepository.save(
-                new Product("생선6", 1500, 12, 3.0, 15, now.plusDays(5),
-                        category, subCategory));
+                new Product(
+                        "생선6", 1500, 12, 3.0, 15, now.plusDays(5),
+                        category, subCategory, partners.getId(),
+                        "storedFileName3", "viewFileName3", "상품 설명 입니다."
+                )
+        );
         productRepository.save(
-                new Product("생선7", 1500, 12, 3.0, 15, now.plusDays(6),
-                        category, subCategory));
+                new Product(
+                        "생선7", 1500, 12, 3.0, 15, now.plusDays(6),
+                        category, subCategory, partners.getId(),
+                        "storedFileName4", "viewFileName4", "상품 설명 입니다."
+                )
+        );
     }
 }

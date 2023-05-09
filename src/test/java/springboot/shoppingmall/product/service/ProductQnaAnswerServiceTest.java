@@ -2,6 +2,7 @@ package springboot.shoppingmall.product.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,13 @@ public class ProductQnaAnswerServiceTest {
     void setUp(){
         Category category = categoryRepository.save(new Category("상위 1"));
         Category subCategory = categoryRepository.save(new Category("하위 1").changeParent(category));
-        product = productRepository.save(new Product("상품 1", 22000, 10, category, subCategory));
+        product = productRepository.save(
+                new Product(
+                        "상품 1", 22000, 10, 1.0, 10, LocalDateTime.now(),
+                        category, subCategory, 10L,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                )
+        );
         saveUser = userRepository.save(User.builder()
                 .userName("테스터1")
                 .loginId("tester1")
