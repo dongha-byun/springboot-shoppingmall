@@ -1,11 +1,14 @@
 package springboot.shoppingmall.order.service;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderFinder;
 import springboot.shoppingmall.order.domain.OrderRepository;
+import springboot.shoppingmall.order.domain.OrderSequence;
+import springboot.shoppingmall.order.domain.OrderSequenceRepository;
 import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
 import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
@@ -14,6 +17,7 @@ import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserFinder;
+import springboot.shoppingmall.utils.DateUtils;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -24,6 +28,7 @@ public class OrderService {
     private final OrderFinder orderFinder;
     private final ProductFinder productFinder;
     private final OrderRepository orderRepository;
+    private final OrderSequenceRepository orderSequenceRepository;
     private final OrderDeliveryInterfaceService orderDeliveryInterfaceService;
 
     @Transactional
@@ -35,8 +40,17 @@ public class OrderService {
             throw new OverQuantityException("상품 재고 수가 부족합니다.");
         }
 
+        LocalDateTime now = LocalDateTime.now();
+        String yyyyMMdd = DateUtils.toStringOfLocalDateTIme(now, "yyyyMMdd");
+        OrderSequence orderSequence = orderSequenceRepository.findByDate(yyyyMMdd)
+                .orElseGet(() -> OrderSequence.createSequence(now));
+        if(orderSequence.isNew()) {
+            orderSequenceRepository.save(orderSequence);
+        }
+        String orderCode = orderSequence.generateOrderCode();
+
         Order newOrder = orderRepository.save(
-                Order.createOrder(user.getId(), product, orderRequest.getQuantity()
+                Order.createOrder(orderCode, user.getId(), product, orderRequest.getQuantity()
                 , orderRequest.getReceiverName(), orderRequest.getZipCode(), orderRequest.getAddress()
                 , orderRequest.getDetailAddress(), orderRequest.getRequestMessage())
         );

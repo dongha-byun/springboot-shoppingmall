@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -80,17 +81,17 @@ class OrderHistoryRepositoryTest {
         // given
         LocalDateTime now = LocalDateTime.now();
         Order order1 =
-                new Order(user.getId(), product, 2, now.minusMonths(6), OrderStatus.READY, 100000
+                new Order(UUID.randomUUID().toString(), user.getId(), product, 2, now.minusMonths(6), OrderStatus.READY, 100000
                 , delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
                 , delivery.getRequestMessage(), null);
 
         Order order2 =
-                new Order(user.getId(), product, 2, now.minusMonths(3), OrderStatus.READY, 100000
+                new Order(UUID.randomUUID().toString(), user.getId(), product, 2, now.minusMonths(3), OrderStatus.READY, 100000
                 , delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
                 , delivery.getRequestMessage(), null);
 
         Order order3 =
-                new Order(user.getId(), product, 2, now, OrderStatus.READY, 100000
+                new Order(UUID.randomUUID().toString(), user.getId(), product, 2, now, OrderStatus.READY, 100000
                 , delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
                 , delivery.getRequestMessage(), null);
 

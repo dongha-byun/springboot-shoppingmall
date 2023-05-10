@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import org.assertj.core.api.ThrowableAssertAlternative;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -276,7 +277,7 @@ class OrderServiceTest {
     }
 
     private Order 특정_주문상태_데이터_생성(OrderStatus status) {
-        return orderRepository.save(new Order(user.getId(), product, 2, status, delivery.getReceiverName()
+        return orderRepository.save(new Order(UUID.randomUUID().toString(), user.getId(), product, 2, status, delivery.getReceiverName()
                 , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
                 , delivery.getRequestMessage()));
     }

@@ -30,7 +30,7 @@ public class Order extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "order_code", nullable = false)
+    @Column(name = "order_code", nullable = false, unique = true)
     private String orderCode;
 
     @Column(name = "user_id", nullable = false)
@@ -61,16 +61,16 @@ public class Order extends BaseEntity {
     private String refundReason;
     private String exchangeReason;
 
-    public Order(Long userId, Product product, int quantity, OrderStatus orderStatus, String receiverName,
+    public Order(String orderCode, Long userId, Product product, int quantity, OrderStatus orderStatus, String receiverName,
                  String zipCode, String address, String detailAddress, String requestMessage){
-        this(userId, product, quantity, LocalDateTime.now(), orderStatus, quantity * product.getPrice(),
+        this(orderCode, userId, product, quantity, LocalDateTime.now(), orderStatus, quantity * product.getPrice(),
                 receiverName, zipCode, address, detailAddress, requestMessage, null);
     }
 
-    public Order(Long userId, Product product, int quantity, LocalDateTime orderDate, OrderStatus orderStatus,
+    public Order(String orderCode, Long userId, Product product, int quantity, LocalDateTime orderDate, OrderStatus orderStatus,
                  int totalPrice, String receiverName, String zipCode, String address, String detailAddress,
                  String requestMessage, String invoiceNumber) {
-        this.orderCode = UUID.randomUUID().toString();
+        this.orderCode = orderCode;
         this.userId = userId;
         this.product = product;
         this.quantity = quantity;
@@ -85,9 +85,9 @@ public class Order extends BaseEntity {
         this.invoiceNumber = invoiceNumber;
     }
 
-    public static Order createOrder(Long userId, Product product, int quantity, String receiverName,
+    public static Order createOrder(String orderCode, Long userId, Product product, int quantity, String receiverName,
                                     String zipCode, String address, String detailAddress, String requestMessage){
-        return new Order(userId, product, quantity, OrderStatus.READY,
+        return new Order(orderCode, userId, product, quantity, OrderStatus.READY,
                 receiverName, zipCode, address, detailAddress, requestMessage);
     }
 

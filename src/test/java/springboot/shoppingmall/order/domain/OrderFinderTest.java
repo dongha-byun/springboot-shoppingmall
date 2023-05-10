@@ -3,6 +3,7 @@ package springboot.shoppingmall.order.domain;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,7 +63,7 @@ class OrderFinderTest {
     void findOrderById() {
         // given
         Order order = orderRepository.save(
-                new Order(user.getId(), product, 20, OrderStatus.READY, delivery.getReceiverName()
+                new Order(UUID.randomUUID().toString(), user.getId(), product, 20, OrderStatus.READY, delivery.getReceiverName()
                         , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
                         , delivery.getRequestMessage())
         );
@@ -80,7 +81,7 @@ class OrderFinderTest {
         // given
         String invoiceNumber = "invoiceNumber1";
         Order order = orderRepository.save(
-                new Order(user.getId(), product, 20, LocalDateTime.now(), OrderStatus.READY, 25000
+                new Order(UUID.randomUUID().toString(), user.getId(), product, 20, LocalDateTime.now(), OrderStatus.READY, 25000
                         , delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress()
                         , delivery.getDetailAddress(), delivery.getRequestMessage(), invoiceNumber)
         );
