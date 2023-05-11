@@ -40,15 +40,7 @@ public class OrderService {
             throw new OverQuantityException("상품 재고 수가 부족합니다.");
         }
 
-        LocalDateTime now = LocalDateTime.now();
-        String yyyyMMdd = DateUtils.toStringOfLocalDateTIme(now, "yyyyMMdd");
-        OrderSequence orderSequence = orderSequenceRepository.findByDate(yyyyMMdd)
-                .orElseGet(() -> OrderSequence.createSequence(now));
-        if(orderSequence.isNew()) {
-            orderSequenceRepository.save(orderSequence);
-        }
-        String orderCode = orderSequence.generateOrderCode();
-
+        String orderCode = generateOrderCode();
         Order newOrder = orderRepository.save(
                 Order.createOrder(orderCode, user.getId(), product, orderRequest.getQuantity()
                 , orderRequest.getReceiverName(), orderRequest.getZipCode(), orderRequest.getAddress()
@@ -59,6 +51,17 @@ public class OrderService {
         product.removeCount(newOrder.getQuantity());
 
         return OrderResponse.of(newOrder);
+    }
+
+    private String generateOrderCode() {
+        LocalDateTime now = LocalDateTime.now();
+        String yyyyMMdd = DateUtils.toStringOfLocalDateTIme(now, "yyyyMMdd");
+        OrderSequence orderSequence = orderSequenceRepository.findByDate(yyyyMMdd)
+                .orElseGet(() -> OrderSequence.createSequence(now));
+        if(orderSequence.isNew()) {
+            orderSequenceRepository.save(orderSequence);
+        }
+        return orderSequence.generateOrderCode();
     }
 
     // 주문취소

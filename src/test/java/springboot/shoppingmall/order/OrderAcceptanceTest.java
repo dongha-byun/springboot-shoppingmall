@@ -81,6 +81,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         // then
         assertThat(주문_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(주문_생성_결과.jsonPath().getLong("id")).isNotNull();
+        assertThat(주문_생성_결과.jsonPath().getString("orderCode")).isNotNull();
         assertThat(주문_생성_결과.jsonPath().getString("orderStatusName")).isEqualTo(OrderStatus.READY.getStatusName());
         assertThat(주문_생성_결과.jsonPath().getString("receiverName")).isEqualTo(배송지.getReceiverName());
     }
@@ -105,6 +106,9 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
 
         // then
         assertThat(주문_상태_변경_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(주문_상태_변경_결과.jsonPath().getString("orderStatusName")).isEqualTo(
+                OrderStatus.OUTING.getStatusName()
+        );
     }
 
     /**
