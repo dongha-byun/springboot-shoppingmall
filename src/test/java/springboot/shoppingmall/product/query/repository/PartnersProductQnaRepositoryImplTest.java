@@ -63,21 +63,24 @@ class PartnersProductQnaRepositoryImplTest {
                 new Product(
                         "product1", 1000, 10, 1.0, 10, now,
                         category, subCategory, partnerId,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다."
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                        "test-product-code"
                 )
         );
         product2 = productRepository.save(
                 new Product(
                         "product2", 1200, 11, 1.5, 20,
                         now.plusDays(1), category, subCategory, partnerId,
-                        "storedFileName2", "viewFileName2", "상품 설명 입니다."
+                        "storedFileName2", "viewFileName2", "상품 설명 입니다.",
+                        "test-product-code"
                 )
         );
         product3 = productRepository.save(
                 new Product(
                         "product3", 1500, 12, 3.0, 15,
                         now.plusDays(2), category, subCategory, partnerId,
-                        "storedFileName3", "viewFileName3", "상품 설명 입니다."
+                        "storedFileName3", "viewFileName3", "상품 설명 입니다.",
+                        "test-product-code"
                 )
         );
     }

@@ -14,6 +14,7 @@ import springboot.shoppingmall.providers.domain.Provider;
 @AllArgsConstructor
 public class ProductResponse {
     private Long id;
+    private String productCode;
     private String name;
     private int price;
     private int count;
@@ -27,7 +28,8 @@ public class ProductResponse {
     private List<ProductReviewResponse> reviews;
 
     public static ProductResponse of(Product product){
-        return new ProductResponse(product.getId(), product.getName(), product.getPrice(), product.getCount(),
+        return new ProductResponse(product.getId(), product.getProductCode(),
+                product.getName(), product.getPrice(), product.getCount(),
                 CategoryResponse.of(product.getCategory()), CategoryResponse.of(product.getSubCategory()),
                 product.getPartnerId(), null, product.getThumbnail(), product.getDetail(),
                 null, null
@@ -41,7 +43,9 @@ public class ProductResponse {
         List<ProductReviewResponse> reviewResponses = product.getReviews().getReviews().stream()
                 .map(ProductReviewResponse::of)
                 .collect(Collectors.toList());
-        return new ProductResponse(product.getId(), product.getName(), product.getPrice(), product.getCount(),
+
+        return new ProductResponse(product.getId(), product.getProductCode(),
+                product.getName(), product.getPrice(), product.getCount(),
                 CategoryResponse.of(product.getCategory()), CategoryResponse.of(product.getSubCategory()),
                 provider.getId(), provider.getName(), product.getThumbnail(), product.getDetail(),
                 qnaResponses, reviewResponses

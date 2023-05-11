@@ -8,6 +8,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -61,22 +62,22 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         Delivery delivery = deliveryRepository.findById(배송지.getId()).orElseThrow();
 
         Order order = orderRepository.save(
-                new Order(user.getId(), product, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
+                new Order(UUID.randomUUID().toString(), user.getId(), product, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
                         , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
                         , delivery.getRequestMessage())
         );
         Order order2 = orderRepository.save(
-                new Order(user.getId(), product2, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
+                new Order(UUID.randomUUID().toString(), user.getId(), product2, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
                         , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
                         , delivery.getRequestMessage())
         );
         Order order3 = orderRepository.save(
-                new Order(user2.getId(), product, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
+                new Order(UUID.randomUUID().toString(), user2.getId(), product, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
                         , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
                         , delivery.getRequestMessage())
         );
         Order deliveryOrder = orderRepository.save(
-                new Order(user.getId(), product, 2, OrderStatus.DELIVERY, delivery.getReceiverName()
+                new Order(UUID.randomUUID().toString(), user.getId(), product, 2, OrderStatus.DELIVERY, delivery.getReceiverName()
                         , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
                         , delivery.getRequestMessage())
         );

@@ -4,8 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.partners.dto.PartnersOrderQueryDto;
+import springboot.shoppingmall.order.partners.dto.PartnersReadyOrderQueryDto;
 
 public interface PartnersOrderQueryRepository {
-    List<PartnersOrderQueryDto> findPartnersOrders(Long partnerId, OrderStatus status, LocalDateTime startDate,
-                                                   LocalDateTime endDate);
+    List<PartnersReadyOrderQueryDto> findPartnersReadyOrders(Long partnerId, PartnersOrderQueryType status,
+                                                        LocalDateTime startDate, LocalDateTime endDate);
 }

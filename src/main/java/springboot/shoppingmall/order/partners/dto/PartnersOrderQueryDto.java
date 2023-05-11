@@ -14,6 +14,7 @@ public class PartnersOrderQueryDto {
     private String productCode;
     private String productName;
     private int quantity;
+    private int totalPrice;
     private String orderUserName;
     private String orderUserTelNo;
     private String receiverName;
@@ -25,14 +26,16 @@ public class PartnersOrderQueryDto {
 
     @QueryProjection
     public PartnersOrderQueryDto(Long id, String orderCode, LocalDateTime orderDate, String productCode,
-                                 String productName, int quantity, String orderUserName, String orderUserTelNo,
-                                 String receiverName, String address, String detailAddress, String requestMessage) {
+                                 String productName, int quantity, int totalPrice, String orderUserName,
+                                 String orderUserTelNo, String receiverName, String address, String detailAddress,
+                                 String requestMessage) {
         this.id = id;
         this.orderCode = orderCode;
         this.orderDate = orderDate;
         this.productCode = productCode;
         this.productName = productName;
         this.quantity = quantity;
+        this.totalPrice = totalPrice;
         this.orderUserName = orderUserName;
         this.orderUserTelNo = orderUserTelNo;
         this.receiverName = receiverName;
