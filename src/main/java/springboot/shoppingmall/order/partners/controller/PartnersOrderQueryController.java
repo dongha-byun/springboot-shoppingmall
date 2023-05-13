@@ -2,6 +2,7 @@ package springboot.shoppingmall.order.partners.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryType;
 import springboot.shoppingmall.order.partners.dto.PartnersOrderQueryDto;
 import springboot.shoppingmall.order.partners.dto.PartnersReadyOrderQueryDto;
 import springboot.shoppingmall.order.partners.service.PartnersOrderQueryService;
+import springboot.shoppingmall.order.partners.service.PartnersOrderQueryServiceInterface;
 import springboot.shoppingmall.product.query.PagingDataResponse;
 import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
 import springboot.shoppingmall.providers.authentication.LoginPartner;
@@ -24,6 +26,7 @@ import springboot.shoppingmall.utils.DateUtils;
 public class PartnersOrderQueryController {
 
     private final PartnersOrderQueryService partnersOrderQueryService;
+    private final Map<PartnersOrderQueryType, PartnersOrderQueryServiceInterface> partnersOrderQueryServiceMap;
 
     @GetMapping("/partners/orders/{type}")
     public ResponseEntity<PagingDataResponse<List<PartnersReadyOrderQueryResponse>>> findPartnersReadyOrderAll(
@@ -42,5 +45,24 @@ public class PartnersOrderQueryController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(new PagingDataResponse<>(responses));
+    }
+
+    @GetMapping("/partners/orders")
+    public ResponseEntity<PagingDataResponse<List<PartnersOrderQueryResponse>>> findPartnersOrders(
+            @LoginPartner AuthorizedPartner partner,
+            @RequestParam("type") String type,
+            @RequestParam("startDate") String startDateParam,
+            @RequestParam("endDate") String endDateParam
+    ) {
+        PartnersOrderQueryServiceInterface partnersOrderQueryService =
+                partnersOrderQueryServiceMap.get(PartnersOrderQueryType.valueOf(type));
+
+        LocalDateTime startDate = DateUtils.toStartDate(startDateParam);
+        LocalDateTime endDate = DateUtils.toEndDate(endDateParam);
+        List<PartnersOrderQueryResponse> partnersOrders = partnersOrderQueryService.findPartnersOrders(
+                partner.getId(), startDate, endDate
+        );
+
+        return ResponseEntity.ok().body(new PagingDataResponse<>(partnersOrders));
     }
 }

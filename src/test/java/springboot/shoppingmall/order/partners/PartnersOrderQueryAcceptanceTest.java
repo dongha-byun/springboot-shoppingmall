@@ -20,36 +20,27 @@ import springboot.shoppingmall.utils.DateUtils;
 public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
 
     /**
-     *  given: 배송 준비중인 상품이 있음
+     *  given: 상품 준비 중인 주문과 상품이 출고된 주문이 있음
      *  And: 판매자가 로그인 되어 있음
-     *  when: 배송 준비중인 상품 목록을 조회하면
-     *  then: 배송 준비중인 상품들이 조회된다.
+     *  when: 배송 준비중인 주문 목록을 조회하면
+     *  then: 상품 준비 중인 주문과 상품이 출고된 주문이 조회된다.
      */
     @Test
-    @DisplayName("판매자가 배송 준비중 상태의 주문 목록을 조회한다.")
+    @DisplayName("판매자가 배송 준비중 / 상품 출고 상태의 주문 목록을 조회한다.")
     void partners_order_query_find_ready() {
         // given
         OrderResponse 주문1 = 주문_생성_요청(상품, 2, 0, 배송지).as(OrderResponse.class);
         OrderResponse 주문2 = 주문_생성_요청(상품2, 10, 0, 배송지).as(OrderResponse.class);
-        주문_출고중_요청(주문2);
-
-        LocalDateTime now = LocalDateTime.now();
-        String startDateTimeParam = DateUtils.toStringOfLocalDateTIme(now.minusMinutes(3), "yyyy-MM-dd");
-        String endDateTimeParam = DateUtils.toStringOfLocalDateTIme(now, "yyyy-MM-dd");
+        OrderResponse 주문2_출고중 = 주문_출고중_요청(주문2).as(OrderResponse.class);
 
         // when
-        ExtractableResponse<Response> 판매자_준비중_주문_조회_결과 = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .headers(createAuthorizationHeader(판매자_로그인토큰))
-                .when().get("/partners/orders/{type}?startDate={startDate}&endDate={endDate}",
-                        PartnersOrderQueryType.READY,
-                        startDateTimeParam,
-                        endDateTimeParam)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> 판매자_준비중_주문_조회_결과 = 판매자_주문내역_조회_요청(PartnersOrderQueryType.READY);
 
         // then
         assertThat(판매자_준비중_주문_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(판매자_준비중_주문_조회_결과.jsonPath().getList("data.id", Long.class)).containsExactly(
+                주문1.getId(), 주문2.getId()
+        );
         assertThat(판매자_준비중_주문_조회_결과.jsonPath().getList("data.productName", String.class)).containsExactly(
                 상품.getName(), 상품2.getName()
         );
@@ -77,5 +68,48 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
         assertThat(판매자_준비중_주문_조회_결과.jsonPath().getList("data.orderStatusName", String.class)).containsExactly(
                 OrderStatus.READY.getStatusName(), OrderStatus.OUTING.getStatusName()
         );
+        assertThat(판매자_준비중_주문_조회_결과.jsonPath().getList("data.invoiceNumber", String.class)).containsExactly(
+                null, 주문2_출고중.getInvoiceNumber()
+        );
+    }
+
+    /**
+     *  given: 배송중인 주문이 있다.
+     *  And: 판매자가 로그인 되어 있음
+     *  when: 배송 중인 주문 목록을 조회하면
+     *  then: 배송 중인 주문내역이 조회된다.
+     */
+    @Test
+    @DisplayName("판매자가 배송중인 주문 내역을 조회한다.")
+    void partners_find_order_delivery() {
+        // given
+        OrderResponse 주문1 = 주문_생성_요청(상품, 2, 0, 배송지).as(OrderResponse.class);
+        OrderResponse 주문2 = 주문_생성_요청(상품2, 10, 0, 배송지).as(OrderResponse.class);
+        OrderResponse 주문1_출고중 = 주문_출고중_요청(주문1).as(OrderResponse.class);
+        OrderResponse 주문2_출고중 = 주문_출고중_요청(주문2).as(OrderResponse.class);
+        OrderResponse 주문1_배송중 = 주문_배송중_요청(주문1_출고중).as(OrderResponse.class);
+        OrderResponse 주문2_배송중 = 주문_배송중_요청(주문2_출고중).as(OrderResponse.class);
+
+        // when
+        ExtractableResponse<Response> 판매자_주문내역_조회_결과 = 판매자_주문내역_조회_요청(PartnersOrderQueryType.DELIVERY);
+
+        // then
+        assertThat(판매자_주문내역_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private ExtractableResponse<Response> 판매자_주문내역_조회_요청(PartnersOrderQueryType type) {
+        LocalDateTime now = LocalDateTime.now();
+        String startDateTimeParam = DateUtils.toStringOfLocalDateTIme(now.minusMinutes(3), "yyyy-MM-dd");
+        String endDateTimeParam = DateUtils.toStringOfLocalDateTIme(now, "yyyy-MM-dd");
+
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers(createAuthorizationHeader(판매자_로그인토큰))
+                .when().get("/partners/orders?type={type}&startDate={startDate}&endDate={endDate}",
+                        type,
+                        startDateTimeParam,
+                        endDateTimeParam)
+                .then().log().all()
+                .extract();
     }
 }

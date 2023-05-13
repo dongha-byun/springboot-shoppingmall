@@ -3,14 +3,13 @@ package springboot.shoppingmall.order.partners.controller;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.partners.dto.PartnersReadyOrderQueryDto;
 import springboot.shoppingmall.utils.DateUtils;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class PartnersReadyOrderQueryResponse {
+public class PartnersReadyOrderQueryResponse implements PartnersOrderQueryResponse{
     private Long id;
     private String orderCode;
     private String orderDate;
