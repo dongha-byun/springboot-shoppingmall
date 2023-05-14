@@ -93,4 +93,10 @@ public class AcceptanceTest {
 
         return headers;
     }
+
+    protected <T> void 목록_조회_결과_검증(ExtractableResponse<Response> response, String path, Class<T> type, T... results){
+        assertThat(response.jsonPath().getList(path, type)).containsExactly(
+                results
+        );
+    }
 }
