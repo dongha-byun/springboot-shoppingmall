@@ -81,9 +81,10 @@ public class OrderTest {
                 , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
                 , delivery.getRequestMessage());
         String refundReason = "환불 요청 합니다. 배송이 잘못왔어요.";
+        LocalDateTime refundDate = LocalDateTime.of(2023, 5, 2, 12, 0, 0);
 
         // when
-        order.refund(refundReason);
+        order.refund(refundDate, refundReason);
 
         // then
         assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.REFUND);
@@ -98,10 +99,11 @@ public class OrderTest {
                 , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
                 , delivery.getRequestMessage());
         String emptyReason = "";
+        LocalDateTime refundDate = LocalDateTime.of(2023, 5, 2, 12, 0, 0);
 
         // when & then
         assertThatIllegalArgumentException().isThrownBy(
-                () -> order.refund(emptyReason)
+                () -> order.refund(refundDate, emptyReason)
         );
     }
 
@@ -112,10 +114,11 @@ public class OrderTest {
         Order order = new Order("exchange-order-code", 1L, product, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
                 , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
                 , delivery.getRequestMessage());
+        LocalDateTime exchangeDate = LocalDateTime.of(2023, 5, 1, 0, 0, 0);
         String exchangeReason = "교환 신청 합니다. 사이즈가 안맞아요.";
 
         // when
-        order.exchange(exchangeReason);
+        order.exchange(exchangeDate, exchangeReason);
 
         // then
         assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.EXCHANGE);
@@ -129,11 +132,12 @@ public class OrderTest {
         Order order = new Order("exchange-order-code", 1L, product, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
                 , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
                 , delivery.getRequestMessage());
+        LocalDateTime exchangeDate = LocalDateTime.of(2023, 5, 1, 0, 0, 0);
         String emptyReason = "";
 
         // when & then
         assertThatIllegalArgumentException().isThrownBy(
-                () -> order.exchange(emptyReason)
+                () -> order.exchange(exchangeDate, emptyReason)
         );
     }
 }

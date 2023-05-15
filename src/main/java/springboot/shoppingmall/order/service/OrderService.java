@@ -66,9 +66,9 @@ public class OrderService {
 
     // 주문취소
     @Transactional
-    public OrderResponse cancel(Long orderId) {
+    public OrderResponse cancel(Long orderId, LocalDateTime cancelDate, String cancelReason) {
         Order order = orderFinder.findOrderById(orderId);
-        order.cancel();
+        order.cancel(cancelDate, cancelReason);
 
         // 주문된 상품이 주문 취소되면, 상품의 재고 수량을 다시 증가시킨다.
         Product product = order.getProduct();
@@ -113,9 +113,9 @@ public class OrderService {
 
     // 환불
     @Transactional
-    public OrderResponse refund(Long orderId, String returnReason) {
+    public OrderResponse refund(Long orderId, LocalDateTime refundDate, String refundReason) {
         Order order = orderFinder.findOrderById(orderId);
-        order.refund(returnReason);
+        order.refund(refundDate, refundReason);
 
         return OrderResponse.of(order);
     }
@@ -135,9 +135,9 @@ public class OrderService {
 
     // 교환
     @Transactional
-    public OrderResponse exchange(Long orderId, String exchangeReason) {
+    public OrderResponse exchange(Long orderId, LocalDateTime exchangeDate, String exchangeReason) {
         Order order = orderFinder.findOrderById(orderId);
-        order.exchange(exchangeReason);
+        order.exchange(exchangeDate, exchangeReason);
 
         return OrderResponse.of(order);
     }

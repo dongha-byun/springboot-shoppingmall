@@ -1,9 +1,8 @@
 package springboot.shoppingmall.order.controller;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,11 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
+import springboot.shoppingmall.order.dto.CancelRequest;
 import springboot.shoppingmall.order.dto.OrderExchangeRequest;
 import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.order.dto.OrderRefundRequest;
-import springboot.shoppingmall.order.dto.OrderStatusChangeRequest;
 import springboot.shoppingmall.order.service.OrderService;
 import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
 import springboot.shoppingmall.providers.authentication.LoginPartner;
@@ -39,8 +38,10 @@ public class OrderApiController {
 
     @PutMapping("/orders/{id}/cancel")
     public ResponseEntity<OrderResponse> cancelOrder(@AuthenticationStrategy AuthorizedUser user,
-                                                     @PathVariable("id") Long orderId) {
-        OrderResponse order = orderService.cancel(orderId);
+                                                     @PathVariable("id") Long orderId,
+                                                     @RequestBody CancelRequest cancelRequest) {
+        OrderResponse order =
+                orderService.cancel(orderId, LocalDateTime.now(), cancelRequest.getCancelReason());
         return ResponseEntity.ok(order);
     }
 
@@ -62,7 +63,7 @@ public class OrderApiController {
     public ResponseEntity<OrderResponse> refundOrder(@AuthenticationStrategy AuthorizedUser user,
                                                      @PathVariable("id") Long orderId,
                                                      @RequestBody OrderRefundRequest refundRequest) {
-        OrderResponse orderResponse = orderService.refund(orderId, refundRequest.getRefundReason());
+        OrderResponse orderResponse = orderService.refund(orderId, LocalDateTime.now(), refundRequest.getRefundReason());
         return ResponseEntity.ok(orderResponse);
     }
 
@@ -70,7 +71,7 @@ public class OrderApiController {
     public ResponseEntity<OrderResponse> exchangeOrder(@AuthenticationStrategy AuthorizedUser user,
                                                        @PathVariable("id") Long orderId,
                                                        @RequestBody OrderExchangeRequest exchangeRequest) {
-        OrderResponse orderResponse = orderService.exchange(orderId, exchangeRequest.getExchangeReason());
+        OrderResponse orderResponse = orderService.exchange(orderId, LocalDateTime.now(), exchangeRequest.getExchangeReason());
         return ResponseEntity.ok(orderResponse);
     }
 

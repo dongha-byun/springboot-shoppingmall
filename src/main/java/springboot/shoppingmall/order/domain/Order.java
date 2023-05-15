@@ -29,36 +29,30 @@ public class Order extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(name = "order_code", nullable = false, unique = true)
     private String orderCode;
-
     @Column(name = "user_id", nullable = false)
     private Long userId;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
-
     private LocalDateTime orderDate;
-
     private int quantity;
-
     @Column(unique = true)
     private String invoiceNumber;
-
     private int totalPrice;
-
     private String receiverName;
     private String zipCode;
     private String address;
     private String detailAddress;
     private String requestMessage;
-
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
-
+    private LocalDateTime cancelDate;
+    private String cancelReason;
+    private LocalDateTime refundDate;
     private String refundReason;
+    private LocalDateTime exchangeDate;
     private String exchangeReason;
     private LocalDateTime deliveryDate;
     private String deliveryPlace;
@@ -93,11 +87,13 @@ public class Order extends BaseEntity {
                 receiverName, zipCode, address, detailAddress, requestMessage);
     }
 
-    public void cancel() {
+    public void cancel(LocalDateTime cancelDate, String cancelReason) {
         if(this.orderStatus != OrderStatus.READY){
             throw new IllegalArgumentException("준비 중인 주문만 취소 가능합니다.");
         }
         this.orderStatus = OrderStatus.CANCEL;
+        this.cancelDate = cancelDate;
+        this.cancelReason = cancelReason;
     }
 
     public void outing() {
@@ -130,7 +126,7 @@ public class Order extends BaseEntity {
         this.orderStatus = OrderStatus.FINISH;
     }
 
-    public void refund(String refundReason) {
+    public void refund(LocalDateTime refundDate, String refundReason) {
         if(!StringUtils.hasText(refundReason)) {
             throw new IllegalArgumentException("환불 사유는 필수입니다.");
         }
@@ -140,10 +136,11 @@ public class Order extends BaseEntity {
         }
 
         this.orderStatus = OrderStatus.REFUND;
+        this.refundDate = refundDate;
         this.refundReason = refundReason;
     }
 
-    public void exchange(String exchangeReason) {
+    public void exchange(LocalDateTime exchangeDate, String exchangeReason) {
         if(!StringUtils.hasText(exchangeReason)) {
             throw new IllegalArgumentException("교환 사유는 필수입니다.");
         }
@@ -152,6 +149,7 @@ public class Order extends BaseEntity {
             throw new IllegalArgumentException("배송이 완료된 주문만 교환 신청이 가능합니다.");
         }
         this.orderStatus = OrderStatus.EXCHANGE;
+        this.exchangeDate = exchangeDate;
         this.exchangeReason = exchangeReason;
     }
 

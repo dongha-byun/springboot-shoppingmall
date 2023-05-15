@@ -38,7 +38,8 @@ public class OrderDeliveryInvoiceApiController {
             @PathVariable("invoiceNumber") String invoiceNumber,
             @RequestBody DeliveryEndRequest request
     ) {
-        OrderResponse orderResponse = invoiceService.deliveryEnd(invoiceNumber, request);
+        OrderResponse orderResponse =
+                invoiceService.deliveryEnd(invoiceNumber, request.getDeliveryDate(), request.getDeliveryPlace());
         return ResponseEntity.ok(orderResponse);
     }
 }

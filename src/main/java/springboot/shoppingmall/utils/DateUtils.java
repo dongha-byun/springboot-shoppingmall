@@ -26,6 +26,14 @@ public abstract class DateUtils {
         );
     }
 
+    /**
+     * <pre>
+     * LocalDateTime -> String
+     * default format yyyy-MM-dd HH:mm:ss
+     * </pre>
+     * @param localDateTime
+     * @return String yyyy-MM-dd HH:mm:ss
+     */
     public static String toStringOfLocalDateTIme(LocalDateTime localDateTime) {
         return toStringOfLocalDateTIme(localDateTime, "yyyy-MM-dd HH:mm:ss");
     }

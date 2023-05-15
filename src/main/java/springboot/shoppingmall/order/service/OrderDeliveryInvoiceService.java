@@ -1,5 +1,6 @@
 package springboot.shoppingmall.order.service;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +25,9 @@ public class OrderDeliveryInvoiceService {
     }
 
     // 배송완료 처리 - 택배사에서 호출하는 로직
-    public OrderResponse deliveryEnd(String invoiceNumber, DeliveryEndRequest deliveryEndRequest) {
+    public OrderResponse deliveryEnd(String invoiceNumber, LocalDateTime deliveryEndDate, String deliveryPlace) {
         Order order = orderFinder.findOrderByInvoiceNumber(invoiceNumber);
-        order.deliveryEnd(deliveryEndRequest.getDeliveryDate(), deliveryEndRequest.getDeliveryPlace());
+        order.deliveryEnd(deliveryEndDate, deliveryPlace);
 
         return OrderResponse.of(order);
     }

@@ -28,6 +28,8 @@ public class OrderResponse {
     private OrderDeliveryInvoiceResponse deliveryInvoice;
     private String deliveryDate;
     private String deliveryPlace;
+    private String cancelDate;
+    private String cancelReason;
 
     public static OrderResponse of(Order order) {
         return new OrderResponse(order.getId(), order.getOrderCode(),
@@ -35,7 +37,8 @@ public class OrderResponse {
                 order.getProduct().getName(), order.getQuantity(), order.getTotalPrice(),
                 order.getReceiverName(), order.getZipCode(), order.getAddress(),
                 order.getDetailAddress(), order.getRequestMessage(), order.getInvoiceNumber(),
-                null, toStringOfLocalDateTIme(order.getDeliveryDate()), order.getDeliveryPlace());
+                null, toStringOfLocalDateTIme(order.getDeliveryDate()), order.getDeliveryPlace(),
+                toStringOfLocalDateTIme(order.getCancelDate()), order.getCancelReason());
     }
 
     public static OrderResponse of(Order order, OrderDeliveryInvoiceResponse deliveryInvoice) {
@@ -44,6 +47,7 @@ public class OrderResponse {
                 order.getProduct().getName(), order.getQuantity(), order.getTotalPrice(),
                 order.getReceiverName(), order.getZipCode(), order.getAddress(),
                 order.getDetailAddress(), order.getRequestMessage(), order.getInvoiceNumber(),
-                deliveryInvoice, toStringOfLocalDateTIme(order.getDeliveryDate()), order.getDeliveryPlace());
+                deliveryInvoice, toStringOfLocalDateTIme(order.getDeliveryDate()), order.getDeliveryPlace(),
+                toStringOfLocalDateTIme(order.getCancelDate()), order.getCancelReason());
     }
 }

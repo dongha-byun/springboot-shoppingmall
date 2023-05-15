@@ -24,10 +24,10 @@ import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.order.exception.OverQuantityException;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.product.dto.ProductRequest;
 import springboot.shoppingmall.user.domain.Delivery;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.utils.DateUtils;
 
 @Import(TestOrderConfig.class)
 @Transactional
@@ -110,13 +110,16 @@ class OrderServiceTest {
                 delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
                 delivery.getDetailAddress(), delivery.getRequestMessage(), 25000);
         OrderResponse orderResponse = orderService.createOrder(user.getId(), orderRequest);
+        String cancelReason = "단순변심으로 구매 취소합니다.";
+        LocalDateTime cancelDate = LocalDateTime.of(2023, 5, 9, 13, 10, 12);
 
         // when
-        OrderResponse cancelOrder = orderService.cancel(orderResponse.getId());
+        OrderResponse cancelOrder = orderService.cancel(orderResponse.getId(), cancelDate, cancelReason);
 
         // then
         assertThat(cancelOrder.getOrderStatusName()).isEqualTo(OrderStatus.CANCEL.getStatusName());
-
+        assertThat(cancelOrder.getCancelDate()).isEqualTo(DateUtils.toStringOfLocalDateTIme(cancelDate));
+        assertThat(cancelOrder.getCancelReason()).isEqualTo(cancelReason);
 
         // 주문을 취소하면 상품 갯수를 원래대로 되돌린다.
         assertThat(product.getCount()).isEqualTo(productCount);
@@ -135,16 +138,19 @@ class OrderServiceTest {
         Order returnEndOrder = 특정_주문상태_데이터_생성(OrderStatus.REFUND_END);
         Order returnReqOrder = 특정_주문상태_데이터_생성(OrderStatus.REFUND);
 
+        LocalDateTime cancelDate = LocalDateTime.of(2023, 5, 12, 12, 0, 0);
+        String cancelReason = "주문 취소 합니다.";
+
         // when & then
         assertAll(
-                () -> 주문취소_변경_실패_검증(outingOrder),
-                () -> 주문취소_변경_실패_검증(cancelOrder),
-                () -> 주문취소_변경_실패_검증(checkingOrder),
-                () -> 주문취소_변경_실패_검증(endOrder),
-                () -> 주문취소_변경_실패_검증(exchangeReqOrder),
-                () -> 주문취소_변경_실패_검증(finishOrder),
-                () -> 주문취소_변경_실패_검증(returnEndOrder),
-                () -> 주문취소_변경_실패_검증(returnReqOrder)
+                () -> 주문취소_변경_실패_검증(outingOrder, cancelDate, cancelReason),
+                () -> 주문취소_변경_실패_검증(cancelOrder, cancelDate, cancelReason),
+                () -> 주문취소_변경_실패_검증(checkingOrder, cancelDate, cancelReason),
+                () -> 주문취소_변경_실패_검증(endOrder, cancelDate, cancelReason),
+                () -> 주문취소_변경_실패_검증(exchangeReqOrder, cancelDate, cancelReason),
+                () -> 주문취소_변경_실패_검증(finishOrder, cancelDate, cancelReason),
+                () -> 주문취소_변경_실패_검증(returnEndOrder, cancelDate, cancelReason),
+                () -> 주문취소_변경_실패_검증(returnReqOrder, cancelDate, cancelReason)
         );
     }
 
@@ -219,13 +225,14 @@ class OrderServiceTest {
     void requestReturnOrderTest() {
         // given
         Order endOrder = 특정_주문상태_데이터_생성(OrderStatus.DELIVERY_END);
+        LocalDateTime refundDate = LocalDateTime.of(2023, 5, 7, 12, 0, 0);
         String refundReason = "환불 요청 합니다.";
 
         // when
-        orderService.refund(endOrder.getId(), refundReason);
+        orderService.refund(endOrder.getId(), refundDate, refundReason);
 
         // then
-        Order findOrder = orderRepository.findById(endOrder.getId()).get();
+        Order findOrder = orderRepository.findById(endOrder.getId()).orElseThrow();
         assertThat(findOrder.getOrderStatus()).isEqualTo(OrderStatus.REFUND);
         assertThat(findOrder.getRefundReason()).isEqualTo(refundReason);
     }
@@ -235,13 +242,14 @@ class OrderServiceTest {
     void requestExchangeOrderTest() {
         // given
         Order order = 특정_주문상태_데이터_생성(OrderStatus.DELIVERY_END);
+        LocalDateTime exchangeDate = LocalDateTime.of(2023, 4, 29, 12, 0, 0);
         String exchangeReason = "교환 요청 합니다.";
 
         // when
-        orderService.exchange(order.getId(), exchangeReason);
+        orderService.exchange(order.getId(), exchangeDate, exchangeReason);
 
         // then
-        Order findOrder = orderRepository.findById(order.getId()).get();
+        Order findOrder = orderRepository.findById(order.getId()).orElseThrow();
         assertThat(findOrder.getOrderStatus()).isEqualTo(OrderStatus.EXCHANGE);
         assertThat(findOrder.getExchangeReason()).isEqualTo(exchangeReason);
     }
@@ -264,9 +272,11 @@ class OrderServiceTest {
     }
 
 
-    private ThrowableAssertAlternative<IllegalArgumentException> 주문취소_변경_실패_검증(Order order) {
+    private ThrowableAssertAlternative<IllegalArgumentException> 주문취소_변경_실패_검증(
+            Order order, LocalDateTime cancelDate, String cancelReason
+    ) {
         return assertThatIllegalArgumentException().isThrownBy(
-                () -> orderService.cancel(order.getId())
+                () -> orderService.cancel(order.getId(), cancelDate, cancelReason)
         );
     }
 

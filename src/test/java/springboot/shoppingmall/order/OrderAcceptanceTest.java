@@ -19,6 +19,7 @@ import springboot.shoppingmall.authorization.exception.ErrorCode;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.order.dto.CancelRequest;
 import springboot.shoppingmall.order.dto.DeliveryEndRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.domain.Product;
@@ -144,7 +145,8 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         assertThat(출고중_주문.getOrderStatusName()).isEqualTo(OrderStatus.OUTING.getStatusName());
 
         // when : 출고중인 주문 상태를 주문 취소로 변경하면
-        ExtractableResponse<Response> 출고중_에서_주문취소_변경_결과 = 주문_주문취소_요청(출고중_주문);
+        String cancelReason = "주문 취소 합니다.";
+        ExtractableResponse<Response> 출고중_에서_주문취소_변경_결과 = 주문_주문취소_요청(출고중_주문, cancelReason);
 
         // then : 준비 중인 주문이 아니므로, 주문 취소 상태로 변경되지 않고
         assertThat(출고중_에서_주문취소_변경_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -160,9 +162,9 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         // when: 배송이 완료되어 배송완료 처리를 하면
         LocalDateTime deliveryDate = LocalDateTime.of(2023, 5, 5, 15, 30, 30);
         String deliveryPlace = "무인택배함";
-        DeliveryEndRequest request = new DeliveryEndRequest(deliveryDate, deliveryPlace);
+        DeliveryEndRequest deliveryEndRequest = new DeliveryEndRequest(deliveryDate, deliveryPlace);
 
-        ExtractableResponse<Response> 배송중_에서_배송완료_변경_결과 = 주문_배송완료_요청(배송중_주문, request);
+        ExtractableResponse<Response> 배송중_에서_배송완료_변경_결과 = 주문_배송완료_요청(배송중_주문, deliveryEndRequest);
         assertThat(배송중_에서_배송완료_변경_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then: 주문 상태가 배송완료로 변경되고
@@ -296,10 +298,15 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         );
     }
 
-    public static ExtractableResponse<Response> 주문_주문취소_요청(OrderResponse order) {
+    public static ExtractableResponse<Response> 주문_주문취소_요청(OrderResponse order, String reason) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("cancelDate", LocalDateTime.now());
+        params.put("cancelReason", reason);
+
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers(createAuthorizationHeader(로그인정보))
+                .body(params)
                 .when().put("/orders/{id}/cancel", order.getId())
                 .then().log().all()
                 .extract();

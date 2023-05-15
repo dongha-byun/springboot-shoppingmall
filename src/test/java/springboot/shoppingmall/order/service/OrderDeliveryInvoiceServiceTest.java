@@ -88,10 +88,10 @@ class OrderDeliveryInvoiceServiceTest {
         // given
         특정_주문상태_데이터_생성(OrderStatus.DELIVERY);
         LocalDateTime deliveryDate = LocalDateTime.of(2023, 5, 15, 15, 0, 0);
-        DeliveryEndRequest deliveryEndRequest = new DeliveryEndRequest(deliveryDate, "문 앞");
+        String deliveryPlace = "문 앞";
 
         // when
-        OrderResponse order = invoiceService.deliveryEnd(invoiceNumber, deliveryEndRequest);
+        OrderResponse order = invoiceService.deliveryEnd(invoiceNumber, deliveryDate, deliveryPlace);
 
         // then
         assertThat(order.getDeliveryDate()).isEqualTo("2023-05-15 15:00:00");
