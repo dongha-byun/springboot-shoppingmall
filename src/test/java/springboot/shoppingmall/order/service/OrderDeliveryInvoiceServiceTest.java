@@ -15,6 +15,7 @@ import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.order.dto.DeliveryEndRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
@@ -82,15 +83,18 @@ class OrderDeliveryInvoiceServiceTest {
     }
 
     @Test
-    @DisplayName("배송완료 상태로 변경")
+    @DisplayName("배송완료 상태로 변경 - 최종 배송장소와 배송시간도 추가로 저장한다.")
     void delivery_end_test() {
         // given
-        Order outingOrder = 특정_주문상태_데이터_생성(OrderStatus.DELIVERY);
+        특정_주문상태_데이터_생성(OrderStatus.DELIVERY);
+        LocalDateTime deliveryDate = LocalDateTime.of(2023, 5, 15, 15, 0, 0);
+        DeliveryEndRequest deliveryEndRequest = new DeliveryEndRequest(deliveryDate, "문 앞");
 
         // when
-        OrderResponse order = invoiceService.deliveryEnd(invoiceNumber);
+        OrderResponse order = invoiceService.deliveryEnd(invoiceNumber, deliveryEndRequest);
 
         // then
+        assertThat(order.getDeliveryDate()).isEqualTo("2023-05-15 15:00:00");
         assertThat(order.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY_END.getStatusName());
     }
 

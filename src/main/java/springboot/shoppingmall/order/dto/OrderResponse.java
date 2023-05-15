@@ -1,9 +1,13 @@
 package springboot.shoppingmall.order.dto;
 
+import static springboot.shoppingmall.utils.DateUtils.*;
+
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.utils.DateUtils;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,14 +26,16 @@ public class OrderResponse {
     private String requestMessage;
     private String invoiceNumber;
     private OrderDeliveryInvoiceResponse deliveryInvoice;
-
+    private String deliveryDate;
+    private String deliveryPlace;
 
     public static OrderResponse of(Order order) {
         return new OrderResponse(order.getId(), order.getOrderCode(),
                 order.getOrderStatus().getStatusName(),
                 order.getProduct().getName(), order.getQuantity(), order.getTotalPrice(),
                 order.getReceiverName(), order.getZipCode(), order.getAddress(),
-                order.getDetailAddress(), order.getRequestMessage(), order.getInvoiceNumber(), null);
+                order.getDetailAddress(), order.getRequestMessage(), order.getInvoiceNumber(),
+                null, toStringOfLocalDateTIme(order.getDeliveryDate()), order.getDeliveryPlace());
     }
 
     public static OrderResponse of(Order order, OrderDeliveryInvoiceResponse deliveryInvoice) {
@@ -37,6 +43,7 @@ public class OrderResponse {
                 order.getOrderStatus().getStatusName(),
                 order.getProduct().getName(), order.getQuantity(), order.getTotalPrice(),
                 order.getReceiverName(), order.getZipCode(), order.getAddress(),
-                order.getDetailAddress(), order.getRequestMessage(), order.getInvoiceNumber(), deliveryInvoice);
+                order.getDetailAddress(), order.getRequestMessage(), order.getInvoiceNumber(),
+                deliveryInvoice, toStringOfLocalDateTIme(order.getDeliveryDate()), order.getDeliveryPlace());
     }
 }

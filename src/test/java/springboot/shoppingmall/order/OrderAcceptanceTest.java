@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,7 @@ import springboot.shoppingmall.authorization.exception.ErrorCode;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.order.dto.DeliveryEndRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
@@ -156,7 +158,11 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         assertThat(배송중_주문.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY.getStatusName());
 
         // when: 배송이 완료되어 배송완료 처리를 하면
-        ExtractableResponse<Response> 배송중_에서_배송완료_변경_결과 = 주문_배송완료_요청(배송중_주문);
+        LocalDateTime deliveryDate = LocalDateTime.of(2023, 5, 5, 15, 30, 30);
+        String deliveryPlace = "무인택배함";
+        DeliveryEndRequest request = new DeliveryEndRequest(deliveryDate, deliveryPlace);
+
+        ExtractableResponse<Response> 배송중_에서_배송완료_변경_결과 = 주문_배송완료_요청(배송중_주문, request);
         assertThat(배송중_에서_배송완료_변경_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then: 주문 상태가 배송완료로 변경되고
@@ -315,9 +321,13 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 주문_배송완료_요청(OrderResponse order) {
+    public static ExtractableResponse<Response> 주문_배송완료_요청(OrderResponse order, DeliveryEndRequest request) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("deliveryDate", request.getDeliveryDate());
+        params.put("deliveryPlace", request.getDeliveryPlace());
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
                 .when().put("/orders/{invoiceNumber}/delivery-end", order.getInvoiceNumber())
                 .then().log().all()
                 .extract();

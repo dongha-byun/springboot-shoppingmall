@@ -60,6 +60,8 @@ public class Order extends BaseEntity {
 
     private String refundReason;
     private String exchangeReason;
+    private LocalDateTime deliveryDate;
+    private String deliveryPlace;
 
     public Order(String orderCode, Long userId, Product product, int quantity, OrderStatus orderStatus, String receiverName,
                  String zipCode, String address, String detailAddress, String requestMessage){
@@ -112,11 +114,13 @@ public class Order extends BaseEntity {
         this.orderStatus = OrderStatus.DELIVERY;
     }
 
-    public void deliveryEnd() {
+    public void deliveryEnd(LocalDateTime deliveryDate, String deliveryPlace) {
         if(this.orderStatus != OrderStatus.DELIVERY) {
             throw new IllegalArgumentException("배송 준비중인 주문만 배송완료 처리가 가능합니다.");
         }
         this.orderStatus = OrderStatus.DELIVERY_END;
+        this.deliveryDate = deliveryDate;
+        this.deliveryPlace = deliveryPlace;
     }
 
     public void finish() {
@@ -149,24 +153,6 @@ public class Order extends BaseEntity {
         }
         this.orderStatus = OrderStatus.EXCHANGE;
         this.exchangeReason = exchangeReason;
-    }
-
-    public void changeStatus(OrderStatus orderStatus) {
-        if(OrderStatus.OUTING == orderStatus){
-            outing();
-        }
-        if(OrderStatus.CANCEL == orderStatus){
-            cancel();
-        }
-        if(OrderStatus.DELIVERY == orderStatus){
-            delivery();
-        }
-        if(OrderStatus.DELIVERY_END == orderStatus){
-            deliveryEnd();
-        }
-        if(OrderStatus.FINISH == orderStatus){
-            finish();
-        }
     }
 
     public boolean isOuting() {

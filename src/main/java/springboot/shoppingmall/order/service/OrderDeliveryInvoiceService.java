@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderFinder;
+import springboot.shoppingmall.order.dto.DeliveryEndRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
 
 @RequiredArgsConstructor
@@ -23,9 +24,9 @@ public class OrderDeliveryInvoiceService {
     }
 
     // 배송완료 처리 - 택배사에서 호출하는 로직
-    public OrderResponse deliveryEnd(String invoiceNumber) {
+    public OrderResponse deliveryEnd(String invoiceNumber, DeliveryEndRequest deliveryEndRequest) {
         Order order = orderFinder.findOrderByInvoiceNumber(invoiceNumber);
-        order.deliveryEnd();
+        order.deliveryEnd(deliveryEndRequest.getDeliveryDate(), deliveryEndRequest.getDeliveryPlace());
 
         return OrderResponse.of(order);
     }

@@ -5,7 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import springboot.shoppingmall.order.dto.DeliveryEndRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.order.service.OrderDeliveryInvoiceService;
 import springboot.shoppingmall.order.service.OrderService;
@@ -32,8 +34,11 @@ public class OrderDeliveryInvoiceApiController {
      * 택배사에서 해당 api 를 호출해, 특정 주문의 배송상태를 배송상태 로 변경함
      */
     @PutMapping("/orders/{invoiceNumber}/delivery-end")
-    public ResponseEntity<OrderResponse> orderDeliveryEnd(@PathVariable("invoiceNumber") String invoiceNumber) {
-        OrderResponse orderResponse = invoiceService.deliveryEnd(invoiceNumber);
+    public ResponseEntity<OrderResponse> orderDeliveryEnd(
+            @PathVariable("invoiceNumber") String invoiceNumber,
+            @RequestBody DeliveryEndRequest request
+    ) {
+        OrderResponse orderResponse = invoiceService.deliveryEnd(invoiceNumber, request);
         return ResponseEntity.ok(orderResponse);
     }
 }
