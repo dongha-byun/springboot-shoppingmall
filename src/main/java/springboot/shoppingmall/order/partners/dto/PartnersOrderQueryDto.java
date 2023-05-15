@@ -1,10 +1,12 @@
 package springboot.shoppingmall.order.partners.dto;
 
-import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import springboot.shoppingmall.order.domain.OrderStatus;
 
+@AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class PartnersOrderQueryDto {
@@ -15,32 +17,7 @@ public class PartnersOrderQueryDto {
     private String productName;
     private int quantity;
     private int totalPrice;
-    private String orderUserName;
-    private String orderUserTelNo;
-    private String receiverName;
-    private String address;
-    private String detailAddress;
-    private String requestMessage;
-    private String invoiceNumber;
-    private LocalDateTime orderCancelDate;
-
-    @QueryProjection
-    public PartnersOrderQueryDto(Long id, String orderCode, LocalDateTime orderDate, String productCode,
-                                 String productName, int quantity, int totalPrice, String orderUserName,
-                                 String orderUserTelNo, String receiverName, String address, String detailAddress,
-                                 String requestMessage) {
-        this.id = id;
-        this.orderCode = orderCode;
-        this.orderDate = orderDate;
-        this.productCode = productCode;
-        this.productName = productName;
-        this.quantity = quantity;
-        this.totalPrice = totalPrice;
-        this.orderUserName = orderUserName;
-        this.orderUserTelNo = orderUserTelNo;
-        this.receiverName = receiverName;
-        this.address = address;
-        this.detailAddress = detailAddress;
-        this.requestMessage = requestMessage;
-    }
+    private String userName;
+    private String userTelNo;
+    private OrderStatus orderStatus;
 }

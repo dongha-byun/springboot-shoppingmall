@@ -108,7 +108,7 @@ class PartnersOrderQueryRepositoryTest {
 
         // when
         List<PartnersReadyOrderQueryDto> readyOrders = partnersOrderQueryRepository.findPartnersReadyOrders(
-                1L, PartnersOrderQueryType.READY, startDate, endDate);
+                1L, startDate, endDate);
 
         // then
         assertThat(readyOrders).hasSize(3);
@@ -135,7 +135,7 @@ class PartnersOrderQueryRepositoryTest {
         );
 
         List<String> userTelNo = readyOrders.stream()
-                .map(PartnersReadyOrderQueryDto::getTelNo)
+                .map(PartnersReadyOrderQueryDto::getUserTelNo)
                 .collect(Collectors.toList());
         assertThat(userTelNo).containsExactly(
                 user.telNo(), user.telNo(), user.telNo()

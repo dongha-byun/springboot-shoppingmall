@@ -2,16 +2,15 @@ package springboot.shoppingmall.order.partners.configuration;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryRepository;
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryType;
-import springboot.shoppingmall.order.partners.service.PartnersCancelOrderQueryServiceImpl;
-import springboot.shoppingmall.order.partners.service.PartnersEndOrderQueryServiceImpl;
-import springboot.shoppingmall.order.partners.service.PartnersDeliveryOrderQueryServiceImpl;
-import springboot.shoppingmall.order.partners.service.PartnersOrderQueryServiceInterface;
-import springboot.shoppingmall.order.partners.service.PartnersReadyOrderQueryServiceImpl;
+import springboot.shoppingmall.order.partners.service.PartnersCancelOrderQueryService;
+import springboot.shoppingmall.order.partners.service.PartnersEndOrderQueryService;
+import springboot.shoppingmall.order.partners.service.PartnersDeliveryOrderQueryService;
+import springboot.shoppingmall.order.partners.service.PartnersOrderQueryService;
+import springboot.shoppingmall.order.partners.service.PartnersReadyOrderQueryService;
 
 @Configuration
 public class PartnersOrderQueryConfiguration {
@@ -23,8 +22,8 @@ public class PartnersOrderQueryConfiguration {
     }
 
     @Bean
-    public Map<PartnersOrderQueryType, PartnersOrderQueryServiceInterface> partnersOrderQueryServiceMap() {
-        Map<PartnersOrderQueryType, PartnersOrderQueryServiceInterface> map = new HashMap<>();
+    public Map<PartnersOrderQueryType, PartnersOrderQueryService> partnersOrderQueryServiceMap() {
+        Map<PartnersOrderQueryType, PartnersOrderQueryService> map = new HashMap<>();
         map.put(PartnersOrderQueryType.READY, partnersReadyOrderQueryService());
         map.put(PartnersOrderQueryType.DELIVERY, partnersDeliveryOrderQueryService());
         map.put(PartnersOrderQueryType.END, partnersEndOrderQueryService());
@@ -34,22 +33,22 @@ public class PartnersOrderQueryConfiguration {
     }
 
     @Bean
-    public PartnersReadyOrderQueryServiceImpl partnersReadyOrderQueryService() {
-        return new PartnersReadyOrderQueryServiceImpl(repository);
+    public PartnersReadyOrderQueryService partnersReadyOrderQueryService() {
+        return new PartnersReadyOrderQueryService(repository);
     }
 
     @Bean
-    public PartnersDeliveryOrderQueryServiceImpl partnersDeliveryOrderQueryService() {
-        return new PartnersDeliveryOrderQueryServiceImpl(repository);
+    public PartnersDeliveryOrderQueryService partnersDeliveryOrderQueryService() {
+        return new PartnersDeliveryOrderQueryService(repository);
     }
 
     @Bean
-    public PartnersEndOrderQueryServiceImpl partnersEndOrderQueryService() {
-        return new PartnersEndOrderQueryServiceImpl(repository);
+    public PartnersEndOrderQueryService partnersEndOrderQueryService() {
+        return new PartnersEndOrderQueryService(repository);
     }
 
     @Bean
-    public PartnersCancelOrderQueryServiceImpl partnersCancelOrderQueryService() {
-        return new PartnersCancelOrderQueryServiceImpl(repository);
+    public PartnersCancelOrderQueryService partnersCancelOrderQueryService() {
+        return new PartnersCancelOrderQueryService(repository);
     }
 }

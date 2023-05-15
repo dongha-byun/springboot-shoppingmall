@@ -1,8 +1,8 @@
 package springboot.shoppingmall;
 
+import java.util.UUID;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
 import springboot.shoppingmall.order.service.OrderDeliveryInterfaceService;
 
@@ -12,7 +12,7 @@ public class TestOrderConfig {
     @Bean
     public OrderDeliveryInterfaceService orderDeliveryInterfaceService() {
         return order -> new OrderDeliveryInvoiceResponse(
-                "test-delivery-invoice-number",
+                UUID.randomUUID().toString().substring(0, 10),
                 order.getReceiverName(),
                 order.getZipCode(),
                 order.getAddress(),

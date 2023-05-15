@@ -1,7 +1,6 @@
 package springboot.shoppingmall.order.partners.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,7 @@ import springboot.shoppingmall.order.partners.dto.PartnersReadyOrderQueryDto;
 
 @RequiredArgsConstructor
 @Slf4j
-public class PartnersReadyOrderQueryServiceImpl implements PartnersOrderQueryServiceInterface{
+public class PartnersReadyOrderQueryService implements PartnersOrderQueryService {
 
     private final PartnersOrderQueryRepository queryRepository;
 
