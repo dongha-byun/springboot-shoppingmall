@@ -41,17 +41,13 @@ public class ProductReviewApiController {
                                                                   @PathVariable("productId") Long productId,
                                                                   @Valid @RequestBody ProductReviewRequest reviewRequest,
                                                                   BindingResult bindingResult) {
-
         if(bindingResult.hasErrors()){
             throw new ContentNotBlankException();
         }
 
-        // 여기서 주문이 완료 됐다는 걸 검증하는게 나을까?
-        // 트랜잭션이 발생하는 건 아니니까 크게 상관 없을거 같은데...
-        // 컨트롤러에선 파라미터에 대한 검증만 하고 서비스에서 논리적 검증 정도는 처리할 수 있게 하자!
         orderValidator.validateOrderIsEnd(orderId);
 
-        ProductUserReviewResponse reviewResponse = productReviewService.createProductReview(user.getId(), user.getLoginId(), productId, reviewRequest);
+        ProductUserReviewResponse reviewResponse = productReviewService.createProductReview(user.getId(), user.getLoginId(), orderId, productId, reviewRequest);
         return ResponseEntity.created(URI.create("/products/" + productId + "/reviews/" + reviewResponse.getId())).body(reviewResponse);
     }
 

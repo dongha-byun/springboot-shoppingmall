@@ -5,6 +5,9 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderFinder;
+import springboot.shoppingmall.order.validator.OrderValidator;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
 import springboot.shoppingmall.product.domain.ProductReview;
@@ -20,6 +23,8 @@ import springboot.shoppingmall.product.dto.ProductUserReviewResponse;
 public class ProductReviewService {
     private final ProductReviewRepository reviewRepository;
     private final ProductFinder productFinder;
+    private final OrderFinder orderFinder;
+    private final OrderValidator orderValidator;
 
     public List<ProductReviewResponse> findAllReview(Long productId) {
         List<ProductReviewDto> reviewDtos = reviewRepository.findAllProductReview(productId);
@@ -40,7 +45,9 @@ public class ProductReviewService {
     }
 
     @Transactional
-    public ProductUserReviewResponse createProductReview(Long userId, String loginId, Long productId, ProductReviewRequest productReviewRequest) {
+    public ProductUserReviewResponse createProductReview(Long userId, String loginId, Long orderId, Long productId, ProductReviewRequest productReviewRequest) {
+        orderValidator.validateOrderIsEnd(orderId);
+
         Product product = productFinder.findProductById(productId);
 
         if(reviewRepository.existsByUserIdAndProduct(userId, product)) {
@@ -59,6 +66,10 @@ public class ProductReviewService {
 
         // 평점 총합 / 리뷰 갯수 -> 평점 갱신
         product.refreshScore();
+
+        // 리뷰 작성 시, 해당 주문은 구매확정 처리가 된다.
+        Order order = orderFinder.findOrderById(orderId);
+        order.finish();
 
         return ProductUserReviewResponse.of(savedReview);
     }

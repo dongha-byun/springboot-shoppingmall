@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
+import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderRepository;
+import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.domain.ProductReview;
@@ -45,8 +49,16 @@ class ProductReviewServiceTest {
     @Autowired
     ProductReviewService service;
 
+    @Autowired
+    OrderRepository orderRepository;
+    Long orderId = 10L;
+
+    /**
+     * 배송이 완료된 상품에 대해 리뷰를 남긴다.
+     * 리뷰를 남긴 주문은 구매확정 처리가 되어 교환/환불이 불가하다.
+     */
     @Test
-    @DisplayName("상품 리뷰 등록 테스트")
+    @DisplayName("상품 리뷰 등록 테스트 - 리뷰가 등록되면 구매확정 처리 한다.")
     void createReviewTest() {
         // given
         User user = userRepository.save(new User("사용자1", "user1", "user1!", "010-2222-3333"));
@@ -60,15 +72,21 @@ class ProductReviewServiceTest {
                         "test-product-code"
                 )
         );
+        Order endOrder = orderRepository.save(
+                new Order("test-order-code", user.getId(), product, 2, OrderStatus.DELIVERY_END,
+                        "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
 
         // when
         ProductReviewRequest productReviewRequest = new ProductReviewRequest("리뷰 등록 합니다.", 3);
-        ProductUserReviewResponse response = service.createProductReview(user.getId(), user.getLoginId(), product.getId(), productReviewRequest);
+        ProductUserReviewResponse response = service.createProductReview(user.getId(), user.getLoginId(), endOrder.getId(), product.getId(), productReviewRequest);
 
         // then
         assertThat(response.getId()).isNotNull();
         assertThat(response.getContent()).isEqualTo("리뷰 등록 합니다.");
         assertThat(response.getProductName()).isEqualTo("상품 1");
+
+        Order finishOrder = orderRepository.findById(endOrder.getId()).orElseThrow();
+        assertThat(finishOrder.getOrderStatus()).isEqualTo(OrderStatus.FINISH);
     }
 
     @Test
@@ -86,13 +104,16 @@ class ProductReviewServiceTest {
                         "test-product-code"
                 )
         );
+        Order endOrder = orderRepository.save(
+                new Order("test-order-code", user.getId(), product, 2, OrderStatus.DELIVERY_END,
+                        "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
 
         ProductReviewRequest productReviewRequest = new ProductReviewRequest("리뷰 등록 합니다.", 3);
-        service.createProductReview(user.getId(), user.getLoginId(), product.getId(), productReviewRequest);
+        service.createProductReview(user.getId(), user.getLoginId(), endOrder.getId(), product.getId(), productReviewRequest);
 
         // when & then
         assertThatThrownBy(
-                () -> service.createProductReview(user.getId(), user.getLoginId(), product.getId(), productReviewRequest)
+                () -> service.createProductReview(user.getId(), user.getLoginId(), endOrder.getId(), product.getId(), productReviewRequest)
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -241,21 +262,36 @@ class ProductReviewServiceTest {
                         "test-product-code"
                 )
         );
+        Order endOrder1 = orderRepository.save(
+                new Order("test-order-code-1", user1.getId(), product, 2, OrderStatus.DELIVERY_END,
+                        "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
+        Order endOrder2 = orderRepository.save(
+                new Order("test-order-code-2", user2.getId(), product, 2, OrderStatus.DELIVERY_END,
+                        "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
+        Order endOrder3 = orderRepository.save(
+                new Order("test-order-code-3", user3.getId(), product, 2, OrderStatus.DELIVERY_END,
+                        "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
+        Order endOrder4 = orderRepository.save(
+                new Order("test-order-code-4", user4.getId(), product, 2, OrderStatus.DELIVERY_END,
+                        "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
+        Order endOrder5 = orderRepository.save(
+                new Order("test-order-code-5", user5.getId(), product, 2, OrderStatus.DELIVERY_END,
+                        "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
 
         // when & then
-        service.createProductReview(user1.getId(), user1.getLoginId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 1", 5));
+        service.createProductReview(user1.getId(), user1.getLoginId(), endOrder1.getId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 1", 5));
         assertThat(product.getScore()).isEqualTo(5.0);
 
-        service.createProductReview(user2.getId(), user2.getLoginId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 2", 4));
+        service.createProductReview(user2.getId(), user2.getLoginId(), endOrder2.getId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 2", 4));
         assertThat(product.getScore()).isEqualTo(4.5);
 
-        service.createProductReview(user3.getId(), user3.getLoginId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 3", 2));
+        service.createProductReview(user3.getId(), user3.getLoginId(), endOrder3.getId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 3", 2));
         assertThat(product.getScore()).isEqualTo(3.7);
 
-        service.createProductReview(user4.getId(), user4.getLoginId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 4", 2));
+        service.createProductReview(user4.getId(), user4.getLoginId(), endOrder4.getId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 4", 2));
         assertThat(product.getScore()).isEqualTo(3.3);
 
-        service.createProductReview(user5.getId(), user5.getLoginId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 5", 4));
+        service.createProductReview(user5.getId(), user5.getLoginId(), endOrder5.getId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 5", 4));
         assertThat(product.getScore()).isEqualTo(3.4);
     }
 }

@@ -112,6 +112,11 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         assertThat(작성된_리뷰.getProductName()).isEqualTo(상품.getName());
         assertThat(작성된_리뷰.getContent()).isEqualTo("리뷰 작성 합니다.");
         assertThat(작성된_리뷰.getWriteDate()).isNotNull();
+
+        // 리뷰가 작성되면 해당 주문 건은 구매확정 처리로 변경한다.
+        Order 구매확정_주문 = orderRepository.findById(배송완료_주문.getId()).orElseThrow();
+        assertThat(구매확정_주문.getId()).isEqualTo(배송완료_주문.getId());
+        assertThat(구매확정_주문.getOrderStatus()).isEqualTo(OrderStatus.FINISH);
     }
 
     /**
@@ -180,7 +185,7 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         String content1 = "리뷰 작성 합니다.";
         String content2 = "리뷰 작성 합니다.2";
         리뷰_작성_요청(배송완료_주문, 상품, 로그인정보, content1, 4);
-        리뷰_작성_요청(배송완료_주문, 상품, 로그인정보2, content2, 3);
+        리뷰_작성_요청(배송완료_주문2, 상품2, 로그인정보2, content2, 3);
 
         // when
         ExtractableResponse<Response> 리뷰_목록_조회_결과 = 리뷰_목록_조회_요청(상품);
