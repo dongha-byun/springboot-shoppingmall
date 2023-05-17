@@ -13,6 +13,8 @@ import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
 import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.order.exception.OverQuantityException;
+import springboot.shoppingmall.pay.domain.PayHistory;
+import springboot.shoppingmall.pay.domain.PayHistoryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
 import springboot.shoppingmall.user.domain.User;
@@ -28,6 +30,7 @@ public class OrderService {
     private final OrderFinder orderFinder;
     private final ProductFinder productFinder;
     private final OrderRepository orderRepository;
+    private final PayHistoryRepository payHistoryRepository;
     private final OrderSequenceRepository orderSequenceRepository;
     private final OrderDeliveryInterfaceService orderDeliveryInterfaceService;
 
@@ -45,6 +48,11 @@ public class OrderService {
                 Order.createOrder(orderCode, user.getId(), product, orderRequest.getQuantity()
                 , orderRequest.getReceiverName(), orderRequest.getZipCode(), orderRequest.getAddress()
                 , orderRequest.getDetailAddress(), orderRequest.getRequestMessage())
+        );
+
+        // 주문 정보 저장 시, 결제정보도 같이 저장한다.
+        payHistoryRepository.save(
+                new PayHistory(newOrder.getId(), orderRequest.getTid(), newOrder.getTotalPrice())
         );
 
         // 상품 주문이 완료되면, 상품의 재고 수를 변경한다.
