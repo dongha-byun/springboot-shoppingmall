@@ -15,13 +15,14 @@ public class OrderHistoryDto {
     private String orderStatusName;
     private Long productId;
     private String productName;
+    private String tid;
     private int orderPrice;
     private Long providerId;
     private String providerName;
 
     @QueryProjection
     public OrderHistoryDto(Long orderId, LocalDateTime orderDate, OrderStatus orderStatus,
-                           Long productId, String productName, int orderPrice,
+                           Long productId, String productName, String tid, int orderPrice,
                            Long providerId, String providerName) {
         this.orderId = orderId;
         this.orderDate = orderDate;
@@ -29,6 +30,7 @@ public class OrderHistoryDto {
         this.orderStatusName = orderStatus.getStatusName();
         this.productId = productId;
         this.productName = productName;
+        this.tid = tid;
         this.orderPrice = orderPrice;
         this.providerId = providerId;
         this.providerName = providerName;

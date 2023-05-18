@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderFinder;
 import springboot.shoppingmall.order.domain.OrderRepository;
@@ -33,6 +34,7 @@ public class OrderService {
     private final PayHistoryRepository payHistoryRepository;
     private final OrderSequenceRepository orderSequenceRepository;
     private final OrderDeliveryInterfaceService orderDeliveryInterfaceService;
+    private final OrderPayService orderPayService;
 
     @Transactional
     public OrderResponse createOrder(Long userId, OrderRequest orderRequest) {
@@ -52,7 +54,9 @@ public class OrderService {
 
         // 주문 정보 저장 시, 결제정보도 같이 저장한다.
         payHistoryRepository.save(
-                new PayHistory(newOrder.getId(), orderRequest.getTid(), newOrder.getTotalPrice())
+                new PayHistory(
+                        newOrder.getId(), orderRequest.getPayType(), orderRequest.getTid(), newOrder.getTotalPrice()
+                )
         );
 
         // 상품 주문이 완료되면, 상품의 재고 수를 변경한다.
@@ -77,6 +81,13 @@ public class OrderService {
     public OrderResponse cancel(Long orderId, LocalDateTime cancelDate, String cancelReason) {
         Order order = orderFinder.findOrderById(orderId);
         order.cancel(cancelDate, cancelReason);
+
+        // 주문이 취소되면, 결제취소 요청을 보낸다.
+//        PayHistory payHistory = payHistoryRepository.findByOrderId(orderId)
+//                .orElseThrow(
+//                        () -> new IllegalArgumentException("결제 고유번호 조회 실패")
+//                );
+//        orderPayService.cancel(payHistory.getTid(), payHistory.getAmount());
 
         // 주문된 상품이 주문 취소되면, 상품의 재고 수량을 다시 증가시킨다.
         Product product = order.getProduct();

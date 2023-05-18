@@ -16,6 +16,7 @@ public class OrderHistoryResponse {
     private String orderStatusName;
     private Long productId;
     private String productName;
+    private String tid;
     private int orderPrice;
     private Long partnerId;
     private String partnerName;
@@ -23,7 +24,7 @@ public class OrderHistoryResponse {
     public static OrderHistoryResponse to(OrderHistoryDto dto) {
         return new OrderHistoryResponse(
                 dto.getOrderId(), dto.getOrderDate(), dto.getOrderStatus(), dto.getOrderStatusName(),
-                dto.getProductId(), dto.getProductName(), dto.getOrderPrice(),
+                dto.getProductId(), dto.getProductName(), dto.getTid(), dto.getOrderPrice(),
                 dto.getProviderId(), dto.getProviderName()
         );
     }

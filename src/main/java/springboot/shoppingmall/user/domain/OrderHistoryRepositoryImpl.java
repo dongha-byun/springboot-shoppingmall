@@ -1,6 +1,7 @@
 package springboot.shoppingmall.user.domain;
 
 import static springboot.shoppingmall.order.domain.QOrder.*;
+import static springboot.shoppingmall.pay.domain.QPayHistory.*;
 import static springboot.shoppingmall.providers.domain.QProvider.*;
 
 import com.querydsl.core.types.Projections;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import springboot.shoppingmall.pay.domain.QPayHistory;
 import springboot.shoppingmall.providers.domain.QProvider;
 import springboot.shoppingmall.user.dto.OrderHistoryDto;
 
@@ -23,11 +25,12 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository{
         return jpaQueryFactory.select(
                         Projections.constructor(OrderHistoryDto.class,
                                 order.id, order.orderDate, order.orderStatus,
-                                order.product.id, order.product.name, order.totalPrice,
+                                order.product.id, order.product.name, payHistory.tid, order.totalPrice,
                                 provider.id, provider.name)
                 )
                 .from(order)
                 .join(provider).on(provider.id.eq(order.product.partnerId))
+                .join(payHistory).on(payHistory.orderId.eq(order.id))
                 .where(
                         order.userId.eq(user.getId())
                                 .and(order.orderDate.between(startDate, endDate))

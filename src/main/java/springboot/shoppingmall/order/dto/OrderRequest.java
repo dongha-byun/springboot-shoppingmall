@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OrderRequest {
     private String tid;
+    private String payType;
     private Long productId;
     private int quantity;
     private int deliveryFee;
