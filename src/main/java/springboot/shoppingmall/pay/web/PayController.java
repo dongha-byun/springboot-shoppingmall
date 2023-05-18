@@ -1,39 +1,28 @@
 package springboot.shoppingmall.pay.web;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
+import springboot.shoppingmall.pay.service.PayService;
 
+@RequiredArgsConstructor
 @Slf4j
 @RestController
 public class PayController {
-    private final RestTemplate restTemplate;
 
-    public PayController() {
-        this.restTemplate = new RestTemplate();
-    }
+    private final PayService payService;
 
     @PostMapping("/pay/ready")
     public ResponseEntity<KakaoPayReadyResponse> readyPay(@RequestBody PayRequest<KakaoPayReadyRequest> param) {
         KakaoPayReadyRequest kakaoPayReadyRequest = param.getData();
         MultiValueMap<String, String> formData = kakaoPayReadyRequest.toFormData();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "KakaoAK 22f748186772959eb46af0f3e0773131");
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, headers);
-
-        KakaoPayReadyResponse response = restTemplate.postForObject(
-                "https://kapi.kakao.com/v1/payment/ready", request, KakaoPayReadyResponse.class
-        );
+        KakaoPayReadyResponse response = (KakaoPayReadyResponse) payService.ready(formData);
 
         return ResponseEntity.ok().body(response);
     }
@@ -43,17 +32,18 @@ public class PayController {
         KakaoPayApproveRequest kakaoPayApproveRequest = param.getData();
         MultiValueMap<String, String> formData = kakaoPayApproveRequest.toFormData();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "KakaoAK 22f748186772959eb46af0f3e0773131");
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        KakaoPayApproveResponse response = (KakaoPayApproveResponse) payService.approve(formData);
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, headers);
-
-        KakaoPayApproveResponse kakaoPayApproveResponse = restTemplate.postForObject(
-                "https://kapi.kakao.com/v1/payment/approve", request, KakaoPayApproveResponse.class
-        );
-
-        return ResponseEntity.ok().body(kakaoPayApproveResponse);
+        return ResponseEntity.ok().body(response);
     }
 
+    @PostMapping("/pay/cancel")
+    public ResponseEntity<KakaoPayCancelResponse> cancelPay(@RequestBody PayRequest<KakaoPayCancelRequest> param) {
+        KakaoPayCancelRequest kakaoPayCancelRequest = param.getData();
+        MultiValueMap<String, Object> formData = kakaoPayCancelRequest.toFormData();
+
+        KakaoPayCancelResponse response = (KakaoPayCancelResponse) payService.cancel(formData);
+
+        return ResponseEntity.ok().body(response);
+    }
 }
