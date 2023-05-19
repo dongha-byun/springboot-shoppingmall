@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.product.domain.Product;
@@ -60,12 +64,14 @@ class OrderValidatorTest {
                         "test-product-code"
                 )
         );
+        List<OrderItem> orderItems = List.of(new OrderItem(product, 2));
+
         Delivery delivery = deliveryRepository.save(new Delivery("배송지1", "수령인1", "10010", "주소", "상세주소", "요청사항", user));
 
         Order savedOrder = orderRepository.save(
-                new Order("test-order-code", user.getId(), product, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
-                        , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
-                        , delivery.getRequestMessage())
+                new Order("test-order-code", user.getId(), orderItems, OrderStatus.DELIVERY_END,
+                        delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getDetailAddress(), delivery.getRequestMessage())
         );
 
         // when

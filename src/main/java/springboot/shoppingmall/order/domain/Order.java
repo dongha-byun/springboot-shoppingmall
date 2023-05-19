@@ -1,7 +1,10 @@
 package springboot.shoppingmall.order.domain;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,20 +30,20 @@ import springboot.shoppingmall.product.domain.Product;
 @Table(name = "orders")
 public class Order extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "order_code", nullable = false, unique = true)
     private String orderCode;
     @Column(name = "user_id", nullable = false)
     private Long userId;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
-    private LocalDateTime orderDate;
-    private int quantity;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<OrderItem> items = new ArrayList<>();
+
     @Column(unique = true)
     private String invoiceNumber;
+
+    private LocalDateTime orderDate;
     private int totalPrice;
     private String receiverName;
     private String zipCode;
@@ -57,33 +61,37 @@ public class Order extends BaseEntity {
     private LocalDateTime deliveryDate;
     private String deliveryPlace;
 
-    public Order(String orderCode, Long userId, Product product, int quantity, OrderStatus orderStatus, String receiverName,
-                 String zipCode, String address, String detailAddress, String requestMessage){
-        this(orderCode, userId, product, quantity, LocalDateTime.now(), orderStatus, quantity * product.getPrice(),
-                receiverName, zipCode, address, detailAddress, requestMessage, null);
+    public Order(String orderCode, Long userId, List<OrderItem> items, OrderStatus orderStatus,
+                 String receiverName, String zipCode, String address, String detailAddress,
+                 String requestMessage){
+        this(orderCode, userId, items, LocalDateTime.now(), orderStatus,
+                receiverName, zipCode, address, detailAddress, requestMessage);
     }
 
-    public Order(String orderCode, Long userId, Product product, int quantity, LocalDateTime orderDate, OrderStatus orderStatus,
-                 int totalPrice, String receiverName, String zipCode, String address, String detailAddress,
-                 String requestMessage, String invoiceNumber) {
+    public Order(String orderCode, Long userId, List<OrderItem> items, LocalDateTime orderDate,
+                 OrderStatus orderStatus, String receiverName, String zipCode, String address,
+                 String detailAddress, String requestMessage) {
         this.orderCode = orderCode;
         this.userId = userId;
-        this.product = product;
-        this.quantity = quantity;
         this.orderDate = orderDate;
         this.orderStatus = orderStatus;
-        this.totalPrice = totalPrice;
         this.receiverName = receiverName;
         this.zipCode = zipCode;
         this.address = address;
         this.detailAddress = detailAddress;
         this.requestMessage = requestMessage;
-        this.invoiceNumber = invoiceNumber;
+
+        initItems(items);
+        calculateTotalPrice();
     }
 
-    public static Order createOrder(String orderCode, Long userId, Product product, int quantity, String receiverName,
+    private void initItems(List<OrderItem> items) {
+        items.forEach(this::addOrderItem);
+    }
+
+    public static Order createOrder(String orderCode, Long userId, List<OrderItem> items, String receiverName,
                                     String zipCode, String address, String detailAddress, String requestMessage){
-        return new Order(orderCode, userId, product, quantity, OrderStatus.READY,
+        return new Order(orderCode, userId, items, OrderStatus.READY,
                 receiverName, zipCode, address, detailAddress, requestMessage);
     }
 
@@ -174,5 +182,34 @@ public class Order extends BaseEntity {
 
     public void checking() {
         this.orderStatus = OrderStatus.CHECKING;
+    }
+
+    public void addOrderItem(OrderItem item) {
+        this.items.add(item);
+        item.ordered(this);
+    }
+
+    public void calculateTotalPrice() {
+        this.items.forEach(
+                orderItem -> this.totalPrice += orderItem.totalPrice()
+        );
+    }
+
+    public void increaseSalesVolume() {
+        items.forEach(
+                OrderItem::increaseSalesVolume
+        );
+    }
+
+    public void increaseQuantity() {
+        items.forEach(
+                OrderItem::increaseQuantity
+        );
+    }
+
+    public void removeQuantity() {
+        items.forEach(
+                OrderItem::removeQuantity
+        );
     }
 }

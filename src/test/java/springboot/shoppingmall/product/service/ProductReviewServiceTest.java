@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.product.domain.Product;
@@ -51,7 +51,6 @@ class ProductReviewServiceTest {
 
     @Autowired
     OrderRepository orderRepository;
-    Long orderId = 10L;
 
     /**
      * 배송이 완료된 상품에 대해 리뷰를 남긴다.
@@ -72,9 +71,12 @@ class ProductReviewServiceTest {
                         "test-product-code"
                 )
         );
+        List<OrderItem> orderItems = List.of(new OrderItem(product, 2));
         Order endOrder = orderRepository.save(
-                new Order("test-order-code", user.getId(), product, 2, OrderStatus.DELIVERY_END,
-                        "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
+                new Order("test-order-code", user.getId(), orderItems, OrderStatus.DELIVERY_END,
+                        "test-receiver", "test-zipcode", "test-address",
+                        "test-detail-address", "test-message")
+        );
 
         // when
         ProductReviewRequest productReviewRequest = new ProductReviewRequest("리뷰 등록 합니다.", 3);
@@ -104,9 +106,12 @@ class ProductReviewServiceTest {
                         "test-product-code"
                 )
         );
+        List<OrderItem> orderItems = List.of(new OrderItem(product, 2));
         Order endOrder = orderRepository.save(
-                new Order("test-order-code", user.getId(), product, 2, OrderStatus.DELIVERY_END,
-                        "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
+                new Order("test-order-code", user.getId(), orderItems, OrderStatus.DELIVERY_END,
+                        "test-receiver", "test-zipcode", "test-address",
+                        "test-detail-address", "test-message")
+        );
 
         ProductReviewRequest productReviewRequest = new ProductReviewRequest("리뷰 등록 합니다.", 3);
         service.createProductReview(user.getId(), user.getLoginId(), endOrder.getId(), product.getId(), productReviewRequest);
@@ -262,20 +267,21 @@ class ProductReviewServiceTest {
                         "test-product-code"
                 )
         );
+        List<OrderItem> orderItems = List.of(new OrderItem(product, 2));
         Order endOrder1 = orderRepository.save(
-                new Order("test-order-code-1", user1.getId(), product, 2, OrderStatus.DELIVERY_END,
+                new Order("test-order-code-1", user1.getId(), orderItems, OrderStatus.DELIVERY_END,
                         "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
         Order endOrder2 = orderRepository.save(
-                new Order("test-order-code-2", user2.getId(), product, 2, OrderStatus.DELIVERY_END,
+                new Order("test-order-code-2", user2.getId(), orderItems, OrderStatus.DELIVERY_END,
                         "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
         Order endOrder3 = orderRepository.save(
-                new Order("test-order-code-3", user3.getId(), product, 2, OrderStatus.DELIVERY_END,
+                new Order("test-order-code-3", user3.getId(), orderItems, OrderStatus.DELIVERY_END,
                         "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
         Order endOrder4 = orderRepository.save(
-                new Order("test-order-code-4", user4.getId(), product, 2, OrderStatus.DELIVERY_END,
+                new Order("test-order-code-4", user4.getId(), orderItems, OrderStatus.DELIVERY_END,
                         "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
         Order endOrder5 = orderRepository.save(
-                new Order("test-order-code-5", user5.getId(), product, 2, OrderStatus.DELIVERY_END,
+                new Order("test-order-code-5", user5.getId(), orderItems, OrderStatus.DELIVERY_END,
                         "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
 
         // when & then

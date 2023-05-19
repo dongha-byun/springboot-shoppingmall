@@ -1,5 +1,6 @@
 package springboot.shoppingmall.order.dto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,13 +11,11 @@ import lombok.NoArgsConstructor;
 public class OrderRequest {
     private String tid;
     private String payType;
-    private Long productId;
-    private int quantity;
+    private List<OrderItemRequest> items;
     private int deliveryFee;
     private String receiverName;
     private String zipCode;
     private String address;
     private String detailAddress;
     private String requestMessage;
-    private int totalPrice;
 }

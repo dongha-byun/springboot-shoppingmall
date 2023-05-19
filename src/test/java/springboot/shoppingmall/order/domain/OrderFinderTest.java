@@ -3,6 +3,7 @@ package springboot.shoppingmall.order.domain;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -62,10 +63,14 @@ class OrderFinderTest {
     @DisplayName("id로 주문 조회 테스트")
     void findOrderById() {
         // given
+        List<OrderItem> orderItems = List.of(
+                new OrderItem(product, 20)
+        );
         Order order = orderRepository.save(
-                new Order(UUID.randomUUID().toString(), user.getId(), product, 20, OrderStatus.READY, delivery.getReceiverName()
-                        , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
-                        , delivery.getRequestMessage())
+                new Order(UUID.randomUUID().toString(), user.getId(), orderItems, OrderStatus.READY,
+                        delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getDetailAddress(), delivery.getRequestMessage()
+                )
         );
 
         // when
@@ -80,10 +85,15 @@ class OrderFinderTest {
     void findOrderByInvoiceNumber() {
         // given
         String invoiceNumber = "invoiceNumber1";
+        List<OrderItem> orderItems = List.of(
+                new OrderItem(product, 20)
+        );
         Order order = orderRepository.save(
-                new Order(UUID.randomUUID().toString(), user.getId(), product, 20, LocalDateTime.now(), OrderStatus.READY, 25000
-                        , delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress()
-                        , delivery.getDetailAddress(), delivery.getRequestMessage(), invoiceNumber)
+                new Order(
+                        UUID.randomUUID().toString(), user.getId(), orderItems, OrderStatus.READY,
+                        delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getDetailAddress(), delivery.getRequestMessage()
+                )
         );
 
         // when

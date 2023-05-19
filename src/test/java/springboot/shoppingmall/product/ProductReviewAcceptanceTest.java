@@ -7,6 +7,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,7 @@ import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceProductTest;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.OrderResponse;
@@ -61,25 +63,30 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         User user2 = userRepository.findById(인수테스터2.getId()).orElseThrow();
         Delivery delivery = deliveryRepository.findById(배송지.getId()).orElseThrow();
 
+        List<OrderItem> order1Items = List.of(new OrderItem(product, 2));
+        List<OrderItem> order2Items = List.of(new OrderItem(product2, 3));
+        List<OrderItem> order3Items = List.of(new OrderItem(product, 2));
+        List<OrderItem> order4Items = List.of(new OrderItem(product, 2));
+
         Order order = orderRepository.save(
-                new Order(UUID.randomUUID().toString(), user.getId(), product, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
-                        , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
-                        , delivery.getRequestMessage())
+                new Order(UUID.randomUUID().toString(), user.getId(), order1Items, OrderStatus.DELIVERY_END,
+                        delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getDetailAddress(), delivery.getRequestMessage())
         );
         Order order2 = orderRepository.save(
-                new Order(UUID.randomUUID().toString(), user.getId(), product2, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
-                        , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
-                        , delivery.getRequestMessage())
+                new Order(UUID.randomUUID().toString(), user.getId(), order2Items, OrderStatus.DELIVERY_END,
+                        delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getDetailAddress(), delivery.getRequestMessage())
         );
         Order order3 = orderRepository.save(
-                new Order(UUID.randomUUID().toString(), user2.getId(), product, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
-                        , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
-                        , delivery.getRequestMessage())
+                new Order(UUID.randomUUID().toString(), user2.getId(), order3Items, OrderStatus.DELIVERY_END,
+                        delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getDetailAddress(), delivery.getRequestMessage())
         );
         Order deliveryOrder = orderRepository.save(
-                new Order(UUID.randomUUID().toString(), user.getId(), product, 2, OrderStatus.DELIVERY, delivery.getReceiverName()
-                        , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
-                        , delivery.getRequestMessage())
+                new Order(UUID.randomUUID().toString(), user.getId(), order4Items, OrderStatus.DELIVERY,
+                        delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getDetailAddress(), delivery.getRequestMessage())
         );
         배송완료_주문 = OrderResponse.of(order);
         배송완료_주문2 = OrderResponse.of(order2);

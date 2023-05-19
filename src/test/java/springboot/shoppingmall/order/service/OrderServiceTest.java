@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import org.assertj.core.api.ThrowableAssertAlternative;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,14 +19,17 @@ import springboot.shoppingmall.TestOrderConfig;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.order.dto.OrderItemRequest;
 import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.order.exception.OverQuantityException;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.user.domain.Delivery;
+import springboot.shoppingmall.user.domain.PayType;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserRepository;
 import springboot.shoppingmall.utils.DateUtils;
@@ -80,10 +85,13 @@ class OrderServiceTest {
     void createTest() {
         // given
         int quantity = 3;
-        OrderRequest orderRequest
-                = new OrderRequest(product.getId(), quantity, 3000,
+        OrderItemRequest orderItemRequest = new OrderItemRequest(product.getId(), quantity);
+        OrderRequest orderRequest = new OrderRequest(
+                "test-tid", PayType.KAKAO_PAY.name(),
+                List.of(orderItemRequest), 3000,
                 delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
-                delivery.getDetailAddress(), delivery.getRequestMessage(), 25000);
+                delivery.getDetailAddress(), delivery.getRequestMessage()
+        );
 
         // when
         OrderResponse orderResponse = orderService.createOrder(user.getId(), orderRequest);
@@ -91,10 +99,13 @@ class OrderServiceTest {
         // then
         assertThat(orderResponse.getId()).isNotNull();
         assertThat(orderResponse.getOrderStatusName()).isEqualTo(OrderStatus.READY.getStatusName());
-        assertThat(orderResponse.getProductName()).isEqualTo("상품 1");
-        assertThat(orderResponse.getQuantity()).isEqualTo(quantity);
         assertThat(orderResponse.getTotalPrice()).isEqualTo(66000);
         assertThat(orderResponse.getReceiverName()).isEqualTo("수령인 1");
+
+        assertThat(orderResponse.getItems()).hasSize(1);
+        assertThat(orderResponse.getItems().get(0).getProductId()).isEqualTo(product.getId());
+        assertThat(orderResponse.getItems().get(0).getProductName()).isEqualTo(product.getName());
+        assertThat(orderResponse.getItems().get(0).getQuantity()).isEqualTo(quantity);
 
         // 상품 주문이 들어오면 수량을 1개 낮춘다.
         assertThat(product.getCount()).isEqualTo(productCount - quantity);
@@ -106,9 +117,13 @@ class OrderServiceTest {
     void cancelTest() {
         // given
         int quantity = 3;
-        OrderRequest orderRequest = new OrderRequest(product.getId(), quantity, 3000,
+        OrderItemRequest orderItemRequest = new OrderItemRequest(product.getId(), quantity);
+        OrderRequest orderRequest = new OrderRequest(
+                "test-tid", PayType.KAKAO_PAY.name(),
+                List.of(orderItemRequest), 3000,
                 delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
-                delivery.getDetailAddress(), delivery.getRequestMessage(), 25000);
+                delivery.getDetailAddress(), delivery.getRequestMessage()
+        );
         OrderResponse orderResponse = orderService.createOrder(user.getId(), orderRequest);
         String cancelReason = "단순변심으로 구매 취소합니다.";
         LocalDateTime cancelDate = LocalDateTime.of(2023, 5, 9, 13, 10, 12);
@@ -217,7 +232,7 @@ class OrderServiceTest {
 
         // then
         assertThat(endOrder.getOrderStatus()).isEqualTo(OrderStatus.FINISH);
-        assertThat(product.getSalesVolume()).isEqualTo(endOrder.getQuantity());
+        assertThat(product.getSalesVolume()).isEqualTo(endOrder.getItems().get(0).getQuantity());
     }
 
     @Test
@@ -258,11 +273,14 @@ class OrderServiceTest {
     @DisplayName("주문 실패 - 재고 수 보다 많은 양을 주문하면 주문에 실패한다.")
     void order_fail_with_quantity_over() {
         // given
+
         int orderQuantity = product.getCount() + 1;
+        OrderItemRequest orderItemRequest = new OrderItemRequest(product.getId(), orderQuantity);
         OrderRequest orderRequest = new OrderRequest(
-                product.getId(), orderQuantity, 0, "덩라",
+                "test-tid", PayType.KAKAO_PAY.name(),
+                List.of(orderItemRequest), 0, "덩라",
                 "01234", "서울시 테스트구 테스트동", "덩라빌딩 301호",
-                "조심히 오세요.", 20000
+                "조심히 오세요."
         );
 
         // when & then
@@ -287,9 +305,14 @@ class OrderServiceTest {
     }
 
     private Order 특정_주문상태_데이터_생성(OrderStatus status) {
-        return orderRepository.save(new Order(UUID.randomUUID().toString(), user.getId(), product, 2, status, delivery.getReceiverName()
-                , delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
-                , delivery.getRequestMessage()));
+        List<OrderItem> orderItems = List.of(new OrderItem(product, 2));
+        return orderRepository.save(
+                new Order(
+                        UUID.randomUUID().toString(), user.getId(), orderItems, status,
+                        delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getDetailAddress(), delivery.getRequestMessage()
+                )
+        );
     }
 
 }

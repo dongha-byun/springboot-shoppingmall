@@ -6,7 +6,9 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +19,7 @@ import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceProductTest;
 import springboot.shoppingmall.authorization.exception.ErrorCode;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.CancelRequest;
@@ -50,15 +53,20 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
     void order_acceptance_beforeEach(){
         super.acceptance_product_beforeEach();
 
-        Product product = productRepository.findById(상품.getId()).orElseThrow();
+        Product product1 = productRepository.findById(상품.getId()).orElseThrow();
+        Product product2 = productRepository.findById(상품2.getId()).orElseThrow();
+
         User user = userRepository.findById(인수테스터1.getId()).orElseThrow();
         Delivery delivery = deliveryRepository.findById(배송지.getId()).orElseThrow();
-
-        Order order = orderRepository.save(
-                new Order("test-order-code", user.getId(), product, 2, OrderStatus.DELIVERY_END, delivery.getReceiverName()
-                        , delivery.getZipCode(), delivery.getAddress()
-                        , delivery.getDetailAddress(), delivery.getRequestMessage())
+        List<OrderItem> orderItems = Arrays.asList(
+                new OrderItem(product1, 2), new OrderItem(product2, 3)
         );
+        Order order = orderRepository.save(
+                new Order("test-order-code", user.getId(), orderItems, OrderStatus.DELIVERY_END,
+                        delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getDetailAddress(), delivery.getRequestMessage())
+        );
+
         배송완료_주문 = OrderResponse.of(order);
     }
 
@@ -87,6 +95,28 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         assertThat(주문_생성_결과.jsonPath().getString("orderCode")).isNotNull();
         assertThat(주문_생성_결과.jsonPath().getString("orderStatusName")).isEqualTo(OrderStatus.READY.getStatusName());
         assertThat(주문_생성_결과.jsonPath().getString("receiverName")).isEqualTo(배송지.getReceiverName());
+    }
+
+    /**
+     * Feature: 최초 주문 (여러 상품)
+     *  Background:
+     *      given: 로그인한 사용자
+     *      And: 등록되어있는 상품들
+     *      And: 사용자가 등록해놓은 배송지 정보가 존재함
+     *
+     *  Scenario: 최초 주문 생성
+     *      when: 구매하고자 하는 상품정보와  갯수, 배송지 정보를 가지고 주문을 생성하면
+     *      then: 주문 내역 조회 시, 주문된 내용이 조회된다.
+     */
+    @Test
+    @DisplayName("여러 상품 주문 테스트")
+    void order_with_many_products() {
+        // given
+
+        // when
+
+
+        // then
     }
 
     /**

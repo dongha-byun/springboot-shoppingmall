@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.partners.dto.PartnersReadyOrderQueryDto;
@@ -49,6 +50,10 @@ class PartnersOrderQueryRepositoryTest {
     Product product3;
     LocalDateTime startDate;
     LocalDateTime endDate;
+
+    Order order1;
+    Order order2;
+    Order order3;
     @BeforeEach
     void setUp() {
         user = userRepository.save(
@@ -82,6 +87,24 @@ class PartnersOrderQueryRepositoryTest {
                 )
         );
 
+        order1 = Order.createOrder(
+                "test-order-code1", user.getId(), List.of(new OrderItem(product1, 3)),
+                "수령인1", "01234",
+                "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요"
+        );
+
+        order2 = Order.createOrder(
+                "test-order-code2", user.getId(), List.of(new OrderItem(product2, 4)),
+                "수령인1", "01234",
+                "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요"
+        );
+
+        order3 = Order.createOrder(
+                "test-order-code3", user.getId(), List.of(new OrderItem(product3, 5)),
+                "수령인1", "01234",
+                "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요"
+        );
+
         String startDateStr = DateUtils.toStringOfLocalDateTIme(now.minusMonths(3), "yyyy-MM-dd");
         String endDateStr = DateUtils.toStringOfLocalDateTIme(now, "yyyy-MM-dd");
         startDate = DateUtils.toStartDate(startDateStr);
@@ -92,23 +115,14 @@ class PartnersOrderQueryRepositoryTest {
     @DisplayName("판매자 - 준비 중인 주문 내역 목록 조회")
     void find_partner_order_ready() {
         // given
-        Order order1 = orderRepository.save(
-                Order.createOrder("test-order-code1", user.getId(), product1, 3, "수령인1", "01234",
-                        "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요")
-        );
-        Order order2 = orderRepository.save(
-                Order.createOrder("test-order-code2", user.getId(), product2, 4, "수령인1", "01234",
-                        "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요")
-        );
-        Order order3 = orderRepository.save(
-                Order.createOrder("test-order-code3", user.getId(), product3, 5, "수령인1", "01234",
-                        "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요")
-        );
-        order2.outing();
+        Order savedOrder1 = orderRepository.save(order1);
+        Order savedOrder2 = orderRepository.save(order2);
+        Order savedOrder3 = orderRepository.save(order3);
+        savedOrder2.outing();
 
         // when
-        List<PartnersReadyOrderQueryDto> readyOrders = partnersOrderQueryRepository.findPartnersReadyOrders(
-                1L, startDate, endDate);
+        List<PartnersReadyOrderQueryDto> readyOrders =
+                partnersOrderQueryRepository.findPartnersReadyOrders(1L, startDate, endDate);
 
         // then
         assertThat(readyOrders).hasSize(3);
@@ -117,7 +131,7 @@ class PartnersOrderQueryRepositoryTest {
                 .map(PartnersReadyOrderQueryDto::getId)
                 .collect(Collectors.toList());
         assertThat(ids).containsExactly(
-                order1.getId(), order2.getId(), order3.getId()
+                savedOrder1.getId(), savedOrder2.getId(), savedOrder3.getId()
         );
 
         List<String> productNames = readyOrders.stream()

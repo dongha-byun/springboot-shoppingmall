@@ -3,10 +3,13 @@ package springboot.shoppingmall.order.dto;
 import static springboot.shoppingmall.utils.DateUtils.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.utils.DateUtils;
 
 @AllArgsConstructor
@@ -16,8 +19,7 @@ public class OrderResponse {
     private Long id;
     private String orderCode;
     private String orderStatusName;
-    private String productName;
-    private int quantity;
+    private List<OrderItemResponse> items;
     private int totalPrice;
     private String receiverName;
     private String zipCode;
@@ -34,7 +36,7 @@ public class OrderResponse {
     public static OrderResponse of(Order order) {
         return new OrderResponse(order.getId(), order.getOrderCode(),
                 order.getOrderStatus().getStatusName(),
-                order.getProduct().getName(), order.getQuantity(), order.getTotalPrice(),
+                ofItemList(order), order.getTotalPrice(),
                 order.getReceiverName(), order.getZipCode(), order.getAddress(),
                 order.getDetailAddress(), order.getRequestMessage(), order.getInvoiceNumber(),
                 null, toStringOfLocalDateTIme(order.getDeliveryDate()), order.getDeliveryPlace(),
@@ -44,10 +46,17 @@ public class OrderResponse {
     public static OrderResponse of(Order order, OrderDeliveryInvoiceResponse deliveryInvoice) {
         return new OrderResponse(order.getId(), order.getOrderCode(),
                 order.getOrderStatus().getStatusName(),
-                order.getProduct().getName(), order.getQuantity(), order.getTotalPrice(),
+                ofItemList(order), order.getTotalPrice(),
                 order.getReceiverName(), order.getZipCode(), order.getAddress(),
                 order.getDetailAddress(), order.getRequestMessage(), order.getInvoiceNumber(),
                 deliveryInvoice, toStringOfLocalDateTIme(order.getDeliveryDate()), order.getDeliveryPlace(),
                 toStringOfLocalDateTIme(order.getCancelDate()), order.getCancelReason());
+    }
+
+    private static List<OrderItemResponse> ofItemList(Order order) {
+        List<OrderItem> items = order.getItems();
+        return items.stream()
+                .map(OrderItemResponse::of)
+                .collect(Collectors.toList());
     }
 }

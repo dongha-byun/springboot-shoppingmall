@@ -3,6 +3,8 @@ package springboot.shoppingmall.order.service;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.DeliveryEndRequest;
@@ -99,10 +102,15 @@ class OrderDeliveryInvoiceServiceTest {
     }
 
     private Order 특정_주문상태_데이터_생성(OrderStatus status) {
-        return orderRepository.save(new Order(UUID.randomUUID().toString(),
-                user.getId(), product, 2, LocalDateTime.now()
-                , status, product.getPrice() * 2
-                , delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress()
-                , delivery.getRequestMessage(), invoiceNumber));
+        List<OrderItem> orderItems = List.of(
+                new OrderItem(product, 2)
+        );
+        return orderRepository.save(
+                new Order(
+                        UUID.randomUUID().toString(), user.getId(), orderItems, status,
+                        delivery.getReceiverName(), delivery.getZipCode(),
+                        delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
+                )
+        );
     }
 }

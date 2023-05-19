@@ -30,8 +30,10 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
     @DisplayName("판매자가 배송 준비중 / 상품 출고 상태의 주문 목록을 조회한다.")
     void partners_order_query_find_ready() {
         // given
-        OrderResponse 주문1 = 주문_생성_요청(상품, 2, 0, 배송지).as(OrderResponse.class);
-        OrderResponse 주문2 = 주문_생성_요청(상품2, 10, 0, 배송지).as(OrderResponse.class);
+        int quantity1 = 2;
+        int quantity2 = 10;
+        OrderResponse 주문1 = 주문_생성_요청(상품, quantity1, 0, 배송지).as(OrderResponse.class);
+        OrderResponse 주문2 = 주문_생성_요청(상품2, quantity2, 0, 배송지).as(OrderResponse.class);
         OrderResponse 주문2_출고중 = 주문_출고중_요청(주문2).as(OrderResponse.class);
 
         // when
@@ -47,7 +49,7 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
                 상품.getName(), 상품2.getName()
         );
         목록_조회_결과_검증(판매자_준비중_주문_조회_결과, "data.quantity", Integer.class,
-                주문1.getQuantity(), 주문2.getQuantity()
+                quantity1, quantity2
         );
         목록_조회_결과_검증(판매자_준비중_주문_조회_결과, "data.totalPrice", Integer.class,
                 주문1.getTotalPrice(), 주문2.getTotalPrice()

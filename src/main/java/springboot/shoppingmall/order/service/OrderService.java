@@ -1,25 +1,25 @@
 package springboot.shoppingmall.order.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderFinder;
+import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderSequence;
 import springboot.shoppingmall.order.domain.OrderSequenceRepository;
 import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
+import springboot.shoppingmall.order.dto.OrderItemRequest;
 import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
-import springboot.shoppingmall.order.exception.OverQuantityException;
 import springboot.shoppingmall.pay.domain.PayHistory;
 import springboot.shoppingmall.pay.domain.PayHistoryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserFinder;
 import springboot.shoppingmall.utils.DateUtils;
 
 @RequiredArgsConstructor
@@ -27,7 +27,6 @@ import springboot.shoppingmall.utils.DateUtils;
 @Service
 public class OrderService {
 
-    private final UserFinder userFinder;
     private final OrderFinder orderFinder;
     private final ProductFinder productFinder;
     private final OrderRepository orderRepository;
@@ -38,18 +37,14 @@ public class OrderService {
 
     @Transactional
     public OrderResponse createOrder(Long userId, OrderRequest orderRequest) {
-        User user = userFinder.findUserById(userId);
-        Product product = productFinder.findProductById(orderRequest.getProductId());
-
-        if(product.getCount() < orderRequest.getQuantity()){
-            throw new OverQuantityException("상품 재고 수가 부족합니다.");
-        }
+        List<OrderItem> items = getOrderItems(orderRequest);
 
         String orderCode = generateOrderCode();
         Order newOrder = orderRepository.save(
-                Order.createOrder(orderCode, user.getId(), product, orderRequest.getQuantity()
-                , orderRequest.getReceiverName(), orderRequest.getZipCode(), orderRequest.getAddress()
-                , orderRequest.getDetailAddress(), orderRequest.getRequestMessage())
+                Order.createOrder(orderCode, userId, items,
+                        orderRequest.getReceiverName(), orderRequest.getZipCode(),
+                        orderRequest.getAddress(), orderRequest.getDetailAddress(),
+                        orderRequest.getRequestMessage())
         );
 
         // 주문 정보 저장 시, 결제정보도 같이 저장한다.
@@ -60,9 +55,24 @@ public class OrderService {
         );
 
         // 상품 주문이 완료되면, 상품의 재고 수를 변경한다.
-        product.removeCount(newOrder.getQuantity());
+        newOrder.removeQuantity();
 
         return OrderResponse.of(newOrder);
+    }
+
+    private List<OrderItem> getOrderItems(OrderRequest orderRequest) {
+        List<OrderItem> items = new ArrayList<>();
+        List<OrderItemRequest> itemRequests = orderRequest.getItems();
+        for (OrderItemRequest itemRequest : itemRequests) {
+            Product product = productFinder.findProductById(itemRequest.getProductId());
+            product.validateQuantity(itemRequest.getQuantity());
+
+            items.add(new OrderItem(
+                    product, itemRequest.getQuantity()
+            ));
+        }
+
+        return items;
     }
 
     private String generateOrderCode() {
@@ -90,8 +100,7 @@ public class OrderService {
 //        orderPayService.cancel(payHistory.getTid(), payHistory.getAmount());
 
         // 주문된 상품이 주문 취소되면, 상품의 재고 수량을 다시 증가시킨다.
-        Product product = order.getProduct();
-        product.increaseCount(order.getQuantity());
+        order.increaseQuantity();
 
         return OrderResponse.of(order);
     }
@@ -115,8 +124,7 @@ public class OrderService {
         order.finish();
 
         // 구매확정 시, 상품 판매 수량이 증가한다.
-        Product product = order.getProduct();
-        product.increaseSalesVolume(order.getQuantity());
+        order.increaseSalesVolume();
 
         return OrderResponse.of(order);
     }
@@ -146,8 +154,7 @@ public class OrderService {
         order.refundEnd();
 
         // 환불 시, 주문 수량 만큼 수량을 증가시킨다.
-        Product product = order.getProduct();
-        product.increaseCount(order.getQuantity());
+        order.increaseQuantity();
 
         return OrderResponse.of(order);
     }
