@@ -8,6 +8,7 @@ import springboot.shoppingmall.order.partners.controller.PartnersReadyOrderQuery
 import springboot.shoppingmall.order.partners.dto.PartnersCancelOrderQueryDto;
 import springboot.shoppingmall.order.partners.dto.PartnersDeliveryOrderQueryDto;
 import springboot.shoppingmall.order.partners.dto.PartnersEndOrderQueryDto;
+import springboot.shoppingmall.order.partners.dto.PartnersOrderItemQueryDto;
 import springboot.shoppingmall.order.partners.dto.PartnersOrderQueryDto;
 import springboot.shoppingmall.order.partners.dto.PartnersReadyOrderQueryDto;
 
@@ -24,4 +25,6 @@ public interface PartnersOrderQueryRepository {
 
     List<PartnersCancelOrderQueryDto> findPartnersCancelOrders(Long partnerId,
                                                                LocalDateTime startDate, LocalDateTime endDate);
+
+    List<PartnersOrderItemQueryDto> findOrderItemDtoByOrderIds(List<Long> orderIds);
 }

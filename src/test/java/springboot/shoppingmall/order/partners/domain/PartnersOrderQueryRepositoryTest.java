@@ -134,13 +134,6 @@ class PartnersOrderQueryRepositoryTest {
                 savedOrder1.getId(), savedOrder2.getId(), savedOrder3.getId()
         );
 
-        List<String> productNames = readyOrders.stream()
-                .map(PartnersReadyOrderQueryDto::getProductName)
-                .collect(Collectors.toList());
-        assertThat(productNames).containsExactly(
-                product1.getName(), product2.getName(), product3.getName()
-        );
-
         List<String> userNames = readyOrders.stream()
                 .map(PartnersReadyOrderQueryDto::getUserName)
                 .collect(Collectors.toList());
@@ -151,7 +144,7 @@ class PartnersOrderQueryRepositoryTest {
         List<String> userTelNo = readyOrders.stream()
                 .map(PartnersReadyOrderQueryDto::getUserTelNo)
                 .collect(Collectors.toList());
-        assertThat(userTelNo).containsExactly(
+         assertThat(userTelNo).containsExactly(
                 user.telNo(), user.telNo(), user.telNo()
         );
 

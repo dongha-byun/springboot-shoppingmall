@@ -1,10 +1,12 @@
 package springboot.shoppingmall.order.partners.controller;
 
+import java.util.List;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import springboot.shoppingmall.order.partners.dto.PartnersEndOrderQueryDto;
+import springboot.shoppingmall.order.partners.dto.PartnersOrderItemQueryDto;
 import springboot.shoppingmall.utils.DateUtils;
 
 @NoArgsConstructor
@@ -19,13 +21,13 @@ public class PartnersEndOrderQueryResponse extends PartnersOrderQueryResponse{
     private String deliveryDate;
     private String deliveryPlace;
 
-    public PartnersEndOrderQueryResponse(Long id, String orderCode, String orderDate, String productCode,
-                                         String productName, int quantity, int totalPrice, String userName,
+    public PartnersEndOrderQueryResponse(Long id, String orderCode, String orderDate,
+                                         List<PartnersOrderItemQueryResponse> items,
+                                         int totalPrice, String userName,
                                          String userTelNo, String orderStatusName, String receiverName, String address,
                                          String detailAddress, String requestMessage, String invoiceNumber,
                                          String deliveryDate, String deliveryPlace) {
-        super(id, orderCode, orderDate, productCode, productName, quantity, totalPrice, userName, userTelNo,
-                orderStatusName);
+        super(id, orderCode, orderDate, items, totalPrice, userName, userTelNo, orderStatusName);
         this.receiverName = receiverName;
         this.address = address;
         this.detailAddress = detailAddress;
@@ -35,10 +37,14 @@ public class PartnersEndOrderQueryResponse extends PartnersOrderQueryResponse{
         this.deliveryPlace = deliveryPlace;
     }
 
-    public static PartnersEndOrderQueryResponse to(PartnersEndOrderQueryDto dto) {
+    public static PartnersEndOrderQueryResponse to(
+            PartnersEndOrderQueryDto dto,
+            List<PartnersOrderItemQueryDto> itemQueryDtos
+    ) {
+        List<PartnersOrderItemQueryResponse> itemQueryResponses = orderItemDtoToResponse(itemQueryDtos);
         return new PartnersEndOrderQueryResponse(
                 dto.getId(), dto.getOrderCode(), DateUtils.toStringOfLocalDateTIme(dto.getOrderDate()),
-                dto.getProductCode(), dto.getProductName(), dto.getQuantity(), dto.getTotalPrice(),
+                itemQueryResponses, dto.getTotalPrice(),
                 dto.getUserName(), dto.getUserTelNo(), dto.getOrderStatus().getStatusName(),
                 dto.getReceiverName(), dto.getAddress(), dto.getDetailAddress(),
                 dto.getRequestMessage(), dto.getInvoiceNumber(),

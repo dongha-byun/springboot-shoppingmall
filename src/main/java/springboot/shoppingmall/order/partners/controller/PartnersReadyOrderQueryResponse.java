@@ -1,40 +1,49 @@
 package springboot.shoppingmall.order.partners.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.w3c.dom.stylesheets.LinkStyle;
+import springboot.shoppingmall.order.partners.dto.PartnersOrderItemQueryDto;
 import springboot.shoppingmall.order.partners.dto.PartnersReadyOrderQueryDto;
 import springboot.shoppingmall.utils.DateUtils;
 
 @NoArgsConstructor
-@Data
+@Getter
 public class PartnersReadyOrderQueryResponse extends PartnersOrderQueryResponse{
     private String receiverName;
     private String address;
     private String detailAddress;
     private String requestMessage;
-    private String invoiceNumber;
 
-    public PartnersReadyOrderQueryResponse(Long id, String orderCode, String orderDate, String productCode,
-                                           String productName, int quantity, int totalPrice,
-                                           String userName, String userTelNo,
+    public PartnersReadyOrderQueryResponse(Long id, String orderCode, String orderDate,
+                                           List<PartnersOrderItemQueryResponse> items,
+                                           int totalPrice, String userName, String userTelNo,
                                            String receiverName, String address, String detailAddress,
-                                           String requestMessage,
-                                           String orderStatusName, String invoiceNumber) {
-        super(id, orderCode, orderDate, productCode, productName, quantity, totalPrice, userName, userTelNo, orderStatusName);
+                                           String requestMessage, String orderStatusName) {
+        super(id, orderCode, orderDate, items, totalPrice, userName, userTelNo, orderStatusName);
         this.receiverName = receiverName;
         this.address = address;
         this.detailAddress = detailAddress;
         this.requestMessage = requestMessage;
-        this.invoiceNumber = invoiceNumber;
     }
 
-    public static PartnersReadyOrderQueryResponse to(PartnersReadyOrderQueryDto dto) {
+    public static PartnersReadyOrderQueryResponse to(
+            PartnersReadyOrderQueryDto dto,
+            List<PartnersOrderItemQueryDto> itemQueryDtos
+    ) {
+        List<PartnersOrderItemQueryResponse> itemQueryResponses = itemQueryDtos.stream()
+                .map(PartnersOrderItemQueryResponse::to)
+                .collect(Collectors.toList());
         return new PartnersReadyOrderQueryResponse(
                 dto.getId(), dto.getOrderCode(), DateUtils.toStringOfLocalDateTIme(dto.getOrderDate()),
-                dto.getProductCode(), dto.getProductName(), dto.getQuantity(), dto.getTotalPrice(),
+                itemQueryResponses, dto.getTotalPrice(),
                 dto.getUserName(), dto.getUserTelNo(),
                 dto.getReceiverName(), dto.getAddress(), dto.getDetailAddress(),
-                dto.getRequestMessage(), dto.getOrderStatus().getStatusName(), dto.getInvoiceNumber()
+                dto.getRequestMessage(), dto.getOrderStatus().getStatusName()
         );
     }
+
 }

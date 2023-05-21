@@ -18,8 +18,10 @@ import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
+import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.partners.controller.PartnersDeliveryOrderQueryResponse;
 import springboot.shoppingmall.order.partners.controller.PartnersEndOrderQueryResponse;
+import springboot.shoppingmall.order.partners.controller.PartnersOrderItemQueryResponse;
 import springboot.shoppingmall.order.partners.controller.PartnersOrderQueryResponse;
 import springboot.shoppingmall.order.partners.controller.PartnersReadyOrderQueryResponse;
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryRepository;
@@ -141,11 +143,16 @@ class PartnersOrderQueryServiceTest {
                 savedOrder1.getId(), savedOrder2.getId(), savedOrder3.getId()
         );
 
-        List<String> invoiceNumbers = partnersReadyOrders.stream()
-                .map(response -> ((PartnersReadyOrderQueryResponse) response).getInvoiceNumber())
+        // 송장번호 check
+        PartnersOrderQueryResponse outingResponse = partnersReadyOrders.stream()
+                .filter(response -> response.getOrderStatusName().equals(OrderStatus.OUTING.getStatusName()))
+                .findAny()
+                .orElseThrow();
+        List<String> invoiceNumbers = outingResponse.getItems().stream()
+                .map(PartnersOrderItemQueryResponse::getInvoiceNumber)
                 .collect(Collectors.toList());
         assertThat(invoiceNumbers).containsExactly(
-                savedOrder1.getInvoiceNumber(), savedOrder2.getInvoiceNumber(), savedOrder3.getInvoiceNumber()
+                savedOrder1.getInvoiceNumber()
         );
     }
 
@@ -178,13 +185,6 @@ class PartnersOrderQueryServiceTest {
                 .collect(Collectors.toList());
         assertThat(ids).containsExactly(
                 savedOrder1.getId(), savedOrder2.getId(), savedOrder3.getId()
-        );
-
-        List<String> invoiceNumbers = partnersDeliveryOrders.stream()
-                .map(response -> ((PartnersDeliveryOrderQueryResponse) response).getInvoiceNumber())
-                .collect(Collectors.toList());
-        assertThat(invoiceNumbers).containsExactly(
-                savedOrder1.getInvoiceNumber(), savedOrder2.getInvoiceNumber(), savedOrder3.getInvoiceNumber()
         );
     }
 

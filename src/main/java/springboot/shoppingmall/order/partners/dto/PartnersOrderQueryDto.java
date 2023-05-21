@@ -13,9 +13,6 @@ public class PartnersOrderQueryDto {
     private Long id;
     private String orderCode;
     private LocalDateTime orderDate;
-    private String productCode;
-    private String productName;
-    private int quantity;
     private int totalPrice;
     private String userName;
     private String userTelNo;

@@ -2,10 +2,12 @@ package springboot.shoppingmall.order.partners.controller;
 
 import static springboot.shoppingmall.utils.DateUtils.*;
 
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import springboot.shoppingmall.order.partners.dto.PartnersCancelOrderQueryDto;
+import springboot.shoppingmall.order.partners.dto.PartnersOrderItemQueryDto;
 
 @NoArgsConstructor
 @Getter
@@ -19,13 +21,12 @@ public class PartnersCancelOrderQueryResponse extends PartnersOrderQueryResponse
     private String exchangeReason;
 
     public PartnersCancelOrderQueryResponse(Long id, String orderCode, String orderDate,
-                                            String productCode, String productName, int quantity, int totalPrice,
+                                            List<PartnersOrderItemQueryResponse> items, int totalPrice,
                                             String userName, String userTelNo, String orderStatusName,
                                             String cancelDate, String cancelReason,
                                             String refundDate, String refundReason,
                                             String exchangeDate, String exchangeReason) {
-        super(id, orderCode, orderDate, productCode, productName, quantity, totalPrice, userName, userTelNo,
-                orderStatusName);
+        super(id, orderCode, orderDate, items, totalPrice, userName, userTelNo, orderStatusName);
         this.cancelDate = cancelDate;
         this.cancelReason = cancelReason;
         this.refundDate = refundDate;
@@ -34,10 +35,14 @@ public class PartnersCancelOrderQueryResponse extends PartnersOrderQueryResponse
         this.exchangeReason = exchangeReason;
     }
 
-    public static PartnersCancelOrderQueryResponse to(PartnersCancelOrderQueryDto dto) {
+    public static PartnersCancelOrderQueryResponse to(
+            PartnersCancelOrderQueryDto dto,
+            List<PartnersOrderItemQueryDto> itemQueryDtos
+    ) {
+        List<PartnersOrderItemQueryResponse> itemQueryResponses = orderItemDtoToResponse(itemQueryDtos);
         return new PartnersCancelOrderQueryResponse(
                 dto.getId(), dto.getOrderCode(), toStringOfLocalDateTIme(dto.getOrderDate()),
-                dto.getProductCode(), dto.getProductName(), dto.getQuantity(), dto.getTotalPrice(),
+                itemQueryResponses, dto.getTotalPrice(),
                 dto.getUserName(), dto.getUserTelNo(), dto.getOrderStatus().getStatusName(),
                 toStringOfLocalDateTIme(dto.getCancelDate()), dto.getCancelReason(),
                 toStringOfLocalDateTIme(dto.getRefundDate()), dto.getRefundReason(),
