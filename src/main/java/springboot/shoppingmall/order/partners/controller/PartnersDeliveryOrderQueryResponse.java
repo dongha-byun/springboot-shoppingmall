@@ -1,10 +1,8 @@
 package springboot.shoppingmall.order.partners.controller;
 
-import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.order.partners.dto.PartnersDeliveryOrderQueryDto;
-import springboot.shoppingmall.order.partners.dto.PartnersOrderItemQueryDto;
 import springboot.shoppingmall.utils.DateUtils;
 
 @NoArgsConstructor
@@ -15,27 +13,25 @@ public class PartnersDeliveryOrderQueryResponse extends PartnersOrderQueryRespon
     private String detailAddress;
     private String requestMessage;
 
-    public PartnersDeliveryOrderQueryResponse(Long id, String orderCode, String orderDate,
-                                              List<PartnersOrderItemQueryResponse> items, int totalPrice,
+    public PartnersDeliveryOrderQueryResponse(Long orderItemId, String orderCode, String orderDate, String productCode,
+                                              String productName, int quantity, String invoiceNumber, int totalPrice,
                                               String userName, String userTelNo, String orderStatusName,
                                               String receiverName, String address, String detailAddress,
                                               String requestMessage) {
-        super(id, orderCode, orderDate, items, totalPrice, userName, userTelNo, orderStatusName);
+        super(orderItemId, orderCode, orderDate, productCode, productName, quantity, invoiceNumber, totalPrice,
+                userName,
+                userTelNo, orderStatusName);
         this.receiverName = receiverName;
         this.address = address;
         this.detailAddress = detailAddress;
         this.requestMessage = requestMessage;
     }
 
-    public static PartnersDeliveryOrderQueryResponse to(
-            PartnersDeliveryOrderQueryDto dto,
-            List<PartnersOrderItemQueryDto> orderItemQueryDtos
-    ) {
-        List<PartnersOrderItemQueryResponse> itemQueryResponses = orderItemDtoToResponse(orderItemQueryDtos);
+    public static PartnersDeliveryOrderQueryResponse to(PartnersDeliveryOrderQueryDto dto) {
         return new PartnersDeliveryOrderQueryResponse(
-                dto.getId(), dto.getOrderCode(), DateUtils.toStringOfLocalDateTIme(dto.getOrderDate()),
-                itemQueryResponses, dto.getTotalPrice(),
-                dto.getUserName(), dto.getUserTelNo(), dto.getOrderStatus().getStatusName(),
+                dto.getOrderItemId(), dto.getOrderCode(), DateUtils.toStringOfLocalDateTIme(dto.getOrderDate()),
+                dto.getProductCode(), dto.getProductName(), dto.getQuantity(), dto.getInvoiceNumber(),
+                dto.getTotalPrice(), dto.getUserName(), dto.getUserTelNo(), dto.getOrderStatus().getStatusName(),
                 dto.getReceiverName(), dto.getAddress(), dto.getDetailAddress(),
                 dto.getRequestMessage()
         );

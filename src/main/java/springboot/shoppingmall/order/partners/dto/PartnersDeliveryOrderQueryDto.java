@@ -1,7 +1,6 @@
 package springboot.shoppingmall.order.partners.dto;
 
 import java.time.LocalDateTime;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.order.domain.OrderStatus;
@@ -14,12 +13,15 @@ public class PartnersDeliveryOrderQueryDto extends PartnersOrderQueryDto{
     private String detailAddress;       // 배송지 상세주소
     private String requestMessage;      // 배송요청사항
 
-    public PartnersDeliveryOrderQueryDto(Long id, String orderCode, LocalDateTime orderDate,
-                                         int totalPrice, String userName,
-                                         String userTelNo, OrderStatus orderStatus,
-                                         String receiverName, String address, String detailAddress,
-                                         String requestMessage) {
-        super(id, orderCode, orderDate, totalPrice, userName, userTelNo, orderStatus);
+    public PartnersDeliveryOrderQueryDto(Long orderItemId, String orderCode, LocalDateTime orderDate,
+                                         String productCode,
+                                         String productName, int quantity, String invoiceNumber, int totalPrice,
+                                         String userName, String userTelNo, OrderStatus orderStatus,
+                                         String receiverName,
+                                         String address, String detailAddress, String requestMessage) {
+        super(orderItemId, orderCode, orderDate, productCode, productName, quantity, invoiceNumber, totalPrice,
+                userName,
+                userTelNo, orderStatus);
         this.receiverName = receiverName;
         this.address = address;
         this.detailAddress = detailAddress;

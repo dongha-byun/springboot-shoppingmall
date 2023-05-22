@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,6 @@ import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
-import springboot.shoppingmall.order.dto.CancelRequest;
 import springboot.shoppingmall.order.dto.DeliveryEndRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.domain.Product;
@@ -30,6 +30,7 @@ import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.dto.ProductResponse;
 import springboot.shoppingmall.user.domain.Delivery;
 import springboot.shoppingmall.user.domain.DeliveryRepository;
+import springboot.shoppingmall.user.domain.PayType;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserRepository;
 import springboot.shoppingmall.user.dto.DeliveryResponse;
@@ -59,7 +60,8 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         User user = userRepository.findById(인수테스터1.getId()).orElseThrow();
         Delivery delivery = deliveryRepository.findById(배송지.getId()).orElseThrow();
         List<OrderItem> orderItems = Arrays.asList(
-                new OrderItem(product1, 2), new OrderItem(product2, 3)
+                new OrderItem(product1, 2, OrderStatus.READY),
+                new OrderItem(product2, 3, OrderStatus.READY)
         );
         Order order = orderRepository.save(
                 new Order("test-order-code", user.getId(), orderItems, OrderStatus.DELIVERY_END,
@@ -92,6 +94,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         // then
         assertThat(주문_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(주문_생성_결과.jsonPath().getLong("id")).isNotNull();
+        assertThat(주문_생성_결과.jsonPath().getString("orderDate")).isNotNull();
         assertThat(주문_생성_결과.jsonPath().getString("orderCode")).isNotNull();
         assertThat(주문_생성_결과.jsonPath().getString("orderStatusName")).isEqualTo(OrderStatus.READY.getStatusName());
         assertThat(주문_생성_결과.jsonPath().getString("receiverName")).isEqualTo(배송지.getReceiverName());
@@ -139,7 +142,10 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
 
         // then
         assertThat(주문_상태_변경_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(주문_상태_변경_결과.jsonPath().getString("orderStatusName")).isEqualTo(
+        assertThat(주문_상태_변경_결과.jsonPath().getList("items.invoiceNumber", String.class)).containsExactly(
+                주문.getItems().get(0).getInvoiceNumber()
+        );
+        assertThat(주문_상태_변경_결과.jsonPath().getList("items.orderStatusName", String.class)).containsExactly(
                 OrderStatus.OUTING.getStatusName()
         );
     }
@@ -182,7 +188,8 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         assertThat(출고중_에서_주문취소_변경_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 
         // when : 출고중인 주문 상태를 배송 중으로 변경하면
-        ExtractableResponse<Response> 출고중_에서_배송중_변경_결과 = 주문_배송중_요청(출고중_주문);
+        String 출고중_송장번호 = 출고중_주문.getItems().get(0).getInvoiceNumber();
+        ExtractableResponse<Response> 출고중_에서_배송중_변경_결과 = 주문_배송중_요청(출고중_송장번호);
         assertThat(출고중_에서_배송중_변경_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then : 주문 상태가 배송중으로 변경되고
@@ -194,7 +201,8 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         String deliveryPlace = "무인택배함";
         DeliveryEndRequest deliveryEndRequest = new DeliveryEndRequest(deliveryDate, deliveryPlace);
 
-        ExtractableResponse<Response> 배송중_에서_배송완료_변경_결과 = 주문_배송완료_요청(배송중_주문, deliveryEndRequest);
+        String 배송중_송장번호 = 배송중_주문.getItems().get(0).getInvoiceNumber();
+        ExtractableResponse<Response> 배송중_에서_배송완료_변경_결과 = 주문_배송완료_요청(배송중_송장번호, deliveryEndRequest);
         assertThat(배송중_에서_배송완료_변경_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then: 주문 상태가 배송완료로 변경되고
@@ -302,24 +310,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         // given
 
         // when
-        Map<String, Object> params = new HashMap<>();
-        params.put("productId", 상품.getId());
-        params.put("quantity", 상품.getCount() + 1);
-        params.put("deliveryFee", 0);
-        params.put("receiverName", 배송지.getReceiverName());
-        params.put("zipCode", 배송지.getZipCode());
-        params.put("address", 배송지.getAddress());
-        params.put("detailAddress", 배송지.getDetailAddress());
-        params.put("requestMessage", 배송지.getRequestMessage());
-        params.put("totalPrice", 15000);
-
-        ExtractableResponse<Response> 주문_결과 = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .headers(createAuthorizationHeader(로그인정보))
-                .body(params)
-                .when().post("/orders")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> 주문_결과 = 주문_생성_요청(상품, 상품.getCount() + 1, 2000, 배송지);
 
         // then
         assertThat(주문_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -350,22 +341,22 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
                 .then().log().all()
                 .extract();
     }
-    public static ExtractableResponse<Response> 주문_배송중_요청(OrderResponse order) {
+    public static ExtractableResponse<Response> 주문_배송중_요청(String invoiceNumber) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/orders/{invoiceNumber}/delivery", order.getInvoiceNumber())
+                .when().put("/orders/{invoiceNumber}/delivery", invoiceNumber)
                 .then().log().all()
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 주문_배송완료_요청(OrderResponse order, DeliveryEndRequest request) {
+    public static ExtractableResponse<Response> 주문_배송완료_요청(String invoiceNumber, DeliveryEndRequest request) {
         Map<String, Object> params = new HashMap<>();
         params.put("deliveryDate", request.getDeliveryDate());
         params.put("deliveryPlace", request.getDeliveryPlace());
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
-                .when().put("/orders/{invoiceNumber}/delivery-end", order.getInvoiceNumber())
+                .when().put("/orders/{invoiceNumber}/delivery-end", invoiceNumber)
                 .then().log().all()
                 .extract();
     }
@@ -422,9 +413,14 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
     }
 
     public static ExtractableResponse<Response> 주문_생성_요청(ProductResponse product, int quantity, int deliveryFee, DeliveryResponse delivery) {
+        Map<String, Object> itemMap = new HashMap<>();
+        itemMap.put("productId", product.getId());
+        itemMap.put("quantity", quantity);
+
         Map<String, Object> params = new HashMap<>();
-        params.put("productId", product.getId());
-        params.put("quantity", quantity);
+        params.put("tid", UUID.randomUUID().toString());
+        params.put("payType", PayType.KAKAO_PAY.name());
+        params.put("items", List.of(itemMap));
         params.put("deliveryFee", deliveryFee);
         params.put("receiverName", delivery.getReceiverName());
         params.put("zipCode", delivery.getZipCode());

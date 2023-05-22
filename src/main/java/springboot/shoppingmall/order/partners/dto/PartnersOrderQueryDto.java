@@ -10,9 +10,13 @@ import springboot.shoppingmall.order.domain.OrderStatus;
 @NoArgsConstructor
 @Data
 public class PartnersOrderQueryDto {
-    private Long id;
+    private Long orderItemId;
     private String orderCode;
     private LocalDateTime orderDate;
+    private String productCode;
+    private String productName;
+    private int quantity;
+    private String invoiceNumber;
     private int totalPrice;
     private String userName;
     private String userTelNo;

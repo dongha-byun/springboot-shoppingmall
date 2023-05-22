@@ -1,7 +1,10 @@
 package springboot.shoppingmall.order.domain;
 
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -36,9 +39,25 @@ public class OrderItem extends BaseEntity {
     @Column(unique = true)
     private String invoiceNumber;
 
-    public OrderItem(Product product, int quantity) {
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
+
+    private LocalDateTime cancelDate;
+    private String cancelReason;
+
+    public OrderItem(Product product, int quantity, OrderStatus orderStatus) {
+        product.validateQuantity(quantity);
+
         this.product = product;
         this.quantity = quantity;
+        this.orderStatus = orderStatus;
+
+        // 상품 주문 정보 생성 시, 상품의 재고수량을 감소시킨다.
+        removeQuantity();
+    }
+
+    public static OrderItem createOrderItem(Product product, int quantity) {
+        return new OrderItem(product, quantity, OrderStatus.READY);
     }
 
     public void ordered(Order order){
@@ -64,4 +83,17 @@ public class OrderItem extends BaseEntity {
     public void removeQuantity() {
         product.removeCount(quantity);
     }
+
+    public void cancel(LocalDateTime cancelDate, String cancelReason) {
+        if(OrderStatus.READY != this.orderStatus) {
+            throw new IllegalArgumentException("준비 중인 주문 만 취소가 가능합니다.");
+        }
+        this.orderStatus = OrderStatus.CANCEL;
+        this.cancelDate = cancelDate;
+        this.cancelReason = cancelReason;
+
+        // 취소 처리 하면 상품의 재고를 올린다.
+        increaseQuantity();
+    }
+
 }

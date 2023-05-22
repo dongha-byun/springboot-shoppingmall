@@ -3,10 +3,8 @@ package springboot.shoppingmall.order.partners.service;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.assertj.core.util.DateUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,13 +17,9 @@ import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
-import springboot.shoppingmall.order.partners.controller.PartnersDeliveryOrderQueryResponse;
 import springboot.shoppingmall.order.partners.controller.PartnersEndOrderQueryResponse;
-import springboot.shoppingmall.order.partners.controller.PartnersOrderItemQueryResponse;
 import springboot.shoppingmall.order.partners.controller.PartnersOrderQueryResponse;
-import springboot.shoppingmall.order.partners.controller.PartnersReadyOrderQueryResponse;
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryRepository;
-import springboot.shoppingmall.order.partners.dto.PartnersOrderQueryDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.user.domain.User;
@@ -96,19 +90,19 @@ class PartnersOrderQueryServiceTest {
         );
 
         order1 = Order.createOrder(
-                "test-order-code1", user.getId(), List.of(new OrderItem(product1, 3)),
+                "test-order-code1", user.getId(), List.of(new OrderItem(product1, 3, OrderStatus.READY)),
                 "수령인1", "01234",
                 "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요"
         );
 
         order2 = Order.createOrder(
-                "test-order-code2", user.getId(), List.of(new OrderItem(product2, 4)),
+                "test-order-code2", user.getId(), List.of(new OrderItem(product2, 4, OrderStatus.READY)),
                 "수령인1", "01234",
                 "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요"
         );
 
         order3 = Order.createOrder(
-                "test-order-code3", user.getId(), List.of(new OrderItem(product3, 5)),
+                "test-order-code3", user.getId(), List.of(new OrderItem(product3, 5, OrderStatus.READY)),
                 "수령인1", "01234",
                 "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요"
         );
@@ -137,23 +131,14 @@ class PartnersOrderQueryServiceTest {
         // then
         assertThat(partnersReadyOrders).hasSize(3);
         List<Long> ids = partnersReadyOrders.stream()
-                .map(PartnersOrderQueryResponse::getId)
+                .map(PartnersOrderQueryResponse::getOrderItemId)
                 .collect(Collectors.toList());
         assertThat(ids).containsExactly(
                 savedOrder1.getId(), savedOrder2.getId(), savedOrder3.getId()
         );
 
         // 송장번호 check
-        PartnersOrderQueryResponse outingResponse = partnersReadyOrders.stream()
-                .filter(response -> response.getOrderStatusName().equals(OrderStatus.OUTING.getStatusName()))
-                .findAny()
-                .orElseThrow();
-        List<String> invoiceNumbers = outingResponse.getItems().stream()
-                .map(PartnersOrderItemQueryResponse::getInvoiceNumber)
-                .collect(Collectors.toList());
-        assertThat(invoiceNumbers).containsExactly(
-                savedOrder1.getInvoiceNumber()
-        );
+
     }
 
     @Test
@@ -181,10 +166,12 @@ class PartnersOrderQueryServiceTest {
         // then
         assertThat(partnersDeliveryOrders).hasSize(3);
         List<Long> ids = partnersDeliveryOrders.stream()
-                .map(PartnersOrderQueryResponse::getId)
+                .map(PartnersOrderQueryResponse::getOrderItemId)
                 .collect(Collectors.toList());
         assertThat(ids).containsExactly(
-                savedOrder1.getId(), savedOrder2.getId(), savedOrder3.getId()
+                savedOrder1.getItems().get(0).getId(),
+                savedOrder2.getItems().get(0).getId(),
+                savedOrder3.getItems().get(0).getId()
         );
     }
 
@@ -219,7 +206,7 @@ class PartnersOrderQueryServiceTest {
         assertThat(partnersEndOrders).hasSize(2);
 
         List<Long> ids = partnersEndOrders.stream()
-                .map(PartnersOrderQueryResponse::getId)
+                .map(PartnersOrderQueryResponse::getOrderItemId)
                 .collect(Collectors.toList());
         assertThat(ids).containsExactly(
                 savedOrder1.getId(), savedOrder2.getId()

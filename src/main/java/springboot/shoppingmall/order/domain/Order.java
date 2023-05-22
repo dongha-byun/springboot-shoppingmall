@@ -212,4 +212,13 @@ public class Order extends BaseEntity {
                 OrderItem::removeQuantity
         );
     }
+
+    public OrderItem findOrderItem(Long orderItemId) {
+        return this.items.stream()
+                .filter(orderItem -> orderItem.getId().equals(orderItemId))
+                .findAny()
+                .orElseThrow(
+                        () -> new IllegalArgumentException("주문 상품 정보가 존재하지 않습니다.")
+                );
+    }
 }

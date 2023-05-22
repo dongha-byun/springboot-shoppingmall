@@ -88,19 +88,22 @@ class PartnersOrderQueryRepositoryTest {
         );
 
         order1 = Order.createOrder(
-                "test-order-code1", user.getId(), List.of(new OrderItem(product1, 3)),
+                "test-order-code1", user.getId(),
+                List.of(new OrderItem(product1, 3, OrderStatus.READY)),
                 "수령인1", "01234",
                 "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요"
         );
 
         order2 = Order.createOrder(
-                "test-order-code2", user.getId(), List.of(new OrderItem(product2, 4)),
+                "test-order-code2", user.getId(),
+                List.of(new OrderItem(product2, 4, OrderStatus.READY)),
                 "수령인1", "01234",
                 "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요"
         );
 
         order3 = Order.createOrder(
-                "test-order-code3", user.getId(), List.of(new OrderItem(product3, 5)),
+                "test-order-code3", user.getId(),
+                List.of(new OrderItem(product3, 5, OrderStatus.READY)),
                 "수령인1", "01234",
                 "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요"
         );
@@ -128,10 +131,12 @@ class PartnersOrderQueryRepositoryTest {
         assertThat(readyOrders).hasSize(3);
 
         List<Long> ids = readyOrders.stream()
-                .map(PartnersReadyOrderQueryDto::getId)
+                .map(PartnersReadyOrderQueryDto::getOrderItemId)
                 .collect(Collectors.toList());
         assertThat(ids).containsExactly(
-                savedOrder1.getId(), savedOrder2.getId(), savedOrder3.getId()
+                savedOrder1.getItems().get(0).getId(),
+                savedOrder2.getItems().get(0).getId(),
+                savedOrder3.getItems().get(0).getId()
         );
 
         List<String> userNames = readyOrders.stream()
