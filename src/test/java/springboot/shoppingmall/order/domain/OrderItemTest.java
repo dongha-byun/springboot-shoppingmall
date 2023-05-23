@@ -141,13 +141,16 @@ class OrderItemTest {
     @DisplayName("4-1. 상품 배송완료 - 상품의 배송이 완료됨을 처리한다.")
     void delivery_end_test() {
         // given
-        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.DELIVERY);
+        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.OUTING);
+        LocalDateTime deliveryStartDate =
+                LocalDateTime.of(2023, 5, 10, 15, 31, 11);
+        orderItem.delivery(deliveryStartDate);
 
         // when
         LocalDateTime deliveryCompleteDate =
                 LocalDateTime.of(2023, 5, 20, 15, 31, 11);
         String deliveryPlace = "현관문 앞";
-        orderItem.deliveryEnd(deliveryCompleteDate, deliveryPlace);
+        orderItem.deliveryComplete(deliveryCompleteDate, deliveryPlace);
 
         // then
         assertThat(orderItem.getOrderStatus()).isEqualTo(OrderStatus.DELIVERY_END);
@@ -169,7 +172,7 @@ class OrderItemTest {
                 LocalDateTime.of(2023, 5, 10, 15, 31, 11);
         String deliveryPlace = "현관문 앞";
         assertThatIllegalArgumentException().isThrownBy(
-                () -> orderItem.deliveryEnd(deliveryCompleteDate, deliveryPlace)
+                () -> orderItem.deliveryComplete(deliveryCompleteDate, deliveryPlace)
         );
     }
 
@@ -340,7 +343,7 @@ class OrderItemTest {
     @DisplayName("9-1. 환불완료 - 상품 결제 금액 만큼 환불을 완료한다.")
     void refund_end_test() {
         // given
-        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.REFUND);
+        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.CHECKING);
 
         // when
         orderItem.refundEnd();

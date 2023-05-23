@@ -56,14 +56,21 @@ public class OrderItem extends BaseEntity {
     private String exchangeReason;
 
     public OrderItem(Product product, int quantity, OrderStatus orderStatus) {
-        product.validateQuantity(quantity);
-
         this.product = product;
         this.quantity = quantity;
         this.orderStatus = orderStatus;
 
+        validateQuantity(quantity);
+
         // 상품 주문 정보 생성 시, 상품의 재고수량을 감소시킨다.
         removeQuantity();
+    }
+
+    private void validateQuantity(int quantity) {
+        if(quantity <= 0) {
+            throw new IllegalArgumentException("상품은 1개 이상 주문해야 합니다.");
+        }
+        product.validateQuantity(quantity);
     }
 
     public static OrderItem createOrderItem(Product product, int quantity) {
@@ -87,6 +94,9 @@ public class OrderItem extends BaseEntity {
     }
 
     public void cancel(LocalDateTime cancelDate, String cancelReason) {
+        if(!StringUtils.hasText(cancelReason)) {
+            throw new IllegalArgumentException("취소 사유를 입력해주세요.");
+        }
         if(OrderStatus.READY != this.orderStatus) {
             throw new IllegalArgumentException("준비 중인 주문 만 취소가 가능합니다.");
         }
@@ -118,8 +128,16 @@ public class OrderItem extends BaseEntity {
         this.deliveryStartDate = deliveryStartDate;
     }
 
-    public void deliveryEnd(LocalDateTime deliveryCompleteDate, String deliveryPlace) {
-
+    public void deliveryComplete(LocalDateTime deliveryCompleteDate, String deliveryPlace) {
+        if(this.deliveryStartDate.isAfter(deliveryCompleteDate)) {
+            throw new IllegalArgumentException("배송 종료시간이 배송 시작시간보다 나중일 수 없습니다.");
+        }
+        if(OrderStatus.DELIVERY != this.orderStatus) {
+            throw new IllegalArgumentException("배송중인 상품만 배송완료 처리가 가능합니다.");
+        }
+        this.deliveryCompleteDate = deliveryCompleteDate;
+        this.deliveryPlace = deliveryPlace;
+        this.orderStatus = OrderStatus.DELIVERY_END;
     }
 
     public void finish() {
