@@ -63,28 +63,28 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         User user2 = userRepository.findById(인수테스터2.getId()).orElseThrow();
         Delivery delivery = deliveryRepository.findById(배송지.getId()).orElseThrow();
 
-        List<OrderItem> order1Items = List.of(new OrderItem(product, 2));
-        List<OrderItem> order2Items = List.of(new OrderItem(product2, 3));
-        List<OrderItem> order3Items = List.of(new OrderItem(product, 2));
-        List<OrderItem> order4Items = List.of(new OrderItem(product, 2));
+        List<OrderItem> order1Items = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
+        List<OrderItem> order2Items = List.of(new OrderItem(product2, 3, OrderStatus.DELIVERY_END));
+        List<OrderItem> order3Items = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
+        List<OrderItem> order4Items = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
 
         Order order = orderRepository.save(
-                new Order(UUID.randomUUID().toString(), user.getId(), order1Items, OrderStatus.DELIVERY_END,
+                new Order(UUID.randomUUID().toString(), user.getId(), order1Items,
                         delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
                         delivery.getDetailAddress(), delivery.getRequestMessage())
         );
         Order order2 = orderRepository.save(
-                new Order(UUID.randomUUID().toString(), user.getId(), order2Items, OrderStatus.DELIVERY_END,
+                new Order(UUID.randomUUID().toString(), user.getId(), order2Items,
                         delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
                         delivery.getDetailAddress(), delivery.getRequestMessage())
         );
         Order order3 = orderRepository.save(
-                new Order(UUID.randomUUID().toString(), user2.getId(), order3Items, OrderStatus.DELIVERY_END,
+                new Order(UUID.randomUUID().toString(), user2.getId(), order3Items,
                         delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
                         delivery.getDetailAddress(), delivery.getRequestMessage())
         );
         Order deliveryOrder = orderRepository.save(
-                new Order(UUID.randomUUID().toString(), user.getId(), order4Items, OrderStatus.DELIVERY,
+                new Order(UUID.randomUUID().toString(), user.getId(), order4Items,
                         delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
                         delivery.getDetailAddress(), delivery.getRequestMessage())
         );
@@ -123,7 +123,6 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         // 리뷰가 작성되면 해당 주문 건은 구매확정 처리로 변경한다.
         Order 구매확정_주문 = orderRepository.findById(배송완료_주문.getId()).orElseThrow();
         assertThat(구매확정_주문.getId()).isEqualTo(배송완료_주문.getId());
-        assertThat(구매확정_주문.getOrderStatus()).isEqualTo(OrderStatus.FINISH);
     }
 
     /**

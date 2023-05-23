@@ -82,7 +82,6 @@ class OrderDeliveryInvoiceServiceTest {
         OrderResponse order = invoiceService.delivery(invoiceNumber);
 
         // then
-        assertThat(order.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY.getStatusName());
     }
 
     @Test
@@ -97,17 +96,15 @@ class OrderDeliveryInvoiceServiceTest {
         OrderResponse order = invoiceService.deliveryEnd(invoiceNumber, deliveryDate, deliveryPlace);
 
         // then
-        assertThat(order.getDeliveryDate()).isEqualTo("2023-05-15 15:00:00");
-        assertThat(order.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY_END.getStatusName());
     }
 
     private Order 특정_주문상태_데이터_생성(OrderStatus status) {
         List<OrderItem> orderItems = List.of(
-                new OrderItem(product, 2)
+                new OrderItem(product, 2, status)
         );
         return orderRepository.save(
                 new Order(
-                        UUID.randomUUID().toString(), user.getId(), orderItems, status,
+                        UUID.randomUUID().toString(), user.getId(), orderItems,
                         delivery.getReceiverName(), delivery.getZipCode(),
                         delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
                 )

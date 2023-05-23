@@ -81,26 +81,26 @@ class OrderHistoryRepositoryTest {
                         "test-product-code")
         );
 
-        List<OrderItem> orderItems = List.of(new OrderItem(product, 2));
+        List<OrderItem> orderItems = List.of(new OrderItem(product, 2, OrderStatus.READY));
 
         order1 = new Order(
                 UUID.randomUUID().toString(), user.getId(), orderItems,
                 LocalDateTime.of(2022, 11, 5, 12, 0, 0),
-                OrderStatus.READY, delivery.getReceiverName(), delivery.getZipCode(),
+                delivery.getReceiverName(), delivery.getZipCode(),
                 delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
         );
 
         order2 = new Order(
                 UUID.randomUUID().toString(), user.getId(), orderItems,
                 LocalDateTime.of(2023, 2, 5, 12, 0, 0),
-                OrderStatus.READY, delivery.getReceiverName(), delivery.getZipCode(),
+                delivery.getReceiverName(), delivery.getZipCode(),
                 delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
         );
 
         order3 = new Order(
                 UUID.randomUUID().toString(), user.getId(), orderItems,
                 LocalDateTime.of(2023, 5, 5, 12, 0, 0),
-                OrderStatus.READY, delivery.getReceiverName(), delivery.getZipCode(),
+                delivery.getReceiverName(), delivery.getZipCode(),
                 delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
         );
     }

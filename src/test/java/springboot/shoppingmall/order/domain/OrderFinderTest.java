@@ -41,6 +41,8 @@ class OrderFinderTest {
     Product product;
     Delivery delivery;
 
+    List<OrderItem> orderItems;
+
     @BeforeEach
     void beforeEach() {
         orderFinder = new OrderFinder(orderRepository);
@@ -57,17 +59,18 @@ class OrderFinderTest {
                 )
         );
         delivery = deliveryRepository.save(new Delivery("닉네임", "수령인", "10010", "수령지주소", "수령지상세주소", "요구사항", user));
+
+        orderItems = List.of(
+                new OrderItem(product, 20, OrderStatus.READY)
+        );
     }
 
     @Test
     @DisplayName("id로 주문 조회 테스트")
     void findOrderById() {
         // given
-        List<OrderItem> orderItems = List.of(
-                new OrderItem(product, 20)
-        );
         Order order = orderRepository.save(
-                new Order(UUID.randomUUID().toString(), user.getId(), orderItems, OrderStatus.READY,
+                new Order(UUID.randomUUID().toString(), user.getId(), orderItems,
                         delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
                         delivery.getDetailAddress(), delivery.getRequestMessage()
                 )
@@ -85,12 +88,9 @@ class OrderFinderTest {
     void findOrderByInvoiceNumber() {
         // given
         String invoiceNumber = "invoiceNumber1";
-        List<OrderItem> orderItems = List.of(
-                new OrderItem(product, 20)
-        );
         Order order = orderRepository.save(
                 new Order(
-                        UUID.randomUUID().toString(), user.getId(), orderItems, OrderStatus.READY,
+                        UUID.randomUUID().toString(), user.getId(), orderItems,
                         delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
                         delivery.getDetailAddress(), delivery.getRequestMessage()
                 )

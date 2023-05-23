@@ -19,6 +19,7 @@ public class OrderTest {
     Product product2;
     Delivery delivery;
 
+    List<OrderItem> orderItems;
     @BeforeEach
     void beforeEach() {
         product1 = new Product(
@@ -36,140 +37,9 @@ public class OrderTest {
         delivery = Delivery.builder()
                 .nickName("수령지 1").receiverName("수령인 1").zipCode("10010")
                 .address("서울시 동작구 사당동").detailAddress("101호").requestMessage("도착 시 연락주세요.").build();
-    }
-
-    @Test
-    @DisplayName("1. 준비중 주문 - 주문이 처음 생성되면 준비중 상태로 생성된다.")
-    void ready_order() {
-        // given
-        List<OrderItem> orderItems = Arrays.asList(
-                new OrderItem(product1, 2), new OrderItem(product2, 2)
-        );
-
-        // when
-        Order order = Order.createOrder("ready-order-code", 1L, orderItems,
-                delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
-                delivery.getDetailAddress(), delivery.getRequestMessage());
-
-
-        // then
-        assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.READY);
-    }
-
-    @Test
-    @DisplayName("2. 상품 출고 - 준비중인 주문이 출고중 상태가 된다.")
-    void outing_order() {
-        // given
-        List<OrderItem> orderItems = Arrays.asList(
-                new OrderItem(product1, 2), new OrderItem(product2, 2)
-        );
-        Order order = Order.createOrder("outing-order-code", 1L, orderItems,
-                delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
-                delivery.getDetailAddress(), delivery.getRequestMessage());
-
-        // when
-        order.outing();
-
-        // then
-        assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.OUTING);
-
-    }
-
-    @Test
-    @DisplayName("3. 구매확정 - 배송완료된 주문을 구매확정 처리한다.")
-    void finish_order() {
-        // given
-        List<OrderItem> orderItems = Arrays.asList(
-                new OrderItem(product1, 2), new OrderItem(product2, 2)
-        );
-        Order order = new Order("finish-order-code", 1L, orderItems, OrderStatus.DELIVERY_END,
-                delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
-                delivery.getDetailAddress(), delivery.getRequestMessage());
-
-        // when
-        order.finish();
-
-        // then
-        assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.FINISH);
-    }
-
-    @Test
-    @DisplayName("4. 환불신청 - 배송이 완료된 주문에 대해 환불을 신청할 수 있다.")
-    void refund_order() {
-        // given
-        List<OrderItem> orderItems = Arrays.asList(
-                new OrderItem(product1, 2), new OrderItem(product2, 2)
-        );
-        Order order = new Order("refund-order-code", 1L, orderItems, OrderStatus.DELIVERY_END,
-                delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
-                delivery.getDetailAddress(), delivery.getRequestMessage());
-        String refundReason = "환불 요청 합니다. 배송이 잘못왔어요.";
-        LocalDateTime refundDate = LocalDateTime.of(2023, 5, 2, 12, 0, 0);
-
-        // when
-        order.refund(refundDate, refundReason);
-
-        // then
-        assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.REFUND);
-        assertThat(order.getRefundReason()).isEqualTo(refundReason);
-    }
-
-    @Test
-    @DisplayName("4-1. 환불신청 오류 - 환불사유가 없는 경우, 환불신청이 불가하다.")
-    void refund_order_fail() {
-        // given
-        List<OrderItem> orderItems = Arrays.asList(
-                new OrderItem(product1, 2), new OrderItem(product2, 2)
-        );
-        Order order = new Order("refund-order-code", 1L, orderItems, OrderStatus.DELIVERY_END,
-                delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
-                delivery.getDetailAddress(), delivery.getRequestMessage());
-        String emptyReason = "";
-        LocalDateTime refundDate = LocalDateTime.of(2023, 5, 2, 12, 0, 0);
-
-        // when & then
-        assertThatIllegalArgumentException().isThrownBy(
-                () -> order.refund(refundDate, emptyReason)
-        );
-    }
-
-    @Test
-    @DisplayName("5. 교환신청 - 배송이 완료된 주문에 대해 교환을 신청할 수 있다.")
-    void exchange_order() {
-        // given
-        List<OrderItem> orderItems = Arrays.asList(
-                new OrderItem(product1, 2), new OrderItem(product2, 2)
-        );
-        Order order = new Order("exchange-order-code", 1L, orderItems, OrderStatus.DELIVERY_END,
-                delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
-                delivery.getDetailAddress(), delivery.getRequestMessage());
-        LocalDateTime exchangeDate = LocalDateTime.of(2023, 5, 1, 0, 0, 0);
-        String exchangeReason = "교환 신청 합니다. 사이즈가 안맞아요.";
-
-        // when
-        order.exchange(exchangeDate, exchangeReason);
-
-        // then
-        assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.EXCHANGE);
-        assertThat(order.getExchangeReason()).isEqualTo(exchangeReason);
-    }
-
-    @Test
-    @DisplayName("5-1. 교환신청 오류 - 교환사유가 없는 경우, 교환신청이 불가하다.")
-    void exchange_order_fail() {
-        // given
-        List<OrderItem> orderItems = Arrays.asList(
-                new OrderItem(product1, 2), new OrderItem(product2, 2)
-        );
-        Order order = new Order("exchange-order-code", 1L, orderItems, OrderStatus.DELIVERY_END,
-                delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
-                delivery.getDetailAddress(), delivery.getRequestMessage());
-        LocalDateTime exchangeDate = LocalDateTime.of(2023, 5, 1, 0, 0, 0);
-        String emptyReason = "";
-
-        // when & then
-        assertThatIllegalArgumentException().isThrownBy(
-                () -> order.exchange(exchangeDate, emptyReason)
+        orderItems = Arrays.asList(
+                new OrderItem(product1, 2, OrderStatus.READY),
+                new OrderItem(product2, 2, OrderStatus.READY)
         );
     }
 
@@ -178,9 +48,6 @@ public class OrderTest {
     void auto_calculate_total_price() {
         // given
         int quantity = 2;
-        List<OrderItem> orderItems = Arrays.asList(
-                new OrderItem(product1, quantity), new OrderItem(product2, quantity)
-        );
         Order order = Order.createOrder("outing-order-code", 1L, orderItems,
                 delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
                 delivery.getDetailAddress(), delivery.getRequestMessage());

@@ -60,11 +60,11 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         User user = userRepository.findById(인수테스터1.getId()).orElseThrow();
         Delivery delivery = deliveryRepository.findById(배송지.getId()).orElseThrow();
         List<OrderItem> orderItems = Arrays.asList(
-                new OrderItem(product1, 2, OrderStatus.READY),
-                new OrderItem(product2, 3, OrderStatus.READY)
+                new OrderItem(product1, 2, OrderStatus.DELIVERY_END),
+                new OrderItem(product2, 3, OrderStatus.DELIVERY_END)
         );
         Order order = orderRepository.save(
-                new Order("test-order-code", user.getId(), orderItems, OrderStatus.DELIVERY_END,
+                new Order("test-order-code", user.getId(), orderItems,
                         delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
                         delivery.getDetailAddress(), delivery.getRequestMessage())
         );
@@ -170,7 +170,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
     void 배송_완료_테스트() {
         // given
         OrderResponse 준비중_주문 = 주문_생성_요청(상품, 3, 3000, 배송지).as(OrderResponse.class);
-        assertThat(준비중_주문.getOrderStatusName()).isEqualTo(OrderStatus.READY.getStatusName());
+        assertThat(준비중_주문.getItems().get(0).getOrderStatusName()).isEqualTo(OrderStatus.READY.getStatusName());
 
         // when : 준비 중인 주문을 출고중으로 변경하면
         ExtractableResponse<Response> 준비중_에서_출고중_변경_결과 = 주문_출고중_요청(준비중_주문);
@@ -178,7 +178,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
 
         // then : 주문 상태가 출고중으로 변경되고
         OrderResponse 출고중_주문 = 준비중_에서_출고중_변경_결과.as(OrderResponse.class);
-        assertThat(출고중_주문.getOrderStatusName()).isEqualTo(OrderStatus.OUTING.getStatusName());
+        assertThat(출고중_주문.getItems().get(0).getOrderStatusName()).isEqualTo(OrderStatus.OUTING.getStatusName());
 
         // when : 출고중인 주문 상태를 주문 취소로 변경하면
         String cancelReason = "주문 취소 합니다.";
@@ -194,7 +194,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
 
         // then : 주문 상태가 배송중으로 변경되고
         OrderResponse 배송중_주문 = 출고중_에서_배송중_변경_결과.as(OrderResponse.class);
-        assertThat(배송중_주문.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY.getStatusName());
+        assertThat(배송중_주문.getItems().get(0).getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY.getStatusName());
 
         // when: 배송이 완료되어 배송완료 처리를 하면
         LocalDateTime deliveryDate = LocalDateTime.of(2023, 5, 5, 15, 30, 30);
@@ -207,7 +207,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
 
         // then: 주문 상태가 배송완료로 변경되고
         OrderResponse 배송완료_주문 = 배송중_에서_배송완료_변경_결과.as(OrderResponse.class);
-        assertThat(배송완료_주문.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY_END.getStatusName());
+        assertThat(배송완료_주문.getItems().get(0).getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY_END.getStatusName());
     }
 
     /**
@@ -235,7 +235,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
 
         // then: 주문 상태가 구매확정으로 변경되고
         OrderResponse 구매확정_주문 = 배송완료_에서_구매확정_변경_결과.as(OrderResponse.class);
-        assertThat(구매확정_주문.getOrderStatusName()).isEqualTo(OrderStatus.FINISH.getStatusName());
+        assertThat(구매확정_주문.getItems().get(0).getOrderStatusName()).isEqualTo(OrderStatus.FINISH.getStatusName());
 
         // when: 구매확정된 주문을 환불처리를 시도하면
         ExtractableResponse<Response> 구매확정_에서_환불요청_변경_결과 = 주문_환불_요청(구매확정_주문, "환불 신청 합니다.");
@@ -272,7 +272,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
 
         // then: 주문이 환불처리 된다.
         OrderResponse 교환된_주문 = 배송완료_에서_교환요청_변경_결과.as(OrderResponse.class);
-        assertThat(교환된_주문.getOrderStatusName()).isEqualTo(OrderStatus.EXCHANGE.getStatusName());
+        assertThat(교환된_주문.getItems().get(0).getOrderStatusName()).isEqualTo(OrderStatus.EXCHANGE.getStatusName());
     }
 
     /**
@@ -296,7 +296,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
 
         // then: 주문이 환불처리 된다.
         OrderResponse 환불된_주문 = 배송완료_에서_환불요청_변경_결과.as(OrderResponse.class);
-        assertThat(환불된_주문.getOrderStatusName()).isEqualTo(OrderStatus.REFUND.getStatusName());
+        assertThat(환불된_주문.getItems().get(0).getOrderStatusName()).isEqualTo(OrderStatus.REFUND.getStatusName());
     }
 
     /**

@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.BaseEntity;
+import springboot.shoppingmall.order.exception.OverQuantityException;
 
 @Getter
 @Entity
@@ -154,5 +155,11 @@ public class Product extends BaseEntity {
 
     public void increaseCount(int quantity) {
         this.count += quantity;
+    }
+
+    public void validateQuantity(int quantity) {
+        if(this.count < quantity) {
+            throw new OverQuantityException(this.name + " 상품의 재고수량이 초과하여 주문이 불가합니다.");
+        }
     }
 }

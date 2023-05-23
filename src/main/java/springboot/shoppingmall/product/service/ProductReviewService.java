@@ -69,7 +69,7 @@ public class ProductReviewService {
 
         // 리뷰 작성 시, 해당 주문은 구매확정 처리가 된다.
         Order order = orderFinder.findOrderById(orderId);
-        order.finish();
+        //order.finish();
 
         return ProductUserReviewResponse.of(savedReview);
     }

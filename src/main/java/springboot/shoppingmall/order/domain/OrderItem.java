@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 import springboot.shoppingmall.BaseEntity;
 import springboot.shoppingmall.product.domain.Product;
 
@@ -38,12 +39,21 @@ public class OrderItem extends BaseEntity {
 
     @Column(unique = true)
     private String invoiceNumber;
+    private LocalDateTime deliveryStartDate;
+    private LocalDateTime deliveryCompleteDate;
+    private String deliveryPlace;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
     private LocalDateTime cancelDate;
     private String cancelReason;
+
+    private LocalDateTime refundDate;
+    private String refundReason;
+
+    private LocalDateTime exchangeDate;
+    private String exchangeReason;
 
     public OrderItem(Product product, int quantity, OrderStatus orderStatus) {
         product.validateQuantity(quantity);
@@ -64,16 +74,8 @@ public class OrderItem extends BaseEntity {
         this.order = order;
     }
 
-    public void setInvoiceNumber(String invoiceNumber) {
-        this.invoiceNumber = invoiceNumber;
-    }
-
     public int totalPrice() {
         return product.getPrice() * quantity;
-    }
-
-    public void increaseSalesVolume() {
-        product.increaseSalesVolume(quantity);
     }
 
     public void increaseQuantity() {
@@ -96,4 +98,82 @@ public class OrderItem extends BaseEntity {
         increaseQuantity();
     }
 
+    public void outing(String invoiceNumber) {
+        if(!StringUtils.hasText(invoiceNumber)) {
+            throw new IllegalArgumentException("송장번호가 존재하지 않아, 출고중 처리가 불가합니다.");
+        }
+        if(OrderStatus.READY != this.orderStatus) {
+            throw new IllegalArgumentException("준비 중인 상품만 출고중 처리가 가능합니다.");
+        }
+
+        this.orderStatus = OrderStatus.OUTING;
+        this.invoiceNumber = invoiceNumber;
+    }
+
+    public void delivery(LocalDateTime deliveryStartDate) {
+        if(OrderStatus.OUTING != this.orderStatus) {
+            throw new IllegalArgumentException("출고된 상품만 배송중 처리가 가능합니다.");
+        }
+        this.orderStatus = OrderStatus.DELIVERY;
+        this.deliveryStartDate = deliveryStartDate;
+    }
+
+    public void deliveryEnd(LocalDateTime deliveryCompleteDate, String deliveryPlace) {
+
+    }
+
+    public void finish() {
+        if(OrderStatus.DELIVERY_END != this.orderStatus) {
+            throw new IllegalArgumentException("배송이 완료된 주문 만 구매확정이 가능합니다.");
+        }
+        this.orderStatus = OrderStatus.FINISH;
+
+        // 구매 확정 시, 상품의 판매수량이 증가한다.
+        product.increaseSalesVolume(this.quantity);
+    }
+
+    public void refund(LocalDateTime refundDate, String refundReason) {
+        if(!StringUtils.hasText(refundReason)) {
+            throw new IllegalArgumentException("환불 사유는 필수입니다.");
+        }
+
+        if(this.orderStatus != OrderStatus.DELIVERY_END) {
+            throw new IllegalArgumentException("배송이 완료된 주문만 환불 신청이 가능합니다.");
+        }
+
+        this.orderStatus = OrderStatus.REFUND;
+        this.refundDate = refundDate;
+        this.refundReason = refundReason;
+    }
+
+    public void exchange(LocalDateTime exchangeDate, String exchangeReason) {
+        if(!StringUtils.hasText(exchangeReason)) {
+            throw new IllegalArgumentException("교환 사유는 필수입니다.");
+        }
+
+        if(this.orderStatus != OrderStatus.DELIVERY_END) {
+            throw new IllegalArgumentException("배송이 완료된 주문만 교환 신청이 가능합니다.");
+        }
+        this.orderStatus = OrderStatus.EXCHANGE;
+        this.exchangeDate = exchangeDate;
+        this.exchangeReason = exchangeReason;
+    }
+
+    public void checking() {
+        if((OrderStatus.EXCHANGE != this.orderStatus) &&
+                (OrderStatus.REFUND != this.orderStatus)) {
+            throw new IllegalArgumentException("교환/환불 이 요청된 주문 상품만 검수처리 가능합니다.");
+        }
+        this.orderStatus = OrderStatus.CHECKING;
+    }
+
+    public void refundEnd() {
+        if(OrderStatus.CHECKING != this.orderStatus) {
+            throw new IllegalArgumentException("환불상품이 아직 검수중이므로 환불 완료 처리가 불가합니다.");
+        }
+        this.orderStatus = OrderStatus.REFUND_END;
+
+        // 환불이 완료되면, 상품의 재고수량을 되돌린다.
+        increaseQuantity();
+    }
 }

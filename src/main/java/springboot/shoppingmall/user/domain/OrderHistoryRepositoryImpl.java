@@ -1,6 +1,7 @@
 package springboot.shoppingmall.user.domain;
 
 import static springboot.shoppingmall.order.domain.QOrder.*;
+import static springboot.shoppingmall.order.domain.QOrderItem.*;
 import static springboot.shoppingmall.pay.domain.QPayHistory.*;
 import static springboot.shoppingmall.providers.domain.QProvider.*;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import springboot.shoppingmall.order.domain.QOrderItem;
 import springboot.shoppingmall.pay.domain.QPayHistory;
 import springboot.shoppingmall.providers.domain.QProvider;
 import springboot.shoppingmall.user.dto.OrderHistoryDto;
@@ -24,18 +26,18 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository{
     public List<OrderHistoryDto> queryOrderHistory(User user, LocalDateTime startDate, LocalDateTime endDate) {
         return jpaQueryFactory.select(
                         Projections.constructor(OrderHistoryDto.class,
-                                order.id, order.orderDate, order.orderStatus,
-                                order.product.id, order.product.name, payHistory.tid, order.totalPrice,
+                                orderItem.order.id, orderItem.order.orderDate, orderItem.orderStatus,
+                                orderItem.product.id, orderItem.product.name, payHistory.tid, order.totalPrice,
                                 provider.id, provider.name)
                 )
-                .from(order)
-                .join(provider).on(provider.id.eq(order.product.partnerId))
-                .join(payHistory).on(payHistory.orderId.eq(order.id))
+                .from(orderItem)
+                .join(provider).on(provider.id.eq(orderItem.product.partnerId))
+                .join(payHistory).on(payHistory.orderId.eq(orderItem.order.id))
                 .where(
-                        order.userId.eq(user.getId())
-                                .and(order.orderDate.between(startDate, endDate))
+                        orderItem.order.userId.eq(user.getId())
+                                .and(orderItem.order.orderDate.between(startDate, endDate))
                 )
-                .orderBy(order.orderDate.desc())
+                .orderBy(orderItem.order.orderDate.desc())
                 .fetch();
     }
 }

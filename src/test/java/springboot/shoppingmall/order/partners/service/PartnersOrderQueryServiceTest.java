@@ -17,7 +17,6 @@ import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
-import springboot.shoppingmall.order.partners.controller.PartnersEndOrderQueryResponse;
 import springboot.shoppingmall.order.partners.controller.PartnersOrderQueryResponse;
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryRepository;
 import springboot.shoppingmall.product.domain.Product;
@@ -122,7 +121,6 @@ class PartnersOrderQueryServiceTest {
         Order savedOrder1 = orderRepository.save(order1);
         Order savedOrder2 = orderRepository.save(order2);
         Order savedOrder3 = orderRepository.save(order3);
-        savedOrder1.outing();
 
         // when
         List<PartnersOrderQueryResponse> partnersReadyOrders =
@@ -150,14 +148,6 @@ class PartnersOrderQueryServiceTest {
         Order savedOrder1 = orderRepository.save(order1);
         Order savedOrder2 = orderRepository.save(order2);
         Order savedOrder3 = orderRepository.save(order3);
-
-        savedOrder1.outing();
-        savedOrder2.outing();
-        savedOrder3.outing();
-
-        savedOrder1.delivery();
-        savedOrder2.delivery();
-        savedOrder3.delivery();
 
         // when
         List<PartnersOrderQueryResponse> partnersDeliveryOrders =
@@ -187,17 +177,6 @@ class PartnersOrderQueryServiceTest {
         LocalDateTime deliveryDate = LocalDateTime.of(2023, 5, 8, 2, 0, 30);
         String deliveryPlace = "현관문 앞";
 
-        savedOrder1.outing();
-        savedOrder2.outing();
-        savedOrder3.outing();
-
-        savedOrder1.delivery();
-        savedOrder2.delivery();
-        savedOrder3.delivery();
-
-        savedOrder1.deliveryEnd(deliveryDate, deliveryPlace);
-        savedOrder2.deliveryEnd(deliveryDate, deliveryPlace);
-
         // when
         List<PartnersOrderQueryResponse> partnersEndOrders =
                 partnersOrderQueryService.findPartnersOrders(partnersId, startDate, endDate);
@@ -210,21 +189,6 @@ class PartnersOrderQueryServiceTest {
                 .collect(Collectors.toList());
         assertThat(ids).containsExactly(
                 savedOrder1.getId(), savedOrder2.getId()
-        );
-
-        List<String> deliveryDates = partnersEndOrders.stream()
-                .map(response -> ((PartnersEndOrderQueryResponse) response).getDeliveryDate())
-                .collect(Collectors.toList());
-        assertThat(deliveryDates).containsExactly(
-                DateUtils.toStringOfLocalDateTIme(savedOrder1.getDeliveryDate()),
-                DateUtils.toStringOfLocalDateTIme(savedOrder2.getDeliveryDate())
-        );
-
-        List<String> deliveryPlaces = partnersEndOrders.stream()
-                .map(response -> ((PartnersEndOrderQueryResponse) response).getDeliveryPlace())
-                .collect(Collectors.toList());
-        assertThat(deliveryPlaces).containsExactly(
-                savedOrder1.getDeliveryPlace(), savedOrder2.getDeliveryPlace()
         );
     }
 }

@@ -34,7 +34,7 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
                                 orderItem.order.totalPrice, user.userName, user.telNo.telNo,
-                                orderItem.order.orderStatus, orderItem.order.receiverName,
+                                orderItem.orderStatus, orderItem.order.receiverName,
                                 orderItem.order.address, orderItem.order.detailAddress,
                                 orderItem.order.requestMessage))
                 .from(orderItem)
@@ -56,7 +56,7 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
                                 orderItem.order.totalPrice, user.userName, user.telNo.telNo,
-                                orderItem.order.orderStatus, orderItem.order.receiverName,
+                                orderItem.orderStatus, orderItem.order.receiverName,
                                 orderItem.order.address, orderItem.order.detailAddress,
                                 orderItem.order.requestMessage))
                 .from(orderItem)
@@ -78,10 +78,10 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
                                 orderItem.order.totalPrice, user.userName, user.telNo.telNo,
-                                orderItem.order.orderStatus, orderItem.order.receiverName,
+                                orderItem.orderStatus, orderItem.order.receiverName,
                                 orderItem.order.address, orderItem.order.detailAddress,
-                                orderItem.order.requestMessage, orderItem.order.invoiceNumber,
-                                orderItem.order.deliveryDate, orderItem.order.deliveryPlace))
+                                orderItem.order.requestMessage, orderItem.invoiceNumber,
+                                orderItem.deliveryCompleteDate, orderItem.deliveryPlace))
                 .from(orderItem)
                 .join(user).on(user.id.eq(orderItem.order.userId))
                 .where(
@@ -100,10 +100,10 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
                                 orderItem.order.totalPrice, user.userName, user.telNo.telNo,
-                                orderItem.order.orderStatus,
-                                orderItem.order.cancelDate, orderItem.order.cancelReason,
-                                orderItem.order.refundDate, orderItem.order.refundReason,
-                                orderItem.order.exchangeDate, orderItem.order.exchangeReason))
+                                orderItem.orderStatus,
+                                orderItem.cancelDate, orderItem.cancelReason,
+                                orderItem.refundDate, orderItem.refundReason,
+                                orderItem.exchangeDate, orderItem.exchangeReason))
                 .from(order)
                 .join(user).on(user.id.eq(order.userId))
                 .where(
@@ -118,7 +118,7 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
     }
 
     private BooleanExpression inOrderStatus(List<OrderStatus> status) {
-        return orderItem.order.orderStatus.in(status);
+        return orderItem.orderStatus.in(status);
     }
 
     private BooleanExpression equalPartners(Long partnerId) {

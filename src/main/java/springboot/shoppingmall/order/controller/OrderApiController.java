@@ -13,6 +13,7 @@ import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
 import springboot.shoppingmall.order.dto.CancelRequest;
 import springboot.shoppingmall.order.dto.OrderExchangeRequest;
+import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.order.dto.OrderRefundRequest;
@@ -36,56 +37,67 @@ public class OrderApiController {
         return ResponseEntity.created(URI.create("/orders/")).body(orderResponse);
     }
 
-    @PutMapping("/orders/{id}/cancel")
-    public ResponseEntity<OrderResponse> cancelOrder(@AuthenticationStrategy AuthorizedUser user,
-                                                     @PathVariable("id") Long orderId,
-                                                     @RequestBody CancelRequest cancelRequest) {
-        OrderResponse order =
-                orderService.cancel(orderId, LocalDateTime.now(), cancelRequest.getCancelReason());
-        return ResponseEntity.ok(order);
+    @PutMapping("/orders/{orderId}/{orderItemId}/cancel")
+    public ResponseEntity<OrderItemResponse> cancelOrder(@AuthenticationStrategy AuthorizedUser user,
+                                                         @PathVariable("orderId") Long orderId,
+                                                         @PathVariable("orderItemId") Long orderItemId,
+                                                         @RequestBody CancelRequest cancelRequest) {
+        OrderItemResponse response =
+                orderService.cancel(orderId, orderItemId, LocalDateTime.now(), cancelRequest.getCancelReason());
+        return ResponseEntity.ok().body(response);
     }
 
-    @PutMapping("/orders/{id}/outing")
-    public ResponseEntity<OrderResponse> outingOrder(@LoginPartner AuthorizedPartner partner,
-                                                     @PathVariable("id") Long orderId) {
-        OrderResponse order = orderService.outing(orderId);
-        return ResponseEntity.ok(order);
+    @PutMapping("/orders/{orderId}/{orderItemId}/outing")
+    public ResponseEntity<OrderItemResponse> outingOrder(@LoginPartner AuthorizedPartner partner,
+                                                         @PathVariable("orderId") Long orderId,
+                                                         @PathVariable("orderItemId") Long orderItemId) {
+        OrderItemResponse response = orderService.outing(orderId, orderItemId);
+        return ResponseEntity.ok().body(response);
     }
 
-    @PutMapping("/orders/{id}/finish")
-    public ResponseEntity<OrderResponse> finishOrder(@AuthenticationStrategy AuthorizedUser user,
-                                                     @PathVariable("id") Long orderId) {
-        OrderResponse order = orderService.finish(orderId);
-        return ResponseEntity.ok(order);
+    @PutMapping("/orders/{orderId}/{orderItemId}/finish")
+    public ResponseEntity<OrderItemResponse> finishOrder(@AuthenticationStrategy AuthorizedUser user,
+                                                         @PathVariable("orderId") Long orderId,
+                                                         @PathVariable("orderItemId") Long orderItemId) {
+        OrderItemResponse response = orderService.finish(orderId, orderItemId);
+        return ResponseEntity.ok().body(response);
     }
 
-    @PutMapping("/orders/{id}/refund")
-    public ResponseEntity<OrderResponse> refundOrder(@AuthenticationStrategy AuthorizedUser user,
-                                                     @PathVariable("id") Long orderId,
-                                                     @RequestBody OrderRefundRequest refundRequest) {
-        OrderResponse orderResponse = orderService.refund(orderId, LocalDateTime.now(), refundRequest.getRefundReason());
-        return ResponseEntity.ok(orderResponse);
+    @PutMapping("/orders/{orderId}/{orderItemId}/refund")
+    public ResponseEntity<OrderItemResponse> refundOrder(@AuthenticationStrategy AuthorizedUser user,
+                                                         @PathVariable("orderId") Long orderId,
+                                                         @PathVariable("orderItemId") Long orderItemId,
+                                                         @RequestBody OrderRefundRequest refundRequest) {
+
+        OrderItemResponse response =
+                orderService.refund(orderId, orderItemId, LocalDateTime.now(), refundRequest.getRefundReason());
+        return ResponseEntity.ok().body(response);
     }
 
-    @PutMapping("/orders/{id}/exchange")
-    public ResponseEntity<OrderResponse> exchangeOrder(@AuthenticationStrategy AuthorizedUser user,
-                                                       @PathVariable("id") Long orderId,
-                                                       @RequestBody OrderExchangeRequest exchangeRequest) {
-        OrderResponse orderResponse = orderService.exchange(orderId, LocalDateTime.now(), exchangeRequest.getExchangeReason());
-        return ResponseEntity.ok(orderResponse);
+    @PutMapping("/orders/{orderId}/{orderItemId}/exchange")
+    public ResponseEntity<OrderItemResponse> exchangeOrder(@AuthenticationStrategy AuthorizedUser user,
+                                                           @PathVariable("orderId") Long orderId,
+                                                           @PathVariable("orderItemId") Long orderItemId,
+                                                           @RequestBody OrderExchangeRequest exchangeRequest) {
+
+        OrderItemResponse response =
+                orderService.exchange(orderId, orderItemId, LocalDateTime.now(), exchangeRequest.getExchangeReason());
+        return ResponseEntity.ok().body(response);
     }
 
-    @PutMapping("/orders/{id}/checking")
-    public ResponseEntity<OrderResponse> checkingOrder(@AuthenticationStrategy AuthorizedUser user,
-                                                       @PathVariable("id") Long orderId) {
-        OrderResponse order = orderService.checking(orderId);
-        return ResponseEntity.ok(order);
+    @PutMapping("/orders/{orderId}/{orderItemId}/checking")
+    public ResponseEntity<OrderItemResponse> checkingOrder(@AuthenticationStrategy AuthorizedUser user,
+                                                           @PathVariable("orderId") Long orderId,
+                                                           @PathVariable("orderItemId") Long orderItemId) {
+        OrderItemResponse response = orderService.checking(orderId, orderItemId);
+        return ResponseEntity.ok().body(response);
     }
 
-    @PutMapping("/orders/{id}/refund-end")
-    public ResponseEntity<OrderResponse> refundEndOrder(@AuthenticationStrategy AuthorizedUser user,
-                                                        @PathVariable("id") Long orderId) {
-        OrderResponse order = orderService.refundEnd(orderId);
-        return ResponseEntity.ok(order);
+    @PutMapping("/orders/{orderId}/{orderItemId}/refund-end")
+    public ResponseEntity<OrderItemResponse> refundEndOrder(@AuthenticationStrategy AuthorizedUser user,
+                                                            @PathVariable("orderId") Long orderId,
+                                                            @PathVariable("orderItemId") Long orderItemId) {
+        OrderItemResponse response = orderService.refundEnd(orderId, orderItemId);
+        return ResponseEntity.ok().body(response);
     }
 }

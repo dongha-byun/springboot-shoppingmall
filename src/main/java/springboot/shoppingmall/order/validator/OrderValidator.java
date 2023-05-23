@@ -11,9 +11,6 @@ public class OrderValidator {
     private final OrderFinder orderFinder;
 
     public void validateOrderIsEnd(Long orderId) {
-        Order order = orderFinder.findOrderById(orderId);
-        if(!order.isDeliveryEnd()) {
-            throw new IllegalArgumentException("배송 완료된 주문이 아닙니다.");
-        }
+        throw new IllegalArgumentException("배송 완료된 주문이 아닙니다.");
     }
 }

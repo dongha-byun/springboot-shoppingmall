@@ -121,7 +121,6 @@ class PartnersOrderQueryRepositoryTest {
         Order savedOrder1 = orderRepository.save(order1);
         Order savedOrder2 = orderRepository.save(order2);
         Order savedOrder3 = orderRepository.save(order3);
-        savedOrder2.outing();
 
         // when
         List<PartnersReadyOrderQueryDto> readyOrders =

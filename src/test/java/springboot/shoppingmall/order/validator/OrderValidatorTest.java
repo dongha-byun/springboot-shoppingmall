@@ -64,12 +64,12 @@ class OrderValidatorTest {
                         "test-product-code"
                 )
         );
-        List<OrderItem> orderItems = List.of(new OrderItem(product, 2));
+        List<OrderItem> orderItems = List.of(new OrderItem(product, 2, OrderStatus.READY));
 
         Delivery delivery = deliveryRepository.save(new Delivery("배송지1", "수령인1", "10010", "주소", "상세주소", "요청사항", user));
 
         Order savedOrder = orderRepository.save(
-                new Order("test-order-code", user.getId(), orderItems, OrderStatus.DELIVERY_END,
+                new Order("test-order-code", user.getId(), orderItems,
                         delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
                         delivery.getDetailAddress(), delivery.getRequestMessage())
         );
@@ -79,7 +79,6 @@ class OrderValidatorTest {
 
         // then
         assertThat(savedOrder.getId()).isNotNull();
-        assertThat(savedOrder.getOrderStatus()).isEqualTo(OrderStatus.DELIVERY_END);
     }
 
 }

@@ -14,6 +14,7 @@ import springboot.shoppingmall.order.domain.OrderSequence;
 import springboot.shoppingmall.order.domain.OrderSequenceRepository;
 import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
 import springboot.shoppingmall.order.dto.OrderItemRequest;
+import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.pay.domain.PayHistory;
@@ -54,9 +55,6 @@ public class OrderService {
                 )
         );
 
-        // 상품 주문이 완료되면, 상품의 재고 수를 변경한다.
-        newOrder.removeQuantity();
-
         return OrderResponse.of(newOrder);
     }
 
@@ -67,9 +65,7 @@ public class OrderService {
             Product product = productFinder.findProductById(itemRequest.getProductId());
             product.validateQuantity(itemRequest.getQuantity());
 
-            items.add(new OrderItem(
-                    product, itemRequest.getQuantity()
-            ));
+            items.add(OrderItem.createOrderItem(product, itemRequest.getQuantity()));
         }
 
         return items;
@@ -86,11 +82,12 @@ public class OrderService {
         return orderSequence.generateOrderCode();
     }
 
-    // 주문취소
+    // 주문 취소
     @Transactional
-    public OrderResponse cancel(Long orderId, LocalDateTime cancelDate, String cancelReason) {
+    public OrderItemResponse cancel(Long orderId, Long orderItemId, LocalDateTime cancelDate, String cancelReason) {
         Order order = orderFinder.findOrderById(orderId);
-        order.cancel(cancelDate, cancelReason);
+        OrderItem orderItem = order.findOrderItem(orderItemId);
+        orderItem.cancel(cancelDate, cancelReason);
 
         // 주문이 취소되면, 결제취소 요청을 보낸다.
 //        PayHistory payHistory = payHistoryRepository.findByOrderId(orderId)
@@ -99,73 +96,68 @@ public class OrderService {
 //                );
 //        orderPayService.cancel(payHistory.getTid(), payHistory.getAmount());
 
-        // 주문된 상품이 주문 취소되면, 상품의 재고 수량을 다시 증가시킨다.
-        order.increaseQuantity();
-
-        return OrderResponse.of(order);
+        return OrderItemResponse.of(orderItem);
     }
 
-    // 출고중
+    // 출고 중
     @Transactional
-    public OrderResponse outing(Long orderId) {
+    public OrderItemResponse outing(Long orderId, Long orderItemId) {
         Order order = orderFinder.findOrderById(orderId);
-        order.outing();
+        OrderItem orderItem = order.findOrderItem(orderItemId);
 
         OrderDeliveryInvoiceResponse deliveryInvoice = orderDeliveryInterfaceService.createInvoiceNumber(order);
-        order.changeInvoiceNumber(deliveryInvoice.getInvoiceNumber());
+        orderItem.outing(deliveryInvoice.getInvoiceNumber());
 
-        return OrderResponse.of(order);
+        return OrderItemResponse.of(orderItem);
     }
 
     // 구매확정
     @Transactional
-    public OrderResponse finish(Long orderId) {
+    public OrderItemResponse finish(Long orderId, Long orderItemId) {
         Order order = orderFinder.findOrderById(orderId);
-        order.finish();
+        OrderItem orderItem = order.findOrderItem(orderItemId);
+        orderItem.finish();
 
-        // 구매확정 시, 상품 판매 수량이 증가한다.
-        order.increaseSalesVolume();
-
-        return OrderResponse.of(order);
+        return OrderItemResponse.of(orderItem);
     }
 
     // 검수중
     @Transactional
-    public OrderResponse checking(Long orderId) {
+    public OrderItemResponse checking(Long orderId, Long orderItemId) {
         Order order = orderFinder.findOrderById(orderId);
-        order.checking();
+        OrderItem orderItem = order.findOrderItem(orderItemId);
+        orderItem.checking();
 
-        return OrderResponse.of(order);
+        return OrderItemResponse.of(orderItem);
     }
 
     // 환불
     @Transactional
-    public OrderResponse refund(Long orderId, LocalDateTime refundDate, String refundReason) {
+    public OrderItemResponse refund(Long orderId, Long orderItemId, LocalDateTime refundDate, String refundReason) {
         Order order = orderFinder.findOrderById(orderId);
-        order.refund(refundDate, refundReason);
+        OrderItem orderItem = order.findOrderItem(orderItemId);
+        orderItem.refund(refundDate, refundReason);
 
-        return OrderResponse.of(order);
+        return OrderItemResponse.of(orderItem);
     }
 
     // 환불 완료
     @Transactional
-    public OrderResponse refundEnd(Long orderId) {
+    public OrderItemResponse refundEnd(Long orderId, Long orderItemId) {
         Order order = orderFinder.findOrderById(orderId);
-        order.refundEnd();
+        OrderItem orderItem = order.findOrderItem(orderItemId);
+        orderItem.refundEnd();
 
-        // 환불 시, 주문 수량 만큼 수량을 증가시킨다.
-        order.increaseQuantity();
-
-        return OrderResponse.of(order);
+        return OrderItemResponse.of(orderItem);
     }
 
     // 교환
     @Transactional
-    public OrderResponse exchange(Long orderId, LocalDateTime exchangeDate, String exchangeReason) {
+    public OrderItemResponse exchange(Long orderId, Long orderItemId, LocalDateTime exchangeDate, String exchangeReason) {
         Order order = orderFinder.findOrderById(orderId);
-        order.exchange(exchangeDate, exchangeReason);
+        OrderItem orderItem = order.findOrderItem(orderItemId);
+        orderItem.exchange(exchangeDate, exchangeReason);
 
-        return OrderResponse.of(order);
+        return OrderItemResponse.of(orderItem);
     }
-
 }

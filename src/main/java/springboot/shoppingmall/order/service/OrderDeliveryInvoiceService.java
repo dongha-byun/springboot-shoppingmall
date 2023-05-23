@@ -19,7 +19,7 @@ public class OrderDeliveryInvoiceService {
     // 배송중 처리
     public OrderResponse delivery(String invoiceNumber) {
         Order order = orderFinder.findOrderByInvoiceNumber(invoiceNumber);
-        order.delivery();
+        //order.delivery();
 
         return OrderResponse.of(order);
     }
@@ -27,7 +27,7 @@ public class OrderDeliveryInvoiceService {
     // 배송완료 처리 - 택배사에서 호출하는 로직
     public OrderResponse deliveryEnd(String invoiceNumber, LocalDateTime deliveryEndDate, String deliveryPlace) {
         Order order = orderFinder.findOrderByInvoiceNumber(invoiceNumber);
-        order.deliveryEnd(deliveryEndDate, deliveryPlace);
+        //order.deliveryEnd(deliveryEndDate, deliveryPlace);
 
         return OrderResponse.of(order);
     }

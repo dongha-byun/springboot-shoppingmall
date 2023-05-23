@@ -18,7 +18,7 @@ import springboot.shoppingmall.utils.DateUtils;
 public class OrderResponse {
     private Long id;
     private String orderCode;
-    private String orderStatusName;
+    private String orderDate;
     private List<OrderItemResponse> items;
     private int totalPrice;
     private String receiverName;
@@ -26,31 +26,24 @@ public class OrderResponse {
     private String address;
     private String detailAddress;
     private String requestMessage;
-    private String invoiceNumber;
     private OrderDeliveryInvoiceResponse deliveryInvoice;
-    private String deliveryDate;
-    private String deliveryPlace;
-    private String cancelDate;
-    private String cancelReason;
 
     public static OrderResponse of(Order order) {
         return new OrderResponse(order.getId(), order.getOrderCode(),
-                order.getOrderStatus().getStatusName(),
+                toStringOfLocalDateTIme(order.getOrderDate()),
                 ofItemList(order), order.getTotalPrice(),
                 order.getReceiverName(), order.getZipCode(), order.getAddress(),
-                order.getDetailAddress(), order.getRequestMessage(), order.getInvoiceNumber(),
-                null, toStringOfLocalDateTIme(order.getDeliveryDate()), order.getDeliveryPlace(),
-                toStringOfLocalDateTIme(order.getCancelDate()), order.getCancelReason());
+                order.getDetailAddress(), order.getRequestMessage(),
+                null);
     }
 
     public static OrderResponse of(Order order, OrderDeliveryInvoiceResponse deliveryInvoice) {
         return new OrderResponse(order.getId(), order.getOrderCode(),
-                order.getOrderStatus().getStatusName(),
+                toStringOfLocalDateTIme(order.getOrderDate()),
                 ofItemList(order), order.getTotalPrice(),
                 order.getReceiverName(), order.getZipCode(), order.getAddress(),
-                order.getDetailAddress(), order.getRequestMessage(), order.getInvoiceNumber(),
-                deliveryInvoice, toStringOfLocalDateTIme(order.getDeliveryDate()), order.getDeliveryPlace(),
-                toStringOfLocalDateTIme(order.getCancelDate()), order.getCancelReason());
+                order.getDetailAddress(), order.getRequestMessage(),
+                deliveryInvoice);
     }
 
     private static List<OrderItemResponse> ofItemList(Order order) {

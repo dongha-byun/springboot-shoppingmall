@@ -71,9 +71,9 @@ class ProductReviewServiceTest {
                         "test-product-code"
                 )
         );
-        List<OrderItem> orderItems = List.of(new OrderItem(product, 2));
+        List<OrderItem> orderItems = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
         Order endOrder = orderRepository.save(
-                new Order("test-order-code", user.getId(), orderItems, OrderStatus.DELIVERY_END,
+                new Order("test-order-code", user.getId(), orderItems,
                         "test-receiver", "test-zipcode", "test-address",
                         "test-detail-address", "test-message")
         );
@@ -88,7 +88,8 @@ class ProductReviewServiceTest {
         assertThat(response.getProductName()).isEqualTo("상품 1");
 
         Order finishOrder = orderRepository.findById(endOrder.getId()).orElseThrow();
-        assertThat(finishOrder.getOrderStatus()).isEqualTo(OrderStatus.FINISH);
+        assertThat(finishOrder.getItems().get(0).getOrderStatus()).isEqualTo(OrderStatus.FINISH);
+
     }
 
     @Test
@@ -106,9 +107,9 @@ class ProductReviewServiceTest {
                         "test-product-code"
                 )
         );
-        List<OrderItem> orderItems = List.of(new OrderItem(product, 2));
+        List<OrderItem> orderItems = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
         Order endOrder = orderRepository.save(
-                new Order("test-order-code", user.getId(), orderItems, OrderStatus.DELIVERY_END,
+                new Order("test-order-code", user.getId(), orderItems,
                         "test-receiver", "test-zipcode", "test-address",
                         "test-detail-address", "test-message")
         );
@@ -267,21 +268,21 @@ class ProductReviewServiceTest {
                         "test-product-code"
                 )
         );
-        List<OrderItem> orderItems = List.of(new OrderItem(product, 2));
+        List<OrderItem> orderItems = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
         Order endOrder1 = orderRepository.save(
-                new Order("test-order-code-1", user1.getId(), orderItems, OrderStatus.DELIVERY_END,
+                new Order("test-order-code-1", user1.getId(), orderItems,
                         "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
         Order endOrder2 = orderRepository.save(
-                new Order("test-order-code-2", user2.getId(), orderItems, OrderStatus.DELIVERY_END,
+                new Order("test-order-code-2", user2.getId(), orderItems,
                         "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
         Order endOrder3 = orderRepository.save(
-                new Order("test-order-code-3", user3.getId(), orderItems, OrderStatus.DELIVERY_END,
+                new Order("test-order-code-3", user3.getId(), orderItems,
                         "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
         Order endOrder4 = orderRepository.save(
-                new Order("test-order-code-4", user4.getId(), orderItems, OrderStatus.DELIVERY_END,
+                new Order("test-order-code-4", user4.getId(), orderItems,
                         "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
         Order endOrder5 = orderRepository.save(
-                new Order("test-order-code-5", user5.getId(), orderItems, OrderStatus.DELIVERY_END,
+                new Order("test-order-code-5", user5.getId(), orderItems,
                         "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
 
         // when & then

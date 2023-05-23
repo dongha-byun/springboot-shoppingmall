@@ -17,9 +17,6 @@ public class OrderFinder {
     }
 
     public Order findOrderByInvoiceNumber(String invoiceNumber) {
-        return orderRepository.findByInvoiceNumber(invoiceNumber)
-                .orElseThrow(
-                        () -> new IllegalArgumentException("송장번호로 주문을 조회할 수 없습니다.")
-                );
+        return null;
     }
 }
