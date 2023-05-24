@@ -22,6 +22,7 @@ import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
@@ -66,7 +67,7 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         List<OrderItem> order1Items = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
         List<OrderItem> order2Items = List.of(new OrderItem(product2, 3, OrderStatus.DELIVERY_END));
         List<OrderItem> order3Items = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
-        List<OrderItem> order4Items = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
+        List<OrderItem> order4Items = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY));
 
         Order order = orderRepository.save(
                 new Order(UUID.randomUUID().toString(), user.getId(), order1Items,
@@ -302,11 +303,18 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         Map<String, Object> params = new HashMap<>();
         params.put("content", content);
         params.put("score", score);
+
+        OrderItemResponse orderItem = order.getItems().get(0);
+
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers(createAuthorizationHeader(token))
                 .body(params)
-                .when().post("/orders/{orderId}/products/{productId}/reviews", order.getId(), product.getId())
+                .when().post("/orders/{orderId}/{orderItemId}/products/{productId}/reviews",
+                        order.getId(),
+                        orderItem.getId(),
+                        product.getId()
+                )
                 .then().log().all()
                 .extract();
     }

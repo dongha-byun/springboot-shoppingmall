@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderFinder;
+import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.validator.OrderValidator;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
@@ -45,8 +46,9 @@ public class ProductReviewService {
     }
 
     @Transactional
-    public ProductUserReviewResponse createProductReview(Long userId, String loginId, Long orderId, Long productId, ProductReviewRequest productReviewRequest) {
-        orderValidator.validateOrderIsEnd(orderId);
+    public ProductUserReviewResponse createProductReview(Long userId, String loginId, Long orderItemId, Long productId,
+                                                         ProductReviewRequest productReviewRequest) {
+        orderValidator.validateOrderIsEnd(orderItemId);
 
         Product product = productFinder.findProductById(productId);
 
@@ -68,8 +70,8 @@ public class ProductReviewService {
         product.refreshScore();
 
         // 리뷰 작성 시, 해당 주문은 구매확정 처리가 된다.
-        Order order = orderFinder.findOrderById(orderId);
-        //order.finish();
+        OrderItem orderItem = orderFinder.findOrderItemById(orderItemId);
+        orderItem.finish();
 
         return ProductUserReviewResponse.of(savedReview);
     }

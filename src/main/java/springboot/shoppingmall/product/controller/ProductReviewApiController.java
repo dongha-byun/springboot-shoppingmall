@@ -35,9 +35,10 @@ public class ProductReviewApiController {
         return ResponseEntity.badRequest().build();
     }
 
-    @PostMapping("/orders/{orderId}/products/{productId}/reviews")
+    @PostMapping("/orders/{orderId}/{orderItemId}/products/{productId}/reviews")
     public ResponseEntity<ProductUserReviewResponse> createReview(@AuthenticationStrategy AuthorizedUser user,
                                                                   @PathVariable("orderId") Long orderId,
+                                                                  @PathVariable("orderItemId") Long orderItemId,
                                                                   @PathVariable("productId") Long productId,
                                                                   @Valid @RequestBody ProductReviewRequest reviewRequest,
                                                                   BindingResult bindingResult) {
@@ -45,9 +46,8 @@ public class ProductReviewApiController {
             throw new ContentNotBlankException();
         }
 
-        orderValidator.validateOrderIsEnd(orderId);
-
-        ProductUserReviewResponse reviewResponse = productReviewService.createProductReview(user.getId(), user.getLoginId(), orderId, productId, reviewRequest);
+        ProductUserReviewResponse reviewResponse =
+                productReviewService.createProductReview(user.getId(), user.getLoginId(), orderItemId, productId, reviewRequest);
         return ResponseEntity.created(URI.create("/products/" + productId + "/reviews/" + reviewResponse.getId())).body(reviewResponse);
     }
 
@@ -59,7 +59,7 @@ public class ProductReviewApiController {
 
     @DeleteMapping("/users/reviews/{reviewId}")
     public ResponseEntity<ProductReviewResponse> deleteReview(@AuthenticationStrategy AuthorizedUser user,
-                                       @PathVariable("reviewId") Long reviewId) {
+                                                              @PathVariable("reviewId") Long reviewId) {
         productReviewService.deleteProductReview(user.getId(), reviewId);
         return ResponseEntity.noContent().build();
     }

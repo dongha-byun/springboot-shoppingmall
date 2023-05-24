@@ -79,8 +79,11 @@ class ProductReviewServiceTest {
         );
 
         // when
+        OrderItem savedOrderItem = endOrder.getItems().get(0);
         ProductReviewRequest productReviewRequest = new ProductReviewRequest("리뷰 등록 합니다.", 3);
-        ProductUserReviewResponse response = service.createProductReview(user.getId(), user.getLoginId(), endOrder.getId(), product.getId(), productReviewRequest);
+        ProductUserReviewResponse response =
+                service.createProductReview(user.getId(), user.getLoginId(), savedOrderItem.getId(),
+                        product.getId(), productReviewRequest);
 
         // then
         assertThat(response.getId()).isNotNull();
@@ -115,11 +118,12 @@ class ProductReviewServiceTest {
         );
 
         ProductReviewRequest productReviewRequest = new ProductReviewRequest("리뷰 등록 합니다.", 3);
-        service.createProductReview(user.getId(), user.getLoginId(), endOrder.getId(), product.getId(), productReviewRequest);
+        OrderItem savedItem = endOrder.getItems().get(0);
+        service.createProductReview(user.getId(), user.getLoginId(), savedItem.getId(), product.getId(), productReviewRequest);
 
         // when & then
         assertThatThrownBy(
-                () -> service.createProductReview(user.getId(), user.getLoginId(), endOrder.getId(), product.getId(), productReviewRequest)
+                () -> service.createProductReview(user.getId(), user.getLoginId(), savedItem.getId(), product.getId(), productReviewRequest)
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -268,21 +272,21 @@ class ProductReviewServiceTest {
                         "test-product-code"
                 )
         );
-        List<OrderItem> orderItems = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
+
         Order endOrder1 = orderRepository.save(
-                new Order("test-order-code-1", user1.getId(), orderItems,
+                new Order("test-order-code-1", user1.getId(), List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
                         "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
         Order endOrder2 = orderRepository.save(
-                new Order("test-order-code-2", user2.getId(), orderItems,
+                new Order("test-order-code-2", user2.getId(), List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
                         "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
         Order endOrder3 = orderRepository.save(
-                new Order("test-order-code-3", user3.getId(), orderItems,
+                new Order("test-order-code-3", user3.getId(), List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
                         "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
         Order endOrder4 = orderRepository.save(
-                new Order("test-order-code-4", user4.getId(), orderItems,
+                new Order("test-order-code-4", user4.getId(), List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
                         "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
         Order endOrder5 = orderRepository.save(
-                new Order("test-order-code-5", user5.getId(), orderItems,
+                new Order("test-order-code-5", user5.getId(), List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
                         "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
 
         // when & then
