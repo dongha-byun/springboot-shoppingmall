@@ -28,6 +28,8 @@ class OrderFinderTest {
     @Autowired
     OrderRepository orderRepository;
     @Autowired
+    OrderItemRepository orderItemRepository;
+    @Autowired
     CategoryRepository categoryRepository;
     @Autowired
     ProductRepository productRepository;
@@ -45,14 +47,14 @@ class OrderFinderTest {
 
     @BeforeEach
     void beforeEach() {
-        orderFinder = new OrderFinder(orderRepository);
+        orderFinder = new OrderFinder(orderRepository, orderItemRepository);
         user = userRepository.save(new User("테스트유저", "testUser", "testUser!", "010-1234-1234"));
         Category category = categoryRepository.save(new Category("의류"));
         Category subCategory = categoryRepository.save(new Category("바지").changeParent(category));
         LocalDateTime now = LocalDateTime.now();
         product = productRepository.save(
                 new Product(
-                        "상품1", 1000, 2, 1.0, 10, now,
+                        "상품1", 1000, 200, 1.0, 10, now,
                         category, subCategory, 10L,
                         "storedFileName1", "viewFileName1", "상품 설명 입니다.",
                         "test-product-code"
@@ -95,12 +97,14 @@ class OrderFinderTest {
                         delivery.getDetailAddress(), delivery.getRequestMessage()
                 )
         );
+        OrderItem savedOrderItem = order.getItems().get(0);
+        savedOrderItem.outing(invoiceNumber);
 
         // when
-        Order findOrder = orderFinder.findOrderByInvoiceNumber(invoiceNumber);
+        OrderItem orderItem = orderFinder.findOrderByInvoiceNumber(invoiceNumber);
 
         // then
-        assertThat(order.getId()).isEqualTo(findOrder.getId());
+        assertThat(order.getId()).isEqualTo(orderItem.getOrder().getId());
     }
 
     @Test

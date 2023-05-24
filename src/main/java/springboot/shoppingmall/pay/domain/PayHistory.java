@@ -32,7 +32,7 @@ public class PayHistory extends BaseEntity {
     @Column(nullable = false)
     private Integer amount;
 
-    public PayHistory(Long orderId, String payType ,String tid, Integer amount) {
+    public PayHistory(Long orderId, String payType, String tid, Integer amount) {
         this.orderId = orderId;
         this.payType = payType;
         this.tid = tid;

@@ -6,6 +6,8 @@ import static springboot.shoppingmall.user.DeliveryAcceptanceTest.배송지_추�
 
 import org.junit.jupiter.api.BeforeEach;
 import springboot.shoppingmall.category.dto.CategoryResponse;
+import springboot.shoppingmall.order.dto.OrderItemResponse;
+import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.dto.ProductResponse;
 import springboot.shoppingmall.user.dto.DeliveryResponse;
 
@@ -29,5 +31,9 @@ public class AcceptanceProductTest extends AcceptanceTest{
                 "서울시 서초구 서초동 103번지",
                 "109호",
                 "부재 시, 경비실에 놔주세요.").as(DeliveryResponse.class);
+    }
+
+    protected OrderItemResponse 첫_번째_주문_상품(OrderResponse orderResponse) {
+        return orderResponse.getItems().get(0);
     }
 }

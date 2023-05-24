@@ -64,7 +64,7 @@ class OrderValidatorTest {
                         "test-product-code"
                 )
         );
-        List<OrderItem> orderItems = List.of(new OrderItem(product, 2, OrderStatus.READY));
+        List<OrderItem> orderItems = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
 
         Delivery delivery = deliveryRepository.save(new Delivery("배송지1", "수령인1", "10010", "주소", "상세주소", "요청사항", user));
 
@@ -75,10 +75,11 @@ class OrderValidatorTest {
         );
 
         // when
-        orderValidator.validateOrderIsEnd(savedOrder.getId());
+        OrderItem orderItem = savedOrder.getItems().get(0);
+        orderValidator.validateOrderIsEnd(orderItem.getId());
 
         // then
-        assertThat(savedOrder.getId()).isNotNull();
+        assertThat(orderItem.getId()).isNotNull();
     }
 
 }

@@ -17,6 +17,7 @@ import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.order.partners.controller.PartnersEndOrderQueryResponse;
 import springboot.shoppingmall.order.partners.controller.PartnersOrderQueryResponse;
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryRepository;
 import springboot.shoppingmall.product.domain.Product;
@@ -122,21 +123,32 @@ class PartnersOrderQueryServiceTest {
         Order savedOrder2 = orderRepository.save(order2);
         Order savedOrder3 = orderRepository.save(order3);
 
+        OrderItem savedOrder3Item = savedOrder3.getItems().get(0);
+        String invoiceNumber = "test-invoice-number";
+        savedOrder3Item.outing(invoiceNumber);
+
         // when
         List<PartnersOrderQueryResponse> partnersReadyOrders =
                 partnersOrderQueryService.findPartnersOrders(partnersId, startDate, endDate);
 
         // then
         assertThat(partnersReadyOrders).hasSize(3);
-        List<Long> ids = partnersReadyOrders.stream()
-                .map(PartnersOrderQueryResponse::getOrderItemId)
+        List<String> orderStatusNames = partnersReadyOrders.stream()
+                .map(PartnersOrderQueryResponse::getOrderStatusName)
                 .collect(Collectors.toList());
-        assertThat(ids).containsExactly(
-                savedOrder1.getId(), savedOrder2.getId(), savedOrder3.getId()
+        assertThat(orderStatusNames).containsExactly(
+                OrderStatus.READY.getStatusName(),
+                OrderStatus.READY.getStatusName(),
+                OrderStatus.OUTING.getStatusName()
         );
 
         // 송장번호 check
-
+        List<String> invoiceNumbers = partnersReadyOrders.stream()
+                .map(PartnersOrderQueryResponse::getInvoiceNumber)
+                .collect(Collectors.toList());
+        assertThat(invoiceNumbers).containsExactly(
+                null, null, invoiceNumber
+        );
     }
 
     @Test
@@ -146,8 +158,25 @@ class PartnersOrderQueryServiceTest {
         PartnersOrderQueryService partnersOrderQueryService = new PartnersDeliveryOrderQueryService(queryRepository);
 
         Order savedOrder1 = orderRepository.save(order1);
+        OrderItem savedOrder1Item = savedOrder1.getItems().get(0);
+        String invoiceNumber1 = "test-invoice-number1";
+        savedOrder1Item.outing(invoiceNumber1);
+        LocalDateTime deliveryDate1 = LocalDateTime.of(2023, 5, 5, 12, 0, 0);
+        savedOrder1Item.delivery(deliveryDate1);
+
         Order savedOrder2 = orderRepository.save(order2);
+        OrderItem savedOrder2Item = savedOrder2.getItems().get(0);
+        String invoiceNumber2 = "test-invoice-number2";
+        savedOrder2Item.outing(invoiceNumber2);
+        LocalDateTime deliveryDate2 = LocalDateTime.of(2023, 5, 5, 12, 0, 0);
+        savedOrder2Item.delivery(deliveryDate2);
+
         Order savedOrder3 = orderRepository.save(order3);
+        OrderItem savedOrder3Item = savedOrder3.getItems().get(0);
+        String invoiceNumber3 = "test-invoice-number3";
+        savedOrder3Item.outing(invoiceNumber3);
+        LocalDateTime deliveryDate3 = LocalDateTime.of(2023, 5, 5, 12, 0, 0);
+        savedOrder3Item.delivery(deliveryDate3);
 
         // when
         List<PartnersOrderQueryResponse> partnersDeliveryOrders =
@@ -159,9 +188,7 @@ class PartnersOrderQueryServiceTest {
                 .map(PartnersOrderQueryResponse::getOrderItemId)
                 .collect(Collectors.toList());
         assertThat(ids).containsExactly(
-                savedOrder1.getItems().get(0).getId(),
-                savedOrder2.getItems().get(0).getId(),
-                savedOrder3.getItems().get(0).getId()
+                savedOrder1Item.getId(), savedOrder2Item.getId(), savedOrder3Item.getId()
         );
     }
 
@@ -170,25 +197,39 @@ class PartnersOrderQueryServiceTest {
     void find_partners_order_end() {
         // given
         PartnersOrderQueryService partnersOrderQueryService = new PartnersEndOrderQueryService(queryRepository);
-
         Order savedOrder1 = orderRepository.save(order1);
         Order savedOrder2 = orderRepository.save(order2);
+
         Order savedOrder3 = orderRepository.save(order3);
-        LocalDateTime deliveryDate = LocalDateTime.of(2023, 5, 8, 2, 0, 30);
+        OrderItem savedOrder3Item = savedOrder3.getItems().get(0);
+        String invoiceNumber3 = "test-invoice-number3";
+        savedOrder3Item.outing(invoiceNumber3);
+
+        LocalDateTime deliveryDate3 = LocalDateTime.of(2023, 5, 5, 12, 0, 0);
+        savedOrder3Item.delivery(deliveryDate3);
+
+        LocalDateTime deliveryCompleteDate = LocalDateTime.of(2023, 5, 8, 2, 0, 30);
         String deliveryPlace = "현관문 앞";
+        savedOrder3Item.deliveryComplete(deliveryCompleteDate, deliveryPlace);
 
         // when
         List<PartnersOrderQueryResponse> partnersEndOrders =
                 partnersOrderQueryService.findPartnersOrders(partnersId, startDate, endDate);
 
         // then
-        assertThat(partnersEndOrders).hasSize(2);
-
+        assertThat(partnersEndOrders).hasSize(1);
         List<Long> ids = partnersEndOrders.stream()
                 .map(PartnersOrderQueryResponse::getOrderItemId)
                 .collect(Collectors.toList());
         assertThat(ids).containsExactly(
-                savedOrder1.getId(), savedOrder2.getId()
+                savedOrder3Item.getId()
+        );
+
+        List<String> deliveryPlaces = partnersEndOrders.stream()
+                .map(dto -> ((PartnersEndOrderQueryResponse) dto).getDeliveryPlace())
+                .collect(Collectors.toList());
+        assertThat(deliveryPlaces).containsExactly(
+                deliveryPlace
         );
     }
 }

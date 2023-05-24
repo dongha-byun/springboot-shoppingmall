@@ -119,7 +119,12 @@ class PartnersOrderQueryRepositoryTest {
     void find_partner_order_ready() {
         // given
         Order savedOrder1 = orderRepository.save(order1);
+
         Order savedOrder2 = orderRepository.save(order2);
+        OrderItem orderItem = savedOrder2.getItems().get(0);
+        String invoiceNumber = "test-invoice-number";
+        orderItem.outing(invoiceNumber);
+
         Order savedOrder3 = orderRepository.save(order3);
 
         // when

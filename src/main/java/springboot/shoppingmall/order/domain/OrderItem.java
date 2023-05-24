@@ -187,11 +187,15 @@ public class OrderItem extends BaseEntity {
 
     public void refundEnd() {
         if(OrderStatus.CHECKING != this.orderStatus) {
-            throw new IllegalArgumentException("환불상품이 아직 검수중이므로 환불 완료 처리가 불가합니다.");
+            throw new IllegalArgumentException("환불상품이 아직 검수가 완료되지 않아 환불 완료 처리가 불가합니다.");
         }
         this.orderStatus = OrderStatus.REFUND_END;
 
         // 환불이 완료되면, 상품의 재고수량을 되돌린다.
         increaseQuantity();
+    }
+
+    public boolean isDeliveryComplete() {
+        return OrderStatus.DELIVERY_END == this.orderStatus;
     }
 }

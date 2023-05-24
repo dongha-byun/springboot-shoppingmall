@@ -18,6 +18,8 @@ import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.pay.domain.PayHistory;
+import springboot.shoppingmall.pay.domain.PayHistoryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.providers.domain.Provider;
@@ -42,6 +44,9 @@ class OrderHistoryRepositoryTest {
     CategoryRepository categoryRepository;
     @Autowired
     OrderRepository orderRepository;
+
+    @Autowired
+    PayHistoryRepository payHistoryRepository;
 
     User user;
     Delivery delivery;
@@ -77,28 +82,29 @@ class OrderHistoryRepositoryTest {
         );
         product = productRepository.save(
                 new Product("테스트상품", 12000, 300, parent, child,
-                        partner.getId(), "storedFileName", "viewFileName", "상품 설명 입니다.",
-                        "test-product-code")
+                        partner.getId(), "storedFileName", "viewFileName",
+                        "상품 설명 입니다.", "test-product-code")
         );
 
-        List<OrderItem> orderItems = List.of(new OrderItem(product, 2, OrderStatus.READY));
-
         order1 = new Order(
-                UUID.randomUUID().toString(), user.getId(), orderItems,
+                UUID.randomUUID().toString(), user.getId(),
+                List.of(new OrderItem(product, 2, OrderStatus.READY)),
                 LocalDateTime.of(2022, 11, 5, 12, 0, 0),
                 delivery.getReceiverName(), delivery.getZipCode(),
                 delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
         );
 
         order2 = new Order(
-                UUID.randomUUID().toString(), user.getId(), orderItems,
+                UUID.randomUUID().toString(), user.getId(),
+                List.of(new OrderItem(product, 2, OrderStatus.READY)),
                 LocalDateTime.of(2023, 2, 5, 12, 0, 0),
                 delivery.getReceiverName(), delivery.getZipCode(),
                 delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
         );
 
         order3 = new Order(
-                UUID.randomUUID().toString(), user.getId(), orderItems,
+                UUID.randomUUID().toString(), user.getId(),
+                List.of(new OrderItem(product, 2, OrderStatus.READY)),
                 LocalDateTime.of(2023, 5, 5, 12, 0, 0),
                 delivery.getReceiverName(), delivery.getZipCode(),
                 delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
@@ -109,13 +115,28 @@ class OrderHistoryRepositoryTest {
     @DisplayName("사용자 별 주문내역 조회")
     void orderHistoryTest(){
         // given
-        orderRepository.save(order1);
-        orderRepository.save(order2);
-        orderRepository.save(order3);
+        Order savedOrder1 = orderRepository.save(order1);
+        Order savedOrder2 = orderRepository.save(order2);
+        Order savedOrder3 = orderRepository.save(order3);
+
+        payHistoryRepository.save(
+                new PayHistory(savedOrder1.getId(), PayType.KAKAO_PAY.name(), "test-tid-order1",
+                        savedOrder1.getTotalPrice())
+        );
+        payHistoryRepository.save(
+                new PayHistory(savedOrder2.getId(), PayType.KAKAO_PAY.name(), "test-tid-order2",
+                        savedOrder2.getTotalPrice())
+        );
+        payHistoryRepository.save(
+                new PayHistory(savedOrder3.getId(), PayType.KAKAO_PAY.name(), "test-tid-order3",
+                        savedOrder3.getTotalPrice())
+        );
 
         // when
-        LocalDateTime startDate = LocalDateTime.of(2023, 2, 1, 0, 0, 0);
-        LocalDateTime endDate = LocalDateTime.of(2023, 5, 1, 0, 0, 0);
+        LocalDateTime startDate =
+                LocalDateTime.of(2023, 2, 1, 0, 0, 0);
+        LocalDateTime endDate =
+                LocalDateTime.of(2023, 6, 1, 23, 59, 59);
         List<OrderHistoryDto> orderHistories = orderHistoryRepository.queryOrderHistory(user, startDate, endDate);
 
         // then

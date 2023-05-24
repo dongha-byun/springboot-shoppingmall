@@ -30,15 +30,16 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                                                     LocalDateTime endDate) {
         return jpaQueryFactory.select(
                         Projections.constructor(PartnersReadyOrderQueryDto.class,
-                                orderItem.id, orderItem.order.orderCode, orderItem.order.orderDate,
+                                orderItem.id, order.orderCode, order.orderDate,
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
-                                orderItem.order.totalPrice, user.userName, user.telNo.telNo,
-                                orderItem.orderStatus, orderItem.order.receiverName,
-                                orderItem.order.address, orderItem.order.detailAddress,
-                                orderItem.order.requestMessage))
+                                order.totalPrice, user.userName, user.telNo.telNo,
+                                orderItem.orderStatus, order.receiverName,
+                                order.address, order.detailAddress,
+                                order.requestMessage))
                 .from(orderItem)
-                .join(user).on(user.id.eq(orderItem.order.userId))
+                .join(order).on(orderItem.order.eq(order))
+                .join(user).on(user.id.eq(order.userId))
                 .where(
                         equalPartners(partnerId)
                                 .and(inOrderStatus(PartnersOrderQueryType.READY.getStatusList()))
@@ -52,14 +53,15 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                                                           LocalDateTime endDate) {
         return jpaQueryFactory.select(
                         Projections.constructor(PartnersDeliveryOrderQueryDto.class,
-                                orderItem.id, orderItem.order.orderCode, orderItem.order.orderDate,
+                                orderItem.id, order.orderCode, order.orderDate,
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
-                                orderItem.order.totalPrice, user.userName, user.telNo.telNo,
-                                orderItem.orderStatus, orderItem.order.receiverName,
-                                orderItem.order.address, orderItem.order.detailAddress,
-                                orderItem.order.requestMessage))
+                                order.totalPrice, user.userName, user.telNo.telNo,
+                                orderItem.orderStatus, order.receiverName,
+                                order.address, order.detailAddress,
+                                order.requestMessage))
                 .from(orderItem)
+                .join(order).on(orderItem.order.eq(order))
                 .join(user).on(user.id.eq(orderItem.order.userId))
                 .where(
                         equalPartners(partnerId)
@@ -74,16 +76,16 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                                                 LocalDateTime endDate) {
         return jpaQueryFactory.select(
                         Projections.constructor(PartnersEndOrderQueryDto.class,
-                                orderItem.id, orderItem.order.orderCode, orderItem.order.orderDate,
+                                orderItem.id, order.orderCode, order.orderDate,
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
-                                orderItem.order.totalPrice, user.userName, user.telNo.telNo,
-                                orderItem.orderStatus, orderItem.order.receiverName,
-                                orderItem.order.address, orderItem.order.detailAddress,
-                                orderItem.order.requestMessage, orderItem.invoiceNumber,
-                                orderItem.deliveryCompleteDate, orderItem.deliveryPlace))
+                                order.totalPrice, user.userName, user.telNo.telNo,
+                                orderItem.orderStatus, order.receiverName,
+                                order.address, order.detailAddress, order.requestMessage,
+                                orderItem.invoiceNumber, orderItem.deliveryCompleteDate, orderItem.deliveryPlace))
                 .from(orderItem)
-                .join(user).on(user.id.eq(orderItem.order.userId))
+                .join(order).on(orderItem.order.eq(order))
+                .join(user).on(user.id.eq(order.userId))
                 .where(
                         equalPartners(partnerId)
                                 .and(inOrderStatus(PartnersOrderQueryType.END.getStatusList()))
@@ -96,15 +98,16 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                                                       LocalDateTime endDate) {
         return jpaQueryFactory.select(
                         Projections.constructor(PartnersCancelOrderQueryDto.class,
-                                orderItem.id, orderItem.order.orderCode, orderItem.order.orderDate,
+                                orderItem.id, order.orderCode, order.orderDate,
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
-                                orderItem.order.totalPrice, user.userName, user.telNo.telNo,
+                                order.totalPrice, user.userName, user.telNo.telNo,
                                 orderItem.orderStatus,
                                 orderItem.cancelDate, orderItem.cancelReason,
                                 orderItem.refundDate, orderItem.refundReason,
                                 orderItem.exchangeDate, orderItem.exchangeReason))
-                .from(order)
+                .from(orderItem)
+                .join(order).on(orderItem.order.eq(order))
                 .join(user).on(user.id.eq(order.userId))
                 .where(
                         equalPartners(partnerId)
@@ -114,7 +117,7 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
     }
 
     private BooleanExpression betweenDate(LocalDateTime startDate, LocalDateTime endDate) {
-        return orderItem.order.orderDate.between(startDate, endDate);
+        return order.orderDate.between(startDate, endDate);
     }
 
     private BooleanExpression inOrderStatus(List<OrderStatus> status) {

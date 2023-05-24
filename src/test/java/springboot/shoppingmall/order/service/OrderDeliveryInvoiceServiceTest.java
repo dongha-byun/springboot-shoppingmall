@@ -19,6 +19,7 @@ import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.DeliveryEndRequest;
+import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
@@ -79,9 +80,12 @@ class OrderDeliveryInvoiceServiceTest {
         Order outingOrder = 특정_주문상태_데이터_생성(OrderStatus.OUTING);
 
         // when
-        OrderResponse order = invoiceService.delivery(invoiceNumber);
+        LocalDateTime deliveryStartDate = LocalDateTime.of(2023, 5, 1, 0, 0, 0);
+        OrderItemResponse orderItem = invoiceService.delivery(invoiceNumber, deliveryStartDate);
 
         // then
+        assertThat(orderItem.getInvoiceNumber()).isEqualTo(invoiceNumber);
+        assertThat(orderItem.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY.getStatusName());
     }
 
     @Test
@@ -93,9 +97,12 @@ class OrderDeliveryInvoiceServiceTest {
         String deliveryPlace = "문 앞";
 
         // when
-        OrderResponse order = invoiceService.deliveryEnd(invoiceNumber, deliveryDate, deliveryPlace);
+        OrderItemResponse orderItem =
+                invoiceService.deliveryEnd(invoiceNumber, deliveryDate, deliveryPlace);
 
         // then
+        assertThat(orderItem.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY_END.getStatusName());
+        assertThat(orderItem.getInvoiceNumber()).isEqualTo(invoiceNumber);
     }
 
     private Order 특정_주문상태_데이터_생성(OrderStatus status) {

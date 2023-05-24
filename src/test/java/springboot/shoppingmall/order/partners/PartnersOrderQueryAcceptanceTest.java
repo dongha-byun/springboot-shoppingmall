@@ -13,8 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceProductTest;
+import springboot.shoppingmall.order.controller.OrderDeliveryRequest;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.DeliveryEndRequest;
+import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryType;
 
@@ -34,7 +36,8 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
         int quantity2 = 10;
         OrderResponse 주문1 = 주문_생성_요청(상품, quantity1, 0, 배송지).as(OrderResponse.class);
         OrderResponse 주문2 = 주문_생성_요청(상품2, quantity2, 0, 배송지).as(OrderResponse.class);
-        OrderResponse 주문2_출고중 = 주문_출고중_요청(주문2).as(OrderResponse.class);
+        OrderItemResponse 주문2_상품 = 첫_번째_주문_상품(주문2);
+        OrderItemResponse 주문2_상품_출고중 = 주문_출고중_요청(주문2, 주문2_상품).as(OrderItemResponse.class);
 
         // when
         ExtractableResponse<Response> 판매자_준비중_주문_조회_결과 =
@@ -62,7 +65,7 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
                 quantity1, quantity2
         );
         목록_조회_결과_검증(판매자_준비중_주문_조회_결과, "data.invoiceNumber", String.class,
-                null, null
+                null, 주문2_상품_출고중.getInvoiceNumber()
         );
         목록_조회_결과_검증(판매자_준비중_주문_조회_결과, "data.totalPrice", Integer.class,
                 주문1.getTotalPrice(), 주문2.getTotalPrice()
@@ -102,12 +105,18 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
         // given
         OrderResponse 주문1 = 주문_생성_요청(상품, 2, 0, 배송지).as(OrderResponse.class);
         OrderResponse 주문2 = 주문_생성_요청(상품2, 10, 0, 배송지).as(OrderResponse.class);
-        OrderResponse 주문1_출고중 = 주문_출고중_요청(주문1).as(OrderResponse.class);
-        OrderResponse 주문2_출고중 = 주문_출고중_요청(주문2).as(OrderResponse.class);
-        String 주문1_송장번호 = 주문1_출고중.getItems().get(0).getInvoiceNumber();
-        String 주문2_송장번호 = 주문2_출고중.getItems().get(0).getInvoiceNumber();
-        OrderResponse 주문1_배송중 = 주문_배송중_요청(주문1_송장번호).as(OrderResponse.class);
-        OrderResponse 주문2_배송중 = 주문_배송중_요청(주문2_송장번호).as(OrderResponse.class);
+        OrderItemResponse 주문1_상품 = 첫_번째_주문_상품(주문1);
+        OrderItemResponse 주문2_상품 = 첫_번째_주문_상품(주문2);
+
+        OrderItemResponse 주문1_상품_출고중 = 주문_출고중_요청(주문1, 주문1_상품).as(OrderItemResponse.class);
+        OrderItemResponse 주문2_상품_출고중 = 주문_출고중_요청(주문2, 주문2_상품).as(OrderItemResponse.class);
+        String 주문1_상품_송장번호 = 주문1_상품_출고중.getInvoiceNumber();
+        String 주문2_상품_송장번호 = 주문2_상품_출고중.getInvoiceNumber();
+
+        LocalDateTime deliveryStartDate =
+                LocalDateTime.of(2023, 5, 1, 0, 0, 0);
+        OrderItemResponse 주문1_상품_배송중 = 주문_배송중_요청(주문1_상품_송장번호, deliveryStartDate).as(OrderItemResponse.class);
+        OrderItemResponse 주문2_상품_배송중 = 주문_배송중_요청(주문2_상품_송장번호, deliveryStartDate).as(OrderItemResponse.class);
 
         // when
         ExtractableResponse<Response> 판매자_주문내역_조회_결과 =
@@ -115,9 +124,15 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
 
         // then
         assertThat(판매자_주문내역_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
-        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.id", Long.class, 주문1_배송중.getId(), 주문2_배송중.getId());
-        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.address", String.class, 배송지.getAddress(), 배송지.getAddress());
-        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.detailAddress", String.class, 배송지.getDetailAddress(), 배송지.getDetailAddress());
+        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.orderItemId", Long.class,
+                주문1_상품_배송중.getId(), 주문2_상품_배송중.getId()
+        );
+        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.address", String.class,
+                배송지.getAddress(), 배송지.getAddress()
+        );
+        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.detailAddress", String.class,
+                배송지.getDetailAddress(), 배송지.getDetailAddress()
+        );
     }
 
     /**
@@ -133,40 +148,53 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
         OrderResponse 주문1 = 주문_생성_요청(상품, 2, 0, 배송지).as(OrderResponse.class);
         OrderResponse 주문2 = 주문_생성_요청(상품2, 10, 0, 배송지).as(OrderResponse.class);
         OrderResponse 주문3 = 주문_생성_요청(상품, 3, 0, 배송지).as(OrderResponse.class);
-        OrderResponse 주문1_출고중 = 주문_출고중_요청(주문1).as(OrderResponse.class);
-        OrderResponse 주문3_출고중 = 주문_출고중_요청(주문3).as(OrderResponse.class);
-        String 주문1_송장번호 = 주문1_출고중.getItems().get(0).getInvoiceNumber();
-        String 주문3_송장번호 = 주문3_출고중.getItems().get(0).getInvoiceNumber();
-        OrderResponse 주문1_배송중 = 주문_배송중_요청(주문1_송장번호).as(OrderResponse.class);
-        OrderResponse 주문3_배송중 = 주문_배송중_요청(주문3_송장번호).as(OrderResponse.class);
+        OrderItemResponse 주문1_상품 = 첫_번째_주문_상품(주문1);
+        OrderItemResponse 주문3_상품 = 첫_번째_주문_상품(주문3);
+
+        OrderItemResponse 주문1_상품_출고중 = 주문_출고중_요청(주문1, 주문1_상품).as(OrderItemResponse.class);
+        OrderItemResponse 주문3_상품_출고중 = 주문_출고중_요청(주문3, 주문3_상품).as(OrderItemResponse.class);
+        String 주문1_송장번호 = 주문1_상품_출고중.getInvoiceNumber();
+        String 주문3_송장번호 = 주문3_상품_출고중.getInvoiceNumber();
+
+        LocalDateTime deliveryStartDate = LocalDateTime.of(2023, 5, 1, 0, 0, 0);
+        OrderItemResponse 주문1_상품_배송중 = 주문_배송중_요청(주문1_송장번호, deliveryStartDate).as(OrderItemResponse.class);
+        OrderItemResponse 주문3_상품_배송중 = 주문_배송중_요청(주문3_송장번호, deliveryStartDate).as(OrderItemResponse.class);
 
         LocalDateTime deliveryDate = LocalDateTime.of(2023, 5, 8, 11, 12, 13);
         String deliveryPlace = "무인택배함";
-        DeliveryEndRequest request = new DeliveryEndRequest(deliveryDate, deliveryPlace);
-        OrderResponse 주문1_배송완료 = 주문_배송완료_요청(주문1_송장번호, request).as(OrderResponse.class);
-        OrderResponse 주문3_배송완료 = 주문_배송완료_요청(주문3_송장번호, request).as(OrderResponse.class);
+        DeliveryEndRequest endRequest = new DeliveryEndRequest(deliveryDate, deliveryPlace);
+        OrderItemResponse 주문1_상품_배송완료 = 주문_배송완료_요청(주문1_송장번호, endRequest).as(OrderItemResponse.class);
+        OrderItemResponse 주문3_상품_배송완료 = 주문_배송완료_요청(주문3_송장번호, endRequest).as(OrderItemResponse.class);
 
         // when
         ExtractableResponse<Response> 판매자_주문내역_조회_결과 = 판매자_주문내역_조회_요청(PartnersOrderQueryType.END);
 
         // then
         assertThat(판매자_주문내역_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
-        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.id", Long.class, 주문1_배송완료.getId(), 주문3_배송완료.getId());
-        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.address", String.class, 배송지.getAddress(), 배송지.getAddress());
-        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.detailAddress", String.class, 배송지.getDetailAddress(), 배송지.getDetailAddress());
+        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.orderItemId", Long.class,
+                주문1_상품.getId(), 주문3_상품.getId()
+        );
+        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.address", String.class,
+                배송지.getAddress(), 배송지.getAddress()
+        );
+        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.detailAddress", String.class,
+                배송지.getDetailAddress(), 배송지.getDetailAddress()
+        );
         목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.deliveryDate", String.class,
                 toStringOfLocalDateTIme(deliveryDate), toStringOfLocalDateTIme(deliveryDate)
         );
-        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.deliveryPlace", String.class, deliveryPlace, deliveryPlace);
+        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.deliveryPlace", String.class,
+                deliveryPlace, deliveryPlace
+        );
     }
 
     /**
-     *  given: 구매자가 취소한 주문이 있다.
-     *  And: 구매자가 환불을 요청한 주문이 있다.
-     *  And: 구매자가 환불받은 주문이 있다.
-     *  And: 구매자가 교환을 요청한 주문이 있다.
-     *  And: 구매자가 교환을 요청하여 상품을 검수 중인 주문이 있다.
-     *  And: 구매자가 환불을 요청하여 상품을 검수 중인 주문이 있다.
+     *  given: 구매자가 취소한 주문이 있다.(1)
+     *  And: 구매자가 환불을 요청한 주문이 있다.(2)
+     *  And: 구매자가 환불받은 주문이 있다.(3)
+     *  And: 구매자가 교환을 요청한 주문이 있다.(4)
+     *  And: 구매자가 교환을 요청하여 상품을 검수 중인 주문이 있다.(5)
+     *  And: 구매자가 환불을 요청하여 상품을 검수 중인 주문이 있다.(6)
      *  And: 판매자가 로그인 되어 있음
      *  when: 배송완료인 주문 목록을 조회하면
      *  then: 배송이 완료된 주문내역이 조회된다.
@@ -175,6 +203,9 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
     @DisplayName("취소/교환/환불 된 주문 내역을 조회한다.")
     void partners_find_order_cancel() {
         // given
+
+        LocalDateTime deliveryStartDate = LocalDateTime.of(2023, 5, 1, 0, 0, 0);
+
         LocalDateTime deliveryDate = LocalDateTime.of(2023, 5, 8, 11, 12, 13);
         String deliveryPlace = "무인택배함";
         DeliveryEndRequest deliveryEndRequest = new DeliveryEndRequest(deliveryDate, deliveryPlace);
@@ -182,53 +213,68 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
         String refundReason = "상품이 불량같아 환불을 요청드립니다.";
         String exchangeReason = "사이즈가 안맞아서 교환 요청합니다.";
 
+        /* == 구매자가 취소한 주문이 있다.(1) == */
         OrderResponse 주문1 = 주문_생성_요청(상품, 2, 0, 배송지).as(OrderResponse.class);
-        OrderResponse 주문1_주문취소 = 주문_주문취소_요청(주문1, cancelReason).as(OrderResponse.class);
+        OrderItemResponse 주문1_상품 = 첫_번째_주문_상품(주문1);
+        OrderItemResponse 주문1_주문취소 = 주문_주문취소_요청(주문1, 주문1_상품, cancelReason).as(OrderItemResponse.class);
 
+        /* == 구매자가 환불을 요청한 주문이 있다.(2) == */
         OrderResponse 주문2 = 주문_생성_요청(상품2, 10, 0, 배송지).as(OrderResponse.class);
-        OrderResponse 주문2_출고중 = 주문_출고중_요청(주문2).as(OrderResponse.class);
-        String 주문2_송장번호 = 주문2_출고중.getItems().get(0).getInvoiceNumber();
-        OrderResponse 주문2_배송중 = 주문_배송중_요청(주문2_송장번호).as(OrderResponse.class);
-        OrderResponse 주문2_배송완료 = 주문_배송완료_요청(주문2_송장번호, deliveryEndRequest).as(OrderResponse.class);
-        OrderResponse 주문2_환불요청 = 주문_환불_요청(주문2_배송완료, refundReason).as(OrderResponse.class);
+        OrderItemResponse 주문2_상품 = 첫_번째_주문_상품(주문2);
 
+        OrderItemResponse 주문2_출고중 = 주문_출고중_요청(주문2, 주문2_상품).as(OrderItemResponse.class);
+        String 주문2_송장번호 = 주문2_출고중.getInvoiceNumber();
+
+        OrderItemResponse 주문2_배송중 = 주문_배송중_요청(주문2_송장번호, deliveryStartDate).as(OrderItemResponse.class);
+        OrderItemResponse 주문2_배송완료 = 주문_배송완료_요청(주문2_송장번호, deliveryEndRequest).as(OrderItemResponse.class);
+        OrderItemResponse 주문2_환불요청 = 주문_환불_요청(주문2, 주문2_배송완료, refundReason).as(OrderItemResponse.class);
+
+        /* == 구매자가 환불받은 주문이 있다.(3) == */
         OrderResponse 주문3 = 주문_생성_요청(상품, 3, 0, 배송지).as(OrderResponse.class);
-        OrderResponse 주문3_출고중 = 주문_출고중_요청(주문3).as(OrderResponse.class);
-        String 주문3_송장번호 = 주문3_출고중.getItems().get(0).getInvoiceNumber();
-        OrderResponse 주문3_배송중 = 주문_배송중_요청(주문3_송장번호).as(OrderResponse.class);
-        OrderResponse 주문3_배송완료 = 주문_배송완료_요청(주문3_송장번호, deliveryEndRequest).as(OrderResponse.class);
-        OrderResponse 주문3_환불요청 = 주문_환불_요청(주문3_배송완료, refundReason).as(OrderResponse.class);
-        OrderResponse 주문3_환불완료 = 주문_환불완료_요청(주문3_환불요청).as(OrderResponse.class);
+        OrderItemResponse 주문3_상품 = 첫_번째_주문_상품(주문3);
+        OrderItemResponse 주문3_상품_출고중 = 주문_출고중_요청(주문3, 주문3_상품).as(OrderItemResponse.class);
 
+        String 주문3_송장번호 = 주문3_상품_출고중.getInvoiceNumber();
+        OrderItemResponse 주문3_상품_배송중 = 주문_배송중_요청(주문3_송장번호, deliveryStartDate).as(OrderItemResponse.class);
+        OrderItemResponse 주문3_상품_배송완료 = 주문_배송완료_요청(주문3_송장번호, deliveryEndRequest).as(OrderItemResponse.class);
+
+        OrderItemResponse 주문3_상품_환불요청 = 주문_환불_요청(주문3, 주문3_상품_배송완료, refundReason).as(OrderItemResponse.class);
+        OrderItemResponse 주문3_상품_검수중 = 주문_검수중_요청(주문3, 주문3_상품_환불요청).as(OrderItemResponse.class);
+        OrderItemResponse 주문3_환불완료 = 주문_환불완료_요청(주문3, 주문3_상품_검수중).as(OrderItemResponse.class);
+
+        /* == 구매자가 교환을 요청한 주문이 있다.(4) == */
         OrderResponse 주문4 = 주문_생성_요청(상품, 3, 0, 배송지).as(OrderResponse.class);
-        OrderResponse 주문4_출고중 = 주문_출고중_요청(주문4).as(OrderResponse.class);
-        String 주문4_송장번호 = 주문4_출고중.getItems().get(0).getInvoiceNumber();
-        OrderResponse 주문4_배송중 = 주문_배송중_요청(주문4_송장번호).as(OrderResponse.class);
-        OrderResponse 주문4_배송완료 = 주문_배송완료_요청(주문4_송장번호, deliveryEndRequest).as(OrderResponse.class);
-        OrderResponse 주문4_교환요청 = 주문_교환_요청(주문4_배송완료, exchangeReason).as(OrderResponse.class);
+        OrderItemResponse 주문4_상품 = 첫_번째_주문_상품(주문4);
 
+        OrderItemResponse 주문4_상품_출고중 = 주문_출고중_요청(주문4, 주문4_상품).as(OrderItemResponse.class);
+        String 주문4_송장번호 = 주문4_상품_출고중.getInvoiceNumber();
+        OrderItemResponse 주문4_상품_배송중 = 주문_배송중_요청(주문4_송장번호, deliveryStartDate).as(OrderItemResponse.class);
+        OrderItemResponse 주문4_상품_배송완료 = 주문_배송완료_요청(주문4_송장번호, deliveryEndRequest).as(OrderItemResponse.class);
+        OrderItemResponse 주문4_상품_교환요청 = 주문_교환_요청(주문4, 주문4_상품_배송완료, exchangeReason).as(OrderItemResponse.class);
+
+        /* == 구매자가 교환을 요청하여 상품을 검수 중인 주문이 있다.(5) == */
         OrderResponse 주문5 = 주문_생성_요청(상품, 3, 0, 배송지).as(OrderResponse.class);
-        OrderResponse 주문5_출고중 = 주문_출고중_요청(주문5).as(OrderResponse.class);
-        String 주문5_송장번호 = 주문5_출고중.getItems().get(0).getInvoiceNumber();
-        OrderResponse 주문5_배송중 = 주문_배송중_요청(주문5_송장번호).as(OrderResponse.class);
-        OrderResponse 주문5_배송완료 = 주문_배송완료_요청(주문5_송장번호, deliveryEndRequest).as(OrderResponse.class);
-        OrderResponse 주문5_교환요청 = 주문_교환_요청(주문5_배송완료, exchangeReason).as(OrderResponse.class);
+        OrderItemResponse 주문5_상품 = 첫_번째_주문_상품(주문5);
 
+        OrderItemResponse 주문5_상품_출고중 = 주문_출고중_요청(주문5, 주문5_상품).as(OrderItemResponse.class);
+        String 주문5_송장번호 = 주문5_상품_출고중.getInvoiceNumber();
+        OrderItemResponse 주문5_상품_배송중 = 주문_배송중_요청(주문5_송장번호, deliveryStartDate).as(OrderItemResponse.class);
+        OrderItemResponse 주문5_상품_배송완료 = 주문_배송완료_요청(주문5_송장번호, deliveryEndRequest).as(OrderItemResponse.class);
+
+        OrderItemResponse 주문5_상품_교환요청 = 주문_교환_요청(주문5, 주문5_상품_배송완료, exchangeReason).as(OrderItemResponse.class);
+        OrderItemResponse 주문5_상품_검수중 = 주문_검수중_요청(주문5, 주문5_상품_교환요청).as(OrderItemResponse.class);
+
+        /* == 구매자가 환불을 요청하여 상품을 검수 중인 주문이 있다.(6) == */
         OrderResponse 주문6 = 주문_생성_요청(상품, 3, 0, 배송지).as(OrderResponse.class);
-        OrderResponse 주문6_출고중 = 주문_출고중_요청(주문6).as(OrderResponse.class);
-        String 주문6_송장번호 = 주문6_출고중.getItems().get(0).getInvoiceNumber();
-        OrderResponse 주문6_배송중 = 주문_배송중_요청(주문6_송장번호).as(OrderResponse.class);
-        OrderResponse 주문6_배송완료 = 주문_배송완료_요청(주문6_송장번호, deliveryEndRequest).as(OrderResponse.class);
-        OrderResponse 주문6_교환요청 = 주문_교환_요청(주문6_배송완료, exchangeReason).as(OrderResponse.class);
-        OrderResponse 주문6_검수중 = 주문_검수중_요청(주문6_교환요청).as(OrderResponse.class);
+        OrderItemResponse 주문6_상품 = 첫_번째_주문_상품(주문6);
 
-        OrderResponse 주문7 = 주문_생성_요청(상품, 3, 0, 배송지).as(OrderResponse.class);
-        OrderResponse 주문7_출고중 = 주문_출고중_요청(주문7).as(OrderResponse.class);
-        String 주문7_송장번호 = 주문7_출고중.getItems().get(0).getInvoiceNumber();
-        OrderResponse 주문7_배송중 = 주문_배송중_요청(주문7_송장번호).as(OrderResponse.class);
-        OrderResponse 주문7_배송완료 = 주문_배송완료_요청(주문7_송장번호, deliveryEndRequest).as(OrderResponse.class);
-        OrderResponse 주문7_환불요청 = 주문_환불_요청(주문7_배송완료, refundReason).as(OrderResponse.class);
-        OrderResponse 주문7_검수중 = 주문_검수중_요청(주문7_환불요청).as(OrderResponse.class);
+        OrderItemResponse 주문6_상품_출고중 = 주문_출고중_요청(주문6, 주문6_상품).as(OrderItemResponse.class);
+        String 주문6_송장번호 = 주문6_상품_출고중.getInvoiceNumber();
+        OrderItemResponse 주문6_상품_배송중 = 주문_배송중_요청(주문6_송장번호, deliveryStartDate).as(OrderItemResponse.class);
+        OrderItemResponse 주문6_상품_배송완료 = 주문_배송완료_요청(주문6_송장번호, deliveryEndRequest).as(OrderItemResponse.class);
+
+        OrderItemResponse 주문6_상품_환불요청 = 주문_환불_요청(주문6, 주문6_상품_배송완료, refundReason).as(OrderItemResponse.class);
+        OrderItemResponse 주문6_상품_검수중 = 주문_검수중_요청(주문6, 주문6_상품_환불요청).as(OrderItemResponse.class);
 
 
         // when
@@ -236,23 +282,23 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
 
         // then
         assertThat(판매자_주문내역_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
-        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.id", Long.class,
-                주문1.getId(), 주문2.getId(), 주문3.getId(), 주문4.getId(), 주문5.getId(), 주문6.getId(), 주문7.getId()
+        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.orderItemId", Long.class,
+                주문1_상품.getId(), 주문2_상품.getId(), 주문3_상품.getId(),
+                주문4_상품.getId(), 주문5_상품.getId(), 주문6_상품.getId()
         );
         목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.orderStatusName", String.class,
                 OrderStatus.CANCEL.getStatusName(), OrderStatus.REFUND.getStatusName(),
                 OrderStatus.REFUND_END.getStatusName(), OrderStatus.EXCHANGE.getStatusName(),
-                OrderStatus.EXCHANGE.getStatusName(), OrderStatus.CHECKING.getStatusName(),
-                OrderStatus.CHECKING.getStatusName()
+                OrderStatus.CHECKING.getStatusName(), OrderStatus.CHECKING.getStatusName()
         );
         목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.cancelReason", String.class,
-                cancelReason, null, null, null, null, null, null
+                cancelReason, null, null, null, null, null
         );
         목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.refundReason", String.class,
-                null, refundReason, refundReason, null, null, null, refundReason
+                null, refundReason, refundReason, null, null, refundReason
         );
         목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.exchangeReason", String.class,
-                null, null, null, exchangeReason, exchangeReason, exchangeReason, null
+                null, null, null, exchangeReason, exchangeReason, null
         );
     }
 

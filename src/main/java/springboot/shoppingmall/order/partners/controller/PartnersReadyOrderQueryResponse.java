@@ -18,9 +18,8 @@ public class PartnersReadyOrderQueryResponse extends PartnersOrderQueryResponse{
                                            String userName, String userTelNo, String orderStatusName,
                                            String receiverName,
                                            String address, String detailAddress, String requestMessage) {
-        super(orderItemId, orderCode, orderDate, productCode, productName, quantity, invoiceNumber, totalPrice,
-                userName,
-                userTelNo, orderStatusName);
+        super(orderItemId, orderCode, orderDate, productCode, productName,
+                quantity, invoiceNumber, totalPrice, userName, userTelNo, orderStatusName);
         this.receiverName = receiverName;
         this.address = address;
         this.detailAddress = detailAddress;
@@ -31,9 +30,9 @@ public class PartnersReadyOrderQueryResponse extends PartnersOrderQueryResponse{
         return new PartnersReadyOrderQueryResponse(
                 dto.getOrderItemId(), dto.getOrderCode(), DateUtils.toStringOfLocalDateTIme(dto.getOrderDate()),
                 dto.getProductCode(), dto.getProductName(), dto.getQuantity(), dto.getInvoiceNumber(),
-                dto.getTotalPrice(), dto.getUserName(), dto.getUserTelNo(),
+                dto.getTotalPrice(), dto.getUserName(), dto.getUserTelNo(), dto.getOrderStatus().getStatusName(),
                 dto.getReceiverName(), dto.getAddress(), dto.getDetailAddress(),
-                dto.getRequestMessage(), dto.getOrderStatus().getStatusName()
+                dto.getRequestMessage()
         );
     }
 
