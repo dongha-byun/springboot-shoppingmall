@@ -77,32 +77,56 @@ class OrderDeliveryInvoiceServiceTest {
     @DisplayName("배송중 상태로 변경")
     void delivery_test() {
         // given
-        Order outingOrder = 특정_주문상태_데이터_생성(OrderStatus.OUTING);
+        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.READY);
+        orderItem.outing(invoiceNumber);
+        List<OrderItem> orderItems = List.of(orderItem);
+        orderRepository.save(
+                new Order(
+                        UUID.randomUUID().toString(), user.getId(), orderItems,
+                        delivery.getReceiverName(), delivery.getZipCode(),
+                        delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
+                )
+        );
 
         // when
         LocalDateTime deliveryStartDate = LocalDateTime.of(2023, 5, 1, 0, 0, 0);
-        OrderItemResponse orderItem = invoiceService.delivery(invoiceNumber, deliveryStartDate);
+        OrderItemResponse deliveryItem = invoiceService.delivery(invoiceNumber, deliveryStartDate);
 
         // then
-        assertThat(orderItem.getInvoiceNumber()).isEqualTo(invoiceNumber);
-        assertThat(orderItem.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY.getStatusName());
+        assertThat(deliveryItem.getInvoiceNumber()).isEqualTo(invoiceNumber);
+        assertThat(deliveryItem.getId()).isEqualTo(orderItem.getId());
+        assertThat(deliveryItem.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY.getStatusName());
     }
 
     @Test
     @DisplayName("배송완료 상태로 변경 - 최종 배송장소와 배송시간도 추가로 저장한다.")
     void delivery_end_test() {
         // given
-        특정_주문상태_데이터_생성(OrderStatus.DELIVERY);
-        LocalDateTime deliveryDate = LocalDateTime.of(2023, 5, 15, 15, 0, 0);
+        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.READY);
+        orderItem.outing(invoiceNumber);
+        orderItem.delivery(LocalDateTime.of(2023, 5, 15, 15, 0, 0));
+
+        List<OrderItem> orderItems = List.of(orderItem);
+        orderRepository.save(
+                new Order(
+                        UUID.randomUUID().toString(), user.getId(), orderItems,
+                        delivery.getReceiverName(), delivery.getZipCode(),
+                        delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
+                )
+        );
+
+        LocalDateTime deliveryCompleteDate =
+                LocalDateTime.of(2023, 5, 18, 12, 0, 0);
         String deliveryPlace = "문 앞";
 
         // when
-        OrderItemResponse orderItem =
-                invoiceService.deliveryEnd(invoiceNumber, deliveryDate, deliveryPlace);
+        OrderItemResponse deliveryCompleteItem =
+                invoiceService.deliveryEnd(invoiceNumber, deliveryCompleteDate, deliveryPlace);
 
         // then
-        assertThat(orderItem.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY_END.getStatusName());
-        assertThat(orderItem.getInvoiceNumber()).isEqualTo(invoiceNumber);
+        assertThat(deliveryCompleteItem.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY_END.getStatusName());
+        assertThat(deliveryCompleteItem.getId()).isEqualTo(orderItem.getId());
+        assertThat(deliveryCompleteItem.getInvoiceNumber()).isEqualTo(invoiceNumber);
     }
 
     private Order 특정_주문상태_데이터_생성(OrderStatus status) {
