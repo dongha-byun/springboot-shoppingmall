@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -34,11 +35,8 @@ public class Order extends BaseEntity {
 
     private LocalDateTime orderDate;
     private int totalPrice;
-    private String receiverName;
-    private String zipCode;
-    private String address;
-    private String detailAddress;
-    private String requestMessage;
+    @Embedded
+    private OrderDeliveryInfo orderDeliveryInfo;
 
     public Order(String orderCode, Long userId, List<OrderItem> items,
                  String receiverName, String zipCode, String address, String detailAddress,
@@ -53,11 +51,9 @@ public class Order extends BaseEntity {
         this.orderCode = orderCode;
         this.userId = userId;
         this.orderDate = orderDate;
-        this.receiverName = receiverName;
-        this.zipCode = zipCode;
-        this.address = address;
-        this.detailAddress = detailAddress;
-        this.requestMessage = requestMessage;
+        this.orderDeliveryInfo = new OrderDeliveryInfo(
+                receiverName, zipCode, address, detailAddress, requestMessage
+        );
 
         initItems(items);
         calculateTotalPrice();
@@ -91,5 +87,25 @@ public class Order extends BaseEntity {
                 .orElseThrow(
                         () -> new IllegalArgumentException("주문 상품 정보가 존재하지 않습니다.")
                 );
+    }
+
+    public String getReceiverName() {
+        return this.orderDeliveryInfo.getReceiverName();
+    }
+
+    public String getZipCode() {
+        return this.orderDeliveryInfo.getZipCode();
+    }
+
+    public String getAddress() {
+        return this.orderDeliveryInfo.getAddress();
+    }
+
+    public String getDetailAddress() {
+        return this.orderDeliveryInfo.getDetailAddress();
+    }
+
+    public String getRequestMessage() {
+        return this.orderDeliveryInfo.getRequestMessage();
     }
 }

@@ -34,9 +34,9 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
                                 order.totalPrice, user.userName, user.telNo.telNo,
-                                orderItem.orderStatus, order.receiverName,
-                                order.address, order.detailAddress,
-                                order.requestMessage))
+                                orderItem.orderStatus, order.orderDeliveryInfo.receiverName,
+                                order.orderDeliveryInfo.address, order.orderDeliveryInfo.detailAddress,
+                                order.orderDeliveryInfo.requestMessage))
                 .from(orderItem)
                 .join(order).on(orderItem.order.eq(order))
                 .join(user).on(user.id.eq(order.userId))
@@ -57,9 +57,9 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
                                 order.totalPrice, user.userName, user.telNo.telNo,
-                                orderItem.orderStatus, order.receiverName,
-                                order.address, order.detailAddress,
-                                order.requestMessage))
+                                orderItem.orderStatus, order.orderDeliveryInfo.receiverName,
+                                order.orderDeliveryInfo.address, order.orderDeliveryInfo.detailAddress,
+                                order.orderDeliveryInfo.requestMessage))
                 .from(orderItem)
                 .join(order).on(orderItem.order.eq(order))
                 .join(user).on(user.id.eq(orderItem.order.userId))
@@ -80,8 +80,9 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
                                 order.totalPrice, user.userName, user.telNo.telNo,
-                                orderItem.orderStatus, order.receiverName,
-                                order.address, order.detailAddress, order.requestMessage,
+                                orderItem.orderStatus, order.orderDeliveryInfo.receiverName,
+                                order.orderDeliveryInfo.address, order.orderDeliveryInfo.detailAddress,
+                                order.orderDeliveryInfo.requestMessage,
                                 orderItem.invoiceNumber, orderItem.deliveryCompleteDate, orderItem.deliveryPlace))
                 .from(orderItem)
                 .join(order).on(orderItem.order.eq(order))
