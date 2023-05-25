@@ -34,8 +34,10 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
                                 order.totalPrice, user.userName, user.telNo.telNo,
-                                orderItem.orderStatus, order.orderDeliveryInfo.receiverName,
-                                order.orderDeliveryInfo.address, order.orderDeliveryInfo.detailAddress,
+                                orderItem.orderStatus,
+                                order.orderDeliveryInfo.receiver.name,
+                                order.orderDeliveryInfo.address.address,
+                                order.orderDeliveryInfo.address.detailAddress,
                                 order.orderDeliveryInfo.requestMessage))
                 .from(orderItem)
                 .join(order).on(orderItem.order.eq(order))
@@ -57,8 +59,10 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
                                 order.totalPrice, user.userName, user.telNo.telNo,
-                                orderItem.orderStatus, order.orderDeliveryInfo.receiverName,
-                                order.orderDeliveryInfo.address, order.orderDeliveryInfo.detailAddress,
+                                orderItem.orderStatus,
+                                order.orderDeliveryInfo.receiver.name,
+                                order.orderDeliveryInfo.address.address,
+                                order.orderDeliveryInfo.address.detailAddress,
                                 order.orderDeliveryInfo.requestMessage))
                 .from(orderItem)
                 .join(order).on(orderItem.order.eq(order))
@@ -80,8 +84,9 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
                                 order.totalPrice, user.userName, user.telNo.telNo,
-                                orderItem.orderStatus, order.orderDeliveryInfo.receiverName,
-                                order.orderDeliveryInfo.address, order.orderDeliveryInfo.detailAddress,
+                                orderItem.orderStatus, order.orderDeliveryInfo.receiver.name,
+                                order.orderDeliveryInfo.address.address,
+                                order.orderDeliveryInfo.address.detailAddress,
                                 order.orderDeliveryInfo.requestMessage,
                                 orderItem.invoiceNumber, orderItem.deliveryCompleteDate, orderItem.deliveryPlace))
                 .from(orderItem)
