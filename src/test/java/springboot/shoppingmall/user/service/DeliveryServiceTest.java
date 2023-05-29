@@ -40,7 +40,8 @@ class DeliveryServiceTest {
     void createTest(){
         // given
         DeliveryRequest deliveryRequest = new DeliveryRequest(
-                "닉네임 1", "수령인 1", "11002", "서울시 영등포구 당산동", "1동 2호", ""
+                "닉네임 1", "수령인 1", "010-1234-1234",
+                "11002", "서울시 영등포구 당산동", "1동 2호", ""
         );
 
         // when
@@ -55,10 +56,12 @@ class DeliveryServiceTest {
     void deleteTest(){
         // given
         DeliveryRequest deliveryRequest1 = new DeliveryRequest(
-                "닉네임 1", "수령인 1", "11002", "서울시 영등포구 당산동", "1동 2호", ""
+                "닉네임 1", "수령인 1", "010-1234-1234",
+                "11002", "서울시 영등포구 당산동", "1동 2호", ""
         );
         DeliveryRequest deliveryRequest2 = new DeliveryRequest(
-                "닉네임 2", "수령인 1", "11002", "서울시 영등포구 당산동", "1동 2호", ""
+                "닉네임 2", "수령인 1", "010-1234-1234",
+                "11002", "서울시 영등포구 당산동", "1동 2호", ""
         );
         deliveryService.create(saveUser.getId(), deliveryRequest1);
         DeliveryResponse deliveryResponse = deliveryService.create(saveUser.getId(), deliveryRequest2);

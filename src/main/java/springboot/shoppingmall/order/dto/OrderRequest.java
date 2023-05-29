@@ -14,6 +14,7 @@ public class OrderRequest {
     private List<OrderItemRequest> items;
     private int deliveryFee;
     private String receiverName;
+    private String receiverPhoneNumber;
     private String zipCode;
     private String address;
     private String detailAddress;

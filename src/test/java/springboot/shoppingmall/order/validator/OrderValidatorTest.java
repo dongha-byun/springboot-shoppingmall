@@ -66,11 +66,15 @@ class OrderValidatorTest {
         );
         List<OrderItem> orderItems = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
 
-        Delivery delivery = deliveryRepository.save(new Delivery("배송지1", "수령인1", "10010", "주소", "상세주소", "요청사항", user));
+        Delivery delivery = deliveryRepository.save(
+                new Delivery("배송지1", "수령인1", "010-1234-1234",
+                        "10010", "주소", "상세주소", "요청사항", user)
+        );
 
         Order savedOrder = orderRepository.save(
                 new Order("test-order-code", user.getId(), orderItems,
-                        delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                        delivery.getZipCode(), delivery.getAddress(),
                         delivery.getDetailAddress(), delivery.getRequestMessage())
         );
 

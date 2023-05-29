@@ -90,7 +90,7 @@ class OrderHistoryRepositoryTest {
                 UUID.randomUUID().toString(), user.getId(),
                 List.of(new OrderItem(product, 2, OrderStatus.READY)),
                 LocalDateTime.of(2022, 11, 5, 12, 0, 0),
-                delivery.getReceiverName(), delivery.getZipCode(),
+                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
                 delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
         );
 
@@ -98,7 +98,7 @@ class OrderHistoryRepositoryTest {
                 UUID.randomUUID().toString(), user.getId(),
                 List.of(new OrderItem(product, 2, OrderStatus.READY)),
                 LocalDateTime.of(2023, 2, 5, 12, 0, 0),
-                delivery.getReceiverName(), delivery.getZipCode(),
+                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
                 delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
         );
 
@@ -106,7 +106,7 @@ class OrderHistoryRepositoryTest {
                 UUID.randomUUID().toString(), user.getId(),
                 List.of(new OrderItem(product, 2, OrderStatus.READY)),
                 LocalDateTime.of(2023, 5, 5, 12, 0, 0),
-                delivery.getReceiverName(), delivery.getZipCode(),
+                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
                 delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
         );
     }

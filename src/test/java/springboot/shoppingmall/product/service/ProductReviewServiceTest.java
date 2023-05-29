@@ -74,7 +74,8 @@ class ProductReviewServiceTest {
         List<OrderItem> orderItems = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
         Order endOrder = orderRepository.save(
                 new Order("test-order-code", user.getId(), orderItems,
-                        "test-receiver", "test-zipcode", "test-address",
+                        "test-receiver", "010-1234-1234",
+                        "test-zipcode", "test-address",
                         "test-detail-address", "test-message")
         );
 
@@ -113,7 +114,8 @@ class ProductReviewServiceTest {
         List<OrderItem> orderItems = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
         Order endOrder = orderRepository.save(
                 new Order("test-order-code", user.getId(), orderItems,
-                        "test-receiver", "test-zipcode", "test-address",
+                        "test-receiver", "010-1234-1234",
+                        "test-zipcode", "test-address",
                         "test-detail-address", "test-message")
         );
 
@@ -274,20 +276,30 @@ class ProductReviewServiceTest {
         );
 
         Order endOrder1 = orderRepository.save(
-                new Order("test-order-code-1", user1.getId(), List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
-                        "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
+                new Order("test-order-code-1", user1.getId(),
+                        List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
+                        "test-receiver", "010-1234-1234",
+                        "test-zipcode", "test-address", "test-detail-address", "test-message"));
         Order endOrder2 = orderRepository.save(
-                new Order("test-order-code-2", user2.getId(), List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
-                        "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
+                new Order("test-order-code-2", user2.getId(),
+                        List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
+                        "test-receiver", "010-1234-1234",
+                        "test-zipcode", "test-address", "test-detail-address", "test-message"));
         Order endOrder3 = orderRepository.save(
-                new Order("test-order-code-3", user3.getId(), List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
-                        "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
+                new Order("test-order-code-3", user3.getId(),
+                        List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
+                        "test-receiver", "010-1234-1234",
+                        "test-zipcode", "test-address", "test-detail-address", "test-message"));
         Order endOrder4 = orderRepository.save(
-                new Order("test-order-code-4", user4.getId(), List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
-                        "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
+                new Order("test-order-code-4", user4.getId(),
+                        List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
+                        "test-receiver", "010-1234-1234",
+                        "test-zipcode", "test-address", "test-detail-address", "test-message"));
         Order endOrder5 = orderRepository.save(
-                new Order("test-order-code-5", user5.getId(), List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
-                        "test-receiver", "test-zipcode", "test-address", "test-detail-address", "test-message"));
+                new Order("test-order-code-5", user5.getId(),
+                        List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
+                        "test-receiver", "010-1234-1234",
+                        "test-zipcode", "test-address", "test-detail-address", "test-message"));
 
         // when & then
         service.createProductReview(user1.getId(), user1.getLoginId(), endOrder1.getId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 1", 5));

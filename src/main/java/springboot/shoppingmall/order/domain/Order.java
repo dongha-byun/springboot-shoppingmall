@@ -39,20 +39,24 @@ public class Order extends BaseEntity {
     private OrderDeliveryInfo orderDeliveryInfo;
 
     public Order(String orderCode, Long userId, List<OrderItem> items,
-                 String receiverName, String zipCode, String address, String detailAddress,
+                 String receiverName, String receiverPhoneNumber,
+                 String zipCode, String address, String detailAddress,
                  String requestMessage){
         this(orderCode, userId, items, LocalDateTime.now(),
-                receiverName, zipCode, address, detailAddress, requestMessage);
+                receiverName, receiverPhoneNumber,
+                zipCode, address, detailAddress, requestMessage);
     }
 
     public Order(String orderCode, Long userId, List<OrderItem> items, LocalDateTime orderDate,
-                 String receiverName, String zipCode, String address,
+                 String receiverName, String receiverPhoneNumber,
+                 String zipCode, String address,
                  String detailAddress, String requestMessage) {
         this.orderCode = orderCode;
         this.userId = userId;
         this.orderDate = orderDate;
         this.orderDeliveryInfo = new OrderDeliveryInfo(
-                receiverName, zipCode, address, detailAddress, requestMessage
+                receiverName, receiverPhoneNumber,
+                zipCode, address, detailAddress, requestMessage
         );
 
         initItems(items);
@@ -63,10 +67,12 @@ public class Order extends BaseEntity {
         items.forEach(this::addOrderItem);
     }
 
-    public static Order createOrder(String orderCode, Long userId, List<OrderItem> items, String receiverName,
+    public static Order createOrder(String orderCode, Long userId, List<OrderItem> items,
+                                    String receiverName, String receiverPhoneNumber,
                                     String zipCode, String address, String detailAddress, String requestMessage){
         return new Order(orderCode, userId, items,
-                receiverName, zipCode, address, detailAddress, requestMessage);
+                receiverName, receiverPhoneNumber,
+                zipCode, address, detailAddress, requestMessage);
     }
 
     public void addOrderItem(OrderItem item) {
@@ -92,7 +98,9 @@ public class Order extends BaseEntity {
     public String getReceiverName() {
         return this.orderDeliveryInfo.getReceiverName();
     }
-
+    public String getReceiverPhoneNumber() {
+        return this.orderDeliveryInfo.getReceiverPhoneNumber();
+    }
     public String getZipCode() {
         return this.orderDeliveryInfo.getZipCode();
     }

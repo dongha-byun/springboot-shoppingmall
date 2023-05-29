@@ -83,7 +83,7 @@ class OrderDeliveryInvoiceServiceTest {
         orderRepository.save(
                 new Order(
                         UUID.randomUUID().toString(), user.getId(), orderItems,
-                        delivery.getReceiverName(), delivery.getZipCode(),
+                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
                         delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
                 )
         );
@@ -110,7 +110,7 @@ class OrderDeliveryInvoiceServiceTest {
         orderRepository.save(
                 new Order(
                         UUID.randomUUID().toString(), user.getId(), orderItems,
-                        delivery.getReceiverName(), delivery.getZipCode(),
+                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
                         delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
                 )
         );
@@ -136,7 +136,7 @@ class OrderDeliveryInvoiceServiceTest {
         return orderRepository.save(
                 new Order(
                         UUID.randomUUID().toString(), user.getId(), orderItems,
-                        delivery.getReceiverName(), delivery.getZipCode(),
+                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
                         delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
                 )
         );

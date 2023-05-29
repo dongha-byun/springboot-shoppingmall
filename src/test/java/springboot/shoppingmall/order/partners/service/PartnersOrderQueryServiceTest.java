@@ -91,19 +91,19 @@ class PartnersOrderQueryServiceTest {
 
         order1 = Order.createOrder(
                 "test-order-code1", user.getId(), List.of(new OrderItem(product1, 3, OrderStatus.READY)),
-                "수령인1", "01234",
+                "수령인1", "010-1234-1234", "01234",
                 "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요"
         );
 
         order2 = Order.createOrder(
                 "test-order-code2", user.getId(), List.of(new OrderItem(product2, 4, OrderStatus.READY)),
-                "수령인1", "01234",
+                "수령인1", "010-1234-1234","01234",
                 "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요"
         );
 
         order3 = Order.createOrder(
                 "test-order-code3", user.getId(), List.of(new OrderItem(product3, 5, OrderStatus.READY)),
-                "수령인1", "01234",
+                "수령인1", "010-1234-1234","01234",
                 "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요"
         );
 

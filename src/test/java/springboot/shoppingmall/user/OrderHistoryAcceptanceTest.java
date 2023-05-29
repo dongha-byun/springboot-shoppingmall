@@ -37,6 +37,7 @@ public class OrderHistoryAcceptanceTest extends AcceptanceTest {
         상품 = 상품_등록_요청("상품 1", 10000, 200, 상위_카테고리.getId(), 하위_카테고리.getId()).as(ProductResponse.class);
         배송지 = 배송지_추가_요청("배송지 1",
                 "수령인 1",
+                "010-1234-1234",
                 "10010",
                 "서울시 서초구 서초동 103번지",
                 "109호",

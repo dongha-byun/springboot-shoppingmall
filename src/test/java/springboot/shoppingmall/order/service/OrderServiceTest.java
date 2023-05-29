@@ -45,8 +45,6 @@ class OrderServiceTest {
     @Autowired
     OrderService orderService;
 
-    @Autowired
-    OrderRepository orderRepository;
     User user;
     Product product;
     Product product2;
@@ -66,8 +64,9 @@ class OrderServiceTest {
                 .userName("테스터1").loginId("test1").password("test1!").telNo("010-0000-0000")
                 .build();
         delivery = Delivery.builder()
-                .nickName("수령지 1").receiverName("수령인 1").zipCode("10010")
-                .address("서울시 동작구 사당동").detailAddress("101호").requestMessage("도착 시 연락주세요.").build();
+                .nickName("수령지 1").receiverName("수령인 1").receiverPhoneNumber("010-1234-1234")
+                .zipCode("10010").address("서울시 동작구 사당동").detailAddress("101호")
+                .requestMessage("도착 시 연락주세요.").build();
 
         user.addDelivery(delivery);
         userRepository.save(user);
@@ -105,7 +104,8 @@ class OrderServiceTest {
 
         OrderRequest orderRequest = new OrderRequest(
                 "test-tid", PayType.KAKAO_PAY.name(), itemRequests, 3000,
-                "test-receiver", "test-zipcode", "test-address", "test-detail-address",
+                "test-receiver", "010-1234-1234",
+                "test-zipcode", "test-address", "test-detail-address",
                 "test-request-message"
         );
 
@@ -114,6 +114,8 @@ class OrderServiceTest {
 
         // then
         assertThat(order.getId()).isNotNull();
+        assertThat(order.getReceiverPhoneNumber()).isEqualTo("010-1234-1234");
+
         assertThat(order.getItems()).hasSize(2);
 
         List<OrderItemResponse> orderItems = order.getItems();
@@ -138,7 +140,8 @@ class OrderServiceTest {
         OrderRequest orderRequest = new OrderRequest(
                 "test-tid", PayType.KAKAO_PAY.name(),
                 List.of(orderItemRequest), 3000,
-                delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                delivery.getZipCode(), delivery.getAddress(),
                 delivery.getDetailAddress(), delivery.getRequestMessage()
         );
         OrderResponse orderResponse = orderService.createOrder(user.getId(), orderRequest);
@@ -182,7 +185,7 @@ class OrderServiceTest {
         OrderItemRequest orderItemRequest = new OrderItemRequest(product.getId(), orderQuantity);
         OrderRequest orderRequest = new OrderRequest(
                 "test-tid", PayType.KAKAO_PAY.name(),
-                List.of(orderItemRequest), 0, "덩라",
+                List.of(orderItemRequest), 0, "덩라", "010-1234-1234",
                 "01234", "서울시 테스트구 테스트동", "덩라빌딩 301호",
                 "조심히 오세요."
         );

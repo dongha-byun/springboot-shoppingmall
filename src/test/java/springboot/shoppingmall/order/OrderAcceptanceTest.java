@@ -19,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceProductTest;
 import springboot.shoppingmall.authorization.exception.ErrorCode;
-import springboot.shoppingmall.order.controller.OrderDeliveryRequest;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
@@ -67,7 +66,8 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         );
         Order order = orderRepository.save(
                 new Order("test-order-code", user.getId(), orderItems,
-                        delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                        delivery.getZipCode(), delivery.getAddress(),
                         delivery.getDetailAddress(), delivery.getRequestMessage())
         );
 
@@ -99,6 +99,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         assertThat(주문_생성_결과.jsonPath().getString("orderDate")).isNotNull();
         assertThat(주문_생성_결과.jsonPath().getString("orderCode")).isNotNull();
         assertThat(주문_생성_결과.jsonPath().getString("receiverName")).isEqualTo(배송지.getReceiverName());
+        assertThat(주문_생성_결과.jsonPath().getString("receiverPhoneNumber")).isEqualTo(배송지.getReceiverPhoneNumber());
         assertThat(주문_생성_결과.jsonPath().getList("items.orderStatusName")).containsExactly(
                 OrderStatus.READY.getStatusName()
         );
@@ -438,6 +439,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         params.put("items", List.of(itemMap));
         params.put("deliveryFee", deliveryFee);
         params.put("receiverName", delivery.getReceiverName());
+        params.put("receiverPhoneNumber", delivery.getReceiverPhoneNumber());
         params.put("zipCode", delivery.getZipCode());
         params.put("address", delivery.getAddress());
         params.put("detailAddress", delivery.getDetailAddress());

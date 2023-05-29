@@ -49,7 +49,8 @@ public class OrderTest {
         // given
         int quantity = 2;
         Order order = Order.createOrder("outing-order-code", 1L, orderItems,
-                delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                delivery.getZipCode(), delivery.getAddress(),
                 delivery.getDetailAddress(), delivery.getRequestMessage());
 
         // when

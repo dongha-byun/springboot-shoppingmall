@@ -71,22 +71,26 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
 
         Order order = orderRepository.save(
                 new Order(UUID.randomUUID().toString(), user.getId(), order1Items,
-                        delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                        delivery.getZipCode(), delivery.getAddress(),
                         delivery.getDetailAddress(), delivery.getRequestMessage())
         );
         Order order2 = orderRepository.save(
                 new Order(UUID.randomUUID().toString(), user.getId(), order2Items,
-                        delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                        delivery.getZipCode(), delivery.getAddress(),
                         delivery.getDetailAddress(), delivery.getRequestMessage())
         );
         Order order3 = orderRepository.save(
                 new Order(UUID.randomUUID().toString(), user2.getId(), order3Items,
-                        delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                        delivery.getZipCode(), delivery.getAddress(),
                         delivery.getDetailAddress(), delivery.getRequestMessage())
         );
         Order deliveryOrder = orderRepository.save(
                 new Order(UUID.randomUUID().toString(), user.getId(), order4Items,
-                        delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                        delivery.getZipCode(), delivery.getAddress(),
                         delivery.getDetailAddress(), delivery.getRequestMessage())
         );
         배송완료_주문 = OrderResponse.of(order);

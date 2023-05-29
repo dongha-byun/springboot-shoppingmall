@@ -82,6 +82,9 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
         목록_조회_결과_검증(판매자_준비중_주문_조회_결과, "data.receiverName", String.class,
                 배송지.getReceiverName(), 배송지.getReceiverName()
         );
+        목록_조회_결과_검증(판매자_준비중_주문_조회_결과, "data.receiverPhoneNumber", String.class,
+                배송지.getReceiverPhoneNumber(), 배송지.getReceiverPhoneNumber()
+        );
         목록_조회_결과_검증(판매자_준비중_주문_조회_결과, "data.address", String.class,
                 배송지.getAddress(), 배송지.getAddress()
         );
@@ -126,6 +129,9 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
         assertThat(판매자_주문내역_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
         목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.orderItemId", Long.class,
                 주문1_상품_배송중.getId(), 주문2_상품_배송중.getId()
+        );
+        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.receiverPhoneNumber", String.class,
+                배송지.getReceiverPhoneNumber(), 배송지.getReceiverPhoneNumber()
         );
         목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.address", String.class,
                 배송지.getAddress(), 배송지.getAddress()
@@ -173,6 +179,9 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
         assertThat(판매자_주문내역_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
         목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.orderItemId", Long.class,
                 주문1_상품.getId(), 주문3_상품.getId()
+        );
+        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.receiverPhoneNumber", String.class,
+                배송지.getReceiverPhoneNumber(), 배송지.getReceiverPhoneNumber()
         );
         목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.address", String.class,
                 배송지.getAddress(), 배송지.getAddress()

@@ -60,7 +60,10 @@ class OrderFinderTest {
                         "test-product-code"
                 )
         );
-        delivery = deliveryRepository.save(new Delivery("닉네임", "수령인", "10010", "수령지주소", "수령지상세주소", "요구사항", user));
+        delivery = deliveryRepository.save(
+                new Delivery("닉네임", "수령인", "010-1234-1234",
+                        "10010", "수령지주소", "수령지상세주소", "요구사항", user)
+        );
 
         orderItems = List.of(
                 new OrderItem(product, 20, OrderStatus.READY)
@@ -73,8 +76,9 @@ class OrderFinderTest {
         // given
         Order order = orderRepository.save(
                 new Order(UUID.randomUUID().toString(), user.getId(), orderItems,
-                        delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
-                        delivery.getDetailAddress(), delivery.getRequestMessage()
+                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                        delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress(),
+                        delivery.getRequestMessage()
                 )
         );
 
@@ -93,8 +97,9 @@ class OrderFinderTest {
         Order order = orderRepository.save(
                 new Order(
                         UUID.randomUUID().toString(), user.getId(), orderItems,
-                        delivery.getReceiverName(), delivery.getZipCode(), delivery.getAddress(),
-                        delivery.getDetailAddress(), delivery.getRequestMessage()
+                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                        delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress(),
+                        delivery.getRequestMessage()
                 )
         );
         OrderItem savedOrderItem = order.getItems().get(0);

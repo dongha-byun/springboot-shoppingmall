@@ -18,15 +18,20 @@ public class OrderDeliveryInfo {
     private Address address;
     private String requestMessage;
 
-    public OrderDeliveryInfo(String receiverName, String zipCode, String address, String detailAddress,
+    public OrderDeliveryInfo(String receiverName, String receiverPhoneNumber,
+                             String zipCode, String address, String detailAddress,
                              String requestMessage) {
-        this.receiver = new Receiver(receiverName);
+        this.receiver = new Receiver(receiverName, receiverPhoneNumber);
         this.address = new Address(zipCode, address, detailAddress);
         this.requestMessage = requestMessage;
     }
 
     public String getReceiverName() {
         return this.receiver.getName();
+    }
+
+    public String getReceiverPhoneNumber() {
+        return this.receiver.getPhoneNumber();
     }
 
     public String getAddress() {

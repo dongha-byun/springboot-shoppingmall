@@ -22,6 +22,7 @@ public class OrderResponse {
     private List<OrderItemResponse> items;
     private int totalPrice;
     private String receiverName;
+    private String receiverPhoneNumber;
     private String zipCode;
     private String address;
     private String detailAddress;
@@ -32,7 +33,8 @@ public class OrderResponse {
         return new OrderResponse(order.getId(), order.getOrderCode(),
                 toStringOfLocalDateTIme(order.getOrderDate()),
                 ofItemList(order), order.getTotalPrice(),
-                order.getReceiverName(), order.getZipCode(), order.getAddress(),
+                order.getReceiverName(), order.getReceiverPhoneNumber(),
+                order.getZipCode(), order.getAddress(),
                 order.getDetailAddress(), order.getRequestMessage(),
                 null);
     }
@@ -41,7 +43,8 @@ public class OrderResponse {
         return new OrderResponse(order.getId(), order.getOrderCode(),
                 toStringOfLocalDateTIme(order.getOrderDate()),
                 ofItemList(order), order.getTotalPrice(),
-                order.getReceiverName(), order.getZipCode(), order.getAddress(),
+                order.getReceiverName(), order.getReceiverPhoneNumber(),
+                order.getZipCode(), order.getAddress(),
                 order.getDetailAddress(), order.getRequestMessage(),
                 deliveryInvoice);
     }

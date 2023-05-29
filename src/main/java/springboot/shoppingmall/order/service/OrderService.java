@@ -43,8 +43,8 @@ public class OrderService {
         String orderCode = generateOrderCode();
         Order newOrder = orderRepository.save(
                 Order.createOrder(orderCode, userId, items,
-                        orderRequest.getReceiverName(), orderRequest.getZipCode(),
-                        orderRequest.getAddress(), orderRequest.getDetailAddress(),
+                        orderRequest.getReceiverName(), orderRequest.getReceiverPhoneNumber(),
+                        orderRequest.getZipCode(), orderRequest.getAddress(), orderRequest.getDetailAddress(),
                         orderRequest.getRequestMessage())
         );
 

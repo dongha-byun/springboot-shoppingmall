@@ -36,6 +36,7 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 order.totalPrice, user.userName, user.telNo.telNo,
                                 orderItem.orderStatus,
                                 order.orderDeliveryInfo.receiver.name,
+                                order.orderDeliveryInfo.receiver.phoneNumber,
                                 order.orderDeliveryInfo.address.address,
                                 order.orderDeliveryInfo.address.detailAddress,
                                 order.orderDeliveryInfo.requestMessage))
@@ -61,6 +62,7 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 order.totalPrice, user.userName, user.telNo.telNo,
                                 orderItem.orderStatus,
                                 order.orderDeliveryInfo.receiver.name,
+                                order.orderDeliveryInfo.receiver.phoneNumber,
                                 order.orderDeliveryInfo.address.address,
                                 order.orderDeliveryInfo.address.detailAddress,
                                 order.orderDeliveryInfo.requestMessage))
@@ -84,11 +86,13 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
                                 order.totalPrice, user.userName, user.telNo.telNo,
-                                orderItem.orderStatus, order.orderDeliveryInfo.receiver.name,
+                                orderItem.orderStatus,
+                                order.orderDeliveryInfo.receiver.name,
+                                order.orderDeliveryInfo.receiver.phoneNumber,
                                 order.orderDeliveryInfo.address.address,
                                 order.orderDeliveryInfo.address.detailAddress,
                                 order.orderDeliveryInfo.requestMessage,
-                                orderItem.invoiceNumber, orderItem.deliveryCompleteDate, orderItem.deliveryPlace))
+                                orderItem.deliveryCompleteDate, orderItem.deliveryPlace))
                 .from(orderItem)
                 .join(order).on(orderItem.order.eq(order))
                 .join(user).on(user.id.eq(order.userId))

@@ -28,6 +28,8 @@ public class Delivery extends BaseEntity {
 
     private String receiverName;
 
+    private String receiverPhoneNumber;
+
     private String zipCode;
     private String address;
     private String detailAddress;
@@ -38,10 +40,12 @@ public class Delivery extends BaseEntity {
     private User user;
 
     @Builder
-    public Delivery(String nickName, String receiverName, String zipCode, String address, String detailAddress,
+    public Delivery(String nickName, String receiverName, String receiverPhoneNumber,
+                    String zipCode, String address, String detailAddress,
                     String requestMessage, User user) {
         this.nickName = nickName;
         this.receiverName = receiverName;
+        this.receiverPhoneNumber = receiverPhoneNumber;
         this.zipCode = zipCode;
         this.address = address;
         this.detailAddress = detailAddress;
