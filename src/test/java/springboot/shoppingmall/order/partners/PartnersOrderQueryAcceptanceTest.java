@@ -46,8 +46,10 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
         // then
         assertThat(판매자_준비중_주문_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
         목록_조회_결과_검증(판매자_준비중_주문_조회_결과, "data.orderItemId", Long.class,
-                주문1.getItems().get(0).getId(),
-                주문2.getItems().get(0).getId()
+                주문1.getItems().get(0).getId(), 주문2.getItems().get(0).getId()
+        );
+        목록_조회_결과_검증(판매자_준비중_주문_조회_결과, "data.orderId", Long.class,
+                주문1.getId(), 주문2.getId()
         );
         목록_조회_결과_검증(판매자_준비중_주문_조회_결과, "data.orderCode", String.class,
                 주문1.getOrderCode(), 주문2.getOrderCode()
@@ -130,6 +132,9 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
         목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.orderItemId", Long.class,
                 주문1_상품_배송중.getId(), 주문2_상품_배송중.getId()
         );
+        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.orderId", Long.class,
+                주문1.getId(), 주문2.getId()
+        );
         목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.receiverPhoneNumber", String.class,
                 배송지.getReceiverPhoneNumber(), 배송지.getReceiverPhoneNumber()
         );
@@ -179,6 +184,9 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
         assertThat(판매자_주문내역_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
         목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.orderItemId", Long.class,
                 주문1_상품.getId(), 주문3_상품.getId()
+        );
+        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.orderId", Long.class,
+                주문1.getId(), 주문3.getId()
         );
         목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.receiverPhoneNumber", String.class,
                 배송지.getReceiverPhoneNumber(), 배송지.getReceiverPhoneNumber()
@@ -294,6 +302,9 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
         목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.orderItemId", Long.class,
                 주문1_상품.getId(), 주문2_상품.getId(), 주문3_상품.getId(),
                 주문4_상품.getId(), 주문5_상품.getId(), 주문6_상품.getId()
+        );
+        목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.orderId", Long.class,
+                주문1.getId(), 주문2.getId(), 주문3.getId(), 주문4.getId(), 주문5.getId(), 주문6.getId()
         );
         목록_조회_결과_검증(판매자_주문내역_조회_결과, "data.orderStatusName", String.class,
                 OrderStatus.CANCEL.getStatusName(), OrderStatus.REFUND.getStatusName(),

@@ -18,15 +18,14 @@ public class PartnersEndOrderQueryDto extends PartnersOrderQueryDto{
     private LocalDateTime deliveryDate; // 배송완료 시간
     private String deliveryPlace;       // 배송장소
 
-    public PartnersEndOrderQueryDto(Long orderItemId, String orderCode, LocalDateTime orderDate, String productCode,
+    public PartnersEndOrderQueryDto(Long orderItemId, Long orderId, String orderCode, LocalDateTime orderDate, String productCode,
                                     String productName, int quantity, String invoiceNumber, int totalPrice,
                                     String userName, String userTelNo, OrderStatus orderStatus,
                                     String receiverName, String receiverPhoneNumber,
                                     String address, String detailAddress, String requestMessage,
                                     LocalDateTime deliveryDate, String deliveryPlace) {
-        super(orderItemId, orderCode, orderDate, productCode, productName, quantity, invoiceNumber, totalPrice,
-                userName,
-                userTelNo, orderStatus);
+        super(orderItemId, orderId, orderCode, orderDate, productCode, productName, quantity, invoiceNumber, totalPrice,
+                userName, userTelNo, orderStatus);
         this.receiverName = receiverName;
         this.receiverPhoneNumber = receiverPhoneNumber;
         this.address = address;

@@ -30,7 +30,7 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                                                     LocalDateTime endDate) {
         return jpaQueryFactory.select(
                         Projections.constructor(PartnersReadyOrderQueryDto.class,
-                                orderItem.id, order.orderCode, order.orderDate,
+                                orderItem.id, order.id, order.orderCode, order.orderDate,
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
                                 order.totalPrice, user.userName, user.telNo.telNo,
@@ -56,7 +56,7 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                                                           LocalDateTime endDate) {
         return jpaQueryFactory.select(
                         Projections.constructor(PartnersDeliveryOrderQueryDto.class,
-                                orderItem.id, order.orderCode, order.orderDate,
+                                orderItem.id, order.id, order.orderCode, order.orderDate,
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
                                 order.totalPrice, user.userName, user.telNo.telNo,
@@ -82,7 +82,7 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                                                 LocalDateTime endDate) {
         return jpaQueryFactory.select(
                         Projections.constructor(PartnersEndOrderQueryDto.class,
-                                orderItem.id, order.orderCode, order.orderDate,
+                                orderItem.id, order.id, order.orderCode, order.orderDate,
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
                                 order.totalPrice, user.userName, user.telNo.telNo,
@@ -108,7 +108,7 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                                                       LocalDateTime endDate) {
         return jpaQueryFactory.select(
                         Projections.constructor(PartnersCancelOrderQueryDto.class,
-                                orderItem.id, order.orderCode, order.orderDate,
+                                orderItem.id, order.id, order.orderCode, order.orderDate,
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
                                 order.totalPrice, user.userName, user.telNo.telNo,

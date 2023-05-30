@@ -18,15 +18,14 @@ public class PartnersEndOrderQueryResponse extends PartnersOrderQueryResponse{
     private String deliveryDate;
     private String deliveryPlace;
 
-    public PartnersEndOrderQueryResponse(Long orderItemId, String orderCode, String orderDate, String productCode,
+    public PartnersEndOrderQueryResponse(Long orderItemId, Long orderId, String orderCode, String orderDate, String productCode,
                                          String productName, int quantity, String invoiceNumber, int totalPrice,
                                          String userName, String userTelNo, String orderStatusName,
                                          String receiverName, String receiverPhoneNumber,
                                          String address, String detailAddress, String requestMessage,
                                          String deliveryDate, String deliveryPlace) {
-        super(orderItemId, orderCode, orderDate, productCode, productName, quantity, invoiceNumber, totalPrice,
-                userName,
-                userTelNo, orderStatusName);
+        super(orderItemId, orderId, orderCode, orderDate, productCode, productName, quantity, invoiceNumber, totalPrice,
+                userName, userTelNo, orderStatusName);
         this.receiverName = receiverName;
         this.receiverPhoneNumber = receiverPhoneNumber;
         this.address = address;
@@ -38,7 +37,7 @@ public class PartnersEndOrderQueryResponse extends PartnersOrderQueryResponse{
 
     public static PartnersEndOrderQueryResponse to(PartnersEndOrderQueryDto dto) {
         return new PartnersEndOrderQueryResponse(
-                dto.getOrderItemId(), dto.getOrderCode(), DateUtils.toStringOfLocalDateTIme(dto.getOrderDate()),
+                dto.getOrderItemId(), dto.getOrderId(), dto.getOrderCode(), DateUtils.toStringOfLocalDateTIme(dto.getOrderDate()),
                 dto.getProductCode(), dto.getProductName(), dto.getQuantity(), dto.getInvoiceNumber(),
                 dto.getTotalPrice(), dto.getUserName(), dto.getUserTelNo(), dto.getOrderStatus().getStatusName(),
                 dto.getReceiverName(), dto.getReceiverPhoneNumber(),

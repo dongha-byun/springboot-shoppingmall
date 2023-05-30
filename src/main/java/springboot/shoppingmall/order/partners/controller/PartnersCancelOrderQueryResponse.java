@@ -18,13 +18,13 @@ public class PartnersCancelOrderQueryResponse extends PartnersOrderQueryResponse
     private String exchangeDate;
     private String exchangeReason;
 
-    public PartnersCancelOrderQueryResponse(Long orderItemId, String orderCode, String orderDate, String productCode,
+    public PartnersCancelOrderQueryResponse(Long orderItemId, Long orderId, String orderCode, String orderDate, String productCode,
                                             String productName, int quantity, String invoiceNumber, int totalPrice,
                                             String userName, String userTelNo, String orderStatusName,
                                             String cancelDate,
                                             String cancelReason, String refundDate, String refundReason,
                                             String exchangeDate, String exchangeReason) {
-        super(orderItemId, orderCode, orderDate, productCode, productName, quantity, invoiceNumber, totalPrice,
+        super(orderItemId, orderId, orderCode, orderDate, productCode, productName, quantity, invoiceNumber, totalPrice,
                 userName,
                 userTelNo, orderStatusName);
         this.cancelDate = cancelDate;
@@ -37,7 +37,7 @@ public class PartnersCancelOrderQueryResponse extends PartnersOrderQueryResponse
 
     public static PartnersCancelOrderQueryResponse to(PartnersCancelOrderQueryDto dto) {
         return new PartnersCancelOrderQueryResponse(
-                dto.getOrderItemId(), dto.getOrderCode(), toStringOfLocalDateTIme(dto.getOrderDate()),
+                dto.getOrderItemId(), dto.getOrderId(), dto.getOrderCode(), toStringOfLocalDateTIme(dto.getOrderDate()),
                 dto.getProductCode(), dto.getProductName(), dto.getQuantity(), dto.getInvoiceNumber(),
                 dto.getTotalPrice(), dto.getUserName(), dto.getUserTelNo(), dto.getOrderStatus().getStatusName(),
                 toStringOfLocalDateTIme(dto.getCancelDate()), dto.getCancelReason(),

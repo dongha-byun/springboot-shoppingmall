@@ -11,6 +11,7 @@ import springboot.shoppingmall.order.domain.OrderStatus;
 @Data
 public class PartnersOrderQueryDto {
     private Long orderItemId;
+    private Long orderId;
     private String orderCode;
     private LocalDateTime orderDate;
     private String productCode;

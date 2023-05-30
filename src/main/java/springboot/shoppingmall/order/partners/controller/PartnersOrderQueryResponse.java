@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class PartnersOrderQueryResponse {
     private Long orderItemId;
+    private Long orderId;
     private String orderCode;
     private String orderDate;
     private String productCode;

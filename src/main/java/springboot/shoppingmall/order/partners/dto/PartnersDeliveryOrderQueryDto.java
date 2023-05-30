@@ -14,15 +14,14 @@ public class PartnersDeliveryOrderQueryDto extends PartnersOrderQueryDto{
     private String detailAddress;       // 배송지 상세주소
     private String requestMessage;      // 배송요청사항
 
-    public PartnersDeliveryOrderQueryDto(Long orderItemId, String orderCode, LocalDateTime orderDate,
+    public PartnersDeliveryOrderQueryDto(Long orderItemId, Long orderId, String orderCode, LocalDateTime orderDate,
                                          String productCode,
                                          String productName, int quantity, String invoiceNumber, int totalPrice,
                                          String userName, String userTelNo, OrderStatus orderStatus,
                                          String receiverName, String receiverPhoneNumber,
                                          String address, String detailAddress, String requestMessage) {
-        super(orderItemId, orderCode, orderDate, productCode, productName, quantity, invoiceNumber, totalPrice,
-                userName,
-                userTelNo, orderStatus);
+        super(orderItemId, orderId, orderCode, orderDate, productCode, productName, quantity, invoiceNumber, totalPrice,
+                userName, userTelNo, orderStatus);
         this.receiverName = receiverName;
         this.receiverPhoneNumber = receiverPhoneNumber;
         this.address = address;
