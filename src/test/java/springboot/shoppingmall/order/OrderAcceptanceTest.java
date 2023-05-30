@@ -367,7 +367,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
 
     public static ExtractableResponse<Response> 주문_배송완료_요청(String invoiceNumber, DeliveryEndRequest request) {
         Map<String, Object> params = new HashMap<>();
-        params.put("deliveryDate", request.getDeliveryDate());
+        params.put("deliveryCompleteDate", request.getDeliveryCompleteDate());
         params.put("deliveryPlace", request.getDeliveryPlace());
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

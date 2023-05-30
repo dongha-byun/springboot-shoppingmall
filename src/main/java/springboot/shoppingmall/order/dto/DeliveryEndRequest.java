@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class DeliveryEndRequest {
-    private LocalDateTime deliveryDate;
+    private LocalDateTime deliveryCompleteDate;
     private String deliveryPlace;
 }

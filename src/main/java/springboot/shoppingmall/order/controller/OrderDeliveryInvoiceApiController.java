@@ -28,7 +28,7 @@ public class OrderDeliveryInvoiceApiController {
      */
     @PutMapping("/orders/{invoiceNumber}/delivery")
     public ResponseEntity<OrderItemResponse> orderDelivery(@PathVariable("invoiceNumber") String invoiceNumber,
-                                                       @RequestBody OrderDeliveryRequest orderDeliveryRequest) {
+                                                           @RequestBody OrderDeliveryRequest orderDeliveryRequest) {
         OrderItemResponse itemResponse =
                 invoiceService.delivery(invoiceNumber, orderDeliveryRequest.getDeliveryStartDate());
         return ResponseEntity.ok().body(itemResponse);
@@ -38,13 +38,10 @@ public class OrderDeliveryInvoiceApiController {
      * 택배사에서 해당 api 를 호출해, 특정 주문의 배송상태를 배송상태 로 변경함
      */
     @PutMapping("/orders/{invoiceNumber}/delivery-end")
-    public ResponseEntity<OrderItemResponse> orderDeliveryEnd(
-            @PathVariable("invoiceNumber") String invoiceNumber,
-            @RequestBody DeliveryEndRequest request
-    ) {
-
+    public ResponseEntity<OrderItemResponse> orderDeliveryEnd(@PathVariable("invoiceNumber") String invoiceNumber,
+                                                              @RequestBody DeliveryEndRequest request) {
         OrderItemResponse itemResponse =
-                invoiceService.deliveryEnd(invoiceNumber, request.getDeliveryDate(), request.getDeliveryPlace());
+                invoiceService.deliveryEnd(invoiceNumber, request.getDeliveryCompleteDate(), request.getDeliveryPlace());
         return ResponseEntity.ok().body(itemResponse);
     }
 }
