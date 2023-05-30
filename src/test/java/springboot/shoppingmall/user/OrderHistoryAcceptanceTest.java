@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
 import springboot.shoppingmall.category.dto.CategoryResponse;
+import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.dto.ProductResponse;
 import springboot.shoppingmall.user.dto.DeliveryResponse;
 
@@ -64,7 +65,7 @@ public class OrderHistoryAcceptanceTest extends AcceptanceTest {
         String startDate = startLocalDateTime.format(dateTimeFormatter);
         String endDate = endLocalDateTime.format(dateTimeFormatter);
 
-        주문_생성_요청(상품, 3, 3000, 배송지);
+        OrderResponse 주문 = 주문_생성_요청(상품, 3, 3000, 배송지).as(OrderResponse.class);
 
         // when
         ExtractableResponse<Response> 개인_주문_목록_조회_결과 = 개인_주문_목록_조회_요청(startDate, endDate);
@@ -72,6 +73,10 @@ public class OrderHistoryAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(개인_주문_목록_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(개인_주문_목록_조회_결과.jsonPath().getList("orderId")).hasSize(1);
+        assertThat(개인_주문_목록_조회_결과.jsonPath().getList("orderItemId", Long.class)).hasSize(1);
+        assertThat(개인_주문_목록_조회_결과.jsonPath().getList("orderItemId", Long.class)).containsExactly(
+                주문.getItems().get(0).getId()
+        );
         assertThat(개인_주문_목록_조회_결과.jsonPath().getList("productId")).hasSize(1);
         assertThat(개인_주문_목록_조회_결과.jsonPath().getList("productId", Long.class)).containsExactly(
                 상품.getId()

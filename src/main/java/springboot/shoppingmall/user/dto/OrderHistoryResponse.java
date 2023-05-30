@@ -11,6 +11,7 @@ import springboot.shoppingmall.order.domain.OrderStatus;
 @Data
 public class OrderHistoryResponse {
     private Long orderId;
+    private Long orderItemId;
     private LocalDateTime orderDate;
     private OrderStatus orderStatus;
     private String orderStatusName;
@@ -23,7 +24,8 @@ public class OrderHistoryResponse {
 
     public static OrderHistoryResponse to(OrderHistoryDto dto) {
         return new OrderHistoryResponse(
-                dto.getOrderId(), dto.getOrderDate(), dto.getOrderStatus(), dto.getOrderStatusName(),
+                dto.getOrderId(), dto.getOrderItemId(), dto.getOrderDate(),
+                dto.getOrderStatus(), dto.getOrderStatusName(),
                 dto.getProductId(), dto.getProductName(), dto.getTid(), dto.getOrderPrice(),
                 dto.getProviderId(), dto.getProviderName()
         );

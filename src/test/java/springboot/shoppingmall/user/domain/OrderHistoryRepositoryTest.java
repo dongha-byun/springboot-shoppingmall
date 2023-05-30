@@ -4,8 +4,11 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -141,5 +144,12 @@ class OrderHistoryRepositoryTest {
 
         // then
         assertThat(orderHistories).hasSize(2);
+        List<Long> orderItemIds = orderHistories.stream()
+                .map(OrderHistoryDto::getOrderItemId)
+                .collect(Collectors.toList());
+        assertThat(orderItemIds).containsExactly(
+                savedOrder3.getItems().get(0).getId(),
+                savedOrder2.getItems().get(0).getId()
+        );
     }
 }

@@ -23,9 +23,11 @@ public class OrderHistoryApiController {
     private final OrderHistoryService orderHistoryService;
 
     @GetMapping("/user/orders")
-    public ResponseEntity<List<OrderHistoryResponse>> getOrderHistories(@AuthenticationStrategy AuthorizedUser user,
-                                                                   @RequestParam(name = "startDate") String startDate,
-                                                                   @RequestParam(name = "endDate") String endDate){
+    public ResponseEntity<List<OrderHistoryResponse>> getOrderHistories(
+            @AuthenticationStrategy AuthorizedUser user,
+            @RequestParam(name = "startDate") String startDate,
+            @RequestParam(name = "endDate") String endDate)
+    {
         LocalDateTime startDateTime = DateUtils.getLocalDateTime(startDate, 0, 0, 0);
         LocalDateTime endDateTime = DateUtils.getLocalDateTime(endDate, 23, 59, 59);
 

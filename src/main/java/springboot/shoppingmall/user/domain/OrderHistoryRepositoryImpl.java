@@ -26,7 +26,7 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository{
     public List<OrderHistoryDto> queryOrderHistory(User user, LocalDateTime startDate, LocalDateTime endDate) {
         return jpaQueryFactory.select(
                         Projections.constructor(OrderHistoryDto.class,
-                                order.id, order.orderDate, orderItem.orderStatus,
+                                order.id, orderItem.id, order.orderDate, orderItem.orderStatus,
                                 orderItem.product.id, orderItem.product.name, payHistory.tid,
                                 order.totalPrice, provider.id, provider.name)
                 )

@@ -10,6 +10,7 @@ import springboot.shoppingmall.order.domain.OrderStatus;
 @NoArgsConstructor
 public class OrderHistoryDto {
     private Long orderId;
+    private Long orderItemId;
     private LocalDateTime orderDate;
     private OrderStatus orderStatus;
     private String orderStatusName;
@@ -21,10 +22,11 @@ public class OrderHistoryDto {
     private String providerName;
 
     @QueryProjection
-    public OrderHistoryDto(Long orderId, LocalDateTime orderDate, OrderStatus orderStatus,
+    public OrderHistoryDto(Long orderId, Long orderItemId, LocalDateTime orderDate, OrderStatus orderStatus,
                            Long productId, String productName, String tid, int orderPrice,
                            Long providerId, String providerName) {
         this.orderId = orderId;
+        this.orderItemId = orderItemId;
         this.orderDate = orderDate;
         this.orderStatus = orderStatus;
         this.orderStatusName = orderStatus.getStatusName();
