@@ -5,6 +5,10 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderFinder;
+import springboot.shoppingmall.order.domain.OrderItem;
+import springboot.shoppingmall.order.validator.OrderValidator;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
 import springboot.shoppingmall.product.domain.ProductReview;
@@ -20,6 +24,8 @@ import springboot.shoppingmall.product.dto.ProductUserReviewResponse;
 public class ProductReviewService {
     private final ProductReviewRepository reviewRepository;
     private final ProductFinder productFinder;
+    private final OrderFinder orderFinder;
+    private final OrderValidator orderValidator;
 
     public List<ProductReviewResponse> findAllReview(Long productId) {
         List<ProductReviewDto> reviewDtos = reviewRepository.findAllProductReview(productId);
@@ -28,7 +34,7 @@ public class ProductReviewService {
                         productReviewDto -> new ProductReviewResponse(productReviewDto.getId(),
                                 productReviewDto.getContent(),
                                 productReviewDto.getWriteDate(),
-                                productReviewDto.getUserName())
+                                productReviewDto.getWriterLoginId())
                 ).collect(Collectors.toList());
     }
 
@@ -40,7 +46,10 @@ public class ProductReviewService {
     }
 
     @Transactional
-    public ProductUserReviewResponse createProductReview(Long userId, Long productId, ProductReviewRequest productReviewRequest) {
+    public ProductUserReviewResponse createProductReview(Long userId, String loginId, Long orderItemId, Long productId,
+                                                         ProductReviewRequest productReviewRequest) {
+        orderValidator.validateOrderIsEnd(orderItemId);
+
         Product product = productFinder.findProductById(productId);
 
         if(reviewRepository.existsByUserIdAndProduct(userId, product)) {
@@ -52,12 +61,17 @@ public class ProductReviewService {
                 .score(productReviewRequest.getScore())
                 .product(product)
                 .userId(userId)
+                .writerLoginId(loginId)
                 .build();
 
         ProductReview savedReview = reviewRepository.save(productReview);
 
         // 평점 총합 / 리뷰 갯수 -> 평점 갱신
         product.refreshScore();
+
+        // 리뷰 작성 시, 해당 주문은 구매확정 처리가 된다.
+        OrderItem orderItem = orderFinder.findOrderItemById(orderItemId);
+        orderItem.finish();
 
         return ProductUserReviewResponse.of(savedReview);
     }

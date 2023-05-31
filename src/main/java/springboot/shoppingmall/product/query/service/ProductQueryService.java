@@ -6,9 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
-import springboot.shoppingmall.category.domain.CategoryRepository;
-import springboot.shoppingmall.product.dto.ProductResponse;
+import springboot.shoppingmall.category.domain.CategoryFinder;
+import springboot.shoppingmall.product.domain.Product;
+import springboot.shoppingmall.product.dto.ProductDto;
 import springboot.shoppingmall.product.query.ProductQueryOrderType;
+import springboot.shoppingmall.product.query.dto.ProductQueryDto;
 import springboot.shoppingmall.product.query.dto.ProductQueryResponse;
 import springboot.shoppingmall.product.query.repository.ProductQueryRepository;
 
@@ -18,11 +20,11 @@ import springboot.shoppingmall.product.query.repository.ProductQueryRepository;
 public class ProductQueryService {
 
     private final ProductQueryRepository productQueryRepository;
-    private final CategoryRepository categoryRepository;
+    private final CategoryFinder categoryFinder;
 
     public List<ProductQueryResponse> findProductByOrder(Long categoryId, Long subCategoryId, ProductQueryOrderType orderType) {
-        Category category = getCategory(categoryId);
-        Category subCategory = getCategory(subCategoryId);
+        Category category = categoryFinder.findById(categoryId);
+        Category subCategory = categoryFinder.findById(subCategoryId);
         return productQueryRepository.queryProducts(category, subCategory, orderType).stream()
                 .map(ProductQueryResponse::of)
                 .collect(Collectors.toList());
@@ -30,24 +32,44 @@ public class ProductQueryService {
 
     public List<ProductQueryResponse> findProductByOrder(Long categoryId, Long subCategoryId, ProductQueryOrderType orderType,
                                                          int limit, int offset) {
-        Category category = getCategory(categoryId);
-        Category subCategory = getCategory(subCategoryId);
+        Category category = categoryFinder.findById(categoryId);
+        Category subCategory = categoryFinder.findById(subCategoryId);
         return productQueryRepository.queryProducts(category, subCategory, orderType, limit, offset).stream()
                 .map(ProductQueryResponse::of)
                 .collect(Collectors.toList());
     }
 
+    public int getTotalCount(Long categoryId, Long subCategoryId) {
+        Category category = categoryFinder.findById(categoryId);
+        Category subCategory = categoryFinder.findById(subCategoryId);
+        return productQueryRepository.countByCategoryAndSubCategory(category, subCategory);
+    }
+
     public List<ProductQueryResponse> searchProducts(Long categoryId, Long subCategoryId, String searchKeyword) {
-        Category category = getCategory(categoryId);
-        Category subCategory = getCategory(subCategoryId);
+        Category category = categoryFinder.findById(categoryId);
+        Category subCategory = categoryFinder.findById(subCategoryId);
         return productQueryRepository.searchProducts(category, subCategory, searchKeyword).stream()
                 .map(ProductQueryResponse::of)
                 .collect(Collectors.toList());
     }
 
-    private Category getCategory(Long id) {
-        return categoryRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("카테고리가 존재하지 않습니다.")
-        );
+    public List<ProductQueryResponse> findPartnersProductsAll(Long partnerId, Long categoryId, Long subCategoryId,
+                                                              int limit, int offset) {
+        Category category = categoryFinder.findById(categoryId);
+        Category subCategory = categoryFinder.findById(subCategoryId);
+        return productQueryRepository.queryPartnersProducts(partnerId, category, subCategory, limit, offset).stream()
+                .map(ProductQueryResponse::of)
+                .collect(Collectors.toList());
+    }
+
+    public int countPartnersProducts(Long partnerId, Long categoryId, Long subCategoryId) {
+        Category category = categoryFinder.findById(categoryId);
+        Category subCategory = categoryFinder.findById(subCategoryId);
+        return productQueryRepository.countByPartnerIdAndCategoryAndSubCategory(partnerId, category, subCategory);
+    }
+
+    public List<ProductQueryDto> searchProducts(String searchKeyword, ProductQueryOrderType orderType,
+                                                int limit, int offset) {
+        return productQueryRepository.searchProducts(searchKeyword, orderType, limit, offset);
     }
 }

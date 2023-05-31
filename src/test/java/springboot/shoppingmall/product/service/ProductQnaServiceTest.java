@@ -2,6 +2,7 @@ package springboot.shoppingmall.product.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +42,14 @@ class ProductQnaServiceTest {
     void setUp(){
         Category category = categoryRepository.save(new Category("상위 1"));
         Category subCategory = categoryRepository.save(new Category("하위 1").changeParent(category));
-        product = productRepository.save(new Product("상품 1", 22000, 10, category, subCategory));
+        product = productRepository.save(
+                new Product(
+                        "상품 1", 22000, 10, 1.0, 10, LocalDateTime.now(),
+                        category, subCategory, 10L,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                        "test-product-code"
+                )
+        );
         saveUser = userRepository.save(User.builder()
                 .userName("테스터1")
                 .loginId("tester1")
@@ -57,7 +65,7 @@ class ProductQnaServiceTest {
         ProductQnaRequest productQnaRequest = new ProductQnaRequest("제품이 이상헤요.");
 
         // when
-        ProductQnaResponse qna = productQnaService.createQna(saveUser.getId(), product.getId(), productQnaRequest);
+        ProductQnaResponse qna = productQnaService.createQna(saveUser.getId(), saveUser.getLoginId(), product.getId(), productQnaRequest);
 
         // then
         assertThat(qna.getId()).isNotNull();
@@ -67,8 +75,8 @@ class ProductQnaServiceTest {
     @DisplayName("상품에 대한 문의 목록을 조회한다.")
     void findQnaAllTest(){
         // given
-        productQnaService.createQna(saveUser.getId(), product.getId(), new ProductQnaRequest("제품이 이상해요 1"));
-        productQnaService.createQna(saveUser.getId(), product.getId(), new ProductQnaRequest("제품이 이상해요 2"));
+        productQnaService.createQna(saveUser.getId(), saveUser.getLoginId(), product.getId(), new ProductQnaRequest("제품이 이상해요 1"));
+        productQnaService.createQna(saveUser.getId(), saveUser.getLoginId(), product.getId(), new ProductQnaRequest("제품이 이상해요 2"));
 
         // when
         List<ProductQnaResponse> productQnaList = productQnaService.findQnaAllByProduct(product.getId());
@@ -82,7 +90,8 @@ class ProductQnaServiceTest {
     @DisplayName("상품 문의 1건을 조회한다.")
     void findQnaTest(){
         // given
-        ProductQnaResponse qna = productQnaService.createQna(saveUser.getId(), product.getId(),
+        ProductQnaResponse qna = productQnaService.createQna(saveUser.getId(), saveUser.getLoginId(),
+                product.getId(),
                 new ProductQnaRequest("제품에 대해 물어볼게 있어요. 1"));
 
         // when

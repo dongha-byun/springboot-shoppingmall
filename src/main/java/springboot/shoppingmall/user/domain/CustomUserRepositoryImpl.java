@@ -2,8 +2,6 @@ package springboot.shoppingmall.user.domain;
 
 import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import springboot.shoppingmall.user.dto.FindIdRequest;
-import springboot.shoppingmall.user.dto.FindPwRequest;
 
 @RequiredArgsConstructor
 public class CustomUserRepositoryImpl implements CustomUserRepository{
@@ -17,7 +15,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
                 + "and u.userName = :userName "
                 + "and u.telNo = :telNo", User.class)
                 .setParameter("userName", name)
-                .setParameter("telNo", telNo)
+                .setParameter("telNo", new TelNo(telNo))
                 .getSingleResult();
     }
 
@@ -29,7 +27,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
                         + "and u.loginId = :loginId "
                         + "and u.telNo = :telNo", User.class)
                 .setParameter("userName", name)
-                .setParameter("telNo", telNo)
+                .setParameter("telNo", new TelNo(telNo))
                 .setParameter("loginId", loginId)
                 .getSingleResult();
     }

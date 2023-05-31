@@ -5,30 +5,33 @@ import static org.assertj.core.api.Assertions.*;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import org.aspectj.lang.annotation.Before;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceProductTest;
-import springboot.shoppingmall.TestOrderConfig;
+import springboot.shoppingmall.authorization.exception.ErrorCode;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.order.dto.DeliveryEndRequest;
+import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderResponse;
-import springboot.shoppingmall.order.service.OrderService;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.dto.ProductResponse;
 import springboot.shoppingmall.user.domain.Delivery;
 import springboot.shoppingmall.user.domain.DeliveryRepository;
+import springboot.shoppingmall.user.domain.PayType;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserRepository;
 import springboot.shoppingmall.user.dto.DeliveryResponse;
@@ -52,11 +55,22 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
     void order_acceptance_beforeEach(){
         super.acceptance_product_beforeEach();
 
-        Product product = productRepository.findById(상품.getId()).orElseThrow();
+        Product product1 = productRepository.findById(상품.getId()).orElseThrow();
+        Product product2 = productRepository.findById(상품2.getId()).orElseThrow();
+
         User user = userRepository.findById(인수테스터1.getId()).orElseThrow();
         Delivery delivery = deliveryRepository.findById(배송지.getId()).orElseThrow();
+        List<OrderItem> orderItems = Arrays.asList(
+                new OrderItem(product1, 2, OrderStatus.DELIVERY_END),
+                new OrderItem(product2, 3, OrderStatus.DELIVERY_END)
+        );
+        Order order = orderRepository.save(
+                new Order("test-order-code", user.getId(), orderItems,
+                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                        delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getDetailAddress(), delivery.getRequestMessage())
+        );
 
-        Order order = orderRepository.save(new Order(user.getId(), product, 2, delivery, OrderStatus.DELIVERY_END));
         배송완료_주문 = OrderResponse.of(order);
     }
 
@@ -82,7 +96,35 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         // then
         assertThat(주문_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(주문_생성_결과.jsonPath().getLong("id")).isNotNull();
-        assertThat(주문_생성_결과.jsonPath().getString("orderStatusName")).isEqualTo(OrderStatus.READY.getStatusName());
+        assertThat(주문_생성_결과.jsonPath().getString("orderDate")).isNotNull();
+        assertThat(주문_생성_결과.jsonPath().getString("orderCode")).isNotNull();
+        assertThat(주문_생성_결과.jsonPath().getString("receiverName")).isEqualTo(배송지.getReceiverName());
+        assertThat(주문_생성_결과.jsonPath().getString("receiverPhoneNumber")).isEqualTo(배송지.getReceiverPhoneNumber());
+        assertThat(주문_생성_결과.jsonPath().getList("items.orderStatusName")).containsExactly(
+                OrderStatus.READY.getStatusName()
+        );
+    }
+
+    /**
+     * Feature: 최초 주문 (여러 상품)
+     *  Background:
+     *      given: 로그인한 사용자
+     *      And: 등록되어있는 상품들
+     *      And: 사용자가 등록해놓은 배송지 정보가 존재함
+     *
+     *  Scenario: 최초 주문 생성
+     *      when: 구매하고자 하는 상품정보와  갯수, 배송지 정보를 가지고 주문을 생성하면
+     *      then: 주문 내역 조회 시, 주문된 내용이 조회된다.
+     */
+    @Test
+    @DisplayName("여러 상품 주문 테스트")
+    void order_with_many_products() {
+        // given
+
+        // when
+
+
+        // then
     }
 
     /**
@@ -99,12 +141,20 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
     void statusChangeTest1(){
         // given
         OrderResponse 주문 = 주문_생성_요청(상품, 3, 3000, 배송지).as(OrderResponse.class);
+        OrderItemResponse 주문_상품 = 주문.getItems().get(0);
 
         // when
-        ExtractableResponse<Response> 주문_상태_변경_결과 = 주문_출고중_요청(주문);
+        ExtractableResponse<Response> 주문_상태_변경_결과 = 주문_출고중_요청(주문, 주문_상품);
+        OrderItemResponse 출고중_상품 = 주문_상태_변경_결과.as(OrderItemResponse.class);
 
         // then
         assertThat(주문_상태_변경_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(주문_상태_변경_결과.jsonPath().getString("invoiceNumber")).isEqualTo(
+                출고중_상품.getInvoiceNumber()
+        );
+        assertThat(주문_상태_변경_결과.jsonPath().getString("orderStatusName")).isEqualTo(
+                OrderStatus.OUTING.getStatusName()
+        );
     }
 
     /**
@@ -126,38 +176,47 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
     @DisplayName("주문 배송 완료 테스트")
     void 배송_완료_테스트() {
         // given
-        OrderResponse 준비중_주문 = 주문_생성_요청(상품, 3, 3000, 배송지).as(OrderResponse.class);
-        assertThat(준비중_주문.getOrderStatusName()).isEqualTo(OrderStatus.READY.getStatusName());
+        OrderResponse 주문 = 주문_생성_요청(상품, 3, 3000, 배송지).as(OrderResponse.class);
+        OrderItemResponse 준비중_주문_상품 = 첫_번째_주문_상품(주문);
+        assertThat(준비중_주문_상품.getOrderStatusName()).isEqualTo(OrderStatus.READY.getStatusName());
 
         // when : 준비 중인 주문을 출고중으로 변경하면
-        ExtractableResponse<Response> 준비중_에서_출고중_변경_결과 = 주문_출고중_요청(준비중_주문);
+        ExtractableResponse<Response> 준비중_에서_출고중_변경_결과 = 주문_출고중_요청(주문, 준비중_주문_상품);
         assertThat(준비중_에서_출고중_변경_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then : 주문 상태가 출고중으로 변경되고
-        OrderResponse 출고중_주문 = 준비중_에서_출고중_변경_결과.as(OrderResponse.class);
-        assertThat(출고중_주문.getOrderStatusName()).isEqualTo(OrderStatus.OUTING.getStatusName());
+        OrderItemResponse 출고중_주문_상품 = 준비중_에서_출고중_변경_결과.as(OrderItemResponse.class);
+        assertThat(출고중_주문_상품.getOrderStatusName()).isEqualTo(OrderStatus.OUTING.getStatusName());
 
         // when : 출고중인 주문 상태를 주문 취소로 변경하면
-        ExtractableResponse<Response> 출고중_에서_주문취소_변경_결과 = 주문_주문취소_요청(출고중_주문);
+        String cancelReason = "주문 취소 합니다.";
+        ExtractableResponse<Response> 출고중_에서_주문취소_변경_결과 = 주문_주문취소_요청(주문, 출고중_주문_상품, cancelReason);
 
         // then : 준비 중인 주문이 아니므로, 주문 취소 상태로 변경되지 않고
         assertThat(출고중_에서_주문취소_변경_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 
         // when : 출고중인 주문 상태를 배송 중으로 변경하면
-        ExtractableResponse<Response> 출고중_에서_배송중_변경_결과 = 주문_배송중_요청(출고중_주문);
+        LocalDateTime deliveryStartDate = LocalDateTime.of(2023, 5, 1, 0, 0, 0);
+        String 출고중_송장번호 = 출고중_주문_상품.getInvoiceNumber();
+        ExtractableResponse<Response> 출고중_에서_배송중_변경_결과 = 주문_배송중_요청(출고중_송장번호, deliveryStartDate);
         assertThat(출고중_에서_배송중_변경_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then : 주문 상태가 배송중으로 변경되고
-        OrderResponse 배송중_주문 = 출고중_에서_배송중_변경_결과.as(OrderResponse.class);
-        assertThat(배송중_주문.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY.getStatusName());
+        OrderItemResponse 배송중_주문_상품 = 출고중_에서_배송중_변경_결과.as(OrderItemResponse.class);
+        assertThat(배송중_주문_상품.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY.getStatusName());
 
         // when: 배송이 완료되어 배송완료 처리를 하면
-        ExtractableResponse<Response> 배송중_에서_배송완료_변경_결과 = 주문_배송완료_요청(배송중_주문);
+        LocalDateTime deliveryDate = LocalDateTime.of(2023, 5, 5, 15, 30, 30);
+        String deliveryPlace = "무인택배함";
+        DeliveryEndRequest deliveryEndRequest = new DeliveryEndRequest(deliveryDate, deliveryPlace);
+
+        String 배송중_송장번호 = 배송중_주문_상품.getInvoiceNumber();
+        ExtractableResponse<Response> 배송중_에서_배송완료_변경_결과 = 주문_배송완료_요청(배송중_송장번호, deliveryEndRequest);
         assertThat(배송중_에서_배송완료_변경_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then: 주문 상태가 배송완료로 변경되고
-        OrderResponse 배송완료_주문 = 배송중_에서_배송완료_변경_결과.as(OrderResponse.class);
-        assertThat(배송완료_주문.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY_END.getStatusName());
+        OrderItemResponse 배송완료_주문_상품 = 배송중_에서_배송완료_변경_결과.as(OrderItemResponse.class);
+        assertThat(배송완료_주문_상품.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY_END.getStatusName());
     }
 
     /**
@@ -180,21 +239,22 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         // given
 
         // when: 구매자가 구매확정 처리를 하면
-        ExtractableResponse<Response> 배송완료_에서_구매확정_변경_결과 = 주문_구매확정_요청(배송완료_주문);
+        OrderItemResponse 배송완료_주문_상품 = 첫_번째_주문_상품(배송완료_주문);
+        ExtractableResponse<Response> 배송완료_에서_구매확정_변경_결과 = 주문_구매확정_요청(배송완료_주문, 배송완료_주문_상품);
         assertThat(배송완료_에서_구매확정_변경_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then: 주문 상태가 구매확정으로 변경되고
-        OrderResponse 구매확정_주문 = 배송완료_에서_구매확정_변경_결과.as(OrderResponse.class);
-        assertThat(구매확정_주문.getOrderStatusName()).isEqualTo(OrderStatus.FINISH.getStatusName());
+        OrderItemResponse 구매확정_주문_상품 = 배송완료_에서_구매확정_변경_결과.as(OrderItemResponse.class);
+        assertThat(구매확정_주문_상품.getOrderStatusName()).isEqualTo(OrderStatus.FINISH.getStatusName());
 
         // when: 구매확정된 주문을 환불처리를 시도하면
-        ExtractableResponse<Response> 구매확정_에서_환불요청_변경_결과 = 주문_환불_요청(구매확정_주문, "환불 신청 합니다.");
+        ExtractableResponse<Response> 구매확정_에서_환불요청_변경_결과 = 주문_환불_요청(배송완료_주문, 구매확정_주문_상품, "환불 신청 합니다.");
 
         // then: 구매확정된 주문이라 환불처리가 불가능하고
         assertThat(구매확정_에서_환불요청_변경_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 
         // when: 구매확정된 주문을 교환처리를 시도하면
-        ExtractableResponse<Response> 구매확정_에서_교환요청_변경_결과 = 주문_교환_요청(구매확정_주문, "교환 신청 합니다.");
+        ExtractableResponse<Response> 구매확정_에서_교환요청_변경_결과 = 주문_교환_요청(배송완료_주문, 구매확정_주문_상품, "교환 신청 합니다.");
 
         // then: 구매확정된 주문이라 교환처리가 불가능하다.
         assertThat(구매확정_에서_교환요청_변경_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -217,12 +277,13 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         // given
 
         // when: 배송완료된 주문을 환불처리를 시도하면
-        ExtractableResponse<Response> 배송완료_에서_교환요청_변경_결과 = 주문_교환_요청(배송완료_주문, "교환 신청 합니다.");
+        OrderItemResponse 주문_상품 = 첫_번째_주문_상품(배송완료_주문);
+        ExtractableResponse<Response> 배송완료_에서_교환요청_변경_결과 = 주문_교환_요청(배송완료_주문, 주문_상품, "교환 신청 합니다.");
         assertThat(배송완료_에서_교환요청_변경_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then: 주문이 환불처리 된다.
-        OrderResponse 교환된_주문 = 배송완료_에서_교환요청_변경_결과.as(OrderResponse.class);
-        assertThat(교환된_주문.getOrderStatusName()).isEqualTo(OrderStatus.EXCHANGE.getStatusName());
+        OrderItemResponse 교환된_주문_상품 = 배송완료_에서_교환요청_변경_결과.as(OrderItemResponse.class);
+        assertThat(교환된_주문_상품.getOrderStatusName()).isEqualTo(OrderStatus.EXCHANGE.getStatusName());
     }
 
     /**
@@ -241,104 +302,148 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         // given
 
         // when: 배송완료된 주문을 환불처리를 시도하면
-        ExtractableResponse<Response> 배송완료_에서_환불요청_변경_결과 = 주문_환불_요청(배송완료_주문, "환불 신청 합니다.");
+        OrderItemResponse 주문_상품 = 첫_번째_주문_상품(배송완료_주문);
+        ExtractableResponse<Response> 배송완료_에서_환불요청_변경_결과 = 주문_환불_요청(배송완료_주문, 주문_상품, "환불 신청 합니다.");
         assertThat(배송완료_에서_환불요청_변경_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then: 주문이 환불처리 된다.
-        OrderResponse 환불된_주문 = 배송완료_에서_환불요청_변경_결과.as(OrderResponse.class);
-        assertThat(환불된_주문.getOrderStatusName()).isEqualTo(OrderStatus.REFUND.getStatusName());
+        OrderItemResponse 환불된_주문_상품 = 배송완료_에서_환불요청_변경_결과.as(OrderItemResponse.class);
+        assertThat(환불된_주문_상품.getOrderStatusName()).isEqualTo(OrderStatus.REFUND.getStatusName());
     }
 
-    public static ExtractableResponse<Response> 주문_주문취소_요청(OrderResponse order) {
+    /**
+     *  given: 상품이 준비되어 있음
+     *  when: 상품의 남은 재고 수 보다 많은 수량을 주문을 시도하면
+     *  then: 수량이 너무 많아 주문에 실패한다.
+     */
+    @Test
+    @DisplayName("주문 실패 - 상품 재고 수량보다 많은 수를 주문하면 주문에 실패한다.")
+    void order_fail_with_over_quantity() {
+        // given
+
+        // when
+        ExtractableResponse<Response> 주문_결과 = 주문_생성_요청(상품, 상품.getCount() + 1, 2000, 배송지);
+
+        // then
+        assertThat(주문_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(주문_결과.jsonPath().getString("msg")).isEqualTo(
+                ErrorCode.OVER_QUANTITY.getMessage()
+        );
+    }
+
+    public static ExtractableResponse<Response> 주문_주문취소_요청(OrderResponse order,
+                                                           OrderItemResponse orderItem,
+                                                           String reason) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("cancelReason", reason);
+
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers(createAuthorizationHeader(로그인정보))
-                .when().put("/orders/{id}/cancel", order.getId())
+                .body(params)
+                .when().put("/orders/{orderId}/{orderItemId}/cancel", order.getId(), orderItem.getId())
                 .then().log().all()
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 주문_출고중_요청(OrderResponse order) {
+    public static ExtractableResponse<Response> 주문_출고중_요청(OrderResponse order, OrderItemResponse orderItem) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers(createAuthorizationHeader(판매자_로그인토큰))
+                .when().put("/orders/{orderId}/{orderItemId}/outing", order.getId(), orderItem.getId())
+                .then().log().all()
+                .extract();
+    }
+    public static ExtractableResponse<Response> 주문_배송중_요청(String invoiceNumber, LocalDateTime deliveryStartDate) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("deliveryStartDate", deliveryStartDate);
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(map)
+                .when().put("/orders/{invoiceNumber}/delivery", invoiceNumber)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 주문_배송완료_요청(String invoiceNumber, DeliveryEndRequest request) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("deliveryCompleteDate", request.getDeliveryCompleteDate());
+        params.put("deliveryPlace", request.getDeliveryPlace());
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when().put("/orders/{invoiceNumber}/delivery-end", invoiceNumber)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 주문_구매확정_요청(OrderResponse order, OrderItemResponse orderItem) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers(createAuthorizationHeader(로그인정보))
-                .when().put("/orders/{id}/outing", order.getId())
-                .then().log().all()
-                .extract();
-    }
-    public static ExtractableResponse<Response> 주문_배송중_요청(OrderResponse order) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/orders/{invoiceNumber}/delivery", order.getInvoiceNumber())
+                .when().put("/orders/{orderId}/{orderItemId}/finish", order.getId(), orderItem.getId())
                 .then().log().all()
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 주문_배송완료_요청(OrderResponse order) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/orders/{invoiceNumber}/delivery-end", order.getInvoiceNumber())
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> 주문_구매확정_요청(OrderResponse order) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .headers(createAuthorizationHeader(로그인정보))
-                .when().put("/orders/{id}/finish", order.getId())
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> 주문_환불_요청(OrderResponse order, String reason) {
+    public static ExtractableResponse<Response> 주문_환불_요청(OrderResponse order, OrderItemResponse orderItem, String reason) {
         Map<String, String> params = new HashMap<>();
         params.put("refundReason", reason);
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers(createAuthorizationHeader(로그인정보))
                 .body(params)
-                .when().put("/orders/{id}/refund", order.getId())
+                .when().put("/orders/{orderId}/{orderItemId}/refund", order.getId(), orderItem.getId())
                 .then().log().all()
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 주문_교환_요청(OrderResponse order, String reason) {
+    public static ExtractableResponse<Response> 주문_교환_요청(OrderResponse order, OrderItemResponse orderItem, String reason) {
         Map<String, String> params = new HashMap<>();
         params.put("exchangeReason", reason);
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers(createAuthorizationHeader(로그인정보))
                 .body(params)
-                .when().put("/orders/{id}/exchange", order.getId())
+                .when().put("/orders/{orderId}/{orderItemId}/exchange", order.getId(), orderItem.getId())
                 .then().log().all()
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 주문_검수중_요청(OrderResponse order) {
+    public static ExtractableResponse<Response> 주문_검수중_요청(OrderResponse order, OrderItemResponse orderItem) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers(createAuthorizationHeader(로그인정보))
-                .when().put("/orders/{id}/checking", order.getId())
+                .when().put("/orders/{orderId}/{orderItemId}/checking", order.getId(), orderItem.getId())
                 .then().log().all()
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 주문_환불완료_요청(OrderResponse order) {
+    public static ExtractableResponse<Response> 주문_환불완료_요청(OrderResponse order, OrderItemResponse orderItem) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers(createAuthorizationHeader(로그인정보))
-                .when().put("/orders/{id}/refund-end", order.getId())
+                .when().put("/orders/{orderId}/{orderItemId}/refund-end", order.getId(), orderItem.getId())
                 .then().log().all()
                 .extract();
     }
 
     public static ExtractableResponse<Response> 주문_생성_요청(ProductResponse product, int quantity, int deliveryFee, DeliveryResponse delivery) {
+        Map<String, Object> itemMap = new HashMap<>();
+        itemMap.put("productId", product.getId());
+        itemMap.put("quantity", quantity);
+
         Map<String, Object> params = new HashMap<>();
-        params.put("productId", product.getId());
-        params.put("quantity", quantity);
+        params.put("tid", UUID.randomUUID().toString());
+        params.put("payType", PayType.KAKAO_PAY.name());
+        params.put("items", List.of(itemMap));
         params.put("deliveryFee", deliveryFee);
-        params.put("deliveryId", delivery.getId());
+        params.put("receiverName", delivery.getReceiverName());
+        params.put("receiverPhoneNumber", delivery.getReceiverPhoneNumber());
+        params.put("zipCode", delivery.getZipCode());
+        params.put("address", delivery.getAddress());
+        params.put("detailAddress", delivery.getDetailAddress());
+        params.put("requestMessage", delivery.getRequestMessage());
 
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

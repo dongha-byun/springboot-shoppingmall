@@ -16,6 +16,11 @@ import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
+import springboot.shoppingmall.product.dto.ProductDto;
+import springboot.shoppingmall.product.query.ProductQueryOrderType;
+import springboot.shoppingmall.product.query.dto.ProductQueryDto;
+import springboot.shoppingmall.providers.domain.Provider;
+import springboot.shoppingmall.providers.domain.ProviderRepository;
 
 @Transactional
 @SpringBootTest
@@ -30,6 +35,9 @@ class ProductQueryRepositoryTest {
     @Autowired
     ProductQueryRepository productQueryRepository;
 
+    @Autowired
+    ProviderRepository providerRepository;
+
     Category category;
     Category subCategory;
 
@@ -38,18 +46,41 @@ class ProductQueryRepositoryTest {
     Product 생선3;
 
     LocalDateTime now;
+    Provider partners;
 
     @BeforeEach
     void setUp() {
+        partners = providerRepository.save(
+                new Provider("테스트판매사", "테스트대표", "테스트시 테스트구 테스트동", "031-444-1234", "110-22-334411",
+                        "test_partner", "test_partner1!", true)
+        );
         category = categoryRepository.save(new Category("식품 분류"));
         subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
         now = LocalDateTime.now();
         생선1 = productRepository.save(
-                new Product("생선1", 1000, 10, 1.0, 10, now, category, subCategory));
+                new Product(
+                        "생선1", 1000, 10, 1.0, 10, now,
+                        category, subCategory, partners.getId(),
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                        partners.generateProductCode()
+                )
+        );
         생선2 = productRepository.save(
-                new Product("생선2", 1200, 11, 1.5, 20, now.plusDays(1), category, subCategory));
+                new Product(
+                        "생선2", 1200, 11, 1.5, 20, now.plusDays(1),
+                        category, subCategory, partners.getId(),
+                        "storedFileName2", "viewFileName2", "상품 설명 입니다.",
+                        partners.generateProductCode()
+                )
+        );
         생선3 = productRepository.save(
-                new Product("생선3", 1500, 12, 3.0, 15, now.plusDays(2), category, subCategory));
+                new Product(
+                        "생선3", 1500, 12, 3.0, 15, now.plusDays(2),
+                        category, subCategory, partners.getId(),
+                        "storedFileName3", "viewFileName3", "상품 설명 입니다.",
+                        partners.generateProductCode()
+                )
+        );
     }
 
     @Test
@@ -127,29 +158,25 @@ class ProductQueryRepositoryTest {
         // given
 
         // when
-        List<Product> products = productQueryRepository.searchProducts(category, subCategory, "선1");
+        List<ProductQueryDto> productDtos =
+                productQueryRepository.searchProducts("생선", RECENT, 10, 0);
 
         // then
-        assertThat(products).hasSize(1);
-        assertThat(products.get(0).getName()).isEqualTo("생선1");
+        assertThat(productDtos).hasSize(3);
+        List<Long> ids = productDtos.stream()
+                .map(ProductQueryDto::getId)
+                .collect(Collectors.toList());
+        assertThat(ids).containsExactly(
+                생선3.getId(), 생선2.getId(), 생선1.getId()
+        );
+
     }
 
     @Test
     @DisplayName("상품 페이징 테스트 - 7개 중 뒤에 3개 조회(limit : 3 / offset : 4)")
     void paging_test() {
         // given
-        productRepository.save(
-                new Product("생선4", 1500, 12, 3.0, 15, now.plusDays(3),
-                        category, subCategory));
-        productRepository.save(
-                new Product("생선5", 1500, 12, 3.0, 15, now.plusDays(4),
-                        category, subCategory));
-        productRepository.save(
-                new Product("생선6", 1500, 12, 3.0, 15, now.plusDays(5),
-                        category, subCategory));
-        productRepository.save(
-                new Product("생선7", 1500, 12, 3.0, 15, now.plusDays(6),
-                        category, subCategory));
+        saveMoreProducts();
 
         // when
         // 7 개 중 뒤에 3개 조회이므로, 가장 나중에 등록된 3개가 최신순으로 조회되면 됨
@@ -162,6 +189,148 @@ class ProductQueryRepositoryTest {
                 .collect(Collectors.toList());
         assertThat(ids).containsExactly(
                 생선3.getId(), 생선2.getId(), 생선1.getId()
+        );
+    }
+
+    @Test
+    @DisplayName("총 상품 갯수 조회")
+    void total_count_test() {
+        // given
+
+        // when
+        int totalCount = productQueryRepository.countByCategoryAndSubCategory(category, subCategory);
+
+        // then
+        assertThat(totalCount).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("판매자가 등록한 상품 목록조회")
+    void find_all_partners_products() {
+        // given
+        Long partnerId = 10L;
+        Product product1 = productRepository.save(
+                new Product(
+                        "product1", 1500, 12, 3.0, 15, now.plusDays(3),
+                        category, subCategory, partnerId,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                        partners.generateProductCode()
+                )
+        );
+        Product product2 = productRepository.save(
+                new Product(
+                        "product2", 1500, 12, 3.0, 15, now.plusDays(2),
+                        category, subCategory, partnerId,
+                        "storedFileName2", "viewFileName2", "상품 설명 입니다.",
+                        partners.generateProductCode()
+                )
+        );
+        Product product3 = productRepository.save(
+                new Product(
+                        "product3", 1500, 12, 3.0, 15, now.plusDays(1),
+                        category, subCategory, partnerId,
+                        "storedFileName3", "viewFileName3", "상품 설명 입니다.",
+                        partners.generateProductCode()
+                )
+        );
+        Product product4 = productRepository.save(
+                new Product(
+                        "product4", 1500, 12, 3.0, 15, now,
+                        category, subCategory, partnerId,
+                        "storedFileName4", "viewFileName4", "상품 설명 입니다.",
+                        partners.generateProductCode()
+                )
+        );
+
+        // when
+        List<Product> products = productQueryRepository.queryPartnersProducts(partnerId, category, subCategory, 10, 0);
+
+        // then
+        assertThat(products).hasSize(4);
+        List<Long> ids = products.stream()
+                .map(Product::getId)
+                .collect(Collectors.toList());
+        assertThat(ids).containsExactly(
+                product1.getId(), product2.getId(), product3.getId(), product4.getId()
+        );
+    }
+
+    @Test
+    @DisplayName("판매자가 등록한 상품의 갯수 조회")
+    void count_partners_products() {
+        // given
+        Long partnerId = 10L;
+        productRepository.save(
+                new Product("product1", 1500, 12, 3.0, 15, now.plusDays(3),
+                        category, subCategory, partnerId,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                        partners.generateProductCode()
+                )
+        );
+        productRepository.save(
+                new Product(
+                        "product2", 1500, 12, 3.0, 15, now.plusDays(2),
+                        category, subCategory, partnerId,
+                        "storedFileName2", "viewFileName2", "상품 설명 입니다.",
+                        partners.generateProductCode()
+                )
+        );
+        productRepository.save(
+                new Product(
+                        "product3", 1500, 12, 3.0, 15, now.plusDays(1),
+                        category, subCategory, partnerId,
+                        "storedFileName3", "viewFileName3", "상품 설명 입니다.",
+                        partners.generateProductCode()
+                )
+        );
+        productRepository.save(
+                new Product(
+                        "product4", 1500, 12, 3.0, 15, now,
+                        category, subCategory, partnerId,
+                        "storedFileName4", "viewFileName4", "상품 설명 입니다.",
+                        partners.generateProductCode()
+                )
+        );
+
+        // when
+        int count = productQueryRepository.countByPartnerIdAndCategoryAndSubCategory(partnerId, category, subCategory);
+
+        // then
+        assertThat(count).isEqualTo(4);
+    }
+
+    private void saveMoreProducts() {
+        productRepository.save(
+                new Product(
+                        "생선4", 1500, 12, 3.0, 15, now.plusDays(3),
+                        category, subCategory, partners.getId(),
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                        partners.generateProductCode()
+                )
+        );
+        productRepository.save(
+                new Product(
+                        "생선5", 1500, 12, 3.0, 15, now.plusDays(4),
+                        category, subCategory, partners.getId(),
+                        "storedFileName2", "viewFileName2", "상품 설명 입니다.",
+                        partners.generateProductCode()
+                )
+        );
+        productRepository.save(
+                new Product(
+                        "생선6", 1500, 12, 3.0, 15, now.plusDays(5),
+                        category, subCategory, partners.getId(),
+                        "storedFileName3", "viewFileName3", "상품 설명 입니다.",
+                        partners.generateProductCode()
+                )
+        );
+        productRepository.save(
+                new Product(
+                        "생선7", 1500, 12, 3.0, 15, now.plusDays(6),
+                        category, subCategory, partners.getId(),
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                        partners.generateProductCode()
+                )
         );
     }
 }

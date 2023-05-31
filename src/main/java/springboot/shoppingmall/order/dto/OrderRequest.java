@@ -1,5 +1,6 @@
 package springboot.shoppingmall.order.dto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,8 +9,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRequest {
-    private Long productId;
-    private int quantity;
+    private String tid;
+    private String payType;
+    private List<OrderItemRequest> items;
     private int deliveryFee;
-    private Long deliveryId;
+    private String receiverName;
+    private String receiverPhoneNumber;
+    private String zipCode;
+    private String address;
+    private String detailAddress;
+    private String requestMessage;
 }

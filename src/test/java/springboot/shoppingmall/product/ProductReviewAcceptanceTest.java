@@ -1,12 +1,15 @@
 package springboot.shoppingmall.product;
 
 import static org.assertj.core.api.Assertions.*;
+import static springboot.shoppingmall.product.ProductAcceptanceTest.상품_등록_요청;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,8 +19,10 @@ import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceProductTest;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
@@ -46,6 +51,7 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
 
     OrderResponse 배송완료_주문;
     OrderResponse 배송완료_주문2;
+    OrderResponse 배송완료_주문3;
     OrderResponse 배송이_완료되지_않은_주문;
 
     @BeforeEach
@@ -55,13 +61,41 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         Product product = productRepository.findById(상품.getId()).orElseThrow();
         Product product2 = productRepository.findById(상품2.getId()).orElseThrow();
         User user = userRepository.findById(인수테스터1.getId()).orElseThrow();
+        User user2 = userRepository.findById(인수테스터2.getId()).orElseThrow();
         Delivery delivery = deliveryRepository.findById(배송지.getId()).orElseThrow();
 
-        Order order = orderRepository.save(new Order(user.getId(), product, 2, delivery, OrderStatus.DELIVERY_END));
-        Order order2 = orderRepository.save(new Order(user.getId(), product2, 2, delivery, OrderStatus.DELIVERY_END));
-        Order deliveryOrder = orderRepository.save(new Order(user.getId(), product, 2, delivery, OrderStatus.DELIVERY));
+        List<OrderItem> order1Items = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
+        List<OrderItem> order2Items = List.of(new OrderItem(product2, 3, OrderStatus.DELIVERY_END));
+        List<OrderItem> order3Items = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
+        List<OrderItem> order4Items = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY));
+
+        Order order = orderRepository.save(
+                new Order(UUID.randomUUID().toString(), user.getId(), order1Items,
+                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                        delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getDetailAddress(), delivery.getRequestMessage())
+        );
+        Order order2 = orderRepository.save(
+                new Order(UUID.randomUUID().toString(), user.getId(), order2Items,
+                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                        delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getDetailAddress(), delivery.getRequestMessage())
+        );
+        Order order3 = orderRepository.save(
+                new Order(UUID.randomUUID().toString(), user2.getId(), order3Items,
+                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                        delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getDetailAddress(), delivery.getRequestMessage())
+        );
+        Order deliveryOrder = orderRepository.save(
+                new Order(UUID.randomUUID().toString(), user.getId(), order4Items,
+                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                        delivery.getZipCode(), delivery.getAddress(),
+                        delivery.getDetailAddress(), delivery.getRequestMessage())
+        );
         배송완료_주문 = OrderResponse.of(order);
         배송완료_주문2 = OrderResponse.of(order2);
+        배송완료_주문3 = OrderResponse.of(order3);
 
         배송이_완료되지_않은_주문 = OrderResponse.of(deliveryOrder);
     }
@@ -90,6 +124,10 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         assertThat(작성된_리뷰.getProductName()).isEqualTo(상품.getName());
         assertThat(작성된_리뷰.getContent()).isEqualTo("리뷰 작성 합니다.");
         assertThat(작성된_리뷰.getWriteDate()).isNotNull();
+
+        // 리뷰가 작성되면 해당 주문 건은 구매확정 처리로 변경한다.
+        Order 구매확정_주문 = orderRepository.findById(배송완료_주문.getId()).orElseThrow();
+        assertThat(구매확정_주문.getId()).isEqualTo(배송완료_주문.getId());
     }
 
     /**
@@ -158,7 +196,7 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         String content1 = "리뷰 작성 합니다.";
         String content2 = "리뷰 작성 합니다.2";
         리뷰_작성_요청(배송완료_주문, 상품, 로그인정보, content1, 4);
-        리뷰_작성_요청(배송완료_주문, 상품, 로그인정보2, content2, 3);
+        리뷰_작성_요청(배송완료_주문2, 상품2, 로그인정보2, content2, 3);
 
         // when
         ExtractableResponse<Response> 리뷰_목록_조회_결과 = 리뷰_목록_조회_요청(상품);
@@ -168,8 +206,39 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         assertThat(리뷰_목록_조회_결과.jsonPath().getList("content")).containsExactly(
                 content2, content1
         );
-        assertThat(리뷰_목록_조회_결과.jsonPath().getList("userName")).containsExactly(
-                "인수테스터2", "인수테스터1"
+        assertThat(리뷰_목록_조회_결과.jsonPath().getList("writerLoginId")).containsExactly(
+                인수테스터2.getLoginId(), 인수테스터1.getLoginId()
+        );
+    }
+
+    /**
+     *  given: 상품이 등록되어 있음
+     *  And: 해당 상품을 구매하고 배송 완료까지 됨
+     *  And: 리뷰를 작성했음
+     *  when: 상품 정보를 조회하면
+     *  then: 상품 정보에 등록된 리뷰 목록도 같이 조회된다.
+     */
+    @Test
+    @DisplayName("상품 정보 조회 - 리뷰도 같이 조회")
+    void find_product_with_reviews() {
+        // given
+        ProductUserReviewResponse 작성리뷰1 = 리뷰_작성_요청(배송완료_주문, 상품, 로그인정보,"리뷰1 입니다.", 3).as(ProductUserReviewResponse.class);
+        ProductUserReviewResponse 작성리뷰2 = 리뷰_작성_요청(배송완료_주문3,상품, 로그인정보2, "리뷰2 입니다.", 4).as(ProductUserReviewResponse.class);
+
+        // when
+        ExtractableResponse<Response> 상품_정보_조회 = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/products/{id}", 상품.getId())
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(상품_정보_조회.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(상품_정보_조회.jsonPath().getList("reviews.id", Long.class)).containsExactly(
+                작성리뷰1.getId(), 작성리뷰2.getId()
+        );
+        assertThat(상품_정보_조회.jsonPath().getList("reviews.writerLoginId", String.class)).containsExactly(
+                인수테스터1.getLoginId(), 인수테스터2.getLoginId()
         );
     }
 
@@ -234,15 +303,22 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 리뷰_작성_요청(OrderResponse order, ProductResponse product, TokenResponse token, String content, int score) {
+    public static ExtractableResponse<Response> 리뷰_작성_요청(OrderResponse order, ProductResponse product, TokenResponse token, String content, int score) {
         Map<String, Object> params = new HashMap<>();
         params.put("content", content);
         params.put("score", score);
+
+        OrderItemResponse orderItem = order.getItems().get(0);
+
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers(createAuthorizationHeader(token))
                 .body(params)
-                .when().post("/orders/{orderId}/products/{productId}/reviews", order.getId(), product.getId())
+                .when().post("/orders/{orderId}/{orderItemId}/products/{productId}/reviews",
+                        order.getId(),
+                        orderItem.getId(),
+                        product.getId()
+                )
                 .then().log().all()
                 .extract();
     }

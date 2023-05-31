@@ -85,13 +85,13 @@ public class ProductQnaAnswerAcceptanceTest extends AcceptanceTest {
 
     }
 
-    private ExtractableResponse<Response> 문의_답변_등록_요청(ProductResponse productResponse, ProductQnaResponse qnaResponse, String content) {
+    public static ExtractableResponse<Response> 문의_답변_등록_요청(ProductResponse productResponse, ProductQnaResponse qnaResponse, String content) {
         Map<String, String> body = new HashMap<>();
         body.put("content", content);
 
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .headers(createAuthorizationHeader(로그인정보))
+                .headers(createAuthorizationHeader(판매자_로그인토큰))
                 .body(body)
                 .when().post("/products/{productId}/qna/{qnaId}/answer", productResponse.getId(), qnaResponse.getId())
                 .then().log().all()

@@ -40,8 +40,11 @@ public class ProductReview extends BaseEntity {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @Column(name = "user_id")
+    @Column(name = "user_id", nullable = false)
     private Long userId;
+
+    @Column(name = "writer_login_id", nullable = false)
+    private String writerLoginId;
 
     public ProductReview(String content, int score) {
         this.writeDate = LocalDateTime.now();
@@ -50,15 +53,16 @@ public class ProductReview extends BaseEntity {
     }
 
     @Builder
-    public ProductReview(String content, int score, Product product, Long userId) {
+    public ProductReview(String content, int score, Product product, Long userId, String writerLoginId) {
         this(content, score);
-        byUser(userId);
+        byUser(userId, writerLoginId);
         byProduct(product);
 
     }
 
-    public ProductReview byUser(@NotNull Long userId) {
+    public ProductReview byUser(@NotNull Long userId, @NotNull String writerLoginId) {
         this.userId = userId;
+        this.writerLoginId = writerLoginId;
         return this;
     }
 

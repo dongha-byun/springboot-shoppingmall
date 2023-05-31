@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,7 +17,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.BaseEntity;
-import springboot.shoppingmall.user.dto.UserRequest;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -37,24 +37,37 @@ public class User extends BaseEntity {
     @Column(length = 400, nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String telNo;
+    @Embedded
+    private TelNo telNo;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Basket> baskets = new ArrayList<>();
+    @Column(name = "login_fail_count")
+    private int loginFailCount = 0;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Delivery> deliveries = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments = new ArrayList<>();
+    private boolean isLock = false;
 
     @Builder
     public User(String userName, String loginId, String password, String telNo) {
+        this(userName, loginId, password, telNo, 0);
+    }
+
+    @Builder
+    public User(String userName, String loginId, String password, String telNo, int loginFailCount) {
+        this(userName, loginId, password, telNo, loginFailCount, false);
+    }
+
+    @Builder
+    public User(String userName, String loginId, String password, String telNo, int loginFailCount, boolean isLock) {
         this.userName = userName;
         this.loginId = loginId;
         this.password = password;
-        this.telNo = telNo;
+        this.telNo = new TelNo(telNo);
+        this.loginFailCount = loginFailCount;
+        this.isLock = isLock;
     }
 
     public void updateUser(User user) {
@@ -64,14 +77,6 @@ public class User extends BaseEntity {
 
     public boolean isEqualPassword(String password) {
         return this.password.equals(password);
-    }
-
-    public void addBasket(Basket basket){
-        this.getBaskets().add(basket);
-    }
-
-    public void removeBasket(Basket basket) {
-        this.getBaskets().remove(basket);
     }
 
     public void addDelivery(Delivery delivery){
@@ -92,5 +97,21 @@ public class User extends BaseEntity {
                 .collect(Collectors.toList());
         this.payments.clear();
         this.payments.addAll(payments);
+    }
+
+    public String telNo() {
+        return this.telNo.getTelNo();
+    }
+
+    public int increaseLoginFailCount() {
+        this.loginFailCount++;
+        if(this.loginFailCount >= 5) {
+            this.isLock = true;
+        }
+        return this.loginFailCount;
+    }
+
+    public boolean isLocked() {
+        return this.isLock;
     }
 }

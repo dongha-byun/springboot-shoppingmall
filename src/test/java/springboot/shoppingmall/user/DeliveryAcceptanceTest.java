@@ -39,8 +39,18 @@ public class DeliveryAcceptanceTest extends AcceptanceTest {
         // given
 
         // when 1.
-        ExtractableResponse<Response> 배송지_추가_요청_결과_1 = 배송지_추가_요청("닉네임 1", "수령인 1", "10010", "서울시 강남구 청담동", "401동 1101호", "부재 시, 경비실에 맡겨주세요.");
-        ExtractableResponse<Response> 배송지_추가_요청_결과_2 = 배송지_추가_요청("닉네임 2", "수령인 2", "20020", "서울시 영등포구 여의도동", "101동 101", "조심히 오세요");
+        ExtractableResponse<Response> 배송지_추가_요청_결과_1 =
+                배송지_추가_요청(
+                        "닉네임 1", "수령인 1", "010-1234-1234",
+                        "10010", "서울시 강남구 청담동", "401동 1101호",
+                        "부재 시, 경비실에 맡겨주세요."
+                );
+        ExtractableResponse<Response> 배송지_추가_요청_결과_2 =
+                배송지_추가_요청(
+                        "닉네임 2", "수령인 2", "010-2345-2345",
+                        "20020", "서울시 영등포구 여의도동", "101동 101",
+                        "조심히 오세요"
+                );
 
         // then 1.
         assertThat(배송지_추가_요청_결과_1.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -55,6 +65,9 @@ public class DeliveryAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 배송지_목록_조회_결과 = 배송지_목록_조회_요청();
         assertThat(배송지_목록_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(배송지_목록_조회_결과.jsonPath().getList("id", Long.class)).hasSize(1);
+        assertThat(배송지_목록_조회_결과.jsonPath().getList("receiverPhoneNumber", String.class)).containsExactly(
+                "010-1234-1234"
+        );
     }
 
     private ExtractableResponse<Response> 배송지_목록_조회_요청() {
@@ -76,10 +89,13 @@ public class DeliveryAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 배송지_추가_요청(String nickName, String receiverName, String zipCode, String address, String detailAddress, String requestMessage) {
+    public static ExtractableResponse<Response> 배송지_추가_요청(String nickName, String receiverName, String receiverPhoneNumber,
+                                                          String zipCode, String address, String detailAddress,
+                                                          String requestMessage) {
         Map<String, String> params = new HashMap<>();
         params.put("nickName", nickName);
         params.put("receiverName", receiverName);
+        params.put("receiverPhoneNumber", receiverPhoneNumber);
         params.put("zipCode", zipCode);
         params.put("address", address);
         params.put("detailAddress", detailAddress);

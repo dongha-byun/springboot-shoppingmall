@@ -2,13 +2,14 @@ package springboot.shoppingmall.product.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
 @Embeddable
 public class ProductReviews {
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductReview> reviews = new ArrayList<>();
 
     public void addReview(ProductReview review) {

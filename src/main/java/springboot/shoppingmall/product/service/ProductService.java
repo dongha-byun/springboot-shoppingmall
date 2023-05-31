@@ -4,37 +4,49 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
-import springboot.shoppingmall.category.domain.CategoryRepository;
+import springboot.shoppingmall.category.domain.CategoryFinder;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.dto.ProductRequest;
+import springboot.shoppingmall.product.domain.ProductFinder;
+import springboot.shoppingmall.product.dto.ProductDto;
 import springboot.shoppingmall.product.dto.ProductResponse;
 import springboot.shoppingmall.product.domain.ProductRepository;
+import springboot.shoppingmall.providers.domain.Provider;
+import springboot.shoppingmall.providers.domain.ProviderFinder;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
+    private final CategoryFinder categoryFinder;
+    private final ProductFinder productFinder;
+    private final ProviderFinder providerFinder;
 
     @Transactional
-    public ProductResponse saveProduct(ProductRequest productRequest){
-        Category category = getCategory(productRequest.getCategoryId());
-        Category subCategory = getCategory(productRequest.getSubCategoryId());
+    public ProductResponse saveProduct(Long partnerId, ProductDto productDto){
+        Category category = categoryFinder.findById(productDto.getCategoryId());
+        Category subCategory = categoryFinder.findById(productDto.getSubCategoryId());
+        Provider provider = providerFinder.findById(partnerId);
 
-        Product product = productRepository.save(ProductRequest.toProduct(productRequest,category, subCategory));
+        Product product = productRepository.save(
+                Product.builder()
+                        .name(productDto.getName())
+                        .price(productDto.getPrice())
+                        .count(productDto.getCount())
+                        .category(category)
+                        .subCategory(subCategory)
+                        .partnerId(partnerId)
+                        .storedFileName(productDto.getStoredThumbnailName())
+                        .viewFileName(productDto.getViewThumbnailName())
+                        .detail(productDto.getDetail())
+                        .productCode(provider.generateProductCode())
+                        .build()
+        );
         return ProductResponse.of(product);
     }
 
-    private Category getCategory(Long id) {
-        return categoryRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("카테고리가 존재하지 않습니다.")
-        );
-    }
-
     public ProductResponse findProduct(Long id){
-        return ProductResponse.of(productRepository.findById(id)
-                .orElseThrow(
-                        () -> new IllegalArgumentException("존재하지 않는 상품입니다.")
-                ));
+        Product product = productFinder.findProductById(id);
+        Provider provider = providerFinder.findById(product.getPartnerId());
+        return ProductResponse.of(product, provider);
     }
 }

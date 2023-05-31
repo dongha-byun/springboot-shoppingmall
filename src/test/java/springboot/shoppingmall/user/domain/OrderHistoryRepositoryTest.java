@@ -2,19 +2,31 @@ package springboot.shoppingmall.user.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
+import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.pay.domain.PayHistory;
+import springboot.shoppingmall.pay.domain.PayHistoryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
+import springboot.shoppingmall.providers.domain.Provider;
+import springboot.shoppingmall.providers.domain.ProviderRepository;
 import springboot.shoppingmall.user.dto.OrderHistoryDto;
 
 @Transactional
@@ -23,6 +35,8 @@ class OrderHistoryRepositoryTest {
 
     @Autowired
     OrderHistoryRepository orderHistoryRepository;
+    @Autowired
+    ProviderRepository providerRepository;
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -34,17 +48,26 @@ class OrderHistoryRepositoryTest {
     @Autowired
     OrderRepository orderRepository;
 
-    @Commit
-    @Test
-    @DisplayName("사용자 별 주문내역 조회")
-    void orderHistoryTest(){
-        // given
-        User user = userRepository.save(User.builder().userName("테스터")
+    @Autowired
+    PayHistoryRepository payHistoryRepository;
+
+    User user;
+    Delivery delivery;
+    Product product;
+    Provider partner;
+
+    Order order1;
+    Order order2;
+    Order order3;
+
+    @BeforeEach
+    void setup() {
+        user = userRepository.save(User.builder().userName("테스터")
                 .loginId("test1")
                 .password("test1!")
                 .telNo("010-1234-1234")
                 .build());
-        Delivery delivery = deliveryRepository.save(Delivery.builder().user(user)
+        delivery = deliveryRepository.save(Delivery.builder().user(user)
                 .address("주소지 1")
                 .detailAddress("상세 주소지 1")
                 .nickName("배송지 1")
@@ -55,22 +78,78 @@ class OrderHistoryRepositoryTest {
         Category parent = categoryRepository.save(new Category("카테고리1"));
         Category child = categoryRepository.save(new Category("하위 카테고리1"));
 
-        Product product = productRepository.save(Product.builder().name("상품1")
-                .category(parent)
-                .subCategory(child)
-                .price(10000)
-                .count(22)
-                .build());
+        partner = providerRepository.save(
+                new Provider("테스트판매처", "테스터", "테스트시 테스트구 테스트동",
+                        "031-222-3121", "102-33-122333",
+                        "provider_test", "provider_test1!", true)
+        );
+        product = productRepository.save(
+                new Product("테스트상품", 12000, 300, parent, child,
+                        partner.getId(), "storedFileName", "viewFileName",
+                        "상품 설명 입니다.", "test-product-code")
+        );
 
-        Order order1 = Order.createOrder(user.getId(), product, 2, delivery);
-        Order order2 = Order.createOrder(user.getId(), product, 3, delivery);
-        orderRepository.save(order1);
-        orderRepository.save(order2);
+        order1 = new Order(
+                UUID.randomUUID().toString(), user.getId(),
+                List.of(new OrderItem(product, 2, OrderStatus.READY)),
+                LocalDateTime.of(2022, 11, 5, 12, 0, 0),
+                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
+                delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
+        );
+
+        order2 = new Order(
+                UUID.randomUUID().toString(), user.getId(),
+                List.of(new OrderItem(product, 2, OrderStatus.READY)),
+                LocalDateTime.of(2023, 2, 5, 12, 0, 0),
+                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
+                delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
+        );
+
+        order3 = new Order(
+                UUID.randomUUID().toString(), user.getId(),
+                List.of(new OrderItem(product, 2, OrderStatus.READY)),
+                LocalDateTime.of(2023, 5, 5, 12, 0, 0),
+                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
+                delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
+        );
+    }
+
+    @Test
+    @DisplayName("사용자 별 주문내역 조회")
+    void orderHistoryTest(){
+        // given
+        Order savedOrder1 = orderRepository.save(order1);
+        Order savedOrder2 = orderRepository.save(order2);
+        Order savedOrder3 = orderRepository.save(order3);
+
+        payHistoryRepository.save(
+                new PayHistory(savedOrder1.getId(), PayType.KAKAO_PAY.name(), "test-tid-order1",
+                        savedOrder1.getTotalPrice())
+        );
+        payHistoryRepository.save(
+                new PayHistory(savedOrder2.getId(), PayType.KAKAO_PAY.name(), "test-tid-order2",
+                        savedOrder2.getTotalPrice())
+        );
+        payHistoryRepository.save(
+                new PayHistory(savedOrder3.getId(), PayType.KAKAO_PAY.name(), "test-tid-order3",
+                        savedOrder3.getTotalPrice())
+        );
 
         // when
-        List<OrderHistoryDto> orderHistories = orderHistoryRepository.queryOrderHistory(user);
+        LocalDateTime startDate =
+                LocalDateTime.of(2023, 2, 1, 0, 0, 0);
+        LocalDateTime endDate =
+                LocalDateTime.of(2023, 6, 1, 23, 59, 59);
+        List<OrderHistoryDto> orderHistories = orderHistoryRepository.queryOrderHistory(user, startDate, endDate);
 
         // then
         assertThat(orderHistories).hasSize(2);
+        List<Long> orderItemIds = orderHistories.stream()
+                .map(OrderHistoryDto::getOrderItemId)
+                .collect(Collectors.toList());
+        assertThat(orderItemIds).containsExactly(
+                savedOrder3.getItems().get(0).getId(),
+                savedOrder2.getItems().get(0).getId()
+        );
     }
 }

@@ -1,26 +1,21 @@
 package springboot.shoppingmall.order.domain;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.util.StringUtils;
 import springboot.shoppingmall.BaseEntity;
-import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.user.domain.Delivery;
-import springboot.shoppingmall.user.domain.User;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -28,162 +23,97 @@ import springboot.shoppingmall.user.domain.User;
 @Table(name = "orders")
 public class Order extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column(name = "order_code", nullable = false, unique = true)
+    private String orderCode;
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<OrderItem> items = new ArrayList<>();
 
     private LocalDateTime orderDate;
-
-    private int quantity;
-
-    @Column(unique = true)
-    private String invoiceNumber;
-
     private int totalPrice;
+    @Embedded
+    private OrderDeliveryInfo orderDeliveryInfo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "delivery_id")
-    private Delivery delivery;
-
-    @Enumerated(EnumType.STRING)
-    private OrderStatus orderStatus;
-
-    private String refundReason;
-    private String exchangeReason;
-
-    public Order(Long userId, Product product, int quantity, Delivery delivery, OrderStatus orderStatus){
-        this(userId, product, quantity, delivery, orderStatus, null);
+    public Order(String orderCode, Long userId, List<OrderItem> items,
+                 String receiverName, String receiverPhoneNumber,
+                 String zipCode, String address, String detailAddress,
+                 String requestMessage){
+        this(orderCode, userId, items, LocalDateTime.now(),
+                receiverName, receiverPhoneNumber,
+                zipCode, address, detailAddress, requestMessage);
     }
 
-    public Order(Long userId, Product product, int quantity, Delivery delivery, OrderStatus orderStatus, String invoiceNumber) {
+    public Order(String orderCode, Long userId, List<OrderItem> items, LocalDateTime orderDate,
+                 String receiverName, String receiverPhoneNumber,
+                 String zipCode, String address,
+                 String detailAddress, String requestMessage) {
+        this.orderCode = orderCode;
         this.userId = userId;
-        this.product = product;
-        this.quantity = quantity;
-        this.orderDate = LocalDateTime.now();
-        this.orderStatus = orderStatus;
-        this.totalPrice = product.getPrice() * quantity;
-        this.delivery = delivery;
-        this.invoiceNumber = invoiceNumber;
+        this.orderDate = orderDate;
+        this.orderDeliveryInfo = new OrderDeliveryInfo(
+                receiverName, receiverPhoneNumber,
+                zipCode, address, detailAddress, requestMessage
+        );
+
+        initItems(items);
+        calculateTotalPrice();
     }
 
-    public static Order createOrder(Long userId, Product product, int quantity, Delivery delivery){
-        Order order = new Order();
-        order.userId = userId;
-        order.product = product;
-        order.quantity = quantity;
-        order.orderDate = LocalDateTime.now();
-        order.orderStatus = OrderStatus.READY;
-        order.totalPrice = product.getPrice() * quantity;
-        order.delivery = delivery;
-
-        return order;
+    private void initItems(List<OrderItem> items) {
+        items.forEach(this::addOrderItem);
     }
 
-    public void cancel() {
-        if(this.orderStatus != OrderStatus.READY){
-            throw new IllegalArgumentException("준비 중인 주문만 취소 가능합니다.");
-        }
-        this.orderStatus = OrderStatus.CANCEL;
+    public static Order createOrder(String orderCode, Long userId, List<OrderItem> items,
+                                    String receiverName, String receiverPhoneNumber,
+                                    String zipCode, String address, String detailAddress, String requestMessage){
+        return new Order(orderCode, userId, items,
+                receiverName, receiverPhoneNumber,
+                zipCode, address, detailAddress, requestMessage);
     }
 
-    public void outing() {
-        if(this.orderStatus != OrderStatus.READY){
-            throw new IllegalArgumentException("준비 중인 주문만 출고중으로 처리 가능합니다.");
-        }
-        this.orderStatus = OrderStatus.OUTING;
+    public void addOrderItem(OrderItem item) {
+        this.items.add(item);
+        item.ordered(this);
     }
 
-    public void delivery() {
-        if(this.orderStatus != OrderStatus.OUTING){
-            throw new IllegalArgumentException("출고 중인 주문만 배송중으로 처리 가능합니다.");
-        }
-        this.orderStatus = OrderStatus.DELIVERY;
+    public void calculateTotalPrice() {
+        this.items.forEach(
+                orderItem -> this.totalPrice += orderItem.totalPrice()
+        );
     }
 
-    public void deliveryEnd() {
-        if(this.orderStatus != OrderStatus.DELIVERY) {
-            throw new IllegalArgumentException("배송 준비중인 주문만 배송완료 처리가 가능합니다.");
-        }
-        this.orderStatus = OrderStatus.DELIVERY_END;
+    public OrderItem findOrderItem(Long orderItemId) {
+        return this.items.stream()
+                .filter(orderItem -> orderItem.getId().equals(orderItemId))
+                .findAny()
+                .orElseThrow(
+                        () -> new IllegalArgumentException("주문 상품 정보가 존재하지 않습니다.")
+                );
     }
 
-    public void finish() {
-        if(this.orderStatus != OrderStatus.DELIVERY_END) {
-            throw new IllegalArgumentException("배송이 완료된 주문만 구매확정 처리가 가능합니다.");
-        }
-        this.orderStatus = OrderStatus.FINISH;
+    public String getReceiverName() {
+        return this.orderDeliveryInfo.getReceiverName();
+    }
+    public String getReceiverPhoneNumber() {
+        return this.orderDeliveryInfo.getReceiverPhoneNumber();
+    }
+    public String getZipCode() {
+        return this.orderDeliveryInfo.getZipCode();
     }
 
-    public void refund(String refundReason) {
-        if(!StringUtils.hasText(refundReason)) {
-            throw new IllegalArgumentException("환불 사유는 필수입니다.");
-        }
-
-        if(this.orderStatus != OrderStatus.DELIVERY_END) {
-            throw new IllegalArgumentException("배송이 완료된 주문만 환불 신청이 가능합니다.");
-        }
-
-        this.orderStatus = OrderStatus.REFUND;
-        this.refundReason = refundReason;
+    public String getAddress() {
+        return this.orderDeliveryInfo.getAddress();
     }
 
-    public void exchange(String exchangeReason) {
-        if(!StringUtils.hasText(exchangeReason)) {
-            throw new IllegalArgumentException("교환 사유는 필수입니다.");
-        }
-
-        if(this.orderStatus != OrderStatus.DELIVERY_END) {
-            throw new IllegalArgumentException("배송이 완료된 주문만 교환 신청이 가능합니다.");
-        }
-        this.orderStatus = OrderStatus.EXCHANGE;
-        this.exchangeReason = exchangeReason;
+    public String getDetailAddress() {
+        return this.orderDeliveryInfo.getDetailAddress();
     }
 
-    public void changeStatus(OrderStatus orderStatus) {
-        if(OrderStatus.OUTING == orderStatus){
-            outing();
-        }
-        if(OrderStatus.CANCEL == orderStatus){
-            cancel();
-        }
-        if(OrderStatus.DELIVERY == orderStatus){
-            delivery();
-        }
-        if(OrderStatus.DELIVERY_END == orderStatus){
-            deliveryEnd();
-        }
-        if(OrderStatus.FINISH == orderStatus){
-            finish();
-        }
-    }
-
-    public boolean isOuting() {
-        return OrderStatus.OUTING.equals(orderStatus);
-    }
-
-    public void changeInvoiceNumber(String invoiceNumber) {
-        if(StringUtils.hasText(this.invoiceNumber)){
-            throw new IllegalArgumentException("기존에 발급받은 송장번호가 존재합니다.");
-        }
-        this.invoiceNumber = invoiceNumber;
-    }
-
-    public boolean isDeliveryEnd() {
-        return OrderStatus.DELIVERY_END == this.orderStatus;
-    }
-
-    public void refundEnd() {
-        this.orderStatus = OrderStatus.REFUND_END;
-    }
-
-    public void checking() {
-        this.orderStatus = OrderStatus.CHECKING;
+    public String getRequestMessage() {
+        return this.orderDeliveryInfo.getRequestMessage();
     }
 }

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.product.domain.Product;
+import springboot.shoppingmall.product.domain.ProductFinder;
 import springboot.shoppingmall.product.domain.ProductQna;
 import springboot.shoppingmall.product.domain.ProductQnaRepository;
 import springboot.shoppingmall.product.domain.ProductRepository;
@@ -19,15 +20,16 @@ import springboot.shoppingmall.product.dto.ProductQnaResponse;
 public class ProductQnaService {
 
     private final ProductQnaRepository productQnaRepository;
-    private final ProductRepository productRepository;
+    private final ProductFinder productFinder;
 
     @Transactional
-    public ProductQnaResponse createQna(Long userId, Long productId, ProductQnaRequest productQnaRequest) {
-        Product product = findProductById(productId);
+    public ProductQnaResponse createQna(Long userId, String loginId, Long productId, ProductQnaRequest productQnaRequest) {
+        Product product = productFinder.findProductById(productId);
         ProductQna productQna = productQnaRepository.save(ProductQna.builder()
                 .content(productQnaRequest.getContent())
                 .product(product)
                 .writerId(userId)
+                .writerLoginId(loginId)
                 .build());
 
         return ProductQnaResponse.of(productQna);
@@ -41,15 +43,8 @@ public class ProductQnaService {
     }
 
     public ProductQnaResponse findQnaByProduct(Long productId, Long qnaId){
-        Product product = findProductById(productId);
+        Product product = productFinder.findProductById(productId);
         ProductQna productQna = product.findQna(qnaId);
         return ProductQnaResponse.of(productQna);
-    }
-
-    private Product findProductById(Long productId) {
-        return productRepository.findById(productId)
-                .orElseThrow(
-                        () -> new IllegalArgumentException("상품 조회 실패")
-                );
     }
 }

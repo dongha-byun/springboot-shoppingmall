@@ -12,6 +12,7 @@ public class DeliveryResponse {
     private Long id;
     private String nickName;
     private String receiverName;
+    private String receiverPhoneNumber;
     private String zipCode;
     private String address;
     private String detailAddress;
@@ -22,6 +23,7 @@ public class DeliveryResponse {
                 delivery.getId(),
                 delivery.getNickName(),
                 delivery.getReceiverName(),
+                delivery.getReceiverPhoneNumber(),
                 delivery.getZipCode(),
                 delivery.getAddress(),
                 delivery.getDetailAddress(),

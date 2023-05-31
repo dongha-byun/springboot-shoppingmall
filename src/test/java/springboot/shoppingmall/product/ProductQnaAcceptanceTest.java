@@ -72,8 +72,8 @@ public class ProductQnaAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("content")).containsExactly(
                 문의_2.getContent(), 문의_1.getContent()
         );
-        assertThat(response.jsonPath().getList("writerName")).containsExactly(
-                "인수테스터1", "인수테스터1"
+        assertThat(response.jsonPath().getList("writerLoginId")).containsExactly(
+                인수테스터1.getLoginId(), 인수테스터1.getLoginId()
         );
     }
 

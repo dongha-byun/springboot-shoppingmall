@@ -11,6 +11,7 @@ import springboot.shoppingmall.user.domain.Delivery;
 public class DeliveryRequest {
     private String nickName;
     private String receiverName;
+    private String receiverPhoneNumber;
     private String zipCode;
     private String address;
     private String detailAddress;
@@ -20,6 +21,7 @@ public class DeliveryRequest {
         return Delivery.builder()
                 .nickName(request.getNickName())
                 .receiverName(request.getReceiverName())
+                .receiverPhoneNumber(request.getReceiverPhoneNumber())
                 .zipCode(request.getZipCode())
                 .address(request.getAddress())
                 .detailAddress(request.getDetailAddress())

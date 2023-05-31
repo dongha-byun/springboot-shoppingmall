@@ -5,6 +5,7 @@ import static springboot.shoppingmall.user.dto.UserEditRequest.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.user.domain.TelNo;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserFinder;
 import springboot.shoppingmall.user.dto.FindIdRequest;

@@ -19,7 +19,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.BaseEntity;
-import springboot.shoppingmall.user.domain.User;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -43,20 +42,24 @@ public class ProductQna extends BaseEntity {
 
     @Column(name = "writer_id", nullable = false)
     private Long writerId;
+
+    @Column(name = "writer_login_id", nullable = false)
+    private String writerLoginId;
     
     @OneToOne(mappedBy = "productQna", cascade = CascadeType.ALL, orphanRemoval = true)
     private ProductQnaAnswer answer;
 
     @Builder
-    public ProductQna(String content, Product product, Long writerId) {
-        this(null, content, product, writerId);
+    public ProductQna(String content, Product product, Long writerId, String writerLoginId) {
+        this(null, content, product, writerId, writerLoginId);
     }
 
-    public ProductQna(Long id, String content, Product product, Long writerId) {
+    public ProductQna(Long id, String content, Product product, Long writerId, String writerLoginId) {
         this.id = id;
         this.content = content;
         this.writeDate = LocalDateTime.now();
         this.writerId = writerId;
+        this.writerLoginId = writerLoginId;
         this.product = product;
         if(product != null){
             product.addQna(this);

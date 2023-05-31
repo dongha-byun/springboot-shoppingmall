@@ -2,6 +2,7 @@ package springboot.shoppingmall.product.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
@@ -18,12 +19,17 @@ class ProductReviewTest {
     void addReview() {
         // given
         User user = new User("사용자1", "user1", "user1!", "010-2222-3333");
-        Product product = new Product("상품 1", 12000, 20, new Category("상위 카테고리"), new Category("하위 카테고리"));
+        Product product = new Product(
+                "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
+                new Category("상위 카테고리"), new Category("하위 카테고리"), 10L,
+                "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                "test-product-code"
+        );
         ProductReview productReview1 = new ProductReview("리뷰 입니다.", 4);
         ProductReview productReview2 = new ProductReview("리뷰 2 입니다.", 5);
 
         // when
-        ProductReview review1 = productReview1.byProduct(product).byUser(user.getId());
+        ProductReview review1 = productReview1.byProduct(product).byUser(user.getId(), user.getLoginId());
         ProductReview review2 = productReview2.byProduct(product);
 
         // then
@@ -37,7 +43,12 @@ class ProductReviewTest {
     @DisplayName("상품 리뷰 삭제 테스트")
     void removeReview() {
         // given
-        Product product = new Product("상품 1", 12000, 20, new Category("상위 카테고리"), new Category("하위 카테고리"));
+        Product product = new Product(
+                "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
+                new Category("상위 카테고리"), new Category("하위 카테고리"), 10L,
+                "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                "test-product-code"
+        );
         ProductReview productReview1 = new ProductReview("리뷰 입니다.", 4);
         ProductReview productReview2 = new ProductReview("리뷰 2 입니다.", 5);
 
@@ -60,9 +71,14 @@ class ProductReviewTest {
         // given
         User user1 = new User("사용자1", "user1", "user1!", "010-2222-3333");
         User user2 = new User("사용자2", "user2", "user2@", "010-4444-5555");
-        Product product = new Product("상품 1", 12000, 20, new Category("상위 카테고리"), new Category("하위 카테고리"));
-        ProductReview productReview1 = new ProductReview("리뷰 입니다.", 4, product, user1.getId());
-        ProductReview productReview2 = new ProductReview("리뷰 2 입니다.", 5, product, user2.getId());
+        Product product = new Product(
+                "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
+                new Category("상위 카테고리"), new Category("하위 카테고리"), 10L,
+                "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                "test-product-code"
+        );
+        ProductReview productReview1 = new ProductReview("리뷰 입니다.", 4, product, user1.getId(), user1.getLoginId());
+        ProductReview productReview2 = new ProductReview("리뷰 2 입니다.", 5, product, user2.getId(), user2.getLoginId());
 
         // when
         List<ProductReview> reviews = product.getReviews().getReviews();
@@ -98,8 +114,13 @@ class ProductReviewTest {
     @DisplayName("상품 리뷰를 작성한 사용자가 맞는지 틀린지 확인")
     void is_writer_test(Long userId, boolean result) {
         // given
-        Product product = new Product("상품 1", 12000, 20, new Category("상위 카테고리"), new Category("하위 카테고리"));
-        ProductReview productReview = new ProductReview("리뷰 등록 합니다.", 3, product, 1L);
+        Product product = new Product(
+                "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
+                new Category("상위 카테고리"), new Category("하위 카테고리"), 10L,
+                "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                "test-product-code"
+        );
+        ProductReview productReview = new ProductReview("리뷰 등록 합니다.", 3, product, 1L, "writerLoginId");
 
         // when
         boolean isWriter = productReview.isWriter(userId);

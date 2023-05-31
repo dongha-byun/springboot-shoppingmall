@@ -1,123 +1,163 @@
 package springboot.shoppingmall.order.service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderFinder;
+import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
-import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.order.domain.OrderSequence;
+import springboot.shoppingmall.order.domain.OrderSequenceRepository;
 import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
+import springboot.shoppingmall.order.dto.OrderItemRequest;
+import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
+import springboot.shoppingmall.pay.domain.PayHistory;
+import springboot.shoppingmall.pay.domain.PayHistoryRepository;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.user.domain.Delivery;
-import springboot.shoppingmall.user.domain.DeliveryRepository;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserFinder;
+import springboot.shoppingmall.product.domain.ProductFinder;
+import springboot.shoppingmall.utils.DateUtils;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
 public class OrderService {
 
-    private final UserFinder userFinder;
     private final OrderFinder orderFinder;
-    private final ProductRepository productRepository;
+    private final ProductFinder productFinder;
     private final OrderRepository orderRepository;
-    private final DeliveryRepository deliveryRepository;
+    private final PayHistoryRepository payHistoryRepository;
+    private final OrderSequenceRepository orderSequenceRepository;
     private final OrderDeliveryInterfaceService orderDeliveryInterfaceService;
+    private final OrderPayService orderPayService;
 
     @Transactional
     public OrderResponse createOrder(Long userId, OrderRequest orderRequest) {
-        User user = userFinder.findUserById(userId);
-        Product product = findProductById(orderRequest.getProductId());
-        Delivery delivery = findDeliveryById(orderRequest.getDeliveryId());
+        List<OrderItem> items = getOrderItems(orderRequest);
 
-        Order newOrder = orderRepository.save(Order.createOrder(user.getId(), product, orderRequest.getQuantity(), delivery));
+        String orderCode = generateOrderCode();
+        Order newOrder = orderRepository.save(
+                Order.createOrder(orderCode, userId, items,
+                        orderRequest.getReceiverName(), orderRequest.getReceiverPhoneNumber(),
+                        orderRequest.getZipCode(), orderRequest.getAddress(), orderRequest.getDetailAddress(),
+                        orderRequest.getRequestMessage())
+        );
+
+        // 주문 정보 저장 시, 결제정보도 같이 저장한다.
+        payHistoryRepository.save(
+                new PayHistory(
+                        newOrder.getId(), orderRequest.getPayType(), orderRequest.getTid(), newOrder.getTotalPrice()
+                )
+        );
 
         return OrderResponse.of(newOrder);
     }
 
-    // 주문취소
-    @Transactional
-    public OrderResponse cancel(Long orderId) {
-        Order order = orderFinder.findOrderById(orderId);
-        order.cancel();
+    private List<OrderItem> getOrderItems(OrderRequest orderRequest) {
+        List<OrderItem> items = new ArrayList<>();
+        List<OrderItemRequest> itemRequests = orderRequest.getItems();
+        for (OrderItemRequest itemRequest : itemRequests) {
+            Product product = productFinder.findProductById(itemRequest.getProductId());
+            product.validateQuantity(itemRequest.getQuantity());
 
-        return OrderResponse.of(order);
+            items.add(OrderItem.createOrderItem(product, itemRequest.getQuantity()));
+        }
+
+        return items;
     }
 
-    // 출고중
+    private String generateOrderCode() {
+        LocalDateTime now = LocalDateTime.now();
+        String yyyyMMdd = DateUtils.toStringOfLocalDateTIme(now, "yyyyMMdd");
+        OrderSequence orderSequence = orderSequenceRepository.findByDate(yyyyMMdd)
+                .orElseGet(() -> OrderSequence.createSequence(now));
+        if(orderSequence.isNew()) {
+            orderSequenceRepository.save(orderSequence);
+        }
+        return orderSequence.generateOrderCode();
+    }
+
+    // 주문 취소
     @Transactional
-    public OrderResponse outing(Long orderId) {
+    public OrderItemResponse cancel(Long orderId, Long orderItemId, LocalDateTime cancelDate, String cancelReason) {
         Order order = orderFinder.findOrderById(orderId);
-        order.outing();
+        OrderItem orderItem = order.findOrderItem(orderItemId);
+        orderItem.cancel(cancelDate, cancelReason);
+
+        // 주문이 취소되면, 결제취소 요청을 보낸다.
+//        PayHistory payHistory = payHistoryRepository.findByOrderId(orderId)
+//                .orElseThrow(
+//                        () -> new IllegalArgumentException("결제 고유번호 조회 실패")
+//                );
+//        orderPayService.cancel(payHistory.getTid(), payHistory.getAmount());
+
+        return OrderItemResponse.of(orderItem);
+    }
+
+    // 출고 중
+    @Transactional
+    public OrderItemResponse outing(Long orderId, Long orderItemId) {
+        Order order = orderFinder.findOrderById(orderId);
+        OrderItem orderItem = order.findOrderItem(orderItemId);
 
         OrderDeliveryInvoiceResponse deliveryInvoice = orderDeliveryInterfaceService.createInvoiceNumber(order);
-        order.changeInvoiceNumber(deliveryInvoice.getInvoiceNumber());
+        orderItem.outing(deliveryInvoice.getInvoiceNumber());
 
-        return OrderResponse.of(order);
+        return OrderItemResponse.of(orderItem);
     }
 
     // 구매확정
     @Transactional
-    public OrderResponse finish(Long orderId) {
+    public OrderItemResponse finish(Long orderId, Long orderItemId) {
         Order order = orderFinder.findOrderById(orderId);
-        order.finish();
+        OrderItem orderItem = order.findOrderItem(orderItemId);
+        orderItem.finish();
 
-        // 구매확정 시, 상품 판매 수량이 증가한다.
-        Product product = order.getProduct();
-        product.increaseSalesVolume();
-
-        return OrderResponse.of(order);
+        return OrderItemResponse.of(orderItem);
     }
 
     // 검수중
     @Transactional
-    public OrderResponse checking(Long orderId) {
+    public OrderItemResponse checking(Long orderId, Long orderItemId) {
         Order order = orderFinder.findOrderById(orderId);
-        order.checking();
+        OrderItem orderItem = order.findOrderItem(orderItemId);
+        orderItem.checking();
 
-        return OrderResponse.of(order);
+        return OrderItemResponse.of(orderItem);
     }
 
     // 환불
     @Transactional
-    public OrderResponse refund(Long orderId, String returnReason) {
+    public OrderItemResponse refund(Long orderId, Long orderItemId, LocalDateTime refundDate, String refundReason) {
         Order order = orderFinder.findOrderById(orderId);
-        order.refund(returnReason);
+        OrderItem orderItem = order.findOrderItem(orderItemId);
+        orderItem.refund(refundDate, refundReason);
 
-        return OrderResponse.of(order);
+        return OrderItemResponse.of(orderItem);
     }
 
     // 환불 완료
     @Transactional
-    public OrderResponse refundEnd(Long orderId) {
+    public OrderItemResponse refundEnd(Long orderId, Long orderItemId) {
         Order order = orderFinder.findOrderById(orderId);
-        order.refundEnd();
+        OrderItem orderItem = order.findOrderItem(orderItemId);
+        orderItem.refundEnd();
 
-        return OrderResponse.of(order);
+        return OrderItemResponse.of(orderItem);
     }
 
     // 교환
     @Transactional
-    public OrderResponse exchange(Long orderId, String exchangeReason) {
+    public OrderItemResponse exchange(Long orderId, Long orderItemId, LocalDateTime exchangeDate, String exchangeReason) {
         Order order = orderFinder.findOrderById(orderId);
-        order.exchange(exchangeReason);
+        OrderItem orderItem = order.findOrderItem(orderItemId);
+        orderItem.exchange(exchangeDate, exchangeReason);
 
-        return OrderResponse.of(order);
-    }
-
-
-    private Delivery findDeliveryById(Long deliveryId) {
-        return deliveryRepository.findById(deliveryId)
-                .orElseThrow(IllegalArgumentException::new);
-    }
-
-    private Product findProductById(Long productId) {
-        return productRepository.findById(productId)
-                .orElseThrow(IllegalArgumentException::new);
+        return OrderItemResponse.of(orderItem);
     }
 }

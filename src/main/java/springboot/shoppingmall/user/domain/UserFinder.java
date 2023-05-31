@@ -15,4 +15,11 @@ public class UserFinder {
                         () -> new IllegalArgumentException("사용자 조회 실패")
                 );
     }
+
+    public User findUserByLoginId(String loginId) {
+        return userRepository.findUserByLoginId(loginId)
+                .orElseThrow(
+                        () -> new IllegalArgumentException("회원 조회 실패")
+                );
+    }
 }

@@ -88,6 +88,6 @@ class UserServiceTest {
         assertThat(findUser.getUserName()).isEqualTo("사용자1");
         assertThat(findUser.getLoginId()).isEqualTo("user1");
         assertThat(findUser.getPassword()).isEqualTo("user2@");
-        assertThat(findUser.getTelNo()).isEqualTo("010-2222-4444");
+        assertThat(findUser.telNo()).isEqualTo("010-2222-4444");
     }
 }
