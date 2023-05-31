@@ -25,8 +25,7 @@ public class KakaoPayService implements PayService{
 
     @Override
     public Object ready(MultiValueMap<String, String> formData) {
-        HttpHeaders headers = createHeaders();
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, headers);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, createHeaders());
 
         return restTemplate.postForObject(
                 READY_URL, request, KakaoPayReadyResponse.class
@@ -35,8 +34,7 @@ public class KakaoPayService implements PayService{
 
     @Override
     public Object approve(MultiValueMap<String, String> formData) {
-        HttpHeaders headers = createHeaders();
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, headers);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, createHeaders());
 
         return restTemplate.postForObject(
                 APPROVE_URL, request, KakaoPayApproveResponse.class
@@ -45,8 +43,7 @@ public class KakaoPayService implements PayService{
 
     @Override
     public Object cancel(MultiValueMap<String, Object> formData) {
-        HttpHeaders headers = createHeaders();
-        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(formData, headers);
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(formData, createHeaders());
 
         return restTemplate.postForObject(
                 CANCEL_URL, request, KakaoPayCancelResponse.class
