@@ -13,10 +13,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.dto.ProductDto;
 import springboot.shoppingmall.product.query.ProductQueryOrderType;
 import springboot.shoppingmall.product.query.dto.ProductQueryDto;
-import springboot.shoppingmall.providers.domain.QProvider;
 
 public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepository{
     private final JPAQueryFactory jpaQueryFactory;
@@ -64,7 +62,7 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
     public List<ProductQueryDto> searchProducts(String searchKeyword, ProductQueryOrderType orderType,
                                                     int limit, int offset) {
         return jpaQueryFactory.select(Projections.constructor(ProductQueryDto.class,
-                        product.id, product.name, product.price, product.count, product.score,
+                        product.id, product.name, product.price, product.count, product.score, product.salesVolume,
                         product.thumbnail.storedFileName, product.thumbnail.viewFileName,
                         provider.name))
                 .from(product)
