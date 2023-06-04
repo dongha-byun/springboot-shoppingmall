@@ -119,11 +119,11 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
 
         // then
         assertThat(리뷰_작성_요청_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ProductUserReviewResponse 작성된_리뷰 = 리뷰_작성_요청_결과.as(ProductUserReviewResponse.class);
-        assertThat(작성된_리뷰.getId()).isNotNull();
-        assertThat(작성된_리뷰.getProductName()).isEqualTo(상품.getName());
-        assertThat(작성된_리뷰.getContent()).isEqualTo("리뷰 작성 합니다.");
-        assertThat(작성된_리뷰.getWriteDate()).isNotNull();
+        assertThat(리뷰_작성_요청_결과.jsonPath().getLong("id")).isNotNull();
+        assertThat(리뷰_작성_요청_결과.jsonPath().getString("productName")).isEqualTo(상품.getName());
+        assertThat(리뷰_작성_요청_결과.jsonPath().getInt("score")).isEqualTo(4);
+        assertThat(리뷰_작성_요청_결과.jsonPath().getString("content")).isEqualTo("리뷰 작성 합니다.");
+        assertThat(리뷰_작성_요청_결과.jsonPath().getString("writeDate")).isNotNull();
 
         // 리뷰가 작성되면 해당 주문 건은 구매확정 처리로 변경한다.
         Order 구매확정_주문 = orderRepository.findById(배송완료_주문.getId()).orElseThrow();

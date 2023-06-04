@@ -1,10 +1,10 @@
 package springboot.shoppingmall.product.dto;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.product.domain.ProductReview;
+import springboot.shoppingmall.utils.DateUtils;
 
 @Getter
 @NoArgsConstructor
@@ -12,10 +12,13 @@ import springboot.shoppingmall.product.domain.ProductReview;
 public class ProductUserReviewResponse {
     private Long id;
     private String content;
+    private int score;
     private String productName;
-    private LocalDateTime writeDate;
+    private String writeDate;
 
-    public static ProductUserReviewResponse of(ProductReview productReview) {
-        return new ProductUserReviewResponse(productReview.getId(), productReview.getContent(), productReview.getProductName(), productReview.getWriteDate());
+    public static ProductUserReviewResponse of(ProductReview review) {
+        return new ProductUserReviewResponse(review.getId(), review.getContent(), review.getScore(),
+                review.getProductName(),
+                DateUtils.toStringOfLocalDateTIme(review.getWriteDate()));
     }
 }
