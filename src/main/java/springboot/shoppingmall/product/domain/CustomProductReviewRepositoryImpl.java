@@ -22,10 +22,10 @@ public class CustomProductReviewRepositoryImpl implements CustomProductReviewRep
 
     @Override
     public List<ProductReviewDto> findAllProductReview(Long productId) {
-        return jpaQueryFactory.select(
-                        new QProductReviewDto(
+        return jpaQueryFactory.select(Projections.constructor(ProductReviewDto.class,
                                 productReview.id,
                                 productReview.content,
+                                productReview.score,
                                 productReview.writeDate,
                                 productReview.writerLoginId
                         )

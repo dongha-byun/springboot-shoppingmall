@@ -31,10 +31,7 @@ public class ProductReviewService {
         List<ProductReviewDto> reviewDtos = reviewRepository.findAllProductReview(productId);
         return reviewDtos.stream()
                 .map(
-                        productReviewDto -> new ProductReviewResponse(productReviewDto.getId(),
-                                productReviewDto.getContent(),
-                                productReviewDto.getWriteDate(),
-                                productReviewDto.getWriterLoginId())
+                        ProductReviewResponse::of
                 ).collect(Collectors.toList());
     }
 

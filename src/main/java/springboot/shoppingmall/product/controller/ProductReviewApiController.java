@@ -28,7 +28,6 @@ import springboot.shoppingmall.product.service.ProductReviewService;
 public class ProductReviewApiController {
 
     private final ProductReviewService productReviewService;
-    private final OrderValidator orderValidator;
 
     @ExceptionHandler(ContentNotBlankException.class)
     public ResponseEntity<ProductUserReviewResponse> handleNotBlankException(ContentNotBlankException exception) {
