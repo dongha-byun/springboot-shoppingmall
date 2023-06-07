@@ -12,12 +12,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
+import springboot.shoppingmall.user.domain.UserGrade;
 import springboot.shoppingmall.user.dto.FindIdRequest;
 import springboot.shoppingmall.user.dto.FindIdResponse;
 import springboot.shoppingmall.user.dto.FindPwRequest;
 import springboot.shoppingmall.user.dto.FindPwResponse;
 import springboot.shoppingmall.user.dto.SignUpRequest;
 import springboot.shoppingmall.user.dto.UserEditRequest;
+import springboot.shoppingmall.user.dto.UserGradeInfoDto;
+import springboot.shoppingmall.user.dto.UserGradeInfoResponse;
 import springboot.shoppingmall.user.dto.UserRequest;
 import springboot.shoppingmall.user.dto.UserResponse;
 import springboot.shoppingmall.user.service.UserService;
@@ -59,5 +62,11 @@ public class UserApiController {
                                                    @RequestBody UserEditRequest userRequest){
         UserResponse userResponse = userService.editUser(user.getId(), userRequest);
         return ResponseEntity.ok(userResponse);
+    }
+
+    @GetMapping("/user/grade-info")
+    public ResponseEntity<UserGradeInfoResponse> findUserGradeInfo(@AuthenticationStrategy AuthorizedUser user) {
+        UserGradeInfoDto userGradeInfo = userService.getUserGradeInfo(user.getId());
+        return ResponseEntity.ok().body(UserGradeInfoResponse.to(userGradeInfo));
     }
 }
