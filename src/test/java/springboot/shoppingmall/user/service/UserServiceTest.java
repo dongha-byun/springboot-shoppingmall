@@ -3,12 +3,14 @@ package springboot.shoppingmall.user.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.checkerframework.checker.signature.qual.DotSeparatedIdentifiers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.user.domain.User;
+import springboot.shoppingmall.user.domain.UserGrade;
 import springboot.shoppingmall.user.domain.UserRepository;
 import springboot.shoppingmall.user.dto.FindIdRequest;
 import springboot.shoppingmall.user.dto.FindIdResponse;
@@ -16,6 +18,7 @@ import springboot.shoppingmall.user.dto.FindPwRequest;
 import springboot.shoppingmall.user.dto.FindPwResponse;
 import springboot.shoppingmall.user.dto.SignUpRequest;
 import springboot.shoppingmall.user.dto.UserEditRequest;
+import springboot.shoppingmall.user.dto.UserGradeInfoDto;
 import springboot.shoppingmall.user.dto.UserResponse;
 
 @Transactional
@@ -89,5 +92,23 @@ class UserServiceTest {
         assertThat(findUser.getLoginId()).isEqualTo("user1");
         assertThat(findUser.getPassword()).isEqualTo("user2@");
         assertThat(findUser.telNo()).isEqualTo("010-2222-4444");
+    }
+
+    @Test
+    @DisplayName("다음 회원등급 승급까지 남은 주문량/주문금액을 조회한다.")
+    void get_next_user_grade_condition() {
+        // given
+        User user = userRepository.save(new User("사용자1", "user1", "user1!", "010-1111-2222"));
+
+        // when
+        UserGradeInfoDto userGradeInfo = userService.getUserGradeInfo(user.getId());
+
+        // then
+        assertThat(userGradeInfo.getUserId()).isEqualTo(user.getId());
+        assertThat(userGradeInfo.getUserName()).isEqualTo(user.getUserName());
+        assertThat(userGradeInfo.getCurrentUserGrade()).isEqualTo(UserGrade.NORMAL);
+        assertThat(userGradeInfo.getNextUserGrade()).isEqualTo(UserGrade.REGULAR);
+        assertThat(userGradeInfo.getOrderCount()).isEqualTo(0);
+        assertThat(userGradeInfo.getAmount()).isEqualTo(0);
     }
 }

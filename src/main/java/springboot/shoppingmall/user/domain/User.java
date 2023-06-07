@@ -2,6 +2,7 @@ package springboot.shoppingmall.user.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import springboot.shoppingmall.BaseEntity;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -43,11 +45,15 @@ public class User extends BaseEntity {
     @Column(name = "login_fail_count")
     private int loginFailCount = 0;
 
+    @Embedded
+    private UserGradeInfo userGradeInfo;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Delivery> deliveries = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments = new ArrayList<>();
+    @ColumnDefault("false")
     private boolean isLock = false;
 
     @Builder
@@ -68,6 +74,7 @@ public class User extends BaseEntity {
         this.telNo = new TelNo(telNo);
         this.loginFailCount = loginFailCount;
         this.isLock = isLock;
+        this.userGradeInfo = new UserGradeInfo(UserGrade.NORMAL, 0, 0);
     }
 
     public void updateUser(User user) {
@@ -113,5 +120,9 @@ public class User extends BaseEntity {
 
     public boolean isLocked() {
         return this.isLock;
+    }
+
+    public Optional<UserGrade> getNextUserGrade() {
+        return this.userGradeInfo.nextGrade();
     }
 }

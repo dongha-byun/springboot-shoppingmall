@@ -113,6 +113,38 @@ public class UserAcceptanceTest extends AcceptanceTest {
         assertThat(response.getTelNo()).isEqualTo("010-4567-4567");
     }
 
+    /**
+     * given: 회원가입한 회원으로 로그인하고
+     * when: 내 정보를 조회하면
+     * then: 현재 회원등급과 다음 회원등급, 다음 회원 등급까지 남은 조건이 조회된다.
+     */
+    @Test
+    @DisplayName("현재 회원등급 / 다음 회원등급이 조회된다.")
+    void viewing_user_grade_info() {
+        // given
+        회원가입("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
+        TokenResponse 사용자_로그인 = 로그인("dongha", "dongha1!").as(TokenResponse.class);
+
+        // when
+        ExtractableResponse<Response> 회원등급_조회_결과 = 회원등급_조회(사용자_로그인);
+
+        // then
+        assertThat(회원등급_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(회원등급_조회_결과.jsonPath().getString("userName")).isEqualTo("변동하");
+        assertThat(회원등급_조회_결과.jsonPath().getString("currentUserGrade")).isEqualTo("일반회원");
+        assertThat(회원등급_조회_결과.jsonPath().getString("nextUserGrade")).isEqualTo("단골회원");
+        assertThat(회원등급_조회_결과.jsonPath().getInt("remainedOrderCountForNextGrade")).isEqualTo(10);
+        assertThat(회원등급_조회_결과.jsonPath().getInt("remainedAmountsForNextGrade")).isEqualTo(50000);
+    }
+
+    private ExtractableResponse<Response> 회원등급_조회(TokenResponse login) {
+        return RestAssured.given().log().all()
+                .headers(createAuthorizationHeader(login))
+                .when().get("/user/grade-info")
+                .then().log().all()
+                .extract();
+    }
+
     private ExtractableResponse<Response> 회원정보_조회(String token) {
         Map<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer " + token);
