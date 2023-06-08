@@ -21,6 +21,8 @@ import springboot.shoppingmall.pay.domain.PayHistory;
 import springboot.shoppingmall.pay.domain.PayHistoryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
+import springboot.shoppingmall.user.domain.User;
+import springboot.shoppingmall.user.domain.UserFinder;
 import springboot.shoppingmall.utils.DateUtils;
 
 @RequiredArgsConstructor
@@ -30,6 +32,7 @@ public class OrderService {
 
     private final OrderFinder orderFinder;
     private final ProductFinder productFinder;
+    private final UserFinder userFinder;
     private final OrderRepository orderRepository;
     private final PayHistoryRepository payHistoryRepository;
     private final OrderSequenceRepository orderSequenceRepository;
@@ -117,6 +120,10 @@ public class OrderService {
         Order order = orderFinder.findOrderById(orderId);
         OrderItem orderItem = order.findOrderItem(orderItemId);
         orderItem.finish();
+
+        // 구매확정 시, 사용자의 주문정보를 업데이트한다.
+        User orderUser = userFinder.findUserById(order.getUserId());
+        orderUser.increaseOrderAmount(orderItem.totalPrice());
 
         return OrderItemResponse.of(orderItem);
     }
