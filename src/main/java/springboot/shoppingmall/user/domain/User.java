@@ -125,4 +125,8 @@ public class User extends BaseEntity {
     public Optional<UserGrade> getNextUserGrade() {
         return this.userGradeInfo.nextGrade();
     }
+
+    public void increaseOrderAmount(int amounts) {
+        this.userGradeInfo.increaseOrderAmount(amounts);
+    }
 }

@@ -35,6 +35,7 @@ import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.user.domain.Delivery;
 import springboot.shoppingmall.user.domain.PayType;
 import springboot.shoppingmall.user.domain.User;
+import springboot.shoppingmall.user.domain.UserGradeInfo;
 import springboot.shoppingmall.user.domain.UserRepository;
 import springboot.shoppingmall.utils.DateUtils;
 
@@ -55,6 +56,9 @@ class OrderServiceTest {
     ProductRepository productRepository;
     @Autowired
     CategoryRepository categoryRepository;
+
+    @Autowired
+    OrderRepository orderRepository;
 
     int productCount = 10;
 
@@ -180,7 +184,6 @@ class OrderServiceTest {
     @DisplayName("주문 실패 - 재고 수 보다 많은 양을 주문하면 주문에 실패한다.")
     void order_fail_with_quantity_over() {
         // given
-
         int orderQuantity = product.getCount() + 1;
         OrderItemRequest orderItemRequest = new OrderItemRequest(product.getId(), orderQuantity);
         OrderRequest orderRequest = new OrderRequest(
@@ -194,5 +197,43 @@ class OrderServiceTest {
         assertThatThrownBy(
                 () -> orderService.createOrder(user.getId(), orderRequest)
         ).isInstanceOf(OverQuantityException.class);
+    }
+
+    @Test
+    @DisplayName("구매 확정 - 배송이 완료된 상품을 구매확정 처리 한다. 동시에 사용자의 주문횟수/주문금액을 증가시킨다.")
+    void order_finish_and_user_grade_info_update_test() {
+        // given
+        int orderQuantity1 = 2;
+        int orderQuantity2 = 4;
+        List<OrderItem> items = Arrays.asList(
+                new OrderItem(product, orderQuantity1, OrderStatus.DELIVERY_END),
+                new OrderItem(product2, orderQuantity2, OrderStatus.DELIVERY_END)
+        );
+        LocalDateTime orderDate = LocalDateTime.of(2023, 6, 6, 12, 0, 0);
+        Order order = new Order(
+                "finish-order-code", user.getId(), items, orderDate,
+                "덩라", "010-1234-1234",
+                "01234", "서울시 테스트구 테스트동", "덩라빌딩 301호",
+                "조심히 오세요."
+        );
+        Order savedOrder = orderRepository.save(order);
+        OrderItem orderItem1 = savedOrder.getItems().get(0);
+
+        // when
+        orderService.finish(savedOrder.getId(), orderItem1.getId());
+
+        // then
+        assertThat(orderItem1.getOrderStatus()).isEqualTo(OrderStatus.FINISH);
+
+        // 판매수량 증가
+        Product orderItem1Product = orderItem1.getProduct();
+        assertThat(orderItem1Product.getId()).isEqualTo(product.getId());
+        assertThat(product.getSalesVolume()).isEqualTo(orderQuantity1);
+
+        // 구매자의 주문횟수/금액 처리
+        User orderUser = userRepository.findById(user.getId()).orElseThrow();
+        UserGradeInfo userGradeInfo = orderUser.getUserGradeInfo();
+        assertThat(userGradeInfo.getOrderCount()).isEqualTo(1);
+        assertThat(userGradeInfo.getAmount()).isEqualTo(orderItem1.getQuantity() * product.getPrice());
     }
 }

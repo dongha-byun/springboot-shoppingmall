@@ -27,4 +27,9 @@ public class UserGradeInfo {
     public Optional<UserGrade> nextGrade() {
         return this.grade.nextGrade();
     }
+
+    public void increaseOrderAmount(int amount) {
+        this.orderCount++;
+        this.amount = amount;
+    }
 }
