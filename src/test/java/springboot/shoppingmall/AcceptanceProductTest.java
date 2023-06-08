@@ -27,6 +27,7 @@ public class AcceptanceProductTest extends AcceptanceTest{
         상품2 = 상품_등록_요청("상품 2", 11000, 100, 상위_카테고리.getId(), 하위_카테고리.getId()).as(ProductResponse.class);
         배송지 = 배송지_추가_요청("배송지 1",
                 "수령인 1",
+                "010-2345-2345",
                 "10010",
                 "서울시 서초구 서초동 103번지",
                 "109호",

@@ -36,11 +36,11 @@ public class DataInitializer {
         public void init(){
             Provider provider1 = new Provider(
                     "부실건설", "변부실", "서울시 영등포구", "02-1234-2222"
-                    , "110-33-444222", "qntlfrjstjf", "qntlfrjstjf1"
+                    , "110-33-444222", "test1", "test1!"
             );
             Provider provider2 = new Provider(
                     "파산은행", "김파산", "부산광역시 사상구", "051-333-2222"
-                    , "251-89-698111", "vktksdmsgod", "vktksdmsgod1"
+                    , "251-89-698111", "test2", "test2@"
             );
 
             provider1.approve();
@@ -61,9 +61,11 @@ public class DataInitializer {
                 for (Category subCategory : subCategories) {
                     Long subCategoryId = subCategory.getId();
                     for(int i=1; i<=100; i++){
+                        Provider provider = providers[i%2];
                         em.persist(new Product("상품_"+categoryId+"_"+subCategoryId+"_"+i, 190 * i,
-                                321, category, subCategory, providers[i%2].getId(),
-                                null, null, i + "번째 상품 설명 입니다."));
+                                501-i, category, subCategory, provider.getId(),
+                                null, null, i + "번째 상품 설명 입니다.",
+                                provider.generateProductCode()));
                     }
                 }
             }
