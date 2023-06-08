@@ -1,16 +1,10 @@
 package springboot.shoppingmall.product.dto;
 
-import static springboot.shoppingmall.product.domain.QProductQna.productQna;
-
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.product.domain.ProductQna;
 import springboot.shoppingmall.utils.DateUtils;
-import springboot.shoppingmall.utils.MaskingUtil;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
