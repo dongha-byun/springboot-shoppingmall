@@ -1,53 +1,45 @@
-package springboot.shoppingmall.pay.web;
+package springboot.shoppingmall.pay.type.kakakopay.web;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import springboot.shoppingmall.pay.type.kakakopay.web.KakaoPayApproveRequest;
-import springboot.shoppingmall.pay.type.kakakopay.web.KakaoPayApproveResponse;
-import springboot.shoppingmall.pay.type.kakakopay.web.KakaoPayCancelRequest;
-import springboot.shoppingmall.pay.type.kakakopay.web.KakaoPayCancelResponse;
-import springboot.shoppingmall.pay.type.kakakopay.web.KakaoPayReadyRequest;
-import springboot.shoppingmall.pay.type.kakakopay.web.KakaoPayReadyResponse;
-import springboot.shoppingmall.pay.service.PayService;
+import springboot.shoppingmall.pay.type.kakakopay.service.KakaoPayService;
+import springboot.shoppingmall.pay.web.PayRequest;
 
 @RequiredArgsConstructor
-@Slf4j
 @RestController
-public class PayController {
+public class KakaoPayController {
 
-    private final PayService payService;
+    private final KakaoPayService kakaoPayService;
 
-    @PostMapping("/pay/ready")
+    @PostMapping("/pay/KAKAO_PAY/ready")
     public ResponseEntity<KakaoPayReadyResponse> readyPay(@RequestBody PayRequest<KakaoPayReadyRequest> param) {
         KakaoPayReadyRequest kakaoPayReadyRequest = param.getData();
         MultiValueMap<String, String> formData = kakaoPayReadyRequest.toFormData();
 
-        KakaoPayReadyResponse response = (KakaoPayReadyResponse) payService.ready(formData);
+        KakaoPayReadyResponse response = (KakaoPayReadyResponse) kakaoPayService.ready(formData);
 
         return ResponseEntity.ok().body(response);
     }
-    @PostMapping("/pay/approve")
+    @PostMapping("/pay/KAKAO_PAY/approve")
     public ResponseEntity<KakaoPayApproveResponse> approvePay(@RequestBody PayRequest<KakaoPayApproveRequest> param) {
         KakaoPayApproveRequest kakaoPayApproveRequest = param.getData();
         MultiValueMap<String, String> formData = kakaoPayApproveRequest.toFormData();
 
-        KakaoPayApproveResponse response = (KakaoPayApproveResponse) payService.approve(formData);
+        KakaoPayApproveResponse response = (KakaoPayApproveResponse) kakaoPayService.approve(formData);
 
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/pay/cancel")
+    @PostMapping("/pay/KAKAO_PAY/cancel")
     public ResponseEntity<KakaoPayCancelResponse> cancelPay(@RequestBody PayRequest<KakaoPayCancelRequest> param) {
         KakaoPayCancelRequest kakaoPayCancelRequest = param.getData();
         MultiValueMap<String, Object> formData = kakaoPayCancelRequest.toFormData();
 
-        KakaoPayCancelResponse response = (KakaoPayCancelResponse) payService.cancel(formData);
+        KakaoPayCancelResponse response = (KakaoPayCancelResponse) kakaoPayService.cancel(formData);
 
         return ResponseEntity.ok().body(response);
     }

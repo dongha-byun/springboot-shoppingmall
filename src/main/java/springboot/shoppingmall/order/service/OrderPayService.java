@@ -3,8 +3,8 @@ package springboot.shoppingmall.order.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import springboot.shoppingmall.pay.web.KakaoPayCancelRequest;
-import springboot.shoppingmall.pay.web.KakaoPayCancelResponse;
+import springboot.shoppingmall.pay.type.kakakopay.web.KakaoPayCancelRequest;
+import springboot.shoppingmall.pay.type.kakakopay.web.KakaoPayCancelResponse;
 import springboot.shoppingmall.pay.web.PayRequest;
 
 @RequiredArgsConstructor

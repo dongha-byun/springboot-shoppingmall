@@ -1,4 +1,4 @@
-package springboot.shoppingmall.pay.web;
+package springboot.shoppingmall.pay.type.kakakopay.web;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

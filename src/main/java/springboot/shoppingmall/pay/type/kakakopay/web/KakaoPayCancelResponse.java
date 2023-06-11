@@ -1,4 +1,4 @@
-package springboot.shoppingmall.pay.web;
+package springboot.shoppingmall.pay.type.kakakopay.web;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
