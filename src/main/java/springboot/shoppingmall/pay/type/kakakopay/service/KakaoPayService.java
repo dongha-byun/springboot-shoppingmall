@@ -1,15 +1,16 @@
-package springboot.shoppingmall.pay.service;
+package springboot.shoppingmall.pay.type.kakakopay.service;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import springboot.shoppingmall.pay.web.KakaoPayApproveResponse;
-import springboot.shoppingmall.pay.web.KakaoPayCancelResponse;
-import springboot.shoppingmall.pay.web.KakaoPayReadyResponse;
+import springboot.shoppingmall.pay.service.PayService;
+import springboot.shoppingmall.pay.type.kakakopay.web.KakaoPayApproveResponse;
+import springboot.shoppingmall.pay.type.kakakopay.web.KakaoPayCancelResponse;
+import springboot.shoppingmall.pay.type.kakakopay.web.KakaoPayReadyResponse;
 
-public class KakaoPayService implements PayService{
+public class KakaoPayService implements PayService {
 
     private final RestTemplate restTemplate;
     private static final String READY_URL = "https://kapi.kakao.com/v1/payment/ready";
