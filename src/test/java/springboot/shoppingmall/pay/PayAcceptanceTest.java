@@ -5,13 +5,12 @@ import static org.assertj.core.api.Assertions.*;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
-import springboot.shoppingmall.pay.web.KakaoPayReadyRequest;
+import springboot.shoppingmall.pay.type.kakakopay.web.KakaoPayReadyRequest;
 import springboot.shoppingmall.pay.web.PayRequest;
 
 public class PayAcceptanceTest extends AcceptanceTest {
