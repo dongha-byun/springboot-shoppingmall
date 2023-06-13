@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
 
@@ -19,11 +20,11 @@ public class OrderDeliveryInterfaceServiceImpl implements OrderDeliveryInterface
 
     @Override
     public OrderDeliveryInvoiceResponse createInvoiceNumber(Order order) {
-
-        String receiverName = order.getReceiverName();
-        String zipCode = order.getZipCode();
-        String address = order.getAddress();
-        String detailAddress = order.getDetailAddress();
+        OrderDeliveryInfo orderDeliveryInfo = order.getOrderDeliveryInfo();
+        String receiverName = orderDeliveryInfo.getReceiverName();
+        String zipCode = orderDeliveryInfo.getZipCode();
+        String address = orderDeliveryInfo.getAddress();
+        String detailAddress = orderDeliveryInfo.getDetailAddress();
 
         Map<String, String> params = new HashMap<>();
         params.put("receiverName", receiverName);

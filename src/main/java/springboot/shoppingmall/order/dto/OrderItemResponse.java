@@ -16,7 +16,10 @@ public class OrderItemResponse {
     private Long id;
     private Long productId;
     private String productName;
+    private int productPrice;
     private int quantity;
+    private int totalPrice;
+    private int gradeDiscountAmount;
     private String invoiceNumber;
     private String orderStatusName;
     private String cancelDate;
@@ -25,8 +28,9 @@ public class OrderItemResponse {
     public static OrderItemResponse of(OrderItem orderItem) {
         Product product = orderItem.getProduct();
         return new OrderItemResponse(orderItem.getId(), product.getId(),
-                product.getName(), orderItem.getQuantity(), orderItem.getInvoiceNumber(),
-                orderItem.getOrderStatus().getStatusName(),
+                product.getName(), product.getPrice(), orderItem.getQuantity(),
+                orderItem.getTotalPrice(), orderItem.getGradeDiscountAmount(),
+                orderItem.getInvoiceNumber(), orderItem.getOrderStatus().getStatusName(),
                 toStringOfLocalDateTIme(orderItem.getCancelDate()), orderItem.getCancelReason());
     }
 

@@ -51,6 +51,10 @@ public class OrderService {
                         orderRequest.getRequestMessage())
         );
 
+        // 회원등급 할인 금액 적용
+        User user = userFinder.findUserById(userId);
+        newOrder.gradeDiscount(user.discountRate());
+
         // 주문 정보 저장 시, 결제정보도 같이 저장한다.
         payHistoryRepository.save(
                 new PayHistory(

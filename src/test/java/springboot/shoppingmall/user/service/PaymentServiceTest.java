@@ -40,7 +40,7 @@ class PaymentServiceTest {
     @DisplayName("결제수단 추가")
     void createPaymentTest(){
         // given
-        PaymentRequest paymentRequest = new PaymentRequest("1234", "2134", "3214", "2341", "10", "32", "333", "CREDIT_CARD","SS");
+        PaymentRequest paymentRequest = new PaymentRequest("1234", "2134", "3214", "2341", "10", "32", "333", "CARD","SS");
 
         // when
         Payment payment = paymentService.createPayment(user.getId(), paymentRequest);
@@ -56,7 +56,7 @@ class PaymentServiceTest {
     @DisplayName("결제수단 삭제")
     void deletePaymentTest() {
         // given
-        PaymentRequest paymentRequest = new PaymentRequest("1234", "2134", "3214", "2341", "10", "32", "333", "CREDIT_CARD","SS");
+        PaymentRequest paymentRequest = new PaymentRequest("1234", "2134", "3214", "2341", "10", "32", "333", "CARD","SS");
         Payment payment = paymentService.createPayment(user.getId(), paymentRequest);
 
         em.flush();
@@ -80,8 +80,8 @@ class PaymentServiceTest {
     @DisplayName("결제수단 목록 조회 테스트")
     void findAllTest() {
         // given
-        PaymentRequest paymentRequest1 = new PaymentRequest("1234", "2134", "3214", "2341", "10", "32", "333", "CREDIT_CARD","SS");
-        PaymentRequest paymentRequest2 = new PaymentRequest("2111", "2134", "3214", "2341", "10", "33", "232", "CREDIT_CARD","SS");
+        PaymentRequest paymentRequest1 = new PaymentRequest("1234", "2134", "3214", "2341", "10", "32", "333", "CARD","SS");
+        PaymentRequest paymentRequest2 = new PaymentRequest("2111", "2134", "3214", "2341", "10", "33", "232", "CARD","SS");
         Payment payment1 = paymentService.createPayment(user.getId(), paymentRequest1);
         Payment payment2 = paymentService.createPayment(user.getId(), paymentRequest2);
 
