@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,5 +61,29 @@ public class OrderTest {
 
         // then
         assertThat(totalPrice).isEqualTo(product1_price + product2_price);
+    }
+
+    @Test
+    @DisplayName("회원 등급 할인 적용 시, 각 상품의 할인 금액이 적용된다.")
+    void user_grade_discount_order_items() {
+        // given
+        Order order = Order.createOrder("outing-order-code", 1L, orderItems,
+                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                delivery.getZipCode(), delivery.getAddress(),
+                delivery.getDetailAddress(), delivery.getRequestMessage());
+
+        // when
+        int discountRate = 3;
+        order.gradeDiscount(discountRate);
+
+        // then
+        List<Integer> gradeDiscountAmounts = order.getItems().stream()
+                .map(OrderItem::getGradeDiscountAmount)
+                .collect(Collectors.toList());
+
+        assertThat(gradeDiscountAmounts).containsExactly(
+                orderItems.get(0).totalPrice() * discountRate / 100,
+                orderItems.get(1).totalPrice() * discountRate / 100
+        );
     }
 }

@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.utils.DateUtils;
 
@@ -30,22 +31,24 @@ public class OrderResponse {
     private OrderDeliveryInvoiceResponse deliveryInvoice;
 
     public static OrderResponse of(Order order) {
+        OrderDeliveryInfo orderDeliveryInfo = order.getOrderDeliveryInfo();
         return new OrderResponse(order.getId(), order.getOrderCode(),
                 toStringOfLocalDateTIme(order.getOrderDate()),
                 ofItemList(order), order.getTotalPrice(),
-                order.getReceiverName(), order.getReceiverPhoneNumber(),
-                order.getZipCode(), order.getAddress(),
-                order.getDetailAddress(), order.getRequestMessage(),
+                orderDeliveryInfo.getReceiverName(), orderDeliveryInfo.getReceiverPhoneNumber(),
+                orderDeliveryInfo.getZipCode(), orderDeliveryInfo.getAddress(),
+                orderDeliveryInfo.getDetailAddress(), orderDeliveryInfo.getRequestMessage(),
                 null);
     }
 
     public static OrderResponse of(Order order, OrderDeliveryInvoiceResponse deliveryInvoice) {
+        OrderDeliveryInfo orderDeliveryInfo = order.getOrderDeliveryInfo();
         return new OrderResponse(order.getId(), order.getOrderCode(),
                 toStringOfLocalDateTIme(order.getOrderDate()),
                 ofItemList(order), order.getTotalPrice(),
-                order.getReceiverName(), order.getReceiverPhoneNumber(),
-                order.getZipCode(), order.getAddress(),
-                order.getDetailAddress(), order.getRequestMessage(),
+                orderDeliveryInfo.getReceiverName(), orderDeliveryInfo.getReceiverPhoneNumber(),
+                orderDeliveryInfo.getZipCode(), orderDeliveryInfo.getAddress(),
+                orderDeliveryInfo.getDetailAddress(), orderDeliveryInfo.getRequestMessage(),
                 deliveryInvoice);
     }
 
