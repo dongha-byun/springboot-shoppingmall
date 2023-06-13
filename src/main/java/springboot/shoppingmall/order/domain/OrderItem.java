@@ -36,6 +36,8 @@ public class OrderItem extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
     private int quantity;
+    private int totalPrice;
+    private int gradeDiscountAmount;
 
     @Column(unique = true)
     private String invoiceNumber;
@@ -55,9 +57,14 @@ public class OrderItem extends BaseEntity {
     private LocalDateTime exchangeDate;
     private String exchangeReason;
 
+    public static OrderItem createOrderItem(Product product, int quantity) {
+        return new OrderItem(product, quantity, OrderStatus.READY);
+    }
+
     public OrderItem(Product product, int quantity, OrderStatus orderStatus) {
         this.product = product;
         this.quantity = quantity;
+        this.totalPrice = product.getPrice() * quantity;
         this.orderStatus = orderStatus;
 
         validateQuantity(quantity);
@@ -73,16 +80,12 @@ public class OrderItem extends BaseEntity {
         product.validateQuantity(quantity);
     }
 
-    public static OrderItem createOrderItem(Product product, int quantity) {
-        return new OrderItem(product, quantity, OrderStatus.READY);
-    }
-
     public void ordered(Order order){
         this.order = order;
     }
 
     public int totalPrice() {
-        return product.getPrice() * quantity;
+        return this.totalPrice;
     }
 
     public void increaseQuantity() {
@@ -197,5 +200,9 @@ public class OrderItem extends BaseEntity {
 
     public boolean isDeliveryComplete() {
         return OrderStatus.DELIVERY_END == this.orderStatus;
+    }
+
+    public void gradeDiscount(int gradeDiscountRate) {
+        this.gradeDiscountAmount = this.totalPrice * gradeDiscountRate / 100;
     }
 }

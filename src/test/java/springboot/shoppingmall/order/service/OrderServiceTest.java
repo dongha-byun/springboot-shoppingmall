@@ -35,6 +35,7 @@ import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.user.domain.Delivery;
 import springboot.shoppingmall.user.domain.PayType;
 import springboot.shoppingmall.user.domain.User;
+import springboot.shoppingmall.user.domain.UserGrade;
 import springboot.shoppingmall.user.domain.UserGradeInfo;
 import springboot.shoppingmall.user.domain.UserRepository;
 import springboot.shoppingmall.utils.DateUtils;
@@ -133,6 +134,48 @@ class OrderServiceTest {
         // 각각의 상품의 재고가 각 주문 수량 만큼 감소한다.
         assertThat(product.getCount()).isEqualTo(productCount - orderQuantity1);
         assertThat(product2.getCount()).isEqualTo(productCount - orderQuantity2);
+    }
+
+    @Test
+    @DisplayName("상품 주문 시, 회원등급에 따라 상품 당 가격 할인이 적용된다.")
+    void order_discount_by_user_grade() {
+        // 일반등급 회원이 상품을 주문 하면, 주문 상품 가격의 3% 할인가가 적용된다.
+        // given
+        User tester2 = new User(
+                "테스터2", "tester2", "tester2@", "010-2222-3333",
+                0, false, new UserGradeInfo(UserGrade.REGULAR, 10, 50000)
+        );
+        userRepository.save(tester2);
+
+        int orderQuantity1 = 2;
+        int orderQuantity2 = 4;
+        List<OrderItemRequest> itemRequests = Arrays.asList(
+                new OrderItemRequest(product.getId(), orderQuantity1),
+                new OrderItemRequest(product2.getId(), orderQuantity2)
+        );
+
+        OrderRequest orderRequest = new OrderRequest(
+                "test-tid", PayType.KAKAO_PAY.name(), itemRequests, 3000,
+                "test-receiver", "010-1234-1234",
+                "test-zipcode", "test-address", "test-detail-address",
+                "test-request-message"
+        );
+
+        // when
+        OrderResponse order = orderService.createOrder(tester2.getId(), orderRequest);
+
+        // then
+        List<OrderItemResponse> items = order.getItems();
+
+        List<Integer> gradeDiscountAmounts = items.stream()
+                .map(OrderItemResponse::getGradeDiscountAmount)
+                .collect(Collectors.toList());
+
+        List<Integer> discountAmounts = items.stream()
+                .map(orderItemResponse -> orderItemResponse.getTotalPrice() * UserGrade.REGULAR.getDiscountRate() / 100)
+                .collect(Collectors.toList());
+
+        assertThat(gradeDiscountAmounts).isEqualTo(discountAmounts);
     }
 
     @Test

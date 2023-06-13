@@ -38,6 +38,14 @@ public class Order extends BaseEntity {
     @Embedded
     private OrderDeliveryInfo orderDeliveryInfo;
 
+    public static Order createOrder(String orderCode, Long userId, List<OrderItem> items,
+                                    String receiverName, String receiverPhoneNumber,
+                                    String zipCode, String address, String detailAddress, String requestMessage){
+        return new Order(orderCode, userId, items,
+                receiverName, receiverPhoneNumber,
+                zipCode, address, detailAddress, requestMessage);
+    }
+
     public Order(String orderCode, Long userId, List<OrderItem> items,
                  String receiverName, String receiverPhoneNumber,
                  String zipCode, String address, String detailAddress,
@@ -60,30 +68,22 @@ public class Order extends BaseEntity {
         );
 
         initItems(items);
-        calculateTotalPrice();
     }
 
     private void initItems(List<OrderItem> items) {
         items.forEach(this::addOrderItem);
+        this.totalPrice = calculateTotalPrice();
     }
 
-    public static Order createOrder(String orderCode, Long userId, List<OrderItem> items,
-                                    String receiverName, String receiverPhoneNumber,
-                                    String zipCode, String address, String detailAddress, String requestMessage){
-        return new Order(orderCode, userId, items,
-                receiverName, receiverPhoneNumber,
-                zipCode, address, detailAddress, requestMessage);
-    }
-
-    public void addOrderItem(OrderItem item) {
+    private void addOrderItem(OrderItem item) {
         this.items.add(item);
         item.ordered(this);
     }
 
-    public void calculateTotalPrice() {
-        this.items.forEach(
-                orderItem -> this.totalPrice += orderItem.totalPrice()
-        );
+    private int calculateTotalPrice() {
+        return this.items.stream()
+                .mapToInt(OrderItem::totalPrice)
+                .sum();
     }
 
     public OrderItem findOrderItem(Long orderItemId) {
@@ -95,25 +95,7 @@ public class Order extends BaseEntity {
                 );
     }
 
-    public String getReceiverName() {
-        return this.orderDeliveryInfo.getReceiverName();
-    }
-    public String getReceiverPhoneNumber() {
-        return this.orderDeliveryInfo.getReceiverPhoneNumber();
-    }
-    public String getZipCode() {
-        return this.orderDeliveryInfo.getZipCode();
-    }
-
-    public String getAddress() {
-        return this.orderDeliveryInfo.getAddress();
-    }
-
-    public String getDetailAddress() {
-        return this.orderDeliveryInfo.getDetailAddress();
-    }
-
-    public String getRequestMessage() {
-        return this.orderDeliveryInfo.getRequestMessage();
+    public void gradeDiscount(int gradeDiscountRate) {
+        this.items.forEach(item -> item.gradeDiscount(gradeDiscountRate));
     }
 }

@@ -24,7 +24,7 @@ public class PaymentAcceptanceTest extends AcceptanceTest {
     String expireYY = "27";
     String cvc = "123";
     String cardCom = "SS";
-    String payType = "CREDIT_CARD";
+    String payType = "CARD";
 
     /**
      *  given: 사용자가 로그인 되어 있음

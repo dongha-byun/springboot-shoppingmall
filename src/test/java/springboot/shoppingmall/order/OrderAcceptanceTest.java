@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceProductTest;
+import springboot.shoppingmall.authorization.LoginAcceptanceTest;
+import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.authorization.exception.ErrorCode;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderItem;
@@ -29,10 +31,13 @@ import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.dto.ProductResponse;
+import springboot.shoppingmall.user.UserAcceptanceTest;
 import springboot.shoppingmall.user.domain.Delivery;
 import springboot.shoppingmall.user.domain.DeliveryRepository;
 import springboot.shoppingmall.user.domain.PayType;
 import springboot.shoppingmall.user.domain.User;
+import springboot.shoppingmall.user.domain.UserGrade;
+import springboot.shoppingmall.user.domain.UserGradeInfo;
 import springboot.shoppingmall.user.domain.UserRepository;
 import springboot.shoppingmall.user.dto.DeliveryResponse;
 public class OrderAcceptanceTest extends AcceptanceProductTest {
@@ -120,11 +125,70 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
     @DisplayName("여러 상품 주문 테스트")
     void order_with_many_products() {
         // given
+        Map<String, Object> item1 = new HashMap<>();
+        item1.put("productId", 상품.getId());
+        item1.put("quantity", 3);
+
+        Map<String, Object> item2 = new HashMap<>();
+        item2.put("productId", 상품2.getId());
+        item2.put("quantity", 5);
+
+        List<Map<String, Object>> 주문_상품_목록 = Arrays.asList(item1, item2);
 
         // when
-
+        ExtractableResponse<Response> 결과 = 주문_상품_다건_생성_요청(주문_상품_목록, 3000, 배송지);
 
         // then
+        assertThat(결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(결과.jsonPath().getList("items")).hasSize(2);
+    }
+
+    /**
+     * Feature: 최초 주문 (여러 상품)
+     *  Background:
+     *      given: 로그인한 사용자
+     *      And: 사용자가 VIP 등급임
+     *      And: 등록되어있는 상품들
+     *      And: 사용자가 등록해놓은 배송지 정보가 존재함
+     *
+     *  Scenario: 최초 주문 생성
+     *      when: 구매하고자 하는 상품정보와  갯수, 배송지 정보를 가지고 주문을 생성하면
+     *      then: 주문 내역 조회 시, 주문된 내용이 조회된다.
+     */
+    @Test
+    @DisplayName("회원등급 할인을 받아서 여러 상품을 구매한다.")
+    void order_with_many_products_and_discount_grade() {
+        // given
+        String loginId = "vip_user1";
+        String password = "vip_user1!";
+        User vipUser = userRepository.save(
+                new User(
+                        "VIP 회원", loginId, password, "010-2344-2344",
+                        0, false, new UserGradeInfo(UserGrade.VIP, 50, 150000)
+                )
+        );
+        TokenResponse VIP_로그인정보 = LoginAcceptanceTest.로그인(loginId, password).as(TokenResponse.class);
+
+        Map<String, Object> item1 = new HashMap<>();
+        item1.put("productId", 상품.getId());
+        item1.put("quantity", 3);
+
+        Map<String, Object> item2 = new HashMap<>();
+        item2.put("productId", 상품2.getId());
+        item2.put("quantity", 5);
+
+        List<Map<String, Object>> 주문_상품_목록 = Arrays.asList(item1, item2);
+
+        // when
+        ExtractableResponse<Response> 결과 = 주문_상품_다건_생성_요청(주문_상품_목록, 3000, 배송지, VIP_로그인정보);
+
+        // then
+        assertThat(결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(결과.jsonPath().getList("items")).hasSize(2);
+        assertThat(결과.jsonPath().getList("items.gradeDiscountAmount", Integer.class)).containsExactly(
+                (상품.getPrice() * 3) * UserGrade.VIP.getDiscountRate() / 100,
+                (상품2.getPrice() * 5) * UserGrade.VIP.getDiscountRate() / 100
+        );
     }
 
     /**
@@ -448,6 +512,34 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .headers(createAuthorizationHeader(로그인정보))
+                .body(params)
+                .when().post("/orders")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 주문_상품_다건_생성_요청(
+            List<Map<String, Object>> items, int deliveryFee, DeliveryResponse delivery) {
+        return 주문_상품_다건_생성_요청(items, deliveryFee, delivery, 로그인정보);
+    }
+
+    public static ExtractableResponse<Response> 주문_상품_다건_생성_요청(
+            List<Map<String, Object>> items, int deliveryFee, DeliveryResponse delivery, TokenResponse tokenResponse) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("tid", UUID.randomUUID().toString());
+        params.put("payType", PayType.KAKAO_PAY.name());
+        params.put("items", items);
+        params.put("deliveryFee", deliveryFee);
+        params.put("receiverName", delivery.getReceiverName());
+        params.put("receiverPhoneNumber", delivery.getReceiverPhoneNumber());
+        params.put("zipCode", delivery.getZipCode());
+        params.put("address", delivery.getAddress());
+        params.put("detailAddress", delivery.getDetailAddress());
+        params.put("requestMessage", delivery.getRequestMessage());
+
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers(createAuthorizationHeader(tokenResponse))
                 .body(params)
                 .when().post("/orders")
                 .then().log().all()

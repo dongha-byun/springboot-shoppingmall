@@ -13,10 +13,10 @@ public class TestOrderConfig {
     public OrderDeliveryInterfaceService orderDeliveryInterfaceService() {
         return order -> new OrderDeliveryInvoiceResponse(
                 UUID.randomUUID().toString().substring(0, 10),
-                order.getReceiverName(),
-                order.getZipCode(),
-                order.getAddress(),
-                order.getDetailAddress(),
+                order.getOrderDeliveryInfo().getReceiverName(),
+                order.getOrderDeliveryInfo().getZipCode(),
+                order.getOrderDeliveryInfo().getAddress(),
+                order.getOrderDeliveryInfo().getDetailAddress(),
                 "판매자 1",
                 "00990",
                 "판매자 주소",

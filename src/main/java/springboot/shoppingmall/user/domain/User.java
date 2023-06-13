@@ -68,14 +68,22 @@ public class User extends BaseEntity {
 
     @Builder
     public User(String userName, String loginId, String password, String telNo, int loginFailCount, boolean isLock) {
+        this(userName, loginId, password, telNo, loginFailCount, isLock,
+                new UserGradeInfo(UserGrade.NORMAL, 0, 0));
+    }
+
+    @Builder
+    public User(String userName, String loginId, String password, String telNo, int loginFailCount, boolean isLock,
+                UserGradeInfo userGradeInfo) {
         this.userName = userName;
         this.loginId = loginId;
         this.password = password;
         this.telNo = new TelNo(telNo);
         this.loginFailCount = loginFailCount;
         this.isLock = isLock;
-        this.userGradeInfo = new UserGradeInfo(UserGrade.NORMAL, 0, 0);
+        this.userGradeInfo = userGradeInfo;
     }
+
 
     public void updateUser(User user) {
         this.telNo = user.getTelNo();
@@ -128,5 +136,9 @@ public class User extends BaseEntity {
 
     public void increaseOrderAmount(int amounts) {
         this.userGradeInfo.increaseOrderAmount(amounts);
+    }
+
+    public int discountRate() {
+        return this.userGradeInfo.getGrade().getDiscountRate();
     }
 }
