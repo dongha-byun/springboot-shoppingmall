@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public enum UserGrade {
-    NORMAL("일반회원", 0, 0, 0),
+    NORMAL("일반회원", 0, 0, 1),
     REGULAR("단골회원", 10, 50000, 3),
     VIP("VIP", 50, 150000, 5),
     VVIP("VVIP", 100, 300000, 10);
