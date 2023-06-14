@@ -25,6 +25,7 @@ import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.order.dto.DeliveryInfoRequest;
 import springboot.shoppingmall.order.dto.OrderItemRequest;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderRequest;
@@ -107,11 +108,13 @@ class OrderServiceTest {
                 new OrderItemRequest(product2.getId(), orderQuantity2)
         );
 
-        OrderRequest orderRequest = new OrderRequest(
-                "test-tid", PayType.KAKAO_PAY.name(), itemRequests, 3000,
+        DeliveryInfoRequest deliveryInfoRequest = new DeliveryInfoRequest(
                 "test-receiver", "010-1234-1234",
                 "test-zipcode", "test-address", "test-detail-address",
-                "test-request-message"
+                "test-request-message");
+        OrderRequest orderRequest = new OrderRequest(
+                "test-tid", PayType.KAKAO_PAY.name(), itemRequests,
+                3000, deliveryInfoRequest
         );
 
         // when
@@ -119,7 +122,7 @@ class OrderServiceTest {
 
         // then
         assertThat(order.getId()).isNotNull();
-        assertThat(order.getReceiverPhoneNumber()).isEqualTo("010-1234-1234");
+        assertThat(order.getDeliveryInfo().getReceiverPhoneNumber()).isEqualTo("010-1234-1234");
 
         assertThat(order.getItems()).hasSize(2);
 
@@ -154,11 +157,14 @@ class OrderServiceTest {
                 new OrderItemRequest(product2.getId(), orderQuantity2)
         );
 
-        OrderRequest orderRequest = new OrderRequest(
-                "test-tid", PayType.KAKAO_PAY.name(), itemRequests, 3000,
+        DeliveryInfoRequest deliveryInfoRequest = new DeliveryInfoRequest(
                 "test-receiver", "010-1234-1234",
                 "test-zipcode", "test-address", "test-detail-address",
                 "test-request-message"
+        );
+        OrderRequest orderRequest = new OrderRequest(
+                "test-tid", PayType.KAKAO_PAY.name(), itemRequests,
+                3000, deliveryInfoRequest
         );
 
         // when
@@ -184,12 +190,14 @@ class OrderServiceTest {
         // given
         int orderQuantity = 3;
         OrderItemRequest orderItemRequest = new OrderItemRequest(product.getId(), orderQuantity);
-        OrderRequest orderRequest = new OrderRequest(
-                "test-tid", PayType.KAKAO_PAY.name(),
-                List.of(orderItemRequest), 3000,
+        DeliveryInfoRequest deliveryInfoRequest = new DeliveryInfoRequest(
                 delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
                 delivery.getZipCode(), delivery.getAddress(),
                 delivery.getDetailAddress(), delivery.getRequestMessage()
+        );
+        OrderRequest orderRequest = new OrderRequest(
+                "test-tid", PayType.KAKAO_PAY.name(),
+                List.of(orderItemRequest), 3000, deliveryInfoRequest
         );
         OrderResponse orderResponse = orderService.createOrder(user.getId(), orderRequest);
         Long orderId = orderResponse.getId();
@@ -229,11 +237,15 @@ class OrderServiceTest {
         // given
         int orderQuantity = product.getCount() + 1;
         OrderItemRequest orderItemRequest = new OrderItemRequest(product.getId(), orderQuantity);
-        OrderRequest orderRequest = new OrderRequest(
-                "test-tid", PayType.KAKAO_PAY.name(),
-                List.of(orderItemRequest), 0, "덩라", "010-1234-1234",
+        DeliveryInfoRequest deliveryInfoRequest = new DeliveryInfoRequest(
+                "덩라", "010-1234-1234",
                 "01234", "서울시 테스트구 테스트동", "덩라빌딩 301호",
                 "조심히 오세요."
+        );
+        OrderRequest orderRequest = new OrderRequest(
+                "test-tid", PayType.KAKAO_PAY.name(),
+                List.of(orderItemRequest), 0,
+                deliveryInfoRequest
         );
 
         // when & then

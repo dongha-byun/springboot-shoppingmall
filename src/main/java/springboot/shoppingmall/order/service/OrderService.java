@@ -12,6 +12,7 @@ import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderSequence;
 import springboot.shoppingmall.order.domain.OrderSequenceRepository;
+import springboot.shoppingmall.order.dto.DeliveryInfoRequest;
 import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
 import springboot.shoppingmall.order.dto.OrderItemRequest;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
@@ -41,14 +42,15 @@ public class OrderService {
 
     @Transactional
     public OrderResponse createOrder(Long userId, OrderRequest orderRequest) {
+        DeliveryInfoRequest deliveryInfoRequest = orderRequest.getDeliveryInfo();
         List<OrderItem> items = getOrderItems(orderRequest);
 
         String orderCode = generateOrderCode();
         Order newOrder = orderRepository.save(
                 Order.createOrder(orderCode, userId, items,
-                        orderRequest.getReceiverName(), orderRequest.getReceiverPhoneNumber(),
-                        orderRequest.getZipCode(), orderRequest.getAddress(), orderRequest.getDetailAddress(),
-                        orderRequest.getRequestMessage())
+                        deliveryInfoRequest.getReceiverName(), deliveryInfoRequest.getReceiverPhoneNumber(),
+                        deliveryInfoRequest.getZipCode(), deliveryInfoRequest.getAddress(),
+                        deliveryInfoRequest.getDetailAddress(), deliveryInfoRequest.getRequestMessage())
         );
 
         // 회원등급 할인 금액 적용

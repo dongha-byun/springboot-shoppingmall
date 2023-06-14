@@ -13,10 +13,5 @@ public class OrderRequest {
     private String payType;
     private List<OrderItemRequest> items;
     private int deliveryFee;
-    private String receiverName;
-    private String receiverPhoneNumber;
-    private String zipCode;
-    private String address;
-    private String detailAddress;
-    private String requestMessage;
+    private DeliveryInfoRequest deliveryInfo;
 }

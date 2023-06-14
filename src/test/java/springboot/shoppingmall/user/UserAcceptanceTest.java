@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
+import springboot.shoppingmall.user.domain.UserGrade;
 import springboot.shoppingmall.user.dto.UserResponse;
 
 public class UserAcceptanceTest extends AcceptanceTest {
@@ -135,7 +136,7 @@ public class UserAcceptanceTest extends AcceptanceTest {
         assertThat(회원등급_조회_결과.jsonPath().getString("nextUserGrade")).isEqualTo("단골회원");
         assertThat(회원등급_조회_결과.jsonPath().getInt("remainedOrderCountForNextGrade")).isEqualTo(10);
         assertThat(회원등급_조회_결과.jsonPath().getInt("remainedAmountsForNextGrade")).isEqualTo(50000);
-        assertThat(회원등급_조회_결과.jsonPath().getInt("gradeDiscountRate")).isEqualTo(0);
+        assertThat(회원등급_조회_결과.jsonPath().getInt("gradeDiscountRate")).isEqualTo(UserGrade.NORMAL.getDiscountRate());
     }
 
     private ExtractableResponse<Response> 회원등급_조회(TokenResponse login) {

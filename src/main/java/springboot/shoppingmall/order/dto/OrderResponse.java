@@ -22,12 +22,7 @@ public class OrderResponse {
     private String orderDate;
     private List<OrderItemResponse> items;
     private int totalPrice;
-    private String receiverName;
-    private String receiverPhoneNumber;
-    private String zipCode;
-    private String address;
-    private String detailAddress;
-    private String requestMessage;
+    private DeliveryInfoResponse deliveryInfo;
     private OrderDeliveryInvoiceResponse deliveryInvoice;
 
     public static OrderResponse of(Order order) {
@@ -35,9 +30,11 @@ public class OrderResponse {
         return new OrderResponse(order.getId(), order.getOrderCode(),
                 toStringOfLocalDateTIme(order.getOrderDate()),
                 ofItemList(order), order.getTotalPrice(),
-                orderDeliveryInfo.getReceiverName(), orderDeliveryInfo.getReceiverPhoneNumber(),
-                orderDeliveryInfo.getZipCode(), orderDeliveryInfo.getAddress(),
-                orderDeliveryInfo.getDetailAddress(), orderDeliveryInfo.getRequestMessage(),
+                new DeliveryInfoResponse(
+                        orderDeliveryInfo.getReceiverName(), orderDeliveryInfo.getReceiverPhoneNumber(),
+                        orderDeliveryInfo.getZipCode(), orderDeliveryInfo.getAddress(),
+                        orderDeliveryInfo.getDetailAddress(), orderDeliveryInfo.getRequestMessage()
+                ),
                 null);
     }
 
@@ -46,9 +43,11 @@ public class OrderResponse {
         return new OrderResponse(order.getId(), order.getOrderCode(),
                 toStringOfLocalDateTIme(order.getOrderDate()),
                 ofItemList(order), order.getTotalPrice(),
-                orderDeliveryInfo.getReceiverName(), orderDeliveryInfo.getReceiverPhoneNumber(),
-                orderDeliveryInfo.getZipCode(), orderDeliveryInfo.getAddress(),
-                orderDeliveryInfo.getDetailAddress(), orderDeliveryInfo.getRequestMessage(),
+                new DeliveryInfoResponse(
+                        orderDeliveryInfo.getReceiverName(), orderDeliveryInfo.getReceiverPhoneNumber(),
+                        orderDeliveryInfo.getZipCode(), orderDeliveryInfo.getAddress(),
+                        orderDeliveryInfo.getDetailAddress(), orderDeliveryInfo.getRequestMessage()
+                ),
                 deliveryInvoice);
     }
 

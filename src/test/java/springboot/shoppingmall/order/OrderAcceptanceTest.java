@@ -103,8 +103,8 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         assertThat(주문_생성_결과.jsonPath().getLong("id")).isNotNull();
         assertThat(주문_생성_결과.jsonPath().getString("orderDate")).isNotNull();
         assertThat(주문_생성_결과.jsonPath().getString("orderCode")).isNotNull();
-        assertThat(주문_생성_결과.jsonPath().getString("receiverName")).isEqualTo(배송지.getReceiverName());
-        assertThat(주문_생성_결과.jsonPath().getString("receiverPhoneNumber")).isEqualTo(배송지.getReceiverPhoneNumber());
+        assertThat(주문_생성_결과.jsonPath().getString("deliveryInfo.receiverName")).isEqualTo(배송지.getReceiverName());
+        assertThat(주문_생성_결과.jsonPath().getString("deliveryInfo.receiverPhoneNumber")).isEqualTo(배송지.getReceiverPhoneNumber());
         assertThat(주문_생성_결과.jsonPath().getList("items.orderStatusName")).containsExactly(
                 OrderStatus.READY.getStatusName()
         );
@@ -497,17 +497,20 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         itemMap.put("productId", product.getId());
         itemMap.put("quantity", quantity);
 
+        Map<String, String> deliveryInfoMap = new HashMap<>();
+        deliveryInfoMap.put("receiverName", delivery.getReceiverName());
+        deliveryInfoMap.put("receiverPhoneNumber", delivery.getReceiverPhoneNumber());
+        deliveryInfoMap.put("zipCode", delivery.getZipCode());
+        deliveryInfoMap.put("address", delivery.getAddress());
+        deliveryInfoMap.put("detailAddress", delivery.getDetailAddress());
+        deliveryInfoMap.put("requestMessage", delivery.getRequestMessage());
+
         Map<String, Object> params = new HashMap<>();
         params.put("tid", UUID.randomUUID().toString());
         params.put("payType", PayType.KAKAO_PAY.name());
         params.put("items", List.of(itemMap));
         params.put("deliveryFee", deliveryFee);
-        params.put("receiverName", delivery.getReceiverName());
-        params.put("receiverPhoneNumber", delivery.getReceiverPhoneNumber());
-        params.put("zipCode", delivery.getZipCode());
-        params.put("address", delivery.getAddress());
-        params.put("detailAddress", delivery.getDetailAddress());
-        params.put("requestMessage", delivery.getRequestMessage());
+        params.put("deliveryInfo", deliveryInfoMap);
 
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -525,17 +528,21 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
 
     public static ExtractableResponse<Response> 주문_상품_다건_생성_요청(
             List<Map<String, Object>> items, int deliveryFee, DeliveryResponse delivery, TokenResponse tokenResponse) {
+
+        Map<String, String> deliveryInfoMap = new HashMap<>();
+        deliveryInfoMap.put("receiverName", delivery.getReceiverName());
+        deliveryInfoMap.put("receiverPhoneNumber", delivery.getReceiverPhoneNumber());
+        deliveryInfoMap.put("zipCode", delivery.getZipCode());
+        deliveryInfoMap.put("address", delivery.getAddress());
+        deliveryInfoMap.put("detailAddress", delivery.getDetailAddress());
+        deliveryInfoMap.put("requestMessage", delivery.getRequestMessage());
+
         Map<String, Object> params = new HashMap<>();
         params.put("tid", UUID.randomUUID().toString());
         params.put("payType", PayType.KAKAO_PAY.name());
         params.put("items", items);
         params.put("deliveryFee", deliveryFee);
-        params.put("receiverName", delivery.getReceiverName());
-        params.put("receiverPhoneNumber", delivery.getReceiverPhoneNumber());
-        params.put("zipCode", delivery.getZipCode());
-        params.put("address", delivery.getAddress());
-        params.put("detailAddress", delivery.getDetailAddress());
-        params.put("requestMessage", delivery.getRequestMessage());
+        params.put("deliveryInfo", deliveryInfoMap);
 
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
