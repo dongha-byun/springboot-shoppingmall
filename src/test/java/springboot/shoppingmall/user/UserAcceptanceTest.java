@@ -135,6 +135,7 @@ public class UserAcceptanceTest extends AcceptanceTest {
         assertThat(회원등급_조회_결과.jsonPath().getString("nextUserGrade")).isEqualTo("단골회원");
         assertThat(회원등급_조회_결과.jsonPath().getInt("remainedOrderCountForNextGrade")).isEqualTo(10);
         assertThat(회원등급_조회_결과.jsonPath().getInt("remainedAmountsForNextGrade")).isEqualTo(50000);
+        assertThat(회원등급_조회_결과.jsonPath().getInt("gradeDiscountRate")).isEqualTo(0);
     }
 
     private ExtractableResponse<Response> 회원등급_조회(TokenResponse login) {
