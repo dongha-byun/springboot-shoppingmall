@@ -13,6 +13,7 @@ public class UserGradeInfoResponse {
     private String userName;
     private String enterDate;
     private String currentUserGrade;
+    private int gradeDiscountRate;
     private String nextUserGrade;
     private int remainedOrderCountForNextGrade;
     private int remainedAmountsForNextGrade;
@@ -23,7 +24,10 @@ public class UserGradeInfoResponse {
             return new UserGradeInfoResponse(
                     dto.getUserId(), dto.getUserName(), null,
                     dto.getCurrentUserGrade().getGradeName(),
-                    null, 0, 0
+                    dto.getCurrentUserGrade().getDiscountRate(),
+                    null,
+                    0,
+                    0
             );
         }
 
@@ -32,6 +36,7 @@ public class UserGradeInfoResponse {
         return new UserGradeInfoResponse(
                 dto.getUserId(), dto.getUserName(), null,
                 dto.getCurrentUserGrade().getGradeName(),
+                dto.getCurrentUserGrade().getDiscountRate(),
                 nextGrade.getGradeName(),
                 remainedOrderCountForNextGrade,
                 remainedAmountsForNextGrade
