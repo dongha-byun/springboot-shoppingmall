@@ -16,12 +16,10 @@ class UserTest {
         User user = new User("사용자1", "user1", "user1!", "010-1111-2222");
 
         // when
-        User edit = new User("사용자2", "user2", "user2@", "010-2222-3333");
-        user.updateUser(edit);
+        user.updateUser("010-2222-3333", "user2@");
 
         // then
         assertThat(user.getUserName()).isEqualTo("사용자1");
-        assertThat(user.getLoginId()).isEqualTo("user1");
         assertThat(user.getPassword()).isEqualTo("user2@");
         assertThat(user.telNo()).isEqualTo("010-2222-3333");
     }

@@ -51,8 +51,7 @@ public class UserService {
     @Transactional
     public UserResponse editUser(Long userId, UserEditRequest userEditRequest) {
         User user = userFinder.findUserById(userId);
-
-        user.updateUser(to(userEditRequest));
+        user.updateUser(userEditRequest.getTelNo(), userEditRequest.getPassword());
 
         return UserResponse.of(user);
     }

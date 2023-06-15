@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -33,17 +35,17 @@ public class User extends BaseEntity {
     @Column(length = 20, nullable = false)
     private String userName;
 
-    @Column(length = 30, unique = true, nullable = false)
-    private String loginId;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name="loginId", column = @Column(name = "login_id")),
+            @AttributeOverride(name="password", column = @Column(name = "password")),
+            @AttributeOverride(name="loginFailCount", column = @Column(name = "login_fail_count")),
 
-    @Column(length = 400, nullable = false)
-    private String password;
+    })
+    private LoginInfo loginInfo;
 
     @Embedded
     private TelNo telNo;
-
-    @Column(name = "login_fail_count")
-    private int loginFailCount = 0;
 
     @Embedded
     private UserGradeInfo userGradeInfo;
@@ -76,22 +78,20 @@ public class User extends BaseEntity {
     public User(String userName, String loginId, String password, String telNo, int loginFailCount, boolean isLock,
                 UserGradeInfo userGradeInfo) {
         this.userName = userName;
-        this.loginId = loginId;
-        this.password = password;
+        this.loginInfo = new LoginInfo(loginId, password, loginFailCount);
         this.telNo = new TelNo(telNo);
-        this.loginFailCount = loginFailCount;
         this.isLock = isLock;
         this.userGradeInfo = userGradeInfo;
     }
 
 
-    public void updateUser(User user) {
-        this.telNo = user.getTelNo();
-        this.password = user.getPassword();
+    public void updateUser(String telNo, String password) {
+        this.telNo = new TelNo(telNo);
+        this.loginInfo = this.loginInfo.changePassword(password);
     }
 
     public boolean isEqualPassword(String password) {
-        return this.password.equals(password);
+        return this.loginInfo.checkPasswordEqual(password);
     }
 
     public void addDelivery(Delivery delivery){
@@ -119,11 +119,11 @@ public class User extends BaseEntity {
     }
 
     public int increaseLoginFailCount() {
-        this.loginFailCount++;
-        if(this.loginFailCount >= 5) {
+        int afterIncreaseFailCount = this.loginInfo.increaseLoginFailCount();
+        if(afterIncreaseFailCount >= 5) {
             this.isLock = true;
         }
-        return this.loginFailCount;
+        return afterIncreaseFailCount;
     }
 
     public boolean isLocked() {
@@ -140,5 +140,17 @@ public class User extends BaseEntity {
 
     public int discountRate() {
         return this.userGradeInfo.getGrade().getDiscountRate();
+    }
+
+    public String getPassword() {
+        return this.loginInfo.getPassword();
+    }
+
+    public String getLoginId() {
+        return this.loginInfo.getLoginId();
+    }
+
+    public int getLoginFailCount() {
+        return this.loginInfo.getLoginFailCount();
     }
 }

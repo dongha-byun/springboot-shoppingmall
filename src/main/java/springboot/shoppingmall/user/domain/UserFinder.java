@@ -17,7 +17,7 @@ public class UserFinder {
     }
 
     public User findUserByLoginId(String loginId) {
-        return userRepository.findUserByLoginId(loginId)
+        return userRepository.findUserByLoginInfoLoginId(loginId)
                 .orElseThrow(
                         () -> new IllegalArgumentException("회원 조회 실패")
                 );

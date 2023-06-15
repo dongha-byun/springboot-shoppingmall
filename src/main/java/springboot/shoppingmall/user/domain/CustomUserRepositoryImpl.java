@@ -24,7 +24,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
         return em.createQuery("select u from User u "
                         + "where 1=1 "
                         + "and u.userName = :userName "
-                        + "and u.loginId = :loginId "
+                        + "and u.loginInfo.loginId = :loginId "
                         + "and u.telNo = :telNo", User.class)
                 .setParameter("userName", name)
                 .setParameter("telNo", new TelNo(telNo))
