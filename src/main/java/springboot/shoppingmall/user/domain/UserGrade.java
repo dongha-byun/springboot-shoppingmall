@@ -1,7 +1,9 @@
 package springboot.shoppingmall.user.domain;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.Getter;
 
 @Getter
@@ -30,5 +32,14 @@ public enum UserGrade {
                         userGrade -> userGrade.ordinal() == (currentOrdinal + 1)
                 )
                 .findAny();
+    }
+
+    public List<UserGrade> overGrades() {
+        int currentOrdinal = this.ordinal();
+        return Arrays.stream(UserGrade.values())
+                .filter(
+                        userGrade -> userGrade.ordinal() >= currentOrdinal
+                )
+                .collect(Collectors.toList());
     }
 }

@@ -1,5 +1,6 @@
 package springboot.shoppingmall.user.domain;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,5 +22,9 @@ public class UserFinder {
                 .orElseThrow(
                         () -> new IllegalArgumentException("회원 조회 실패")
                 );
+    }
+
+    public List<User> findUserOverTheUserGrade(UserGrade userGrade) {
+        return userRepository.findUserOverTheUserGrade(userGrade.overGrades());
     }
 }

@@ -1,11 +1,16 @@
 package springboot.shoppingmall.coupon.domain;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
+import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,40 +23,32 @@ import springboot.shoppingmall.BaseEntity;
 @Entity
 public class Coupon extends BaseEntity {
 
-    @EmbeddedId
-    private CouponCode couponCode;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Embedded
     private UsingDuration usingDuration;
-
-    private Long userId;
 
     private int discountRate;
 
     private Long partnersId;
 
-    private boolean isUsed;
+    @OneToMany(mappedBy = "coupon", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    private final List<UserCoupon> userCoupons = new ArrayList<>();
 
-    public Coupon(CouponCode couponCode, UsingDuration usingDuration, Long userId, int discountRate, Long partnersId) {
-        this(couponCode, usingDuration, userId, discountRate, partnersId, false);
-    }
-
-    public Coupon(CouponCode couponCode, UsingDuration usingDuration, Long userId, int discountRate, Long partnersId,
-                  boolean isUsed) {
-        this.couponCode = couponCode;
+    public Coupon(UsingDuration usingDuration, int discountRate, Long partnersId) {
         this.usingDuration = usingDuration;
-        this.userId = userId;
         this.discountRate = discountRate;
         this.partnersId = partnersId;
-        this.isUsed = isUsed;
     }
 
-    public static Coupon create(LocalDateTime fromDate, LocalDateTime toDate,
-                                Long userId, int discountRate, Long partnersId) {
-        String code = UUID.randomUUID().toString();
-        return new Coupon(
-                new CouponCode(code), new UsingDuration(fromDate, toDate), userId, discountRate, partnersId
-        );
+    public static Coupon create(LocalDateTime fromDate, LocalDateTime toDate, int discountRate, Long partnersId) {
+        return new Coupon(new UsingDuration(fromDate, toDate), discountRate, partnersId);
+    }
+
+
+    public void addUserCoupon(UserCoupon userCoupon) {
+        this.userCoupons.add(userCoupon);
     }
 
     @Override
@@ -63,11 +60,11 @@ public class Coupon extends BaseEntity {
             return false;
         }
         Coupon coupon = (Coupon) o;
-        return Objects.equals(getCouponCode(), coupon.getCouponCode());
+        return Objects.equals(getId(), coupon.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getCouponCode());
+        return Objects.hash(getId());
     }
 }

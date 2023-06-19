@@ -1,5 +1,6 @@
 package springboot.shoppingmall.user.domain;
 
+import java.util.List;
 import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
@@ -30,5 +31,14 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
                 .setParameter("telNo", new TelNo(telNo))
                 .setParameter("loginId", loginId)
                 .getSingleResult();
+    }
+
+    @Override
+    public List<User> findUserOverTheUserGrade(List<UserGrade> targetGrades) {
+        return em.createQuery("select u from User u "
+                        + "where 1=1 "
+                        + "and u.userGradeInfo.grade in :targetGrades ", User.class)
+                .setParameter("targetGrades", targetGrades)
+                .getResultList();
     }
 }
