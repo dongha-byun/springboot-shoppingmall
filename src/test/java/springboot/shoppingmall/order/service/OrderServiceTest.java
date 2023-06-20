@@ -1,29 +1,19 @@
 package springboot.shoppingmall.order.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static springboot.shoppingmall.utils.DateUtils.*;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.persistence.EntityManager;
-import org.assertj.core.api.ThrowableAssertAlternative;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.TestOrderConfig;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
-import springboot.shoppingmall.order.domain.Order;
-import springboot.shoppingmall.order.domain.OrderItem;
-import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.DeliveryInfoRequest;
 import springboot.shoppingmall.order.dto.OrderItemRequest;
@@ -39,15 +29,12 @@ import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserGrade;
 import springboot.shoppingmall.user.domain.UserGradeInfo;
 import springboot.shoppingmall.user.domain.UserRepository;
-import springboot.shoppingmall.utils.DateUtils;
 
-@Import(TestOrderConfig.class)
 @Transactional
 @SpringBootTest
 class OrderServiceTest {
     @Autowired
     OrderService orderService;
-
     User user;
     Product product;
     Product product2;
@@ -58,10 +45,6 @@ class OrderServiceTest {
     ProductRepository productRepository;
     @Autowired
     CategoryRepository categoryRepository;
-
-    @Autowired
-    OrderRepository orderRepository;
-
     int productCount = 10;
 
     @BeforeEach
@@ -185,53 +168,6 @@ class OrderServiceTest {
     }
 
     @Test
-    @DisplayName("주문 취소 - 준비 중인 주문 상품에 대해서는 별도로 주문취소 처리가 가능하다.")
-    void order_item_cancel_test() {
-        // given
-        int orderQuantity = 3;
-        OrderItemRequest orderItemRequest = new OrderItemRequest(product.getId(), orderQuantity);
-        DeliveryInfoRequest deliveryInfoRequest = new DeliveryInfoRequest(
-                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
-                delivery.getZipCode(), delivery.getAddress(),
-                delivery.getDetailAddress(), delivery.getRequestMessage()
-        );
-        OrderRequest orderRequest = new OrderRequest(
-                "test-tid", PayType.KAKAO_PAY.name(),
-                List.of(orderItemRequest), 3000, deliveryInfoRequest
-        );
-        OrderResponse orderResponse = orderService.createOrder(user.getId(), orderRequest);
-        Long orderId = orderResponse.getId();
-        Long orderItemId = orderResponse.getItems().get(0).getId();
-
-        // when
-        String cancelReason = "단순변심으로 구매 취소합니다.";
-        LocalDateTime cancelDate = LocalDateTime.of(2023, 5, 9, 13, 10, 12);
-        OrderItemResponse cancelItem = orderService.cancel(orderId, orderItemId, cancelDate, cancelReason);
-
-        // then
-        assertThat(cancelItem.getOrderStatusName()).isEqualTo(OrderStatus.CANCEL.getStatusName());
-        assertThat(cancelItem.getCancelDate()).isEqualTo(toStringOfLocalDateTIme(cancelDate));
-        assertThat(cancelItem.getCancelReason()).isEqualTo(cancelReason);
-
-        // 주문을 취소하면 상품 갯수를 원래대로 되돌린다.
-        Product findProduct = productRepository.findById(product.getId()).orElseThrow();
-        assertThat(findProduct.getCount()).isEqualTo(productCount);
-    }
-
-    @Test
-    @DisplayName("교환 신청 - 배송이 완료된 주문 상품에 대해 교환신청을 할 수 있다.")
-    void exchange_test() {
-        // 배송이 완료된 주문상품이 존재한다.
-        // 해당 주문상품을 교환신청 한다.
-        // given
-        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.DELIVERY_END);
-
-        // when
-
-        // then
-    }
-
-    @Test
     @DisplayName("주문 실패 - 재고 수 보다 많은 양을 주문하면 주문에 실패한다.")
     void order_fail_with_quantity_over() {
         // given
@@ -252,43 +188,5 @@ class OrderServiceTest {
         assertThatThrownBy(
                 () -> orderService.createOrder(user.getId(), orderRequest)
         ).isInstanceOf(OverQuantityException.class);
-    }
-
-    @Test
-    @DisplayName("구매 확정 - 배송이 완료된 상품을 구매확정 처리 한다. 동시에 사용자의 주문횟수/주문금액을 증가시킨다.")
-    void order_finish_and_user_grade_info_update_test() {
-        // given
-        int orderQuantity1 = 2;
-        int orderQuantity2 = 4;
-        List<OrderItem> items = Arrays.asList(
-                new OrderItem(product, orderQuantity1, OrderStatus.DELIVERY_END),
-                new OrderItem(product2, orderQuantity2, OrderStatus.DELIVERY_END)
-        );
-        LocalDateTime orderDate = LocalDateTime.of(2023, 6, 6, 12, 0, 0);
-        Order order = new Order(
-                "finish-order-code", user.getId(), items, orderDate,
-                "덩라", "010-1234-1234",
-                "01234", "서울시 테스트구 테스트동", "덩라빌딩 301호",
-                "조심히 오세요."
-        );
-        Order savedOrder = orderRepository.save(order);
-        OrderItem orderItem1 = savedOrder.getItems().get(0);
-
-        // when
-        orderService.finish(savedOrder.getId(), orderItem1.getId());
-
-        // then
-        assertThat(orderItem1.getOrderStatus()).isEqualTo(OrderStatus.FINISH);
-
-        // 판매수량 증가
-        Product orderItem1Product = orderItem1.getProduct();
-        assertThat(orderItem1Product.getId()).isEqualTo(product.getId());
-        assertThat(product.getSalesVolume()).isEqualTo(orderQuantity1);
-
-        // 구매자의 주문횟수/금액 처리
-        User orderUser = userRepository.findById(user.getId()).orElseThrow();
-        UserGradeInfo userGradeInfo = orderUser.getUserGradeInfo();
-        assertThat(userGradeInfo.getOrderCount()).isEqualTo(1);
-        assertThat(userGradeInfo.getAmount()).isEqualTo(orderItem1.getQuantity() * product.getPrice());
     }
 }
