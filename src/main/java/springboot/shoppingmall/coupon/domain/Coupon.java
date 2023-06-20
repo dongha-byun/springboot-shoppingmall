@@ -46,9 +46,10 @@ public class Coupon extends BaseEntity {
         return new Coupon(new UsingDuration(fromDate, toDate), discountRate, partnersId);
     }
 
-
-    public void addUserCoupon(UserCoupon userCoupon) {
-        this.userCoupons.add(userCoupon);
+    public void addUserCoupon(Long userId) {
+        this.userCoupons.add(
+                UserCoupon.create(userId, this)
+        );
     }
 
     @Override

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.coupon.domain.Coupon;
 import springboot.shoppingmall.coupon.domain.CouponRepository;
-import springboot.shoppingmall.coupon.domain.UserCoupon;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserFinder;
 
@@ -29,9 +28,7 @@ public class CouponService {
                 )
         );
         for (User user : targetUserList) {
-            savedCoupon.addUserCoupon(
-                    UserCoupon.create(user.getId(), savedCoupon)
-            );
+            savedCoupon.addUserCoupon(user.getId());
         }
 
         return savedCoupon.getId();
