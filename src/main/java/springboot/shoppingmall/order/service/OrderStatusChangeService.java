@@ -13,6 +13,7 @@ import springboot.shoppingmall.pay.domain.PayHistoryRepository;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserFinder;
 
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class OrderStatusChangeService {
@@ -22,7 +23,6 @@ public class OrderStatusChangeService {
     private final PayHistoryRepository payHistoryRepository;
 
     // 주문 취소
-    @Transactional
     public OrderItemResponse cancel(Long orderId, Long orderItemId, LocalDateTime cancelDate, String cancelReason) {
         Order order = orderFinder.findOrderById(orderId);
         OrderItem orderItem = order.findOrderItem(orderItemId);
@@ -39,7 +39,6 @@ public class OrderStatusChangeService {
     }
 
     // 출고 중
-    @Transactional
     public OrderItemResponse outing(Long orderId, Long orderItemId) {
         Order order = orderFinder.findOrderById(orderId);
         OrderItem orderItem = order.findOrderItem(orderItemId);
@@ -51,7 +50,6 @@ public class OrderStatusChangeService {
     }
 
     // 구매확정
-    @Transactional
     public OrderItemResponse finish(Long orderId, Long orderItemId) {
         Order order = orderFinder.findOrderById(orderId);
         OrderItem orderItem = order.findOrderItem(orderItemId);
@@ -65,7 +63,6 @@ public class OrderStatusChangeService {
     }
 
     // 검수중
-    @Transactional
     public OrderItemResponse checking(Long orderId, Long orderItemId) {
         Order order = orderFinder.findOrderById(orderId);
         OrderItem orderItem = order.findOrderItem(orderItemId);
@@ -75,7 +72,6 @@ public class OrderStatusChangeService {
     }
 
     // 환불
-    @Transactional
     public OrderItemResponse refund(Long orderId, Long orderItemId, LocalDateTime refundDate, String refundReason) {
         Order order = orderFinder.findOrderById(orderId);
         OrderItem orderItem = order.findOrderItem(orderItemId);
@@ -85,7 +81,6 @@ public class OrderStatusChangeService {
     }
 
     // 환불 완료
-    @Transactional
     public OrderItemResponse refundEnd(Long orderId, Long orderItemId) {
         Order order = orderFinder.findOrderById(orderId);
         OrderItem orderItem = order.findOrderItem(orderItemId);
@@ -95,7 +90,6 @@ public class OrderStatusChangeService {
     }
 
     // 교환
-    @Transactional
     public OrderItemResponse exchange(Long orderId, Long orderItemId, LocalDateTime exchangeDate, String exchangeReason) {
         Order order = orderFinder.findOrderById(orderId);
         OrderItem orderItem = order.findOrderItem(orderItemId);
