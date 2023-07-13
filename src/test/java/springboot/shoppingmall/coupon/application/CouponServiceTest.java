@@ -55,12 +55,13 @@ class CouponServiceTest {
         // 사용기한이 2023-05-28 ~ 2023-07-28 인
         // 할인율 7%의 쿠폰을 발급해준다.
         // given
+        String name = "기념 할인 쿠폰";
         LocalDateTime fromDate = LocalDateTime.of(2023, 5, 28, 0, 0, 0);
         LocalDateTime toDate = LocalDateTime.of(2023, 7, 28, 23, 59, 59);
         int discountRate = 5;
         Long partnersId = 1L;
         CouponCreateDto couponCreateDto = new CouponCreateDto(
-                fromDate, toDate, UserGrade.REGULAR, discountRate, partnersId
+                name, fromDate, toDate, UserGrade.REGULAR, discountRate, partnersId
         );
 
         // when

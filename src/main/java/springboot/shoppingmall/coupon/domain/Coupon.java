@@ -26,6 +26,8 @@ public class Coupon extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
+
     @Embedded
     private UsingDuration usingDuration;
 
@@ -36,14 +38,15 @@ public class Coupon extends BaseEntity {
     @OneToMany(mappedBy = "coupon", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private final List<UserCoupon> userCoupons = new ArrayList<>();
 
-    public Coupon(UsingDuration usingDuration, int discountRate, Long partnersId) {
+    public Coupon(String name, UsingDuration usingDuration, int discountRate, Long partnersId) {
+        this.name = name;
         this.usingDuration = usingDuration;
         this.discountRate = discountRate;
         this.partnersId = partnersId;
     }
 
-    public static Coupon create(LocalDateTime fromDate, LocalDateTime toDate, int discountRate, Long partnersId) {
-        return new Coupon(new UsingDuration(fromDate, toDate), discountRate, partnersId);
+    public static Coupon create(String name, LocalDateTime fromDate, LocalDateTime toDate, int discountRate, Long partnersId) {
+        return new Coupon(name, new UsingDuration(fromDate, toDate), discountRate, partnersId);
     }
 
     public void addUserCoupon(Long userId) {

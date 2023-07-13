@@ -21,6 +21,7 @@ class CouponRepositoryTest {
     void save_test() {
         // given
         Coupon coupon = Coupon.create(
+                "기념 쿠폰",
                 LocalDateTime.of(2023, 6, 6, 0, 0, 0),
                 LocalDateTime.of(2023, 12, 6, 23, 59, 59),
                 5, 1L
@@ -38,6 +39,7 @@ class CouponRepositoryTest {
     void find_id_test() {
         // given
         Coupon coupon = Coupon.create(
+                "기념 쿠폰",
                 LocalDateTime.of(2023, 6, 6, 0, 0, 0),
                 LocalDateTime.of(2023, 12, 6, 23, 59, 59),
                 5, 1L

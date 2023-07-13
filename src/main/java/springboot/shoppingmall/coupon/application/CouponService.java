@@ -19,17 +19,10 @@ public class CouponService {
     @Transactional
     public Long create(CouponCreateDto couponCreateDto) {
         List<User> targetUserList = userFinder.findUserOverTheUserGrade(couponCreateDto.getGrade());
-        Coupon savedCoupon = couponRepository.save(
-                Coupon.create(
-                        couponCreateDto.getFromDate(),
-                        couponCreateDto.getToDate(),
-                        couponCreateDto.getDiscountRate(),
-                        couponCreateDto.getPartnersId()
-                )
+        Coupon savedCoupon = couponRepository.save(couponCreateDto.toEntity());
+        targetUserList.forEach(
+                user -> savedCoupon.addUserCoupon(user.getId())
         );
-        for (User user : targetUserList) {
-            savedCoupon.addUserCoupon(user.getId());
-        }
 
         return savedCoupon.getId();
     }
