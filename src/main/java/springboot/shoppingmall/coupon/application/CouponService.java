@@ -10,13 +10,12 @@ import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserFinder;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 @Service
 public class CouponService {
     private final CouponRepository couponRepository;
     private final UserFinder userFinder;
 
-    @Transactional
     public Long create(CouponCreateDto couponCreateDto) {
         List<User> targetUserList = userFinder.findUserOverTheUserGrade(couponCreateDto.getGrade());
         Coupon savedCoupon = couponRepository.save(couponCreateDto.toEntity());
