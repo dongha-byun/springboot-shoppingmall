@@ -1,0 +1,26 @@
+package springboot.shoppingmall.coupon.presentation;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import springboot.shoppingmall.coupon.domain.UserCouponQueryDto;
+import springboot.shoppingmall.utils.DateUtils;
+
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+public class UserCouponQueryResponse {
+    private String userName;
+    private String userGrade;
+    private String usingDate;
+
+    public static UserCouponQueryResponse of(UserCouponQueryDto dto) {
+        return UserCouponQueryResponse.builder()
+                .userName(dto.getUserName())
+                .userGrade(dto.getUserGrade().getGradeName())
+                .usingDate(DateUtils.toStringOfLocalDateTIme(dto.getUsingDate()))
+                .build();
+    }
+}
