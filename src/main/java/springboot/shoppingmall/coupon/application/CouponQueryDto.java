@@ -2,9 +2,9 @@ package springboot.shoppingmall.coupon.application;
 
 import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDateTime;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import springboot.shoppingmall.user.domain.UserGrade;
 
 @NoArgsConstructor
 @Getter

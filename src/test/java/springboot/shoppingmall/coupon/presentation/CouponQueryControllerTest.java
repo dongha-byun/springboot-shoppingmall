@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +20,7 @@ import springboot.shoppingmall.coupon.application.CouponQueryDto;
 import springboot.shoppingmall.coupon.application.CouponQueryService;
 import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
 import springboot.shoppingmall.providers.authentication.LoginPartnerArgumentResolver;
+import springboot.shoppingmall.user.domain.UserGrade;
 
 @WebMvcTest(controllers = CouponQueryController.class)
 class CouponQueryControllerTest {

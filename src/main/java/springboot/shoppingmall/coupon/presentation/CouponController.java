@@ -1,6 +1,7 @@
 package springboot.shoppingmall.coupon.presentation;
 
 import java.net.URI;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,7 @@ public class CouponController {
 
     @PostMapping("/coupons")
     public ResponseEntity<CouponResponse> create(@LoginPartner AuthorizedPartner partner,
-                                                 @RequestBody CouponCreateRequest couponCreateRequest) {
+                                                 @Valid @RequestBody CouponCreateRequest couponCreateRequest) {
         CouponCreateDto couponCreateDto = couponCreateRequest.toDto(partner.getId());
         Long couponId = couponService.create(couponCreateDto);
 
