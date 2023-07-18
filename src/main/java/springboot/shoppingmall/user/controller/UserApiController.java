@@ -5,25 +5,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
-import springboot.shoppingmall.user.domain.UserGrade;
 import springboot.shoppingmall.user.dto.FindIdRequest;
 import springboot.shoppingmall.user.dto.FindIdResponse;
 import springboot.shoppingmall.user.dto.FindPwRequest;
 import springboot.shoppingmall.user.dto.FindPwResponse;
-import springboot.shoppingmall.user.dto.SignUpRequest;
+import springboot.shoppingmall.user.controller.request.SignUpRequest;
 import springboot.shoppingmall.user.dto.UserEditRequest;
 import springboot.shoppingmall.user.dto.UserGradeInfoDto;
 import springboot.shoppingmall.user.dto.UserGradeInfoResponse;
-import springboot.shoppingmall.user.dto.UserRequest;
 import springboot.shoppingmall.user.dto.UserResponse;
 import springboot.shoppingmall.user.service.UserService;
+import springboot.shoppingmall.user.service.dto.UserCreateDto;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,7 +31,8 @@ public class UserApiController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<UserResponse> signUp(@RequestBody SignUpRequest signUpRequest){
-        UserResponse userResponse = userService.signUp(signUpRequest);
+        UserCreateDto userCreateDto = signUpRequest.toDto();
+        UserResponse userResponse = userService.signUp(userCreateDto);
         return ResponseEntity.created(URI.create("/user/"+userResponse.getId())).body(userResponse);
     }
 

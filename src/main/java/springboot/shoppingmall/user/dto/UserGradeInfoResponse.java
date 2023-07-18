@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.user.domain.UserGrade;
+import springboot.shoppingmall.utils.DateUtils;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,7 +12,7 @@ import springboot.shoppingmall.user.domain.UserGrade;
 public class UserGradeInfoResponse {
     private Long userId;
     private String userName;
-    private String enterDate;
+    private String signUpDate;
     private String currentUserGrade;
     private int gradeDiscountRate;
     private String nextUserGrade;
@@ -22,7 +23,8 @@ public class UserGradeInfoResponse {
         UserGrade nextGrade = dto.getNextUserGrade();
         if(nextGrade == null) {
             return new UserGradeInfoResponse(
-                    dto.getUserId(), dto.getUserName(), null,
+                    dto.getUserId(), dto.getUserName(),
+                    DateUtils.toStringOfLocalDateTIme(dto.getSignUpDate(), "yyyy-MM-dd"),
                     dto.getCurrentUserGrade().getGradeName(),
                     dto.getCurrentUserGrade().getDiscountRate(),
                     null,
@@ -34,7 +36,8 @@ public class UserGradeInfoResponse {
         int remainedOrderCountForNextGrade = nextGrade.getMinOrderCondition() - dto.getOrderCount();
         int remainedAmountsForNextGrade = nextGrade.getMinAmountCondition() - dto.getAmount();
         return new UserGradeInfoResponse(
-                dto.getUserId(), dto.getUserName(), null,
+                dto.getUserId(), dto.getUserName(),
+                DateUtils.toStringOfLocalDateTIme(dto.getSignUpDate(), "yyyy-MM-dd"),
                 dto.getCurrentUserGrade().getGradeName(),
                 dto.getCurrentUserGrade().getDiscountRate(),
                 nextGrade.getGradeName(),

@@ -2,6 +2,7 @@ package springboot.shoppingmall.user.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
@@ -50,19 +51,23 @@ class UserFinderTest {
     @DisplayName("특정 등급 이상의 사용자를 조회")
     void find_user_by_over_the_grade() {
         // given
+        LocalDateTime signUpDate = LocalDateTime.of(2023, 1, 5, 9, 15, 0);
         User normalUser = userRepository.save(
                 new User("일반회원테스터", "normal_tester", "normal_tester_!",
-                        "010-2222-3333", 0, false,
+                        "010-2222-3333", signUpDate,
+                        0, false,
                         new UserGradeInfo(UserGrade.NORMAL, 0, 0))
         );
         User regularUser = userRepository.save(
                 new User("일반회원테스터", "normal_tester", "normal_tester_!",
-                        "010-2222-3333", 0, false,
+                        "010-2222-3333", signUpDate,
+                        0, false,
                         new UserGradeInfo(UserGrade.REGULAR, 10, 50000))
         );
         User vipUser = userRepository.save(
                 new User("일반회원테스터", "normal_tester", "normal_tester_!",
-                        "010-2222-3333", 0, false,
+                        "010-2222-3333", signUpDate,
+                        0, false,
                         new UserGradeInfo(UserGrade.VIP, 50, 150000))
         );
 

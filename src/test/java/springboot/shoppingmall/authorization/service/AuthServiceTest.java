@@ -2,6 +2,7 @@ package springboot.shoppingmall.authorization.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,9 +30,6 @@ class AuthServiceTest {
     JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    EntityManager em;
-
-    @Autowired
     UserRepository userRepository;
 
     @Autowired
@@ -39,6 +37,8 @@ class AuthServiceTest {
 
     @Autowired
     UserFinder userFinder;
+
+    LocalDateTime signUpDate = LocalDateTime.of(2022, 12, 12, 0, 23, 44);
 
     @BeforeEach
     void setUp(){
@@ -123,7 +123,10 @@ class AuthServiceTest {
     @DisplayName("로그인 실패가 5회 이상이면, 계정이 잠금상태가 된다.")
     void cant_login_by_login_fail_count() {
         // given
-        User user = userRepository.save(new User("테스터", "test", "test1!", "010-1111-2222", 4));
+        User user = userRepository.save(
+                new User("테스터", "test", "test1!",
+                        "010-1111-2222", signUpDate, 4)
+        );
         String loginId = "test";
         String password = "test2!";
         String localhost = "127.0.0.1";
@@ -140,7 +143,10 @@ class AuthServiceTest {
     @DisplayName("계정이 잠긴채로 로그인을 시도하면, 로그인이 불가하다.")
     void cant_login_by_user_locked() {
         // given
-        User user = userRepository.save(new User("테스터", "test", "test1!", "010-1111-2222", 5, true));
+        userRepository.save(
+                new User("테스터", "test", "test1!",
+                        "010-1111-2222", signUpDate, 5, true)
+        );
         String loginId = "test";
         String password = "test1!";
         String localhost = "127.0.0.1";

@@ -161,9 +161,10 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         // given
         String loginId = "vip_user1";
         String password = "vip_user1!";
-        User vipUser = userRepository.save(
+        userRepository.save(
                 new User(
                         "VIP 회원", loginId, password, "010-2344-2344",
+                        LocalDateTime.of(2022, 12, 22, 13, 15, 10),
                         0, false, new UserGradeInfo(UserGrade.VIP, 50, 150000)
                 )
         );

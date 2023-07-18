@@ -41,6 +41,7 @@ class CouponServiceTest {
         userRepository.save(
                 new User(
                         name, loginId, "coupon_tester_1!", telNo,
+                        LocalDateTime.of(2023, 9, 12, 15, 20, 15),
                         0, false,
                         new UserGradeInfo(userGrade, userGrade.getMinOrderCondition(), userGrade.getMinAmountCondition()
                         )

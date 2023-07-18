@@ -1,23 +1,18 @@
 package springboot.shoppingmall.user.service;
 
-import static springboot.shoppingmall.user.dto.UserEditRequest.*;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.user.domain.TelNo;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserFinder;
-import springboot.shoppingmall.user.domain.UserGradeInfo;
-import springboot.shoppingmall.user.dto.FindIdRequest;
 import springboot.shoppingmall.user.dto.FindIdResponse;
-import springboot.shoppingmall.user.dto.FindPwRequest;
 import springboot.shoppingmall.user.dto.FindPwResponse;
-import springboot.shoppingmall.user.dto.SignUpRequest;
+import springboot.shoppingmall.user.controller.request.SignUpRequest;
 import springboot.shoppingmall.user.dto.UserEditRequest;
 import springboot.shoppingmall.user.dto.UserGradeInfoDto;
 import springboot.shoppingmall.user.dto.UserResponse;
 import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.user.service.dto.UserCreateDto;
 import springboot.shoppingmall.utils.MaskingUtil;
 
 @Transactional(readOnly = true)
@@ -27,10 +22,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserFinder userFinder;
+
     @Transactional
-    public UserResponse signUp(SignUpRequest signUpRequest){
-        User user = userRepository.save(SignUpRequest.to(signUpRequest));
-        return UserResponse.of(user);
+    public UserResponse signUp(UserCreateDto createDto){
+        User user = createDto.toEntity();
+        User savedUser = userRepository.save(user);
+        return UserResponse.of(savedUser);
     }
 
     public UserResponse findUser(Long id){

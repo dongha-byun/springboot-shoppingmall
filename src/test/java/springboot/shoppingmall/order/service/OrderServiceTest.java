@@ -129,6 +129,7 @@ class OrderServiceTest {
         // given
         User tester2 = new User(
                 "테스터2", "tester2", "tester2@", "010-2222-3333",
+                LocalDateTime.of(2022, 12, 15, 15, 0),
                 0, false, new UserGradeInfo(UserGrade.REGULAR, 10, 50000)
         );
         userRepository.save(tester2);

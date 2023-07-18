@@ -1,5 +1,6 @@
 package springboot.shoppingmall.user.domain;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +45,8 @@ public class User extends BaseEntity {
     })
     private LoginInfo loginInfo;
 
+    private LocalDateTime signUpDate;
+
     @Embedded
     private TelNo telNo;
 
@@ -58,28 +61,32 @@ public class User extends BaseEntity {
     @ColumnDefault("false")
     private boolean isLock = false;
 
-    @Builder
     public User(String userName, String loginId, String password, String telNo) {
-        this(userName, loginId, password, telNo, 0);
+        this(userName, loginId, password, telNo, LocalDateTime.now());
     }
 
     @Builder
-    public User(String userName, String loginId, String password, String telNo, int loginFailCount) {
-        this(userName, loginId, password, telNo, loginFailCount, false);
+    public User(String userName, String loginId, String password, String telNo, LocalDateTime signUpDate) {
+        this(userName, loginId, password, telNo, signUpDate, 0);
     }
 
-    @Builder
-    public User(String userName, String loginId, String password, String telNo, int loginFailCount, boolean isLock) {
-        this(userName, loginId, password, telNo, loginFailCount, isLock,
+    public User(String userName, String loginId, String password, String telNo, LocalDateTime signUpDate,
+                int loginFailCount) {
+        this(userName, loginId, password, telNo, signUpDate, loginFailCount, false);
+    }
+
+    public User(String userName, String loginId, String password, String telNo, LocalDateTime signUpDate,
+                int loginFailCount, boolean isLock) {
+        this(userName, loginId, password, telNo, signUpDate, loginFailCount, isLock,
                 new UserGradeInfo(UserGrade.NORMAL, 0, 0));
     }
 
-    @Builder
-    public User(String userName, String loginId, String password, String telNo, int loginFailCount, boolean isLock,
-                UserGradeInfo userGradeInfo) {
+    public User(String userName, String loginId, String password, String telNo, LocalDateTime signUpDate,
+                int loginFailCount, boolean isLock, UserGradeInfo userGradeInfo) {
         this.userName = userName;
         this.loginInfo = new LoginInfo(loginId, password, loginFailCount);
         this.telNo = new TelNo(telNo);
+        this.signUpDate = signUpDate;
         this.isLock = isLock;
         this.userGradeInfo = userGradeInfo;
     }

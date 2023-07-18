@@ -1,14 +1,12 @@
 package springboot.shoppingmall.user.dto;
 
-import java.util.Optional;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserGrade;
-import springboot.shoppingmall.user.domain.UserGradeInfo;
+import springboot.shoppingmall.utils.DateUtils;
 
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {
@@ -16,10 +14,12 @@ public class UserResponse {
     private String name;
     private String telNo;
     private String loginId;
+    private String signUpDate;
 
-    public static UserResponse of(User user){
+    public static UserResponse of(User user) {
         return new UserResponse(
-                user.getId(), user.getUserName(), user.telNo() ,user.getLoginId()
+                user.getId(), user.getUserName(), user.telNo(),
+                user.getLoginId(), DateUtils.toStringOfLocalDateTIme(user.getSignUpDate(), "yyyy-MM-dd")
         );
     }
 }
