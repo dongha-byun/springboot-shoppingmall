@@ -12,12 +12,14 @@ import springboot.shoppingmall.utils.DateUtils;
 @NoArgsConstructor
 @Getter
 public class UserCouponQueryResponse {
+    private Long userId;
     private String userName;
     private String userGrade;
     private String usingDate;
 
     public static UserCouponQueryResponse of(UserCouponQueryDto dto) {
         return UserCouponQueryResponse.builder()
+                .userId(dto.getUserId())
                 .userName(dto.getUserName())
                 .userGrade(dto.getUserGrade().getGradeName())
                 .usingDate(DateUtils.toStringOfLocalDateTIme(dto.getUsingDate()))

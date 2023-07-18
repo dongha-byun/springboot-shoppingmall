@@ -21,7 +21,8 @@ public class UserCouponQueryRepository {
     public List<UserCouponQueryDto> findAllUserReceivedCoupon(Coupon coupon) {
         return queryFactory.select(
                         Projections.constructor(UserCouponQueryDto.class,
-                                user.userName, user.userGradeInfo.grade, userCoupon.usingDate
+                                user.id, user.userName,
+                                user.userGradeInfo.grade, userCoupon.usingDate
                         )
                 ).from(userCoupon)
                 .join(user).on(user.id.eq(userCoupon.userId))

@@ -9,12 +9,14 @@ import springboot.shoppingmall.user.domain.UserGrade;
 @NoArgsConstructor
 @Getter
 public class UserCouponQueryDto {
+    private Long userId;
     private String userName;
     private UserGrade userGrade;
     private LocalDateTime usingDate;
 
     @QueryProjection
-    public UserCouponQueryDto(String userName, UserGrade userGrade, LocalDateTime usingDate) {
+    public UserCouponQueryDto(Long userId, String userName, UserGrade userGrade, LocalDateTime usingDate) {
+        this.userId = userId;
         this.userName = userName;
         this.userGrade = userGrade;
         this.usingDate = usingDate;
