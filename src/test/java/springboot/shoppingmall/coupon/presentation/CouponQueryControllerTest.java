@@ -20,7 +20,6 @@ import springboot.shoppingmall.coupon.application.CouponQueryDto;
 import springboot.shoppingmall.coupon.application.CouponQueryService;
 import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
 import springboot.shoppingmall.providers.authentication.LoginPartnerArgumentResolver;
-import springboot.shoppingmall.user.domain.UserGrade;
 
 @WebMvcTest(controllers = CouponQueryController.class)
 class CouponQueryControllerTest {
@@ -64,7 +63,7 @@ class CouponQueryControllerTest {
         );
 
         // when & then
-        mockMvc.perform(get("/coupons")
+        mockMvc.perform(get("/partners/coupons")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())

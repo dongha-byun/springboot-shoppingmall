@@ -16,7 +16,7 @@ import springboot.shoppingmall.providers.authentication.LoginPartner;
 public class CouponQueryController {
     private final CouponQueryService queryService;
 
-    @GetMapping("/coupons")
+    @GetMapping("/partners/coupons")
     public ResponseEntity<List<CouponQueryResponse>> findCouponAll(@LoginPartner AuthorizedPartner partner) {
         List<CouponQueryDto> couponDtoAll = queryService.findCouponAll(partner.getId());
         List<CouponQueryResponse> responses = couponDtoAll.stream()
