@@ -15,7 +15,6 @@ import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
 import springboot.shoppingmall.authorization.service.AuthService;
 
-@Component
 @RequiredArgsConstructor
 @Slf4j
 public class AuthenticationStrategyArgumentResolver implements HandlerMethodArgumentResolver {
