@@ -14,7 +14,6 @@ import springboot.shoppingmall.user.domain.UserGrade;
 import springboot.shoppingmall.user.domain.UserRepository;
 import springboot.shoppingmall.user.dto.FindIdResponse;
 import springboot.shoppingmall.user.dto.FindPwResponse;
-import springboot.shoppingmall.user.controller.request.SignUpRequest;
 import springboot.shoppingmall.user.dto.UserEditRequest;
 import springboot.shoppingmall.user.dto.UserGradeInfoDto;
 import springboot.shoppingmall.user.dto.UserResponse;
@@ -50,6 +49,21 @@ class UserServiceTest {
                 () -> assertThat(userResponse.getLoginId()).isEqualTo("tester"),
                 () -> assertThat(userResponse.getTelNo()).isEqualTo("010-2222-3333"),
                 () -> assertThat(userResponse.getSignUpDate()).isEqualTo("2023-05-04")
+        );
+    }
+
+    @DisplayName("비밀번호와 비밀번호 확인 정보가 다른 경우, 회원가입이 불가능하다.")
+    @Test
+    void sign_up_fail_with_password_confirmPassword_not_collect() {
+        // given
+        UserCreateDto userCreateDto = new UserCreateDto(
+                "테스터", "tester", "a", "b",
+                "010-2222-3333", signUpDate
+        );
+
+        // when & then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> userService.signUp(userCreateDto)
         );
     }
 

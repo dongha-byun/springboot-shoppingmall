@@ -25,9 +25,11 @@ public class UserService {
 
     @Transactional
     public UserResponse signUp(UserCreateDto createDto){
-        User user = createDto.toEntity();
-        User savedUser = userRepository.save(user);
-        return UserResponse.of(savedUser);
+        if(!createDto.getPassword().equals(createDto.getConfirmPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않아 회원가입에 실패했습니다.");
+        }
+        User user = userRepository.save(createDto.toEntity());
+        return UserResponse.of(user);
     }
 
     public UserResponse findUser(Long id){
