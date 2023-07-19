@@ -1,5 +1,6 @@
 package springboot.shoppingmall.coupon.domain;
 
+import static springboot.shoppingmall.coupon.domain.QCoupon.*;
 import static springboot.shoppingmall.coupon.domain.QUserCoupon.*;
 import static springboot.shoppingmall.user.domain.QUser.*;
 
@@ -30,6 +31,18 @@ public class UserCouponQueryRepository {
                         userCoupon.coupon.eq(coupon)
                 ).orderBy(
                         user.userName.asc()
+                ).stream().collect(Collectors.toList());
+    }
+
+    public List<Coupon> findCouponsOfPartners(Long userId, Long partnersId) {
+        return queryFactory.selectFrom(coupon)
+                .join(coupon.userCoupons, userCoupon)
+                .where(
+                        userCoupon.userId.eq(userId).and(
+                                coupon.partnersId.eq(partnersId)
+                        )
+                ).orderBy(
+                        coupon.discountRate.desc()
                 ).stream().collect(Collectors.toList());
     }
 }
