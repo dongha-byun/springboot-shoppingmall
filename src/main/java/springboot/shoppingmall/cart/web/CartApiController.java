@@ -23,14 +23,14 @@ public class CartApiController {
 
     @PostMapping("/carts")
     public ResponseEntity<CartResponse> createCart(@AuthenticationStrategy AuthorizedUser user,
-                                                     @RequestBody CartRequest cartRequest){
+                                                   @RequestBody CartRequest cartRequest){
         CartResponse cartResponse = cartService.create(user.getId(), cartRequest);
         return ResponseEntity.created(URI.create("/carts/"+cartResponse.getId())).body(cartResponse);
     }
 
     @DeleteMapping("/carts/{id}")
     public ResponseEntity<CartResponse> deleteCart(@AuthenticationStrategy AuthorizedUser user,
-                                                     @PathVariable("id") Long id){
+                                                   @PathVariable("id") Long id){
         cartService.delete(user.getId(), id);
         return ResponseEntity.noContent().build();
     }

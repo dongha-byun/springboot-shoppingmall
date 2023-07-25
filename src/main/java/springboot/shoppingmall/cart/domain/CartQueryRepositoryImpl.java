@@ -24,7 +24,8 @@ public class CartQueryRepositoryImpl implements CartQueryRepository {
         return jpaQueryFactory
                 .select(Projections.constructor(CartDto.class,
                         cart.id, cart.quantity, product.id,
-                        product.name, product.price, provider.name,
+                        product.name, product.price,
+                        provider.id, provider.name,
                         product.thumbnail.storedFileName
                         ))
                 .from(cart)

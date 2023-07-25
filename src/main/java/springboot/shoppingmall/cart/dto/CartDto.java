@@ -13,6 +13,7 @@ public class CartDto {
     private Long productId;
     private String productName;
     private int price;
+    private Long partnersId;
     private String partnersName;
     private String storedImgFileName;
 }

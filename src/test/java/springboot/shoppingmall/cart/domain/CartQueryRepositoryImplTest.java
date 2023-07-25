@@ -85,6 +85,7 @@ class CartQueryRepositoryImplTest {
         assertThat(cartDto.getProductName()).isEqualTo(cart1.getProduct().getName());
         assertThat(cartDto.getQuantity()).isEqualTo(cart1.getQuantity());
         assertThat(cartDto.getPrice()).isEqualTo(cart1.getProduct().getPrice());
+        assertThat(cartDto.getPartnersId()).isEqualTo(provider.getId());
         assertThat(cartDto.getPartnersName()).isEqualTo(provider.getName());
         assertThat(cartDto.getStoredImgFileName()).isEqualTo(product1.getThumbnail());
     }
@@ -104,27 +105,12 @@ class CartQueryRepositoryImplTest {
         List<CartDto> cartDtos = cartQueryRepository.findAllCartByUserId(user1.getId());
 
         // then
-        assertThat(cartDtos).hasSize(2);
-        List<Long> ids = cartDtos.stream()
-                .map(CartDto::getId)
-                .collect(Collectors.toList());
-        assertThat(ids).containsExactly(
-                cart1.getId(), cart2.getId()
-        );
-
-        List<String> partnerNames = cartDtos.stream()
-                .map(CartDto::getPartnersName)
-                .collect(Collectors.toList());
-        assertThat(partnerNames).containsExactly(
-                "(주)파산은행", "(주)파산은행"
-        );
-
-        List<String> storedImgNames = cartDtos.stream()
-                .map(CartDto::getStoredImgFileName)
-                .collect(Collectors.toList());
-        assertThat(storedImgNames).containsExactly(
-                "stored1", "stored2"
-        );
+        assertThat(cartDtos).hasSize(2)
+                .extracting("id", "partnersName", "partnersId", "storedImgFileName")
+                .containsExactly(
+                        tuple(cart1.getId(), "(주)파산은행", provider.getId(), "stored1"),
+                        tuple(cart2.getId(), "(주)파산은행", provider.getId(), "stored2")
+                );
     }
 
 }
