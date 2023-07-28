@@ -22,6 +22,7 @@ public class OrderResponse {
     private String orderDate;
     private List<OrderItemResponse> items;
     private int totalPrice;
+    private int realPayPrice;
     private DeliveryInfoResponse deliveryInfo;
     private OrderDeliveryInvoiceResponse deliveryInvoice;
 
@@ -29,7 +30,7 @@ public class OrderResponse {
         OrderDeliveryInfo orderDeliveryInfo = order.getOrderDeliveryInfo();
         return new OrderResponse(order.getId(), order.getOrderCode(),
                 toStringOfLocalDateTIme(order.getOrderDate()),
-                ofItemList(order), order.getTotalPrice(),
+                ofItemList(order), order.getTotalPrice(), order.getRealPayPrice(),
                 new DeliveryInfoResponse(
                         orderDeliveryInfo.getReceiverName(), orderDeliveryInfo.getReceiverPhoneNumber(),
                         orderDeliveryInfo.getZipCode(), orderDeliveryInfo.getAddress(),
@@ -42,7 +43,7 @@ public class OrderResponse {
         OrderDeliveryInfo orderDeliveryInfo = order.getOrderDeliveryInfo();
         return new OrderResponse(order.getId(), order.getOrderCode(),
                 toStringOfLocalDateTIme(order.getOrderDate()),
-                ofItemList(order), order.getTotalPrice(),
+                ofItemList(order), order.getTotalPrice(), order.getRealPayPrice(),
                 new DeliveryInfoResponse(
                         orderDeliveryInfo.getReceiverName(), orderDeliveryInfo.getReceiverPhoneNumber(),
                         orderDeliveryInfo.getZipCode(), orderDeliveryInfo.getAddress(),

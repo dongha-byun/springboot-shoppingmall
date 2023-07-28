@@ -51,7 +51,7 @@ class OrderItemTest {
 
         // when & then
         assertThatThrownBy(
-                () -> OrderItem.createOrderItem(product, orderQuantity)
+                () -> OrderItem.createOrderItem(product, orderQuantity, null)
         ).isInstanceOf(OverQuantityException.class);
     }
 
@@ -63,10 +63,9 @@ class OrderItemTest {
 
         // when & then
         assertThatIllegalArgumentException().isThrownBy(
-                () -> new OrderItem(product, orderQuantity, OrderStatus.READY)
+                () -> OrderItem.createOrderItem(product, orderQuantity)
         );
     }
-
 
     @Test
     @DisplayName("2-1. 상품 출고 - 준비 중인 주문 상품을 출고한다. 이 때 송장번호를 저장한다.")

@@ -37,7 +37,11 @@ public class OrderItem extends BaseEntity {
     private Product product;
     private int quantity;
     private int totalPrice;
+    private int realPayPrice;
     private int gradeDiscountAmount;
+
+    private Long usedUserCouponId;
+    private int couponDiscountAmount;
 
     @Column(unique = true)
     private String invoiceNumber;
@@ -58,14 +62,21 @@ public class OrderItem extends BaseEntity {
     private String exchangeReason;
 
     public static OrderItem createOrderItem(Product product, int quantity) {
-        return new OrderItem(product, quantity, OrderStatus.READY);
+        return createOrderItem(product, quantity, null);
+    }
+    public static OrderItem createOrderItem(Product product, int quantity, Long usedUserCouponId) {
+        return new OrderItem(product, quantity, usedUserCouponId, OrderStatus.READY);
     }
 
     public OrderItem(Product product, int quantity, OrderStatus orderStatus) {
+        this(product, quantity, null, orderStatus);
+    }
+    public OrderItem(Product product, int quantity, Long usedUserCouponId, OrderStatus orderStatus) {
         this.product = product;
         this.quantity = quantity;
         this.totalPrice = product.getPrice() * quantity;
         this.orderStatus = orderStatus;
+        this.usedUserCouponId = usedUserCouponId;
 
         validateQuantity(quantity);
 
@@ -204,5 +215,14 @@ public class OrderItem extends BaseEntity {
 
     public void gradeDiscount(int gradeDiscountRate) {
         this.gradeDiscountAmount = this.totalPrice * gradeDiscountRate / 100;
+    }
+
+    public void couponDiscount(int couponDiscountRate) {
+        this.couponDiscountAmount = this.totalPrice * couponDiscountRate / 100;
+    }
+
+    public int calculateRealPayPrice() {
+        this.realPayPrice = this.totalPrice - this.gradeDiscountAmount - this.couponDiscountAmount;
+        return this.realPayPrice;
     }
 }

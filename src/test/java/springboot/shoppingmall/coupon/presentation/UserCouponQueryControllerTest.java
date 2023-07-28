@@ -47,7 +47,6 @@ class UserCouponQueryControllerTest {
                         new UserCouponQueryDto(10L, "10번째 회원", UserGrade.NORMAL, null),
                         new UserCouponQueryDto(20L, "20번째 회원", UserGrade.REGULAR, null),
                         new UserCouponQueryDto(30L, "30번째 회원", UserGrade.NORMAL, null)
-
                 )
         );
 
@@ -58,7 +57,6 @@ class UserCouponQueryControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
-
     }
 
     @DisplayName("상품 주문 시, 상품에 적용할 수 있는 쿠폰 목록을 조회한다.")

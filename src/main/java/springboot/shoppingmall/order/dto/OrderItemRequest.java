@@ -10,4 +10,10 @@ import lombok.NoArgsConstructor;
 public class OrderItemRequest {
     private Long productId;
     private int quantity;
+    private Long userCouponId;
+
+    public OrderItemRequest(Long productId, int quantity) {
+        this.productId = productId;
+        this.quantity = quantity;
+    }
 }

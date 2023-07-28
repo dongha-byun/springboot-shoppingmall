@@ -44,4 +44,8 @@ public class UserCoupon {
     public static UserCoupon create(Long userId, Coupon coupon) {
         return new UserCoupon(userId, coupon, null);
     }
+
+    public void use() {
+        this.usingDate = LocalDateTime.now();
+    }
 }
