@@ -62,6 +62,8 @@ public class OrderService {
 
         // 쿠폰에 따른 할인 금액 적용
         newOrder.getItems()
+                .stream()
+                .filter(item -> item.getUsedUserCouponId()!=null)
                 .forEach(item -> {
                     Long userCouponId = item.getUsedUserCouponId();
                     Optional<UserCoupon> userCouponOptional = userCouponRepository.findById(userCouponId);
