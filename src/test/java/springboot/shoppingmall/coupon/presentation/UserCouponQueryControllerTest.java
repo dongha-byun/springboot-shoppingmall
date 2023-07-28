@@ -63,7 +63,7 @@ class UserCouponQueryControllerTest {
     @Test
     void find_coupons_partners() throws Exception {
         // given
-        when(queryService.findCouponsOfPartners(anyLong(), anyLong())).thenReturn(
+        when(queryService.findUsableCouponList(anyLong(), anyLong())).thenReturn(
                 Arrays.asList(
                         new CouponQueryDto(1L, "신규 쿠폰 #1",
                                 LocalDateTime.of(2023, 5, 1, 0, 0),

@@ -25,8 +25,8 @@ public class UserCouponQueryService {
         return queryRepository.findAllUserReceivedCoupon(coupon);
     }
 
-    public List<CouponQueryDto> findCouponsOfPartners(Long userId, Long partnersId) {
-        List<Coupon> coupons = queryRepository.findCouponsOfPartners(userId, partnersId);
+    public List<CouponQueryDto> findUsableCouponList(Long userId, Long partnersId) {
+        List<Coupon> coupons = queryRepository.findUsableCouponList(userId, partnersId);
         return coupons.stream()
                 .map(CouponQueryDto::of)
                 .collect(Collectors.toList());

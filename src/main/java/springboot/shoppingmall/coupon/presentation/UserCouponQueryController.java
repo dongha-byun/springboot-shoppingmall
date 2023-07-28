@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,9 +35,9 @@ public class UserCouponQueryController {
     }
 
     @GetMapping("/order/coupons")
-    public ResponseEntity<List<CouponQueryResponse>> findCouponsOfPartners(@AuthenticationStrategy AuthorizedUser user,
+    public ResponseEntity<List<CouponQueryResponse>> findUsableCouponList(@AuthenticationStrategy AuthorizedUser user,
                                                                            @RequestParam("partnersId") Long partnersId) {
-        List<CouponQueryDto> coupons = queryService.findCouponsOfPartners(user.getId(), partnersId);
+        List<CouponQueryDto> coupons = queryService.findUsableCouponList(user.getId(), partnersId);
         List<CouponQueryResponse> responses = coupons.stream()
                 .map(CouponQueryResponse::of)
                 .collect(Collectors.toList());

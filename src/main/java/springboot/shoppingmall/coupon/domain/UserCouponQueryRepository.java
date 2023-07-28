@@ -34,13 +34,17 @@ public class UserCouponQueryRepository {
                 ).stream().collect(Collectors.toList());
     }
 
-    public List<Coupon> findCouponsOfPartners(Long userId, Long partnersId) {
+    public List<Coupon> findUsableCouponList(Long userId, Long partnersId) {
         return queryFactory.selectFrom(coupon)
                 .join(coupon.userCoupons, userCoupon)
                 .where(
-                        userCoupon.userId.eq(userId).and(
-                                coupon.partnersId.eq(partnersId)
-                        )
+                        userCoupon.userId.eq(userId)
+                                .and(
+                                        coupon.partnersId.eq(partnersId)
+                                )
+                                .and(
+                                        userCoupon.usingDate.isNull()
+                                )
                 ).orderBy(
                         coupon.discountRate.desc()
                 ).stream().collect(Collectors.toList());

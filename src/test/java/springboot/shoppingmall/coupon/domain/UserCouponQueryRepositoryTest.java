@@ -96,13 +96,60 @@ class UserCouponQueryRepositoryTest {
         coupon3.addUserCoupon(couponReceiver1.getId());
 
         // when
-        List<Coupon> couponsOfPartners = queryRepository.findCouponsOfPartners(couponReceiver1.getId(), 1L);
+        List<Coupon> usableCouponList = queryRepository.findUsableCouponList(couponReceiver1.getId(), 1L);
 
         // then
-        assertThat(couponsOfPartners).hasSize(3)
+        assertThat(usableCouponList).hasSize(3)
                 .extracting("name", "discountRate")
                 .containsExactly(
                         tuple("신규 카테고리 오픈 기념 쿠폰 #2", 15),
+                        tuple("신규 카테고리 오픈 기념 쿠폰 #1", 10),
+                        tuple("신규 카테고리 오픈 기념 쿠폰 #3", 8)
+                );
+    }
+
+    @DisplayName("상품 주문 시, 이미 사용한 쿠폰은 보이지 않는다.")
+    @Test
+    void test() {
+        // given
+        User couponReceiver1 = userRepository.save(
+                new User("쿠폰발급자1", "coupon_receiver1", "a", "010-2222-3333")
+        );
+        Coupon coupon1 = couponRepository.save(
+                new Coupon("신규 카테고리 오픈 기념 쿠폰 #1",
+                        new UsingDuration(
+                                LocalDateTime.of(2023, 3, 1, 0, 0, 0),
+                                LocalDateTime.of(2023, 8, 31, 0, 0, 0)
+                        ), 10, 1L)
+        );
+        Coupon coupon2 = couponRepository.save(
+                new Coupon("신규 카테고리 오픈 기념 쿠폰 #2",
+                        new UsingDuration(
+                                LocalDateTime.of(2023, 7, 1, 0, 0, 0),
+                                LocalDateTime.of(2023, 12, 31, 0, 0, 0)
+                        ), 15, 1L)
+        );
+        Coupon coupon3 = couponRepository.save(
+                new Coupon("신규 카테고리 오픈 기념 쿠폰 #3",
+                        new UsingDuration(
+                                LocalDateTime.of(2023, 5, 1, 0, 0, 0),
+                                LocalDateTime.of(2023, 9, 11, 0, 0, 0)
+                        ), 8, 1L)
+        );
+        coupon1.addUserCoupon(couponReceiver1.getId());
+        coupon2.addUserCoupon(couponReceiver1.getId());
+        coupon3.addUserCoupon(couponReceiver1.getId());
+
+        UserCoupon userCoupon2 = coupon2.getUserCoupons().get(0);
+        userCoupon2.use();
+
+        // when
+        List<Coupon> usableCouponList = queryRepository.findUsableCouponList(couponReceiver1.getId(), 1L);
+
+        // then
+        assertThat(usableCouponList).hasSize(2)
+                .extracting("name", "discountRate")
+                .containsExactly(
                         tuple("신규 카테고리 오픈 기념 쿠폰 #1", 10),
                         tuple("신규 카테고리 오픈 기념 쿠폰 #3", 8)
                 );

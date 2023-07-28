@@ -97,7 +97,7 @@ class UserCouponQueryServiceTest {
         coupon3.addUserCoupon(10L);
 
         // when
-        List<CouponQueryDto> coupons = queryService.findCouponsOfPartners(10L, 1L);
+        List<CouponQueryDto> coupons = queryService.findUsableCouponList(10L, 1L);
 
         // then
         assertThat(coupons).hasSize(3)

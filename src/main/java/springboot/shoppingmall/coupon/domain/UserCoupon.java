@@ -10,11 +10,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Entity
 public class UserCoupon {
 
@@ -30,22 +32,25 @@ public class UserCoupon {
 
     private LocalDateTime usingDate;
 
-    public UserCoupon(Long userId, Coupon coupon, LocalDateTime usingDate) {
-        this(null, userId, coupon, usingDate);
+    public UserCoupon(Long userId, Coupon coupon) {
+        this(userId, coupon, null);
     }
 
-    public UserCoupon(Long id, Long userId, Coupon coupon, LocalDateTime usingDate) {
-        this.id = id;
+    public UserCoupon(Long userId, Coupon coupon, LocalDateTime usingDate) {
         this.userId = userId;
         this.coupon = coupon;
         this.usingDate = usingDate;
     }
 
     public static UserCoupon create(Long userId, Coupon coupon) {
-        return new UserCoupon(userId, coupon, null);
+        return new UserCoupon(userId, coupon);
     }
 
     public void use() {
         this.usingDate = LocalDateTime.now();
+    }
+
+    public boolean isUsed() {
+        return this.usingDate != null;
     }
 }
