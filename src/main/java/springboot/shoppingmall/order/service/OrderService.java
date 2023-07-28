@@ -3,10 +3,17 @@ package springboot.shoppingmall.order.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.coupon.domain.Coupon;
+import springboot.shoppingmall.coupon.domain.OrderCodeCreator;
+import springboot.shoppingmall.coupon.domain.UserCoupon;
+import springboot.shoppingmall.coupon.domain.UserCouponRepository;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderFinder;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
@@ -32,26 +39,41 @@ import springboot.shoppingmall.utils.DateUtils;
 public class OrderService {
     private final ProductFinder productFinder;
     private final UserFinder userFinder;
+    private final UserCouponRepository userCouponRepository;
     private final OrderRepository orderRepository;
     private final PayHistoryRepository payHistoryRepository;
-    private final OrderSequenceRepository orderSequenceRepository;
+    private final OrderCodeCreator orderCodeCreator;
 
     @Transactional
     public OrderResponse createOrder(Long userId, OrderRequest orderRequest) {
         DeliveryInfoRequest deliveryInfoRequest = orderRequest.getDeliveryInfo();
         List<OrderItem> items = getOrderItems(orderRequest);
 
-        String orderCode = generateOrderCode();
+        // 주문 정보를 생성한다.
+        String orderCode = orderCodeCreator.createOrderCode();
+        OrderDeliveryInfo orderDeliveryInfo = deliveryInfoRequest.toValue();
         Order newOrder = orderRepository.save(
-                Order.createOrder(orderCode, userId, items,
-                        deliveryInfoRequest.getReceiverName(), deliveryInfoRequest.getReceiverPhoneNumber(),
-                        deliveryInfoRequest.getZipCode(), deliveryInfoRequest.getAddress(),
-                        deliveryInfoRequest.getDetailAddress(), deliveryInfoRequest.getRequestMessage())
+                Order.createOrder(orderCode, userId, items, orderDeliveryInfo)
         );
 
         // 회원등급 할인 금액 적용
         User user = userFinder.findUserById(userId);
         newOrder.gradeDiscount(user.discountRate());
+
+        // 쿠폰에 따른 할인 금액 적용
+        newOrder.getItems()
+                .forEach(item -> {
+                    Long userCouponId = item.getUsedUserCouponId();
+                    Optional<UserCoupon> userCouponOptional = userCouponRepository.findById(userCouponId);
+                    if (userCouponOptional.isPresent()) {
+                        UserCoupon userCoupon = userCouponOptional.get();
+                        Coupon coupon = userCoupon.getCoupon();
+                        item.couponDiscount(coupon.getDiscountRate());
+                        userCoupon.use();
+                    }
+                });
+
+        newOrder.calculateRealPayPrice();
 
         // 주문 정보 저장 시, 결제정보도 같이 저장한다.
         payHistoryRepository.save(
@@ -64,26 +86,14 @@ public class OrderService {
     }
 
     private List<OrderItem> getOrderItems(OrderRequest orderRequest) {
-        List<OrderItem> items = new ArrayList<>();
-        List<OrderItemRequest> itemRequests = orderRequest.getItems();
-        for (OrderItemRequest itemRequest : itemRequests) {
-            Product product = productFinder.findProductById(itemRequest.getProductId());
-            product.validateQuantity(itemRequest.getQuantity());
+        return orderRequest.getItems()
+                .stream()
+                .map(item -> {
+                    Product product = productFinder.findProductById(item.getProductId());
+                    product.validateQuantity(item.getQuantity());
 
-            items.add(OrderItem.createOrderItem(product, itemRequest.getQuantity()));
-        }
-
-        return items;
-    }
-
-    private String generateOrderCode() {
-        LocalDateTime now = LocalDateTime.now();
-        String yyyyMMdd = DateUtils.toStringOfLocalDateTIme(now, "yyyyMMdd");
-        OrderSequence orderSequence = orderSequenceRepository.findByDate(yyyyMMdd)
-                .orElseGet(() -> OrderSequence.createSequence(now));
-        if(orderSequence.isNew()) {
-            orderSequenceRepository.save(orderSequence);
-        }
-        return orderSequence.generateOrderCode();
+                    return OrderItem.createOrderItem(product, item.getQuantity(), item.getUserCouponId());
+                })
+                .collect(Collectors.toList());
     }
 }

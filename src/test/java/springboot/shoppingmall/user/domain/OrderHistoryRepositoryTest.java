@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
@@ -75,6 +76,11 @@ class OrderHistoryRepositoryTest {
                 .requestMessage("요구사항 1")
                 .zipCode("10001")
                 .build());
+        OrderDeliveryInfo orderDeliveryInfo = new OrderDeliveryInfo(
+                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
+                delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
+        );
+
         Category parent = categoryRepository.save(new Category("카테고리1"));
         Category child = categoryRepository.save(new Category("하위 카테고리1"));
 
@@ -93,24 +99,21 @@ class OrderHistoryRepositoryTest {
                 UUID.randomUUID().toString(), user.getId(),
                 List.of(new OrderItem(product, 2, OrderStatus.READY)),
                 LocalDateTime.of(2022, 11, 5, 12, 0, 0),
-                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
-                delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
+                orderDeliveryInfo
         );
 
         order2 = new Order(
                 UUID.randomUUID().toString(), user.getId(),
                 List.of(new OrderItem(product, 2, OrderStatus.READY)),
                 LocalDateTime.of(2023, 2, 5, 12, 0, 0),
-                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
-                delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
+                orderDeliveryInfo
         );
 
         order3 = new Order(
                 UUID.randomUUID().toString(), user.getId(),
                 List.of(new OrderItem(product, 2, OrderStatus.READY)),
                 LocalDateTime.of(2023, 5, 5, 12, 0, 0),
-                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
-                delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
+                orderDeliveryInfo
         );
     }
 

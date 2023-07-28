@@ -49,10 +49,12 @@ public class OrderTest {
     void auto_calculate_total_price() {
         // given
         int quantity = 2;
-        Order order = Order.createOrder("outing-order-code", 1L, orderItems,
+        OrderDeliveryInfo orderDeliveryInfo = new OrderDeliveryInfo(
                 delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
                 delivery.getZipCode(), delivery.getAddress(),
-                delivery.getDetailAddress(), delivery.getRequestMessage());
+                delivery.getDetailAddress(), delivery.getRequestMessage()
+        );
+        Order order = Order.createOrder("outing-order-code", 1L, orderItems, orderDeliveryInfo);
 
         // when
         int totalPrice = order.getTotalPrice();
@@ -67,10 +69,12 @@ public class OrderTest {
     @DisplayName("회원 등급 할인 적용 시, 각 상품의 할인 금액이 적용된다.")
     void user_grade_discount_order_items() {
         // given
-        Order order = Order.createOrder("outing-order-code", 1L, orderItems,
+        OrderDeliveryInfo orderDeliveryInfo = new OrderDeliveryInfo(
                 delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
                 delivery.getZipCode(), delivery.getAddress(),
-                delivery.getDetailAddress(), delivery.getRequestMessage());
+                delivery.getDetailAddress(), delivery.getRequestMessage()
+        );
+        Order order = Order.createOrder("outing-order-code", 1L, orderItems, orderDeliveryInfo);
 
         // when
         int discountRate = 3;

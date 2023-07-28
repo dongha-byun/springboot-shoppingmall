@@ -17,6 +17,7 @@ import springboot.shoppingmall.TestOrderConfig;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
@@ -51,6 +52,8 @@ class OrderStatusChangeServiceTest {
 
     int productCount = 10;
 
+    OrderDeliveryInfo orderDeliveryInfo;
+
     @BeforeEach
     void beforeEach() {
         user = User.builder()
@@ -60,6 +63,11 @@ class OrderStatusChangeServiceTest {
                 .nickName("수령지 1").receiverName("수령인 1").receiverPhoneNumber("010-1234-1234")
                 .zipCode("10010").address("서울시 동작구 사당동").detailAddress("101호")
                 .requestMessage("도착 시 연락주세요.").build();
+        orderDeliveryInfo = new OrderDeliveryInfo(
+                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress(),
+                delivery.getRequestMessage()
+        );
 
         user.addDelivery(delivery);
         userRepository.save(user);
@@ -95,10 +103,7 @@ class OrderStatusChangeServiceTest {
         );
         LocalDateTime orderDate = LocalDateTime.of(2023, 6, 6, 12, 0, 0);
         Order order = new Order(
-                "ready-order-code", user.getId(), items, orderDate,
-                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
-                delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress(),
-                delivery.getRequestMessage()
+                "ready-order-code", user.getId(), items, orderDate, orderDeliveryInfo
         );
         Order savedOrder = orderRepository.save(order);
         Long orderId = savedOrder.getId();
@@ -144,10 +149,7 @@ class OrderStatusChangeServiceTest {
         );
         LocalDateTime orderDate = LocalDateTime.of(2023, 6, 6, 12, 0, 0);
         Order order = new Order(
-                "finish-order-code", user.getId(), items, orderDate,
-                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
-                delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress(),
-                delivery.getRequestMessage()
+                "finish-order-code", user.getId(), items, orderDate, orderDeliveryInfo
         );
         Order savedOrder = orderRepository.save(order);
         OrderItem orderItem1 = savedOrder.getItems().get(0);

@@ -21,7 +21,10 @@ import springboot.shoppingmall.AcceptanceProductTest;
 import springboot.shoppingmall.authorization.LoginAcceptanceTest;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.authorization.exception.ErrorCode;
+import springboot.shoppingmall.coupon.domain.Coupon;
+import springboot.shoppingmall.coupon.domain.CouponRepository;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
@@ -43,8 +46,9 @@ import springboot.shoppingmall.user.dto.DeliveryResponse;
 public class OrderAcceptanceTest extends AcceptanceProductTest {
 
     @Autowired
+    CouponRepository couponRepository;
+    @Autowired
     OrderRepository orderRepository;
-
     @Autowired
     UserRepository userRepository;
 
@@ -69,11 +73,13 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
                 new OrderItem(product1, 2, OrderStatus.DELIVERY_END),
                 new OrderItem(product2, 3, OrderStatus.DELIVERY_END)
         );
+        OrderDeliveryInfo orderDeliveryInfo = new OrderDeliveryInfo(
+                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                delivery.getZipCode(), delivery.getAddress(),
+                delivery.getDetailAddress(), delivery.getRequestMessage()
+        );
         Order order = orderRepository.save(
-                new Order("test-order-code", user.getId(), orderItems,
-                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
-                        delivery.getZipCode(), delivery.getAddress(),
-                        delivery.getDetailAddress(), delivery.getRequestMessage())
+                new Order("test-order-code", user.getId(), orderItems, orderDeliveryInfo)
         );
 
         배송완료_주문 = OrderResponse.of(order);
@@ -394,6 +400,63 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         assertThat(주문_결과.jsonPath().getString("msg")).isEqualTo(
                 ErrorCode.OVER_QUANTITY.getMessage()
         );
+    }
+
+    /**
+     *  given: 상품이 준비되어 있음
+     *  And: 쿠폰이 준비되어 있음
+     *  when: 상품 주문 시, 쿠폰을 적용하면
+     *  then: 쿠폰이 사용처리 되고, 총 결제금액이 할인된다.
+     */
+    @Test
+    @DisplayName("주문 시 쿠폰을 사용하면, 결제금액이 할인된다.")
+    void order_used_coupon() {
+        // given
+        Coupon coupon1 = couponRepository.save(createCoupon("할인쿠폰#1", 5));
+        Coupon coupon2 = couponRepository.save(createCoupon("할인쿠폰#2", 8));
+
+        Map<String, String> deliveryInfoMap = new HashMap<>();
+        deliveryInfoMap.put("receiverName", "수령인1");
+        deliveryInfoMap.put("receiverPhoneNumber", "010-2222-3333");
+        deliveryInfoMap.put("zipCode", "09822");
+        deliveryInfoMap.put("address", "서울시 영등포구");
+        deliveryInfoMap.put("detailAddress", "상세주소 1");
+        deliveryInfoMap.put("requestMessage", "택배 보관함에 넣어주세요.");
+
+        Map<String, Object> item1 = new HashMap<>();
+        item1.put("productId", 상품.getId()); // 10000원
+        item1.put("quantity", 2);
+        item1.put("usedCouponId", coupon1.getId());
+
+        Map<String, Object> item2 = new HashMap<>();
+        item2.put("productId", 상품2.getId()); // 11000원
+        item2.put("quantity", 5);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("tid", "test-tid");
+        params.put("payType", PayType.KAKAO_PAY.name());
+        params.put("items", Arrays.asList(item1, item2));
+        params.put("deliveryFee", 0);
+        params.put("deliveryInfo", deliveryInfoMap);
+
+        // when
+        ExtractableResponse<Response> 쿠폰_주문_결과 = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers(createAuthorizationHeader(로그인정보))
+                .body(params)
+                .when().post("/orders")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(쿠폰_주문_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(쿠폰_주문_결과.jsonPath().getInt("totalPrice")).isEqualTo(75000);
+    }
+
+    private Coupon createCoupon(String name, int discountRate) {
+        LocalDateTime fromDate = LocalDateTime.now().minusDays(10);
+        LocalDateTime toDate = LocalDateTime.now().plusDays(10);
+        return Coupon.create(name, fromDate, toDate, discountRate, partnerId);
     }
 
     public static ExtractableResponse<Response> 주문_주문취소_요청(OrderResponse order,

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
@@ -66,16 +67,13 @@ class OrderValidatorTest {
         );
         List<OrderItem> orderItems = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
 
-        Delivery delivery = deliveryRepository.save(
-                new Delivery("배송지1", "수령인1", "010-1234-1234",
-                        "10010", "주소", "상세주소", "요청사항", user)
+        OrderDeliveryInfo orderDeliveryInfo = new OrderDeliveryInfo(
+                "수령인1", "010-1234-1234",
+                "10010", "주소", "상세주소", "요청사항"
         );
 
         Order savedOrder = orderRepository.save(
-                new Order("test-order-code", user.getId(), orderItems,
-                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
-                        delivery.getZipCode(), delivery.getAddress(),
-                        delivery.getDetailAddress(), delivery.getRequestMessage())
+                new Order("test-order-code", user.getId(), orderItems, orderDeliveryInfo)
         );
 
         // when

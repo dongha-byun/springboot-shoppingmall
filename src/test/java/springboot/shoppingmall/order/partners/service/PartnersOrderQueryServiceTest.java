@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
@@ -89,22 +90,26 @@ class PartnersOrderQueryServiceTest {
                 )
         );
 
-        order1 = Order.createOrder(
-                "test-order-code1", user.getId(), List.of(new OrderItem(product1, 3, OrderStatus.READY)),
+        OrderDeliveryInfo orderDeliveryInfo = new OrderDeliveryInfo(
                 "수령인1", "010-1234-1234", "01234",
                 "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요"
         );
+        order1 = Order.createOrder(
+                "test-order-code1", user.getId(),
+                List.of(new OrderItem(product1, 3, OrderStatus.READY)),
+                orderDeliveryInfo
+        );
 
         order2 = Order.createOrder(
-                "test-order-code2", user.getId(), List.of(new OrderItem(product2, 4, OrderStatus.READY)),
-                "수령인1", "010-1234-1234","01234",
-                "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요"
+                "test-order-code2", user.getId(),
+                List.of(new OrderItem(product2, 4, OrderStatus.READY)),
+                orderDeliveryInfo
         );
 
         order3 = Order.createOrder(
-                "test-order-code3", user.getId(), List.of(new OrderItem(product3, 5, OrderStatus.READY)),
-                "수령인1", "010-1234-1234","01234",
-                "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요"
+                "test-order-code3", user.getId(),
+                List.of(new OrderItem(product3, 5, OrderStatus.READY)),
+                orderDeliveryInfo
         );
 
         String startDateStr = DateUtils.toStringOfLocalDateTIme(now.minusMonths(3), "yyyy-MM-dd");

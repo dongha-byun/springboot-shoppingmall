@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceProductTest;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
@@ -54,6 +55,8 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
     OrderResponse 배송완료_주문3;
     OrderResponse 배송이_완료되지_않은_주문;
 
+    OrderDeliveryInfo orderDeliveryInfo;
+
     @BeforeEach
     void order_acceptance_beforeEach(){
         super.acceptance_product_beforeEach();
@@ -63,6 +66,11 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         User user = userRepository.findById(인수테스터1.getId()).orElseThrow();
         User user2 = userRepository.findById(인수테스터2.getId()).orElseThrow();
         Delivery delivery = deliveryRepository.findById(배송지.getId()).orElseThrow();
+        orderDeliveryInfo = new OrderDeliveryInfo(
+                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
+                delivery.getZipCode(), delivery.getAddress(),
+                delivery.getDetailAddress(), delivery.getRequestMessage()
+        );
 
         List<OrderItem> order1Items = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
         List<OrderItem> order2Items = List.of(new OrderItem(product2, 3, OrderStatus.DELIVERY_END));
@@ -70,28 +78,16 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         List<OrderItem> order4Items = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY));
 
         Order order = orderRepository.save(
-                new Order(UUID.randomUUID().toString(), user.getId(), order1Items,
-                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
-                        delivery.getZipCode(), delivery.getAddress(),
-                        delivery.getDetailAddress(), delivery.getRequestMessage())
+                new Order(UUID.randomUUID().toString(), user.getId(), order1Items, orderDeliveryInfo)
         );
         Order order2 = orderRepository.save(
-                new Order(UUID.randomUUID().toString(), user.getId(), order2Items,
-                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
-                        delivery.getZipCode(), delivery.getAddress(),
-                        delivery.getDetailAddress(), delivery.getRequestMessage())
+                new Order(UUID.randomUUID().toString(), user.getId(), order2Items, orderDeliveryInfo)
         );
         Order order3 = orderRepository.save(
-                new Order(UUID.randomUUID().toString(), user2.getId(), order3Items,
-                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
-                        delivery.getZipCode(), delivery.getAddress(),
-                        delivery.getDetailAddress(), delivery.getRequestMessage())
+                new Order(UUID.randomUUID().toString(), user2.getId(), order3Items, orderDeliveryInfo)
         );
         Order deliveryOrder = orderRepository.save(
-                new Order(UUID.randomUUID().toString(), user.getId(), order4Items,
-                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
-                        delivery.getZipCode(), delivery.getAddress(),
-                        delivery.getDetailAddress(), delivery.getRequestMessage())
+                new Order(UUID.randomUUID().toString(), user.getId(), order4Items, orderDeliveryInfo)
         );
         배송완료_주문 = OrderResponse.of(order);
         배송완료_주문2 = OrderResponse.of(order2);

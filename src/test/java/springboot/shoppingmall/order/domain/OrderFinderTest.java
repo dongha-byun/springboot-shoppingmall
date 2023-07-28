@@ -34,14 +34,12 @@ class OrderFinderTest {
     @Autowired
     ProductRepository productRepository;
     @Autowired
-    DeliveryRepository deliveryRepository;
-    @Autowired
     UserRepository userRepository;
 
     OrderFinder orderFinder;
     User user;
     Product product;
-    Delivery delivery;
+    OrderDeliveryInfo orderDeliveryInfo;
 
     List<OrderItem> orderItems;
 
@@ -60,9 +58,10 @@ class OrderFinderTest {
                         "test-product-code"
                 )
         );
-        delivery = deliveryRepository.save(
-                new Delivery("닉네임", "수령인", "010-1234-1234",
-                        "10010", "수령지주소", "수령지상세주소", "요구사항", user)
+
+        orderDeliveryInfo = new OrderDeliveryInfo(
+                "수령인", "010-1234-1234",
+                "10010", "수령지주소", "수령지상세주소", "요구사항"
         );
 
         orderItems = List.of(
@@ -75,11 +74,7 @@ class OrderFinderTest {
     void findOrderById() {
         // given
         Order order = orderRepository.save(
-                new Order(UUID.randomUUID().toString(), user.getId(), orderItems,
-                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
-                        delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress(),
-                        delivery.getRequestMessage()
-                )
+                new Order(UUID.randomUUID().toString(), user.getId(), orderItems, orderDeliveryInfo)
         );
 
         // when
@@ -96,10 +91,7 @@ class OrderFinderTest {
         String invoiceNumber = "invoiceNumber1";
         Order order = orderRepository.save(
                 new Order(
-                        UUID.randomUUID().toString(), user.getId(), orderItems,
-                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
-                        delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress(),
-                        delivery.getRequestMessage()
+                        UUID.randomUUID().toString(), user.getId(), orderItems, orderDeliveryInfo
                 )
         );
         OrderItem savedOrderItem = order.getItems().get(0);

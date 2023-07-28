@@ -35,37 +35,25 @@ public class Order extends BaseEntity {
 
     private LocalDateTime orderDate;
     private int totalPrice;
+    private int realPayPrice;
     @Embedded
     private OrderDeliveryInfo orderDeliveryInfo;
 
     public static Order createOrder(String orderCode, Long userId, List<OrderItem> items,
-                                    String receiverName, String receiverPhoneNumber,
-                                    String zipCode, String address, String detailAddress, String requestMessage){
-        return new Order(orderCode, userId, items,
-                receiverName, receiverPhoneNumber,
-                zipCode, address, detailAddress, requestMessage);
+                                    OrderDeliveryInfo orderDeliveryInfo){
+        return new Order(orderCode, userId, items, orderDeliveryInfo);
     }
 
-    public Order(String orderCode, Long userId, List<OrderItem> items,
-                 String receiverName, String receiverPhoneNumber,
-                 String zipCode, String address, String detailAddress,
-                 String requestMessage){
-        this(orderCode, userId, items, LocalDateTime.now(),
-                receiverName, receiverPhoneNumber,
-                zipCode, address, detailAddress, requestMessage);
+    public Order(String orderCode, Long userId, List<OrderItem> items, OrderDeliveryInfo orderDeliveryInfo){
+        this(orderCode, userId, items, LocalDateTime.now(), orderDeliveryInfo);
     }
 
     public Order(String orderCode, Long userId, List<OrderItem> items, LocalDateTime orderDate,
-                 String receiverName, String receiverPhoneNumber,
-                 String zipCode, String address,
-                 String detailAddress, String requestMessage) {
+                 OrderDeliveryInfo orderDeliveryInfo) {
         this.orderCode = orderCode;
         this.userId = userId;
         this.orderDate = orderDate;
-        this.orderDeliveryInfo = new OrderDeliveryInfo(
-                receiverName, receiverPhoneNumber,
-                zipCode, address, detailAddress, requestMessage
-        );
+        this.orderDeliveryInfo = orderDeliveryInfo;
 
         initItems(items);
     }
@@ -97,5 +85,11 @@ public class Order extends BaseEntity {
 
     public void gradeDiscount(int gradeDiscountRate) {
         this.items.forEach(item -> item.gradeDiscount(gradeDiscountRate));
+    }
+
+    public void calculateRealPayPrice() {
+        this.realPayPrice = this.getItems().stream()
+                .mapToInt(OrderItem::calculateRealPayPrice)
+                .sum();
     }
 }

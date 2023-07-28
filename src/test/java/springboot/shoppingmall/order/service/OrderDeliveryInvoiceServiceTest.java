@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
@@ -49,6 +50,8 @@ class OrderDeliveryInvoiceServiceTest {
     @Autowired
     CategoryRepository categoryRepository;
 
+    OrderDeliveryInfo orderDeliveryInfo;
+
     @BeforeEach
     void beforeEach() {
         user = User.builder()
@@ -57,6 +60,10 @@ class OrderDeliveryInvoiceServiceTest {
         delivery = Delivery.builder()
                 .nickName("수령지 1").receiverName("수령인 1").zipCode("10010")
                 .address("서울시 동작구 사당동").detailAddress("101호").requestMessage("도착 시 연락주세요.").build();
+        orderDeliveryInfo = new OrderDeliveryInfo(
+                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
+                delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
+        );
 
         user.addDelivery(delivery);
         userRepository.save(user);
@@ -82,9 +89,7 @@ class OrderDeliveryInvoiceServiceTest {
         List<OrderItem> orderItems = List.of(orderItem);
         orderRepository.save(
                 new Order(
-                        UUID.randomUUID().toString(), user.getId(), orderItems,
-                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
-                        delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
+                        UUID.randomUUID().toString(), user.getId(), orderItems, orderDeliveryInfo
                 )
         );
 
@@ -109,9 +114,7 @@ class OrderDeliveryInvoiceServiceTest {
         List<OrderItem> orderItems = List.of(orderItem);
         orderRepository.save(
                 new Order(
-                        UUID.randomUUID().toString(), user.getId(), orderItems,
-                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
-                        delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
+                        UUID.randomUUID().toString(), user.getId(), orderItems, orderDeliveryInfo
                 )
         );
 
@@ -127,18 +130,5 @@ class OrderDeliveryInvoiceServiceTest {
         assertThat(deliveryCompleteItem.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY_END.getStatusName());
         assertThat(deliveryCompleteItem.getId()).isEqualTo(orderItem.getId());
         assertThat(deliveryCompleteItem.getInvoiceNumber()).isEqualTo(invoiceNumber);
-    }
-
-    private Order 특정_주문상태_데이터_생성(OrderStatus status) {
-        List<OrderItem> orderItems = List.of(
-                new OrderItem(product, 2, status)
-        );
-        return orderRepository.save(
-                new Order(
-                        UUID.randomUUID().toString(), user.getId(), orderItems,
-                        delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
-                        delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
-                )
-        );
     }
 }

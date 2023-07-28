@@ -14,6 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
+import springboot.shoppingmall.coupon.domain.Coupon;
+import springboot.shoppingmall.coupon.domain.CouponRepository;
+import springboot.shoppingmall.coupon.domain.UserCoupon;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.DeliveryInfoRequest;
 import springboot.shoppingmall.order.dto.OrderItemRequest;
@@ -45,7 +48,11 @@ class OrderServiceTest {
     ProductRepository productRepository;
     @Autowired
     CategoryRepository categoryRepository;
+    @Autowired
+    CouponRepository couponRepository;
+
     int productCount = 10;
+    Long partnerId = 10L;
 
     @BeforeEach
     void beforeEach() {
@@ -65,7 +72,7 @@ class OrderServiceTest {
         product = productRepository.save(
                 new Product(
                         "상품 1", 22000, productCount, 1.0, 0, LocalDateTime.now(),
-                        category, subCategory, 10L,
+                        category, subCategory, partnerId,
                         "storedFileName1", "viewFileName1", "상품 설명 입니다.",
                         "test-product-code"
                 )
@@ -73,7 +80,7 @@ class OrderServiceTest {
         product2 = productRepository.save(
                 new Product(
                         "상품 2", 10000, productCount, 1.0, 0, LocalDateTime.now(),
-                        category, subCategory, 10L,
+                        category, subCategory, partnerId,
                         "storedFileName2", "viewFileName2", "상품 설명 입니다.2",
                         "test-product-code2"
                 )
@@ -189,5 +196,45 @@ class OrderServiceTest {
         assertThatThrownBy(
                 () -> orderService.createOrder(user.getId(), orderRequest)
         ).isInstanceOf(OverQuantityException.class);
+    }
+
+    @Test
+    @DisplayName("주문 시, 상품에 쿠폰을 사용하면 금액이 할인된다.")
+    void order_used_coupon() {
+        // given
+        UserCoupon userCoupon1 = createCouponAndUserCoupon("할인쿠폰#1", 5);
+        UserCoupon userCoupon2 = createCouponAndUserCoupon("할인쿠폰#2", 10);
+
+        OrderItemRequest orderItem1 = new OrderItemRequest(product.getId(), 2, userCoupon1.getId());
+        OrderItemRequest orderItem2 = new OrderItemRequest(product2.getId(), 3, userCoupon2.getId());
+        DeliveryInfoRequest deliveryInfoRequest = new DeliveryInfoRequest(
+                "덩라", "010-1234-1234",
+                "01234", "서울시 테스트구 테스트동", "덩라빌딩 301호",
+                "조심히 오세요."
+        );
+        OrderRequest orderRequest = new OrderRequest(
+                "test-tid", PayType.KAKAO_PAY.name(),
+                Arrays.asList(orderItem1, orderItem2),
+                0, deliveryInfoRequest
+        );
+
+        // when
+        OrderResponse orderResponse = orderService.createOrder(user.getId(), orderRequest);
+        assertThat(user.getUserGradeInfo().getGrade()).isEqualTo(UserGrade.NORMAL);
+
+        // then
+        assertThat(orderResponse.getOrderCode()).isNotNull();
+        assertThat(orderResponse.getTotalPrice()).isEqualTo(74000);
+        assertThat(orderResponse.getRealPayPrice()).isEqualTo(68060); // 44000 - 440 - 2200 + 30000 - 300 - 3000
+    }
+
+    private UserCoupon createCouponAndUserCoupon(String name, int discountRate) {
+        LocalDateTime fromDate = LocalDateTime.now().minusDays(10);
+        LocalDateTime toDate = LocalDateTime.now().plusDays(10);
+        Coupon coupon = Coupon.create(name, fromDate, toDate, discountRate, partnerId);
+        coupon.addUserCoupon(user.getId());
+        couponRepository.save(coupon);
+
+        return coupon.getUserCoupons().get(0);
     }
 }

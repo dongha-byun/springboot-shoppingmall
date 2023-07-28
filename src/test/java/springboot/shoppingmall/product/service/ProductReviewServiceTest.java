@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.domain.Order;
+import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
@@ -52,6 +54,17 @@ class ProductReviewServiceTest {
     @Autowired
     OrderRepository orderRepository;
 
+    OrderDeliveryInfo orderDeliveryInfo;
+
+    @BeforeEach
+    void beforeEach() {
+        orderDeliveryInfo = new OrderDeliveryInfo(
+                "test-receiver", "010-1234-1234",
+                "test-zipcode", "test-address",
+                "test-detail-address", "test-message"
+        );
+    }
+
     /**
      * 배송이 완료된 상품에 대해 리뷰를 남긴다.
      * 리뷰를 남긴 주문은 구매확정 처리가 되어 교환/환불이 불가하다.
@@ -73,10 +86,7 @@ class ProductReviewServiceTest {
         );
         List<OrderItem> orderItems = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
         Order endOrder = orderRepository.save(
-                new Order("test-order-code", user.getId(), orderItems,
-                        "test-receiver", "010-1234-1234",
-                        "test-zipcode", "test-address",
-                        "test-detail-address", "test-message")
+                new Order("test-order-code", user.getId(), orderItems, orderDeliveryInfo)
         );
 
         // when
@@ -113,10 +123,7 @@ class ProductReviewServiceTest {
         );
         List<OrderItem> orderItems = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
         Order endOrder = orderRepository.save(
-                new Order("test-order-code", user.getId(), orderItems,
-                        "test-receiver", "010-1234-1234",
-                        "test-zipcode", "test-address",
-                        "test-detail-address", "test-message")
+                new Order("test-order-code", user.getId(), orderItems, orderDeliveryInfo)
         );
 
         ProductReviewRequest productReviewRequest = new ProductReviewRequest("리뷰 등록 합니다.", 3);
@@ -278,28 +285,28 @@ class ProductReviewServiceTest {
         Order endOrder1 = orderRepository.save(
                 new Order("test-order-code-1", user1.getId(),
                         List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
-                        "test-receiver", "010-1234-1234",
-                        "test-zipcode", "test-address", "test-detail-address", "test-message"));
+                        orderDeliveryInfo)
+        );
         Order endOrder2 = orderRepository.save(
                 new Order("test-order-code-2", user2.getId(),
                         List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
-                        "test-receiver", "010-1234-1234",
-                        "test-zipcode", "test-address", "test-detail-address", "test-message"));
+                        orderDeliveryInfo)
+        );
         Order endOrder3 = orderRepository.save(
                 new Order("test-order-code-3", user3.getId(),
                         List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
-                        "test-receiver", "010-1234-1234",
-                        "test-zipcode", "test-address", "test-detail-address", "test-message"));
+                        orderDeliveryInfo)
+        );
         Order endOrder4 = orderRepository.save(
                 new Order("test-order-code-4", user4.getId(),
                         List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
-                        "test-receiver", "010-1234-1234",
-                        "test-zipcode", "test-address", "test-detail-address", "test-message"));
+                        orderDeliveryInfo)
+        );
         Order endOrder5 = orderRepository.save(
                 new Order("test-order-code-5", user5.getId(),
                         List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END)),
-                        "test-receiver", "010-1234-1234",
-                        "test-zipcode", "test-address", "test-detail-address", "test-message"));
+                        orderDeliveryInfo)
+        );
 
         // when & then
         service.createProductReview(user1.getId(), user1.getLoginId(), endOrder1.getId(), product.getId(), new ProductReviewRequest("리뷰 남깁니다. 1", 5));
