@@ -226,6 +226,13 @@ class OrderServiceTest {
         assertThat(orderResponse.getOrderCode()).isNotNull();
         assertThat(orderResponse.getTotalPrice()).isEqualTo(74000);
         assertThat(orderResponse.getRealPayPrice()).isEqualTo(68060); // 44000 - 440 - 2200 + 30000 - 300 - 3000
+
+        assertThat(orderResponse.getItems()).hasSize(2)
+                .extracting("usedCouponId", "couponDiscountAmount")
+                .containsExactly(
+                        tuple(userCoupon1.getId(), 2200),
+                        tuple(userCoupon2.getId(), 3000)
+                );
     }
 
     private UserCoupon createCouponAndUserCoupon(String name, int discountRate) {

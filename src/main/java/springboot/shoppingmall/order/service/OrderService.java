@@ -52,9 +52,7 @@ public class OrderService {
         // 주문 정보를 생성한다.
         String orderCode = orderCodeCreator.createOrderCode();
         OrderDeliveryInfo orderDeliveryInfo = deliveryInfoRequest.toValue();
-        Order newOrder = orderRepository.save(
-                Order.createOrder(orderCode, userId, items, orderDeliveryInfo)
-        );
+        Order newOrder = Order.createOrder(orderCode, userId, items, orderDeliveryInfo);
 
         // 회원등급 할인 금액 적용
         User user = userFinder.findUserById(userId);
@@ -75,12 +73,14 @@ public class OrderService {
                     }
                 });
 
+        // 실제 결제금액 산정
         newOrder.calculateRealPayPrice();
+        orderRepository.save(newOrder);
 
         // 주문 정보 저장 시, 결제정보도 같이 저장한다.
         payHistoryRepository.save(
                 new PayHistory(
-                        newOrder.getId(), orderRequest.getPayType(), orderRequest.getTid(), newOrder.getTotalPrice()
+                        newOrder.getId(), orderRequest.getPayType(), orderRequest.getTid(), newOrder.getRealPayPrice()
                 )
         );
 
@@ -94,7 +94,7 @@ public class OrderService {
                     Product product = productFinder.findProductById(item.getProductId());
                     product.validateQuantity(item.getQuantity());
 
-                    return OrderItem.createOrderItem(product, item.getQuantity(), item.getUserCouponId());
+                    return OrderItem.createOrderItem(product, item.getQuantity(), item.getUsedCouponId());
                 })
                 .collect(Collectors.toList());
     }

@@ -412,8 +412,12 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
     @DisplayName("주문 시 쿠폰을 사용하면, 결제금액이 할인된다.")
     void order_used_coupon() {
         // given
-        Coupon coupon1 = couponRepository.save(createCoupon("할인쿠폰#1", 5));
-        Coupon coupon2 = couponRepository.save(createCoupon("할인쿠폰#2", 8));
+        Coupon coupon1 = createCoupon("할인쿠폰#1", 5);
+        Coupon coupon2 = createCoupon("할인쿠폰#2", 8);
+        coupon1.addUserCoupon(인수테스터1.getId());
+        coupon2.addUserCoupon(인수테스터1.getId());
+        couponRepository.save(coupon1);
+        couponRepository.save(coupon2);
 
         Map<String, String> deliveryInfoMap = new HashMap<>();
         deliveryInfoMap.put("receiverName", "수령인1");
@@ -426,7 +430,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         Map<String, Object> item1 = new HashMap<>();
         item1.put("productId", 상품.getId()); // 10000원
         item1.put("quantity", 2);
-        item1.put("usedCouponId", coupon1.getId());
+        item1.put("usedCouponId", coupon1.getUserCoupons().get(0).getId()); // 5% = 500원 * 2 = 1000원
 
         Map<String, Object> item2 = new HashMap<>();
         item2.put("productId", 상품2.getId()); // 11000원
@@ -451,6 +455,16 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         // then
         assertThat(쿠폰_주문_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(쿠폰_주문_결과.jsonPath().getInt("totalPrice")).isEqualTo(75000);
+        assertThat(쿠폰_주문_결과.jsonPath().getList("items.usedCouponId", Long.class)).containsExactly(
+                coupon1.getId(), null
+        );
+        assertThat(쿠폰_주문_결과.jsonPath().getList("items.couponDiscountAmount", Integer.class)).containsExactly(
+                1000, 0
+        );
+        assertThat(쿠폰_주문_결과.jsonPath().getList("items.gradeDiscountAmount", Integer.class)).containsExactly(
+                200, 550
+        );
+        assertThat(쿠폰_주문_결과.jsonPath().getInt("realPayPrice")).isEqualTo(73250);
     }
 
     private Coupon createCoupon(String name, int discountRate) {
