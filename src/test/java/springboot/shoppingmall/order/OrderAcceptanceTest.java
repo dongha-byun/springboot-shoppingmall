@@ -406,7 +406,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
      *  given: 상품이 준비되어 있음
      *  And: 쿠폰이 준비되어 있음
      *  when: 상품 주문 시, 쿠폰을 적용하면
-     *  then: 쿠폰이 사용처리 되고, 총 결제금액이 할인된다.
+     *  then: 쿠폰이 사용처리 되고, 총 결제금액이 할인 된다.
      */
     @Test
     @DisplayName("주문 시 쿠폰을 사용하면, 결제금액이 할인된다.")
@@ -427,18 +427,21 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         deliveryInfoMap.put("detailAddress", "상세주소 1");
         deliveryInfoMap.put("requestMessage", "택배 보관함에 넣어주세요.");
 
+        Long userCoupon1Id = coupon1.getUserCoupons().get(0).getId();
+        Long userCoupon2Id = coupon2.getUserCoupons().get(0).getId();
         Map<String, Object> item1 = new HashMap<>();
         item1.put("productId", 상품.getId()); // 10000원
         item1.put("quantity", 2);
-        item1.put("usedCouponId", coupon1.getUserCoupons().get(0).getId()); // 5% = 500원 * 2 = 1000원
+        item1.put("usedCouponId", userCoupon1Id); // 5% = 500원 * 2 = 1000원
 
         Map<String, Object> item2 = new HashMap<>();
         item2.put("productId", 상품2.getId()); // 11000원
         item2.put("quantity", 5);
+        item2.put("usedCouponId", userCoupon2Id); // 8% = 880원 * 5 = 4400원
 
         Map<String, Object> params = new HashMap<>();
         params.put("tid", "test-tid");
-        params.put("payType", PayType.KAKAO_PAY.name());
+        params.put("payType", PayType.CARD.name());
         params.put("items", Arrays.asList(item1, item2));
         params.put("deliveryFee", 0);
         params.put("deliveryInfo", deliveryInfoMap);
@@ -455,16 +458,25 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         // then
         assertThat(쿠폰_주문_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(쿠폰_주문_결과.jsonPath().getInt("totalPrice")).isEqualTo(75000);
+        assertThat(쿠폰_주문_결과.jsonPath().getInt("realPayPrice")).isEqualTo(68850);
         assertThat(쿠폰_주문_결과.jsonPath().getList("items.usedCouponId", Long.class)).containsExactly(
-                coupon1.getId(), null
+                userCoupon1Id, userCoupon2Id
         );
         assertThat(쿠폰_주문_결과.jsonPath().getList("items.couponDiscountAmount", Integer.class)).containsExactly(
-                1000, 0
+                1000, 4400
         );
         assertThat(쿠폰_주문_결과.jsonPath().getList("items.gradeDiscountAmount", Integer.class)).containsExactly(
                 200, 550
         );
-        assertThat(쿠폰_주문_결과.jsonPath().getInt("realPayPrice")).isEqualTo(73250);
+
+        ExtractableResponse<Response> 사용_가능한_쿠폰_목록 = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers(createAuthorizationHeader(로그인정보))
+                .when().get("/order/coupons?partnersId={partnersId}", partnerId)
+                .then().log().all()
+                .extract();
+        assertThat(사용_가능한_쿠폰_목록.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(사용_가능한_쿠폰_목록.jsonPath().getList("id")).hasSize(0);
     }
 
     private Coupon createCoupon(String name, int discountRate) {

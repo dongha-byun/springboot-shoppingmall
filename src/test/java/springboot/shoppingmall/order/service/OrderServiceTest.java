@@ -2,7 +2,10 @@ package springboot.shoppingmall.order.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,6 +20,7 @@ import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.coupon.domain.Coupon;
 import springboot.shoppingmall.coupon.domain.CouponRepository;
 import springboot.shoppingmall.coupon.domain.UserCoupon;
+import springboot.shoppingmall.coupon.domain.UserCouponRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.DeliveryInfoRequest;
 import springboot.shoppingmall.order.dto.OrderItemRequest;
@@ -50,6 +54,8 @@ class OrderServiceTest {
     CategoryRepository categoryRepository;
     @Autowired
     CouponRepository couponRepository;
+    @Autowired
+    UserCouponRepository userCouponRepository;
 
     int productCount = 10;
     Long partnerId = 10L;
@@ -233,6 +239,38 @@ class OrderServiceTest {
                         tuple(userCoupon1.getId(), 2200),
                         tuple(userCoupon2.getId(), 3000)
                 );
+    }
+
+    @Test
+    @DisplayName("주문 시, 상품에 쿠폰을 사용하면 쿠폰에 사용일자가 주문일자와 동일하게 처리된다.")
+    void set_using_date_used_coupon() {
+        // given
+        UserCoupon userCoupon1 = createCouponAndUserCoupon("할인쿠폰#1", 5);
+        UserCoupon userCoupon2 = createCouponAndUserCoupon("할인쿠폰#2", 10);
+
+        OrderItemRequest orderItem1 = new OrderItemRequest(product.getId(), 2, userCoupon1.getId());
+        OrderItemRequest orderItem2 = new OrderItemRequest(product2.getId(), 3, userCoupon2.getId());
+        DeliveryInfoRequest deliveryInfoRequest = new DeliveryInfoRequest(
+                "덩라", "010-1234-1234",
+                "01234", "서울시 테스트구 테스트동", "덩라빌딩 301호",
+                "조심히 오세요."
+        );
+        OrderRequest orderRequest = new OrderRequest(
+                "test-tid", PayType.KAKAO_PAY.name(),
+                Arrays.asList(orderItem1, orderItem2),
+                0, deliveryInfoRequest
+        );
+
+        // when
+        OrderResponse orderResponse = orderService.createOrder(user.getId(), orderRequest);
+        assertThat(user.getUserGradeInfo().getGrade()).isEqualTo(UserGrade.NORMAL);
+
+        // then
+        assertThat(orderResponse.getOrderCode()).isNotNull();
+        assertThat(orderResponse.getOrderDate()).isNotNull();
+
+        UserCoupon usedUserCoupon = userCouponRepository.findById(userCoupon1.getId()).orElseThrow();
+        assertThat(usedUserCoupon.getUsingDate()).isNotNull();
     }
 
     private UserCoupon createCouponAndUserCoupon(String name, int discountRate) {

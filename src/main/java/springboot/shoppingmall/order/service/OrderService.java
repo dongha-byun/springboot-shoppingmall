@@ -62,16 +62,7 @@ public class OrderService {
         newOrder.getItems()
                 .stream()
                 .filter(item -> item.getUsedUserCouponId()!=null)
-                .forEach(item -> {
-                    Long userCouponId = item.getUsedUserCouponId();
-                    Optional<UserCoupon> userCouponOptional = userCouponRepository.findById(userCouponId);
-                    if (userCouponOptional.isPresent()) {
-                        UserCoupon userCoupon = userCouponOptional.get();
-                        Coupon coupon = userCoupon.getCoupon();
-                        item.couponDiscount(coupon.getDiscountRate());
-                        userCoupon.use();
-                    }
-                });
+                .forEach(this::discountByCoupon);
 
         // 실제 결제금액 산정
         newOrder.calculateRealPayPrice();
@@ -79,12 +70,19 @@ public class OrderService {
 
         // 주문 정보 저장 시, 결제정보도 같이 저장한다.
         payHistoryRepository.save(
-                new PayHistory(
+                PayHistory.create(
                         newOrder.getId(), orderRequest.getPayType(), orderRequest.getTid(), newOrder.getRealPayPrice()
                 )
         );
 
         return OrderResponse.of(newOrder);
+    }
+
+    private void discountByCoupon(OrderItem item) {
+        UserCoupon userCoupon = userCouponRepository.findById(item.getUsedUserCouponId()).orElseThrow();
+
+        item.couponDiscount(userCoupon.ofDiscountRate());
+        userCoupon.use();
     }
 
     private List<OrderItem> getOrderItems(OrderRequest orderRequest) {
