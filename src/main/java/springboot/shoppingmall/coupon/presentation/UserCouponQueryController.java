@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
 import springboot.shoppingmall.coupon.application.CouponQueryDto;
+import springboot.shoppingmall.coupon.application.UsableCouponDto;
 import springboot.shoppingmall.coupon.application.UserCouponQueryService;
 import springboot.shoppingmall.coupon.domain.UserCouponQueryDto;
 import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
@@ -35,11 +36,11 @@ public class UserCouponQueryController {
     }
 
     @GetMapping("/order/coupons")
-    public ResponseEntity<List<CouponQueryResponse>> findUsableCouponList(@AuthenticationStrategy AuthorizedUser user,
-                                                                           @RequestParam("partnersId") Long partnersId) {
-        List<CouponQueryDto> coupons = queryService.findUsableCouponList(user.getId(), partnersId);
-        List<CouponQueryResponse> responses = coupons.stream()
-                .map(CouponQueryResponse::of)
+    public ResponseEntity<List<UsableCouponResponse>> findUsableCouponList(@AuthenticationStrategy AuthorizedUser user,
+                                                                          @RequestParam("partnersId") Long partnersId) {
+        List<UsableCouponDto> usableCouponList = queryService.findUsableCouponList(user.getId(), partnersId);
+        List<UsableCouponResponse> responses = usableCouponList.stream()
+                .map(UsableCouponResponse::of)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(responses);

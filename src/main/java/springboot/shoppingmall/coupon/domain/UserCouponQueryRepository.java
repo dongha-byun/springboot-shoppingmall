@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
+import springboot.shoppingmall.coupon.application.UsableCouponDto;
 
 @Repository
 public class UserCouponQueryRepository {
@@ -34,8 +35,18 @@ public class UserCouponQueryRepository {
                 ).stream().collect(Collectors.toList());
     }
 
-    public List<Coupon> findUsableCouponList(Long userId, Long partnersId) {
-        return queryFactory.selectFrom(coupon)
+    public List<UsableCouponDto> findUsableCouponList(Long userId, Long partnersId) {
+        return queryFactory.select(
+                Projections.constructor(
+                        UsableCouponDto.class,
+                        userCoupon.id,
+                        coupon.name,
+                        coupon.usingDuration.fromDate,
+                        coupon.usingDuration.toDate,
+                        coupon.discountRate
+                        )
+                )
+                .from(coupon)
                 .join(coupon.userCoupons, userCoupon)
                 .where(
                         userCoupon.userId.eq(userId)

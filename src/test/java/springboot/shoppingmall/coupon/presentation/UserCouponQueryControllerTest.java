@@ -19,6 +19,7 @@ import springboot.shoppingmall.authorization.AuthorizedUser;
 import springboot.shoppingmall.authorization.service.AuthService;
 import springboot.shoppingmall.authorization.service.JwtTokenProvider;
 import springboot.shoppingmall.coupon.application.CouponQueryDto;
+import springboot.shoppingmall.coupon.application.UsableCouponDto;
 import springboot.shoppingmall.coupon.application.UserCouponQueryService;
 import springboot.shoppingmall.coupon.domain.UserCouponQueryDto;
 import springboot.shoppingmall.user.domain.UserGrade;
@@ -65,17 +66,17 @@ class UserCouponQueryControllerTest {
         // given
         when(queryService.findUsableCouponList(anyLong(), anyLong())).thenReturn(
                 Arrays.asList(
-                        new CouponQueryDto(1L, "신규 쿠폰 #1",
+                        new UsableCouponDto(1L, "신규 쿠폰 #1",
                                 LocalDateTime.of(2023, 5, 1, 0, 0),
                                 LocalDateTime.of(2023, 10, 1, 0, 0),
                                 10
                         ),
-                        new CouponQueryDto(2L, "신규 쿠폰 #2",
+                        new UsableCouponDto(2L, "신규 쿠폰 #2",
                                 LocalDateTime.of(2023, 8, 1, 0, 0),
                                 LocalDateTime.of(2023, 11, 1, 0, 0),
                                 6
                         ),
-                        new CouponQueryDto(3L, "신규 쿠폰 #3",
+                        new UsableCouponDto(3L, "신규 쿠폰 #3",
                                 LocalDateTime.of(2023, 3, 1, 0, 0),
                                 LocalDateTime.of(2023, 12, 1, 0, 0),
                                 8

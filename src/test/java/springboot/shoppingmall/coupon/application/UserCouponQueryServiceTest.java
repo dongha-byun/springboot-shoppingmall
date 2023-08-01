@@ -97,10 +97,10 @@ class UserCouponQueryServiceTest {
         coupon3.addUserCoupon(10L);
 
         // when
-        List<CouponQueryDto> coupons = queryService.findUsableCouponList(10L, 1L);
+        List<UsableCouponDto> usableCouponList = queryService.findUsableCouponList(10L, 1L);
 
         // then
-        assertThat(coupons).hasSize(3)
+        assertThat(usableCouponList).hasSize(3)
                 .extracting("name", "discountRate")
                 .containsExactly(
                         tuple("신규 카테고리 오픈 기념 쿠폰 #2", 10),

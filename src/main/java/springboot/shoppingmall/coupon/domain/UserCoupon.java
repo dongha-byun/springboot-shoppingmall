@@ -53,4 +53,8 @@ public class UserCoupon {
     public boolean isUsed() {
         return this.usingDate != null;
     }
+
+    public int ofDiscountRate() {
+        return this.coupon.getDiscountRate();
+    }
 }
