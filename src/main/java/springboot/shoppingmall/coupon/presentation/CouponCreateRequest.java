@@ -16,6 +16,7 @@ import springboot.shoppingmall.utils.DateUtils;
 public class CouponCreateRequest {
     @NotBlank(message = "쿠폰명은 필수 항목 입니다.")
     private String name;
+    @NotBlank(message = "유효기간 시작일은 필수 항목 입니다.")
     private String fromDate;
     private String toDate;
     private String userGrade;

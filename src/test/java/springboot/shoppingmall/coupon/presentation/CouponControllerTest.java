@@ -44,7 +44,7 @@ class CouponControllerTest {
         // given
         CouponCreateRequest createRequest = CouponCreateRequest.builder()
                 .name("")
-                .fromDate("2022-12-20")
+                .fromDate("")
                 .toDate("2023-12-19")
                 .userGrade("NORMAL")
                 .discountRate(10)
@@ -62,6 +62,11 @@ class CouponControllerTest {
                         .content(content))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", is("쿠폰명은 필수 항목 입니다.")));
+                .andExpect(jsonPath("$.errors", hasSize(2)))
+                .andExpect(jsonPath("$.errors[*].message", hasSize(2)))
+                .andExpect(jsonPath("$.errors[*].message", containsInAnyOrder(
+                        "쿠폰명은 필수 항목 입니다.",
+                        "유효기간 시작일은 필수 항목 입니다."
+                )));
     }
 }
