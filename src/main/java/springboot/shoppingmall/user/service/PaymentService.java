@@ -1,6 +1,7 @@
 package springboot.shoppingmall.user.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +9,7 @@ import springboot.shoppingmall.user.domain.Payment;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserFinder;
 import springboot.shoppingmall.user.dto.PaymentRequest;
+import springboot.shoppingmall.user.service.dto.PaymentDto;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -28,8 +30,14 @@ public class PaymentService {
         user.removePayment(paymentId);
     }
 
-    public List<Payment> findAllPayments(Long userId) {
+    public List<PaymentDto> findAllPayments(Long userId) {
         User user = userFinder.findUserById(userId);
-        return user.getPayments();
+        List<Payment> payments = user.getPayments();
+
+        return payments.stream()
+                .map(PaymentDto::of)
+                .collect(Collectors.toList());
     }
+
+
 }

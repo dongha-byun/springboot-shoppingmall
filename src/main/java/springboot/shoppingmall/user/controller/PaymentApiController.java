@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
+import springboot.shoppingmall.user.domain.Payment;
 import springboot.shoppingmall.user.dto.PaymentRequest;
 import springboot.shoppingmall.user.dto.PaymentResponse;
 import springboot.shoppingmall.user.service.PaymentService;
+import springboot.shoppingmall.user.service.dto.PaymentDto;
 
 @RequiredArgsConstructor
 @RestController
@@ -26,7 +28,8 @@ public class PaymentApiController {
     @PostMapping("/payments")
     public ResponseEntity<PaymentResponse> createPayment(@AuthenticationStrategy AuthorizedUser user,
                                                          @RequestBody PaymentRequest paymentRequest) {
-        PaymentResponse paymentResponse = PaymentResponse.of(paymentService.createPayment(user.getId(), paymentRequest));
+        Payment payment = paymentService.createPayment(user.getId(), paymentRequest);
+        PaymentResponse paymentResponse = PaymentResponse.of(PaymentDto.of(payment));
         return ResponseEntity.created(URI.create("/payments/"+paymentResponse.getId())).body(paymentResponse);
     }
 
@@ -39,9 +42,10 @@ public class PaymentApiController {
 
     @GetMapping("/payments")
     public ResponseEntity<List<PaymentResponse>> findAllPayments(@AuthenticationStrategy AuthorizedUser user) {
-        List<PaymentResponse> payments = paymentService.findAllPayments(user.getId()).stream()
+        List<PaymentDto> payments = paymentService.findAllPayments(user.getId());
+        List<PaymentResponse> responses = payments.stream()
                 .map(PaymentResponse::of)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(payments);
+        return ResponseEntity.ok(responses);
     }
 }

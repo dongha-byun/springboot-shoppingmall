@@ -15,6 +15,7 @@ import springboot.shoppingmall.user.domain.Payment;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserRepository;
 import springboot.shoppingmall.user.dto.PaymentRequest;
+import springboot.shoppingmall.user.service.dto.PaymentDto;
 
 @Transactional
 @SpringBootTest
@@ -89,15 +90,14 @@ class PaymentServiceTest {
         em.clear();
 
         // when
-        List<Payment> payments = paymentService.findAllPayments(user.getId());
+        List<PaymentDto> allPayments = paymentService.findAllPayments(user.getId());
 
         // then
-        assertThat(payments).hasSize(2);
-        List<Long> paymentIds = payments.stream()
-                .map(Payment::getId).collect(Collectors.toList());
-
-        assertThat(paymentIds).containsExactly(
-                payment1.getId(), payment2.getId()
-        );
+        assertThat(allPayments).hasSize(2)
+                .extracting("id", "cardCompany")
+                .containsExactly(
+                        tuple(payment1.getId(), payment1.getCardCom()),
+                        tuple(payment2.getId(), payment1.getCardCom())
+                );
     }
 }

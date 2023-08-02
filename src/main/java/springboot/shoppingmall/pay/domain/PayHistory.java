@@ -38,4 +38,8 @@ public class PayHistory extends BaseEntity {
         this.tid = tid;
         this.amount = amount;
     }
+
+    public static PayHistory create(Long orderId, String payType, String tid, Integer amount) {
+        return new PayHistory(orderId, payType, tid, amount);
+    }
 }

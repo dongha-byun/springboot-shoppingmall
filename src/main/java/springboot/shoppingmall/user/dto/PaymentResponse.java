@@ -3,7 +3,7 @@ package springboot.shoppingmall.user.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.user.domain.Payment;
+import springboot.shoppingmall.user.service.dto.PaymentDto;
 
 @Getter
 @NoArgsConstructor
@@ -17,8 +17,8 @@ public class PaymentResponse {
     private String cardCompanyName;
     private String payTypeName;
 
-    public static PaymentResponse of(Payment payment) {
-        return new PaymentResponse(payment.getId(), payment.getCardNo1(), payment.getCardNo2(), payment.getCardNo3(),
-                payment.getCardNo4(), payment.getCardCom().getCompanyName(), payment.getType().getTypeName());
+    public static PaymentResponse of(PaymentDto dto) {
+        return new PaymentResponse(dto.getId(), dto.getCardNo1(), dto.getCardNo2(), dto.getCardNo3(),
+                dto.getCardNo4(), dto.getCardCompany().getCompanyName(), dto.getPayType().getTypeName());
     }
 }
