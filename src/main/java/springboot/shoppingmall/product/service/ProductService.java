@@ -13,8 +13,9 @@ import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.providers.domain.Provider;
 import springboot.shoppingmall.providers.domain.ProviderFinder;
 
-@Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Service
 public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryFinder categoryFinder;
