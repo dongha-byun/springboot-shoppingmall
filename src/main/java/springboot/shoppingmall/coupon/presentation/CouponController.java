@@ -6,29 +6,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import springboot.shoppingmall.common.validation.bean.BeanValidation;
 import springboot.shoppingmall.coupon.application.CouponCreateDto;
 import springboot.shoppingmall.coupon.application.CouponService;
-import springboot.shoppingmall.common.validation.bean.BeanValidationErrorResponse;
 import springboot.shoppingmall.common.validation.bean.BeanValidationException;
 import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
 import springboot.shoppingmall.providers.authentication.LoginPartner;
 
 @Slf4j
 @RequiredArgsConstructor
+@BeanValidation
 @RestController
 public class CouponController {
     private final CouponService couponService;
-
-    @ExceptionHandler
-    public ResponseEntity<BeanValidationErrorResponse> beanValidationException(BeanValidationException e) {
-        return ResponseEntity.badRequest().body(
-                new BeanValidationErrorResponse(e.getErrors())
-        );
-    }
 
     @PostMapping("/coupons")
     public ResponseEntity<CouponResponse> create(@LoginPartner AuthorizedPartner partner,

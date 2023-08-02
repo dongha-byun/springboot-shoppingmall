@@ -38,17 +38,11 @@ class CouponControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    @DisplayName("쿠폰 명은 필수 입력값이다.")
+    @DisplayName("쿠폰 명, 유효기간, 지급대상, 할인율 모두 필수로 입력해야 한다.")
     @Test
     void create_coupon_fail_with_no_name() throws Exception {
         // given
-        CouponCreateRequest createRequest = CouponCreateRequest.builder()
-                .name("")
-                .fromDate("")
-                .toDate("2023-12-19")
-                .userGrade("NORMAL")
-                .discountRate(10)
-                .build();
+        CouponCreateRequest createRequest = CouponCreateRequest.builder().build();
         String content = objectMapper.writeValueAsString(createRequest);
 
         when(loginPartnerArgumentResolver.supportsParameter(any())).thenReturn(true);
@@ -62,11 +56,13 @@ class CouponControllerTest {
                         .content(content))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors", hasSize(2)))
-                .andExpect(jsonPath("$.errors[*].message", hasSize(2)))
+                .andExpect(jsonPath("$.errors", hasSize(5)))
                 .andExpect(jsonPath("$.errors[*].message", containsInAnyOrder(
                         "쿠폰명은 필수 항목 입니다.",
-                        "유효기간 시작일은 필수 항목 입니다."
+                        "유효기간 시작일은 필수 항목 입니다.",
+                        "유효기간 종료일은 필수 항목 입니다.",
+                        "지급대상은 필수 항목 입니다.",
+                        "1% 이상 할인율을 책정해야 합니다."
                 )));
     }
 }
