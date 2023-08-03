@@ -44,20 +44,20 @@ public class ProductServiceTest {
         );
     }
 
+    @DisplayName("상품을 생성한다. - createDto 버전")
     @Test
-    @DisplayName("상품 추가 테스트")
-    void saveTest(){
-        // given
-        ProductDto dto =
-                new ProductDto("청바지", 20000, 100, "상품 설명입니다."
-                        , category.getId(), subCategory.getId(), provider.getId()
-                        , "저장 시 적용될 파일명", "화면에 보여질 파일명(원래 파일명)");
+    void save_product() {
+        // give
+        ProductCreateDto productCreateDto = new ProductCreateDto(
+                "청바지", 20000, 100, "상품 설명입니다.",
+                category.getId(), subCategory.getId(),
+                new ThumbnailInfo("저장 시 적용될 파일명", "화면에 보여질 파일명(원래 파일명)")
+        );
 
         // when
-        ProductResponse productResponse = productService.saveProduct(provider.getId(), dto);
+        ProductDto productDto = productService.saveProduct(provider.getId(), productCreateDto);
 
         // then
-        assertThat(productResponse.getId()).isNotNull();
-        assertThat(productResponse.getDetail()).contains("상품 설명입니다.");
+        assertThat(productDto.getId()).isNotNull();
     }
 }

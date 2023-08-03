@@ -4,12 +4,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.category.dto.CategoryResponse;
 import springboot.shoppingmall.providers.domain.Provider;
 
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductResponse {
@@ -32,6 +33,18 @@ public class ProductResponse {
                 product.getName(), product.getPrice(), product.getCount(),
                 CategoryResponse.of(product.getCategory()), CategoryResponse.of(product.getSubCategory()),
                 product.getPartnerId(), null, product.getThumbnail(), product.getDetail(),
+                null, null
+        );
+    }
+
+    public static ProductResponse of(ProductDto dto) {
+        CategoryResponse category = CategoryResponse.of(dto.getCategory());
+        CategoryResponse subCategory = CategoryResponse.of(dto.getSubCategory());
+
+        return new ProductResponse(
+                dto.getId(), dto.getProductCode(), dto.getName(),
+                dto.getPrice(), dto.getCount(), category, subCategory,
+                dto.getPartnersId(), null, dto.getStoredThumbnailName(), dto.getDetail(),
                 null, null
         );
     }

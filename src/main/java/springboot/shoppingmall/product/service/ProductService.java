@@ -23,26 +23,27 @@ public class ProductService {
     private final ProviderFinder providerFinder;
 
     @Transactional
-    public ProductResponse saveProduct(Long partnerId, ProductDto productDto){
-        Category category = categoryFinder.findById(productDto.getCategoryId());
-        Category subCategory = categoryFinder.findById(productDto.getSubCategoryId());
+    public ProductDto saveProduct(Long partnerId, ProductCreateDto createDto){
+        ThumbnailInfo thumbnailInfo = createDto.getThumbnailInfo();
+        Category category = categoryFinder.findById(createDto.getCategoryId());
+        Category subCategory = categoryFinder.findById(createDto.getSubCategoryId());
         Provider provider = providerFinder.findById(partnerId);
 
         Product product = productRepository.save(
                 Product.builder()
-                        .name(productDto.getName())
-                        .price(productDto.getPrice())
-                        .count(productDto.getCount())
+                        .name(createDto.getName())
+                        .price(createDto.getPrice())
+                        .count(createDto.getQuantity())
                         .category(category)
                         .subCategory(subCategory)
                         .partnerId(partnerId)
-                        .storedFileName(productDto.getStoredThumbnailName())
-                        .viewFileName(productDto.getViewThumbnailName())
-                        .detail(productDto.getDetail())
+                        .storedFileName(thumbnailInfo.getStoredFileName())
+                        .viewFileName(thumbnailInfo.getViewFileName())
+                        .detail(createDto.getDetail())
                         .productCode(provider.generateProductCode())
                         .build()
         );
-        return ProductResponse.of(product);
+        return ProductDto.of(product);
     }
 
     public ProductResponse findProduct(Long id){

@@ -5,6 +5,8 @@ import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import springboot.shoppingmall.product.service.ProductCreateDto;
+import springboot.shoppingmall.product.service.ThumbnailInfo;
 
 @Data
 @NoArgsConstructor
@@ -20,10 +22,15 @@ public class ProductRequest implements Serializable{
     private Long subCategoryId;
     private String detail;
 
-    public static ProductDto toDto(ProductRequest productRequest, Long partnerId
-            , String storedThumbnailName, String viewThumbnailName) {
-        return new ProductDto(productRequest.getName(), productRequest.getPrice(), productRequest.getCount()
-                , productRequest.getDetail() , productRequest.getCategoryId(), productRequest.getSubCategoryId()
-                , partnerId, storedThumbnailName, viewThumbnailName);
+    public ProductCreateDto toDto(ThumbnailInfo thumbnailInfo) {
+        return ProductCreateDto.builder()
+                .name(this.name)
+                .price(this.price)
+                .quantity(this.count)
+                .categoryId(this.categoryId)
+                .subCategoryId(this.subCategoryId)
+                .detail(this.detail)
+                .thumbnailInfo(thumbnailInfo)
+                .build();
     }
 }
