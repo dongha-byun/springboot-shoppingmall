@@ -3,6 +3,7 @@ package springboot.shoppingmall.product.infra;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import springboot.shoppingmall.product.controller.ThumbnailFileService;
@@ -11,7 +12,11 @@ import springboot.shoppingmall.product.service.ThumbnailInfo;
 @Component
 public class LocalThumbnailFileService implements ThumbnailFileService {
 
-    private static final String THUMBNAIL_PATH = "/Users/byundongha/byun/spring/file_dir/shopping_upload/image/";
+    @Value("${thumbnail.local.prefix}")
+    private String LOCAL_FILE_PROTOCOL_PREFIX;
+
+    @Value("${thumbnail.local.path}")
+    private String THUMBNAIL_PATH;
 
     @Override
     public ThumbnailInfo save(MultipartFile file) throws IOException {
@@ -28,6 +33,6 @@ public class LocalThumbnailFileService implements ThumbnailFileService {
 
     @Override
     public String getRealFilePath(String fileName) {
-        return "file" + THUMBNAIL_PATH + fileName;
+        return LOCAL_FILE_PROTOCOL_PREFIX + THUMBNAIL_PATH + fileName;
     }
 }

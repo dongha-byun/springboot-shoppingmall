@@ -1,0 +1,4 @@
+thumbnail:
+  local:
+    prefix: file://
+    path: /Users/byundongha/byun/spring/file_dir/shopping_upload/image/

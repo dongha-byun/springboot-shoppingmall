@@ -54,9 +54,4 @@ public class ProductApiController {
         ProductResponse productResponse = productService.findProduct(id);
         return ResponseEntity.ok(productResponse);
     }
-
-    @GetMapping("/thumbnail/{fileName}")
-    public Resource getThumbnail(@PathVariable("fileName") String fileName) throws MalformedURLException {
-        return new UrlResource(thumbnailFileService.getRealFilePath(fileName));
-    }
 }
