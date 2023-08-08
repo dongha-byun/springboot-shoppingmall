@@ -28,26 +28,20 @@ import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
 import springboot.shoppingmall.providers.authentication.LoginPartner;
 
 @Slf4j
-@RestController
 @RequiredArgsConstructor
+@RestController
 public class ProductApiController {
 
     private final ProductService productService;
-    private static final String THUMBNAIL_PATH = "/Users/byundongha/byun/spring/file_dir/shopping_upload/image/";
+    private final ThumbnailFileService thumbnailFileService;
 
     @PostMapping(value = "/products")
     public ResponseEntity<ProductResponse> createProduct(@LoginPartner AuthorizedPartner partner,
                                                          @RequestPart(name = "data") ProductRequest productRequest,
                                                          @RequestPart(name = "file") MultipartFile showImgFile) throws IOException {
-        String storedThumbnailName = "";
-        String viewThumbnailName = "";
-        if(!showImgFile.isEmpty()) {
-            viewThumbnailName = showImgFile.getOriginalFilename();
-            storedThumbnailName = UUID.randomUUID().toString();
-            showImgFile.transferTo(new File(THUMBNAIL_PATH + storedThumbnailName));
-        }
+        ThumbnailInfo thumbnailInfo = thumbnailFileService.save(showImgFile);
 
-        ProductCreateDto productCreateDto = productRequest.toDto(new ThumbnailInfo(storedThumbnailName, viewThumbnailName));
+        ProductCreateDto productCreateDto = productRequest.toDto(thumbnailInfo);
         ProductDto productDto = productService.saveProduct(partner.getId(), productCreateDto);
         ProductResponse response = ProductResponse.of(productDto);
 
@@ -63,6 +57,6 @@ public class ProductApiController {
 
     @GetMapping("/thumbnail/{fileName}")
     public Resource getThumbnail(@PathVariable("fileName") String fileName) throws MalformedURLException {
-        return new UrlResource("file:" + THUMBNAIL_PATH + fileName);
+        return new UrlResource(thumbnailFileService.getRealFilePath(fileName));
     }
 }

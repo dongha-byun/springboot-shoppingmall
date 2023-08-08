@@ -23,10 +23,14 @@ import org.springframework.http.HttpStatus;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.db.DatabaseCleanUtil;
 import springboot.shoppingmall.message.MessageProvider;
+import springboot.shoppingmall.product.configuration.TestFileConfiguration;
 import springboot.shoppingmall.providers.web.ProviderTokenResponse;
 import springboot.shoppingmall.user.dto.UserResponse;
 
-@Import(TestOrderConfig.class)
+@Import({
+        TestFileConfiguration.class,
+        TestOrderConfig.class
+})
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
     @LocalServerPort
