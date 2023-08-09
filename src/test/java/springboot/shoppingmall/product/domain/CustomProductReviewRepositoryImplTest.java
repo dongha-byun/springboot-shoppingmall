@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,27 +53,35 @@ class CustomProductReviewRepositoryImplTest {
                 )
         );
 
-        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product, user1.getId(), user1.getLoginId()));
-        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product, user2.getId(), user2.getLoginId()));
+        ProductReview review1 = productReviewRepository.save(
+                ProductReview.builder()
+                        .content("리뷰 입니다.")
+                        .score(4)
+                        .product(product)
+                        .userId(user1.getId())
+                        .writerLoginId(user1.getLoginId())
+                        .build()
+        );
+        ProductReview review2 = productReviewRepository.save(
+                ProductReview.builder()
+                        .content("리뷰 2 입니다.")
+                        .score(5)
+                        .product(product)
+                        .userId(user2.getId())
+                        .writerLoginId(user2.getLoginId())
+                        .build()
+        );
 
         // when
         List<ProductReviewDto> reviewDtos = customProductReviewRepository.findAllProductReview(product.getId());
 
-        List<String> contents = reviewDtos.stream().map(ProductReviewDto::getContent).collect(Collectors.toList());
-        List<String> loginIds = reviewDtos.stream().map(ProductReviewDto::getWriterLoginId).collect(Collectors.toList());
-        List<Long> ids = reviewDtos.stream().map(ProductReviewDto::getId).collect(Collectors.toList());
-
         // then
-        assertThat(reviewDtos).hasSize(2);
-        assertThat(ids).containsExactly(
-                review2.getId(), review1.getId()
-        );
-        assertThat(contents).containsExactly(
-                "리뷰 2 입니다.", "리뷰 입니다."
-        );
-        assertThat(loginIds).containsExactly(
-                user2.getLoginId(), user1.getLoginId()
-        );
+        assertThat(reviewDtos).hasSize(2)
+                .extracting("id", "content", "writerLoginId")
+                .containsExactly(
+                        tuple(review2.getId(), "리뷰 2 입니다.", "user2"),
+                        tuple(review1.getId(), "리뷰 입니다.", "user1")
+                );
     }
 
 }

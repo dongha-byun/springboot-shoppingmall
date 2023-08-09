@@ -4,12 +4,17 @@ import static org.assertj.core.api.Assertions.*;
 import static springboot.shoppingmall.product.ProductAcceptanceTest.상품_등록_요청;
 
 import io.restassured.RestAssured;
+import io.restassured.builder.MultiPartSpecBuilder;
+import io.restassured.mapper.ObjectMapperType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.specification.MultiPartSpecification;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.print.attribute.standard.Media;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +32,9 @@ import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
+import springboot.shoppingmall.product.dto.ProductRequest;
 import springboot.shoppingmall.product.dto.ProductResponse;
+import springboot.shoppingmall.product.dto.ProductReviewRequest;
 import springboot.shoppingmall.product.dto.ProductReviewResponse;
 import springboot.shoppingmall.product.dto.ProductUserReviewResponse;
 import springboot.shoppingmall.user.domain.Delivery;
@@ -278,7 +285,37 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         assertThat(내가_작성한_리뷰_목록_조회_결과.jsonPath().getList("id")).containsExactly(
                 리뷰1.getId().intValue(), 리뷰2.getId().intValue()
         );
+    }
 
+    @Test
+    @DisplayName("리뷰 등록 시, 최대 5장의 이미지를 첨부할 수 있다.")
+    void write_review_with_image() {
+        // given
+        Long orderId = 배송완료_주문.getId();
+        OrderItemResponse orderItem = 배송완료_주문.getItems().get(0);
+        Long orderItemId = orderItem.getId();
+        Long productId = orderItem.getProductId();
+
+        MultiPartSpecification data = getDataOfMultipart("리뷰 입니다.", 3);
+
+        // when
+        ExtractableResponse<Response> 상품_리뷰_등록_결과 = RestAssured.given().log().all()
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .headers(createAuthorizationHeader(로그인정보))
+                .multiPart(data)
+                .multiPart("file", "image1.png", "1".getBytes(StandardCharsets.UTF_8))
+                .multiPart("file", "image2.png", "2".getBytes(StandardCharsets.UTF_8))
+                .multiPart("file", "image3.png", "3".getBytes(StandardCharsets.UTF_8))
+                .multiPart("file", "image4.png", "4".getBytes(StandardCharsets.UTF_8))
+                .multiPart("file", "image5.png", "5".getBytes(StandardCharsets.UTF_8))
+                .when().post("/orders/{orderId}/{orderItemId}/products/{productId}/reviews",
+                        orderId, orderItemId, productId
+                )
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(상품_리뷰_등록_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     private ExtractableResponse<Response> 내가_작성한_리뷰_목록_조회_요청() {
@@ -299,17 +336,16 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 리뷰_작성_요청(OrderResponse order, ProductResponse product, TokenResponse token, String content, int score) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("content", content);
-        params.put("score", score);
-
+    public static ExtractableResponse<Response> 리뷰_작성_요청(
+            OrderResponse order, ProductResponse product, TokenResponse token, String content, int score
+    ) {
         OrderItemResponse orderItem = order.getItems().get(0);
+        MultiPartSpecification data = getDataOfMultipart(content, score);
 
         return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .headers(createAuthorizationHeader(token))
-                .body(params)
+                .multiPart(data)
                 .when().post("/orders/{orderId}/{orderItemId}/products/{productId}/reviews",
                         order.getId(),
                         orderItem.getId(),
@@ -325,5 +361,16 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
                 .when().get("/products/{id}/reviews", productResponse.getId())
                 .then().log().all()
                 .extract();
+    }
+
+    private static MultiPartSpecification getDataOfMultipart(String content, int score) {
+        ProductReviewRequest productReviewRequest = new ProductReviewRequest(
+                content, score
+        );
+        return new MultiPartSpecBuilder(productReviewRequest, ObjectMapperType.JACKSON_2)
+                .controlName("data")
+                .mimeType(MediaType.APPLICATION_JSON_VALUE)
+                .charset("UTF-8")
+                .build();
     }
 }

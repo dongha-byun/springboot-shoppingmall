@@ -17,6 +17,7 @@ import springboot.shoppingmall.product.dto.ProductReviewDto;
 import springboot.shoppingmall.product.dto.ProductReviewRequest;
 import springboot.shoppingmall.product.dto.ProductReviewResponse;
 import springboot.shoppingmall.product.dto.ProductUserReviewResponse;
+import springboot.shoppingmall.product.service.dto.ProductReviewCreateDto;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -44,23 +45,21 @@ public class ProductReviewService {
 
     @Transactional
     public ProductUserReviewResponse createProductReview(Long userId, String loginId, Long orderItemId, Long productId,
-                                                         ProductReviewRequest productReviewRequest) {
+                                                         ProductReviewCreateDto createDto) {
         orderValidator.validateOrderIsEnd(orderItemId);
 
         Product product = productFinder.findProductById(productId);
-
         if(reviewRepository.existsByUserIdAndProduct(userId, product)) {
             throw new IllegalArgumentException("이미 작성된 리뷰가 있습니다.");
         }
 
         ProductReview productReview = ProductReview.builder()
-                .content(productReviewRequest.getContent())
-                .score(productReviewRequest.getScore())
+                .content(createDto.getContent())
+                .score(createDto.getScore())
                 .product(product)
                 .userId(userId)
                 .writerLoginId(loginId)
                 .build();
-
         ProductReview savedReview = reviewRepository.save(productReview);
 
         // 평점 총합 / 리뷰 갯수 -> 평점 갱신

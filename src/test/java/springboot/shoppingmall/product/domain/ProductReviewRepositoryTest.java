@@ -54,8 +54,24 @@ class ProductReviewRepositoryTest {
                 )
         );
 
-        ProductReview review1 = productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId(), user.getLoginId()));
-        ProductReview review2 = productReviewRepository.save(new ProductReview("리뷰 2 입니다.", 5, product2, user.getId(), user.getLoginId()));
+        ProductReview review1 = productReviewRepository.save(
+                ProductReview.builder()
+                        .content("리뷰 입니다.")
+                        .score(4)
+                        .product(product1)
+                        .userId(user.getId())
+                        .writerLoginId(user.getLoginId())
+                        .build()
+        );
+        ProductReview review2 = productReviewRepository.save(
+                ProductReview.builder()
+                        .content("리뷰 2 입니다.")
+                        .score(5)
+                        .product(product2)
+                        .userId(user.getId())
+                        .writerLoginId(user.getLoginId())
+                        .build()
+        );
 
         // when
         List<ProductReview> reviews = productReviewRepository.findAllByUserId(user.getId());
@@ -83,7 +99,15 @@ class ProductReviewRepositoryTest {
                 )
         );
 
-        productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId(), user.getLoginId()));
+        productReviewRepository.save(
+                ProductReview.builder()
+                        .content("리뷰 입니다.")
+                        .score(4)
+                        .product(product1)
+                        .userId(user.getId())
+                        .writerLoginId(user.getLoginId())
+                        .build()
+        );
 
         // when
         boolean isExists = productReviewRepository.existsByUserIdAndProduct(user.getId(), product1);
@@ -116,7 +140,15 @@ class ProductReviewRepositoryTest {
                 )
         );
 
-        productReviewRepository.save(new ProductReview("리뷰 입니다.", 4, product1, user.getId(), user.getLoginId()));
+        productReviewRepository.save(
+                ProductReview.builder()
+                        .content("리뷰 입니다.")
+                        .score(4)
+                        .product(product1)
+                        .userId(user.getId())
+                        .writerLoginId(user.getLoginId())
+                        .build()
+        );
 
         // when
         boolean isExists = productReviewRepository.existsByUserIdAndProduct(user.getId(), product2);

@@ -77,32 +77,32 @@ class ProductReviewTest {
                 "storedFileName1", "viewFileName1", "상품 설명 입니다.",
                 "test-product-code"
         );
-        ProductReview productReview1 = new ProductReview("리뷰 입니다.", 4, product, user1.getId(), user1.getLoginId());
-        ProductReview productReview2 = new ProductReview("리뷰 2 입니다.", 5, product, user2.getId(), user2.getLoginId());
+
+        ProductReview.builder()
+                .content("리뷰 입니다.")
+                .score(4)
+                .product(product)
+                .userId(user1.getId())
+                .writerLoginId(user1.getLoginId())
+                .build();
+        ProductReview.builder()
+                .content("리뷰 2 입니다.")
+                .score(5)
+                .product(product)
+                .userId(user2.getId())
+                .writerLoginId(user2.getLoginId())
+                .build();
 
         // when
-        List<ProductReview> reviews = product.getReviews().getReviews();
+        ProductReviews productReviews = product.getReviews();
 
         // then
-        assertThat(reviews).hasSize(2);
-
-        List<String> contents = reviews.stream()
-                .map(ProductReview::getContent).collect(Collectors.toList());
-        assertThat(contents).containsExactly(
-                productReview1.getContent(), productReview2.getContent()
-        );
-
-        List<Integer> scores = reviews.stream()
-                .map(ProductReview::getScore).collect(Collectors.toList());
-        assertThat(scores).containsExactly(
-                productReview1.getScore(), productReview2.getScore()
-        );
-
-        List<Long> users = reviews.stream()
-                .map(ProductReview::getUserId).collect(Collectors.toList());
-        assertThat(users).containsExactly(
-                user1.getId(), user2.getId()
-        );
+        assertThat(productReviews.getReviews()).hasSize(2)
+                .extracting("content", "score", "userId")
+                .containsExactly(
+                        tuple("리뷰 입니다.", 4, user1.getId()),
+                        tuple("리뷰 2 입니다.", 5, user2.getId())
+                );
     }
 
     @ParameterizedTest
@@ -120,7 +120,14 @@ class ProductReviewTest {
                 "storedFileName1", "viewFileName1", "상품 설명 입니다.",
                 "test-product-code"
         );
-        ProductReview productReview = new ProductReview("리뷰 등록 합니다.", 3, product, 1L, "writerLoginId");
+        ProductReview productReview =
+                ProductReview.builder()
+                        .content("리뷰 등록 합니다.")
+                        .score(3)
+                        .product(product)
+                        .userId(1L)
+                        .writerLoginId("writerLoginId")
+                        .build();
 
         // when
         boolean isWriter = productReview.isWriter(userId);
