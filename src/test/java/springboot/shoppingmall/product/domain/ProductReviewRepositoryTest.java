@@ -3,6 +3,10 @@ package springboot.shoppingmall.product.domain;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,22 +59,10 @@ class ProductReviewRepositoryTest {
         );
 
         ProductReview review1 = productReviewRepository.save(
-                ProductReview.builder()
-                        .content("리뷰 입니다.")
-                        .score(4)
-                        .product(product1)
-                        .userId(user.getId())
-                        .writerLoginId(user.getLoginId())
-                        .build()
+                createReview("리뷰 입니다.", 4, product1, user)
         );
         ProductReview review2 = productReviewRepository.save(
-                ProductReview.builder()
-                        .content("리뷰 2 입니다.")
-                        .score(5)
-                        .product(product2)
-                        .userId(user.getId())
-                        .writerLoginId(user.getLoginId())
-                        .build()
+                createReview("리뷰 2 입니다.", 5, product2, user)
         );
 
         // when
@@ -100,13 +92,7 @@ class ProductReviewRepositoryTest {
         );
 
         productReviewRepository.save(
-                ProductReview.builder()
-                        .content("리뷰 입니다.")
-                        .score(4)
-                        .product(product1)
-                        .userId(user.getId())
-                        .writerLoginId(user.getLoginId())
-                        .build()
+                createReview("리뷰 입니다.", 4, product1, user)
         );
 
         // when
@@ -141,13 +127,7 @@ class ProductReviewRepositoryTest {
         );
 
         productReviewRepository.save(
-                ProductReview.builder()
-                        .content("리뷰 입니다.")
-                        .score(4)
-                        .product(product1)
-                        .userId(user.getId())
-                        .writerLoginId(user.getLoginId())
-                        .build()
+                createReview("리뷰 입니다.", 4, product1, user)
         );
 
         // when
@@ -155,5 +135,59 @@ class ProductReviewRepositoryTest {
 
         // then
         assertThat(isExists).isFalse();
+    }
+
+    @Test
+    @DisplayName("리뷰 저장 시, 이미지를 첨부할 수 있다.")
+    void save_review_with_images() {
+        // given
+        User user = userRepository.save(new User("사용자1", "user1", "user1!", "010-2222-3333"));
+        Category category = categoryRepository.save(new Category("상위 카테고리"));
+        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
+        Product product = productRepository.save(
+                new Product(
+                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
+                        category, subCategory, 10L,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                        "test-product-code"
+                )
+        );
+
+        // when
+        List<ProductReviewImage> images = Arrays.asList(
+                new ProductReviewImage("stored-file-name-1", "view-file-name-1"),
+                new ProductReviewImage("stored-file-name-2", "view-file-name-2"),
+                new ProductReviewImage("stored-file-name-3", "view-file-name-3")
+        );
+        ProductReview savedReview = productReviewRepository.save(
+                createReviewWithImages("리뷰 입니다.", 3, product, user, images)
+        );
+
+        // then
+        assertThat(savedReview.getId()).isNotNull();
+        assertThat(savedReview.getImages()).hasSize(3)
+                .extracting("storedFileName", "viewFileName")
+                .containsExactly(
+                        tuple("stored-file-name-1", "view-file-name-1"),
+                        tuple("stored-file-name-2", "view-file-name-2"),
+                        tuple("stored-file-name-3", "view-file-name-3")
+                );
+    }
+
+    private ProductReview createReview(String content, int score, Product product, User user) {
+        return createReviewWithImages(content, score, product, user, new ArrayList<>());
+    }
+
+    private ProductReview createReviewWithImages(
+            String content, int score, Product product, User user, List<ProductReviewImage> images
+    ) {
+        return ProductReview.builder()
+                .content(content)
+                .score(score)
+                .product(product)
+                .userId(user.getId())
+                .writerLoginId(user.getLoginId())
+                .images(images)
+                .build();
     }
 }
