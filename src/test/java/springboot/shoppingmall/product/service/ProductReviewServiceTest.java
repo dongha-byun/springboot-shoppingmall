@@ -3,6 +3,7 @@ package springboot.shoppingmall.product.service;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
@@ -90,7 +91,7 @@ class ProductReviewServiceTest {
         OrderItem savedOrderItem = endOrder.getItems().get(0);
         ProductReviewCreateDto createDto = new ProductReviewCreateDto("리뷰 등록 합니다.", 3);
         ProductUserReviewResponse response = service.createProductReview(
-                user.getId(), user.getLoginId(), savedOrderItem.getId(), product.getId(), createDto
+                user.getId(), user.getLoginId(), savedOrderItem.getId(), product.getId(), createDto, new ArrayList<>()
         );
 
         // then
@@ -122,11 +123,11 @@ class ProductReviewServiceTest {
 
         ProductReviewCreateDto createDto = new ProductReviewCreateDto("리뷰 등록 합니다.", 3);
         OrderItem savedItem = endOrder.getItems().get(0);
-        service.createProductReview(user.getId(), user.getLoginId(), savedItem.getId(), product.getId(), createDto);
+        service.createProductReview(user.getId(), user.getLoginId(), savedItem.getId(), product.getId(), createDto, new ArrayList<>());
 
         // when & then
         assertThatThrownBy(
-                () -> service.createProductReview(user.getId(), user.getLoginId(), savedItem.getId(), product.getId(), createDto)
+                () -> service.createProductReview(user.getId(), user.getLoginId(), savedItem.getId(), product.getId(), createDto, new ArrayList<>())
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -280,19 +281,19 @@ class ProductReviewServiceTest {
         Order endOrder5 = saveOrder("test-order-code-5", user5, product);
 
         // when & then
-        service.createProductReview(user1.getId(), user1.getLoginId(), endOrder1.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 1", 5));
+        service.createProductReview(user1.getId(), user1.getLoginId(), endOrder1.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 1", 5), new ArrayList<>());
         assertThat(product.getScore()).isEqualTo(5.0);
 
-        service.createProductReview(user2.getId(), user2.getLoginId(), endOrder2.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 2", 4));
+        service.createProductReview(user2.getId(), user2.getLoginId(), endOrder2.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 2", 4), new ArrayList<>());
         assertThat(product.getScore()).isEqualTo(4.5);
 
-        service.createProductReview(user3.getId(), user3.getLoginId(), endOrder3.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 3", 2));
+        service.createProductReview(user3.getId(), user3.getLoginId(), endOrder3.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 3", 2), new ArrayList<>());
         assertThat(product.getScore()).isEqualTo(3.7);
 
-        service.createProductReview(user4.getId(), user4.getLoginId(), endOrder4.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 4", 2));
+        service.createProductReview(user4.getId(), user4.getLoginId(), endOrder4.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 4", 2), new ArrayList<>());
         assertThat(product.getScore()).isEqualTo(3.3);
 
-        service.createProductReview(user5.getId(), user5.getLoginId(), endOrder5.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 5", 4));
+        service.createProductReview(user5.getId(), user5.getLoginId(), endOrder5.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 5", 4), new ArrayList<>());
         assertThat(product.getScore()).isEqualTo(3.4);
     }
 

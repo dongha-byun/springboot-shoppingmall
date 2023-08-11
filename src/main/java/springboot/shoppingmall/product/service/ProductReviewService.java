@@ -12,6 +12,7 @@ import springboot.shoppingmall.order.validator.OrderValidator;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
 import springboot.shoppingmall.product.domain.ProductReview;
+import springboot.shoppingmall.product.domain.ProductReviewImage;
 import springboot.shoppingmall.product.domain.ProductReviewRepository;
 import springboot.shoppingmall.product.dto.ProductReviewDto;
 import springboot.shoppingmall.product.dto.ProductReviewRequest;
@@ -45,13 +46,17 @@ public class ProductReviewService {
 
     @Transactional
     public ProductUserReviewResponse createProductReview(Long userId, String loginId, Long orderItemId, Long productId,
-                                                         ProductReviewCreateDto createDto) {
+                                                         ProductReviewCreateDto createDto, List<ThumbnailInfo> images) {
         orderValidator.validateOrderIsEnd(orderItemId);
 
         Product product = productFinder.findProductById(productId);
         if(reviewRepository.existsByUserIdAndProduct(userId, product)) {
             throw new IllegalArgumentException("이미 작성된 리뷰가 있습니다.");
         }
+        List<ProductReviewImage> reviewImages = images.stream()
+                .map(thumbnailInfo -> new ProductReviewImage(thumbnailInfo.getStoredFileName(),
+                        thumbnailInfo.getViewFileName()))
+                .collect(Collectors.toList());
 
         ProductReview productReview = ProductReview.builder()
                 .content(createDto.getContent())
@@ -59,6 +64,7 @@ public class ProductReviewService {
                 .product(product)
                 .userId(userId)
                 .writerLoginId(loginId)
+                .images(reviewImages)
                 .build();
         ProductReview savedReview = reviewRepository.save(productReview);
 

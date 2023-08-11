@@ -54,7 +54,7 @@ public class ProductReviewApiController {
         List<ThumbnailInfo> reviewImages = thumbnailFileService.save(images);
         ProductReviewCreateDto createDto = reviewRequest.toDto();
         ProductUserReviewResponse reviewResponse =
-                productReviewService.createProductReview(user.getId(), user.getLoginId(), orderItemId, productId, createDto);
+                productReviewService.createProductReview(user.getId(), user.getLoginId(), orderItemId, productId, createDto, reviewImages);
         return ResponseEntity.created(URI.create("/products/" + productId + "/reviews/" + reviewResponse.getId())).body(reviewResponse);
     }
 
