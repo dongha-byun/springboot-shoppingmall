@@ -2,7 +2,7 @@
 spring:
   profiles:
     active: local
-    include: file
+    include: file, authmail
   datasource:
     url: jdbc:h2:tcp://localhost/~/byun/h2/dbfile/h2_214/project/shoppingmall
     username: sa
