@@ -1,16 +1,18 @@
 package springboot.shoppingmall.authorization.domain;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
 public class EmailAuthorizationProcessor {
     private final EmailSender emailSender;
-    private static final String TITLE = "[쇼핑몰 프로젝트] 회원가입 인증번호 발송";
+    @Value("${authorization.mail.title}")
+    private String title;
 
     public void sendAuthorizationMail(String email, String code) {
-        emailSender.send(email, TITLE, makeContent(code));
+        emailSender.send(email, title, makeContent(code));
     }
 
     private String makeContent(String code) {

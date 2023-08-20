@@ -4,6 +4,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import springboot.shoppingmall.authorization.domain.AuthorizationCodeGenerator;
 import springboot.shoppingmall.authorization.domain.EmailAuthorizationCodeStore;
+import springboot.shoppingmall.authorization.domain.EmailSender;
 import springboot.shoppingmall.authorization.domain.MemoryEmailAuthorizationCodeStore;
 
 @TestConfiguration
@@ -19,4 +20,10 @@ public class TestEmailAuthorizationConfig {
         return new MemoryEmailAuthorizationCodeStore();
     }
 
+    @Bean
+    public EmailSender emailSender() {
+        return (email, title, message) -> {
+            // .... 아무것도 안해도 되긴하는데....
+        };
+    }
 }

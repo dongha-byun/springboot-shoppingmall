@@ -1,7 +1,6 @@
 package springboot.shoppingmall.product;
 
 import static org.assertj.core.api.Assertions.*;
-import static springboot.shoppingmall.product.ProductAcceptanceTest.상품_등록_요청;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.MultiPartSpecBuilder;
@@ -10,11 +9,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.MultiPartSpecification;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import javax.print.attribute.standard.Media;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,16 +28,13 @@ import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.product.dto.ProductRequest;
 import springboot.shoppingmall.product.dto.ProductResponse;
 import springboot.shoppingmall.product.dto.ProductReviewRequest;
-import springboot.shoppingmall.product.dto.ProductReviewResponse;
 import springboot.shoppingmall.product.dto.ProductUserReviewResponse;
 import springboot.shoppingmall.user.domain.Delivery;
 import springboot.shoppingmall.user.domain.DeliveryRepository;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserRepository;
-import springboot.shoppingmall.user.dto.UserResponse;
 
 public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
 
@@ -316,6 +309,7 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
 
         // then
         assertThat(상품_리뷰_등록_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(상품_리뷰_등록_결과.jsonPath().getList("images")).hasSize(5);
     }
 
     private ExtractableResponse<Response> 내가_작성한_리뷰_목록_조회_요청() {

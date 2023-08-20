@@ -53,4 +53,23 @@ class EmailAuthorizationServiceTest {
         // 2. 이메일 발송 여부 확인 -> 성공/실패 저장으로
     }
 
+    @Test
+    @DisplayName("입력한 인증번호가 발급된 인증번호와 같으면 이메일 인증에 성공했다고 판단한다.")
+    void check_auth_code() {
+        // 1. 이메일에 대해 인증번호를 발급한다.
+        // 2. 인증코드 비교 결과 확인
+        // given
+        String email = "authTest@test.com";
+        EmailAuthorizationService service = new EmailAuthorizationService(store, processor, codeGenerator);
+
+        Email emailForCreate = new Email(email);
+        service.createCode(emailForCreate);
+
+        // when
+        Email emailForCheck = new Email(email);
+        service.checkCode(emailForCheck, new EmailAuthorizationCode("012345"));
+
+        // then
+        assertThat(emailForCreate).isEqualTo(emailForCheck);
+    }
 }

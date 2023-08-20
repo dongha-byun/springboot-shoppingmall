@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import javax.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ import springboot.shoppingmall.user.domain.UserRepository;
 @Transactional
 @SpringBootTest
 class ProductReviewRepositoryTest {
+
+    @Autowired
+    EntityManager em;
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -163,9 +167,13 @@ class ProductReviewRepositoryTest {
                 createReviewWithImages("리뷰 입니다.", 3, product, user, images)
         );
 
+        em.flush();
+        em.clear();
+
         // then
-        assertThat(savedReview.getId()).isNotNull();
-        assertThat(savedReview.getImages()).hasSize(3)
+        ProductReview findReview = productReviewRepository.findById(savedReview.getId()).orElseThrow();
+        assertThat(findReview.getId()).isNotNull();
+        assertThat(findReview.getImages()).hasSize(3)
                 .extracting("storedFileName", "viewFileName")
                 .containsExactly(
                         tuple("stored-file-name-1", "view-file-name-1"),

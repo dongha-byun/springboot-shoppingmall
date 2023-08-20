@@ -20,6 +20,42 @@ import springboot.shoppingmall.user.dto.UserResponse;
 public class UserAcceptanceTest extends AcceptanceTest {
 
     /**
+     * given 이메일을 입력하고, 인증번호를 발급받는다.
+     * when 입력한 인증번호가 발급받은 인증번호와 일치하면
+     * then 인증에 성공한다.
+     */
+    @Test
+    @DisplayName("회원가입 시, 이메일로 발급받은 인증번호를 입력하면 회원가입을 할 수 있게 된다.")
+    void email_auth_check() {
+        // given
+        String email = "authTest@test.com";
+        Map<String, String> param1 = new HashMap<>();
+        param1.put("email", email);
+        ExtractableResponse<Response> 인증번호_발급_결과 = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(param1)
+                .when().post("/send-authorize-code") // 이메일로 인증번호 발송을 위한 REST API
+                .then().log().all()
+                .extract();
+        assertThat(인증번호_발급_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // when
+        String code = "012345";
+        Map<String, String> param2 = new HashMap<>();
+        param2.put("email", email);
+        param2.put("code", code);
+        ExtractableResponse<Response> 인증번호_확인_결과 = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(param2)
+                .when().post("/check-authorized-code") // 이메일로 발송한 인증번호가 맞는지 확인하기 위한 REST API
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(인증번호_확인_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
      * given 회원가입 정보를 생성하고
      * when 회원가입을 시도하면
      * then 회원가입에 성공한다.
