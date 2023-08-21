@@ -1,6 +1,5 @@
 package springboot.shoppingmall.authorization.domain;
 
-public interface EmailSender {
-
+public interface MailNotifier {
     void send(String email, String title, String message);
 }

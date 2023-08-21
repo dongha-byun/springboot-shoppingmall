@@ -7,12 +7,13 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class EmailAuthorizationProcessor {
-    private final EmailSender emailSender;
-    @Value("${authorization.mail.title}")
+    private final MailNotifier mailNotifier;
+
+    @Value("${authorization.mail.signup.title}")
     private String title;
 
     public void sendAuthorizationMail(String email, String code) {
-        emailSender.send(email, title, makeContent(code));
+        mailNotifier.send(email, title, makeContent(code));
     }
 
     private String makeContent(String code) {
