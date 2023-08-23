@@ -1,5 +1,6 @@
 package springboot.shoppingmall.authorization.controller;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +16,8 @@ public class EmailAuthorizationController {
 
     @PostMapping("/send-authorize-code")
     public ResponseEntity<String> sendAuthorizationCode(@RequestBody AuthorizationMailRequest mailRequest) {
-        EmailAuthorizationCode emailAuthorizationCode = service.createCode(mailRequest.toValue());
+        LocalDateTime now = LocalDateTime.now();
+        EmailAuthorizationCode emailAuthorizationCode = service.createCode(mailRequest.toValue(), now);
         return ResponseEntity.ok().body(emailAuthorizationCode.getValue());
     }
 

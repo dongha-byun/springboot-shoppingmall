@@ -2,6 +2,7 @@ package springboot.shoppingmall.authorization.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +39,30 @@ class MemoryEmailAuthorizationCodeStoreTest {
         // then
         assertThatIllegalArgumentException().isThrownBy(
                 () -> store.getCode(new Email("test@test.com"))
+        );
+    }
+
+    @Test
+    @DisplayName("인증코드를 저장할 때, 인증코드 만료시간도 같이 저장한다. 만료시간은 5분이다.")
+    void save_auth_code_with_expire_time() {
+        // given
+        String emailAddress = "test@test.com";
+        LocalDateTime requestTime = LocalDateTime.of(2023, 8, 20, 15, 0, 0);
+        String authCode = "009344";
+
+        Email email = new Email(emailAddress);
+        EmailAuthorizationCode emailAuthCode = new EmailAuthorizationCode(authCode, requestTime);
+
+        MemoryEmailAuthorizationCodeStore store = new MemoryEmailAuthorizationCodeStore();
+
+        // when
+        store.save(email, emailAuthCode);
+
+        // then
+        EmailAuthorizationCode findAuthCode = store.getCode(email);
+        assertThat(findAuthCode.getValue()).isEqualTo("009344");
+        assertThat(findAuthCode.getExpireTime()).isEqualTo(
+                LocalDateTime.of(2023, 8, 20, 15, 5, 0)
         );
     }
 }

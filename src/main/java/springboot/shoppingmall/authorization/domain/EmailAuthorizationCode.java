@@ -1,5 +1,6 @@
 package springboot.shoppingmall.authorization.domain;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,9 +9,15 @@ import lombok.NoArgsConstructor;
 @Getter
 public class EmailAuthorizationCode {
     private String value;
+    private LocalDateTime expireTime;
 
     public EmailAuthorizationCode(String value) {
         this.value = value;
+    }
+
+    public EmailAuthorizationCode(String value, LocalDateTime requestTime) {
+        this.value = value;
+        this.expireTime = requestTime.plusMinutes(5);
     }
 
     @Override

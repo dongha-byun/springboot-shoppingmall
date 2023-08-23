@@ -28,31 +28,37 @@ public class UserAcceptanceTest extends AcceptanceTest {
     @DisplayName("회원가입 시, 이메일로 발급받은 인증번호를 입력하면 회원가입을 할 수 있게 된다.")
     void email_auth_check() {
         // given
-        String email = "authTest@test.com";
-        Map<String, String> param1 = new HashMap<>();
-        param1.put("email", email);
-        ExtractableResponse<Response> 인증번호_발급_결과 = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(param1)
-                .when().post("/send-authorize-code") // 이메일로 인증번호 발송을 위한 REST API
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> 인증번호_발급_결과 = 인증번호_발급_요청("authTest@test.com");
         assertThat(인증번호_발급_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // when
-        String code = "012345";
+        ExtractableResponse<Response> 인증번호_확인_결과 = 인증번호_확인하기_요청("authTest@test.com", "012345");
+
+        // then
+        assertThat(인증번호_확인_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private ExtractableResponse<Response> 인증번호_확인하기_요청(String email, String code) {
         Map<String, String> param2 = new HashMap<>();
         param2.put("email", email);
         param2.put("code", code);
-        ExtractableResponse<Response> 인증번호_확인_결과 = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(param2)
                 .when().post("/check-authorized-code") // 이메일로 발송한 인증번호가 맞는지 확인하기 위한 REST API
                 .then().log().all()
                 .extract();
+    }
 
-        // then
-        assertThat(인증번호_확인_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+    private ExtractableResponse<Response> 인증번호_발급_요청(String email) {
+        Map<String, String> param1 = new HashMap<>();
+        param1.put("email", email);
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(param1)
+                .when().post("/send-authorize-code") // 이메일로 인증번호 발송을 위한 REST API
+                .then().log().all()
+                .extract();
     }
 
     /**
