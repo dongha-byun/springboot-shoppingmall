@@ -38,6 +38,28 @@ public class UserAcceptanceTest extends AcceptanceTest {
         assertThat(인증번호_확인_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    /**
+     * given: 이메일로 인증번호를 발급받고,
+     * when: 발급받은 인증번호와 다른 인증번호를 입력하면
+     * then: 인증번호가 틀리다는 메세지와 함께 회원가입 절차로 넘어가지 못한다.
+     */
+    @Test
+    @DisplayName("발급된 인증번호와 다른 인증번호를 입력하면, 이메일 인증에 실패한다.")
+    void wrong_auth_code() {
+        // given
+        ExtractableResponse<Response> 인증번호_발급_결과 = 인증번호_발급_요청("test@test.com");
+        assertThat(인증번호_발급_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // when
+        ExtractableResponse<Response> 인증번호_확인하기_결과 = 인증번호_확인하기_요청("test@test.com", "543210");
+
+        // then
+        assertThat(인증번호_확인하기_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(인증번호_확인하기_결과.jsonPath().getString("message")).isEqualTo(
+                "인증번호가 맞지 않습니다."
+        );
+    }
+
     private ExtractableResponse<Response> 인증번호_확인하기_요청(String email, String code) {
         Map<String, String> param2 = new HashMap<>();
         param2.put("email", email);
