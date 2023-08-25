@@ -29,7 +29,6 @@ public class ProductQnaService {
                 .content(productQnaRequest.getContent())
                 .product(product)
                 .writerId(userId)
-                .writerLoginId(loginId)
                 .build());
 
         return ProductQnaResponse.of(productQna);

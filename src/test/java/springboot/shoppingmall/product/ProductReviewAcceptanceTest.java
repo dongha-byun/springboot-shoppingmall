@@ -202,9 +202,6 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         assertThat(리뷰_목록_조회_결과.jsonPath().getList("content")).containsExactly(
                 content2, content1
         );
-        assertThat(리뷰_목록_조회_결과.jsonPath().getList("writerLoginId")).containsExactly(
-                인수테스터2.getLoginId(), 인수테스터1.getLoginId()
-        );
     }
 
     /**
@@ -232,9 +229,6 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         assertThat(상품_정보_조회.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(상품_정보_조회.jsonPath().getList("reviews.id", Long.class)).containsExactly(
                 작성리뷰1.getId(), 작성리뷰2.getId()
-        );
-        assertThat(상품_정보_조회.jsonPath().getList("reviews.writerLoginId", String.class)).containsExactly(
-                인수테스터1.getLoginId(), 인수테스터2.getLoginId()
         );
     }
 

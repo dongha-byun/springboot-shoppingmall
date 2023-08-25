@@ -36,7 +36,7 @@ class UserServiceTest {
     void save_user() {
         // given
         UserCreateDto userCreateDto = new UserCreateDto(
-                "테스터", "tester", "a", "a",
+                "테스터", "tester@test.com", "a", "a",
                 "010-2222-3333", signUpDate
         );
 
@@ -46,7 +46,7 @@ class UserServiceTest {
         // then
         assertAll(
                 () -> assertThat(userResponse.getName()).isEqualTo("테스터"),
-                () -> assertThat(userResponse.getLoginId()).isEqualTo("tester"),
+                () -> assertThat(userResponse.getEmail()).isEqualTo("tester@test.com"),
                 () -> assertThat(userResponse.getTelNo()).isEqualTo("010-2222-3333"),
                 () -> assertThat(userResponse.getSignUpDate()).isEqualTo("2023-05-04")
         );
@@ -72,7 +72,7 @@ class UserServiceTest {
     void findId(){
         // given
         UserCreateDto userCreateDto = new UserCreateDto(
-                "테스터", "tester", "a", "a",
+                "테스터", "tester@test.com", "a", "a",
                 "010-2222-3333", signUpDate
         );
         userService.signUp(userCreateDto);
@@ -81,7 +81,7 @@ class UserServiceTest {
         FindIdResponse response = userService.findId("테스터", "010-2222-3333");
 
         // then
-        assertThat(response.getLoginId()).isEqualTo("te****");
+        assertThat(response.getEmail()).isEqualTo("te*************");
     }
 
     @Test
@@ -89,23 +89,23 @@ class UserServiceTest {
     void findPw(){
         // given
         UserCreateDto userCreateDto = new UserCreateDto(
-                "테스터", "tester", "a", "a",
+                "테스터", "tester@test.com", "a", "a",
                 "010-2222-3333", signUpDate
         );
         userService.signUp(userCreateDto);
 
         // when
-        FindPwResponse response = userService.findPw("테스터", "010-2222-3333", "tester");
+        FindPwResponse response = userService.findPw("테스터", "010-2222-3333", "tester@test.com");
 
         // then
-        assertThat(response.getLoginId()).isEqualTo("tester");
+        assertThat(response.getEmail()).isEqualTo("tester@test.com");
     }
 
     @Test
     @DisplayName("사용자 정보를 변경한다.")
     void editUserTest() {
         // given
-        User user = userRepository.save(new User("사용자1", "user1", "user1!", "010-1111-2222"));
+        User user = userRepository.save(new User("사용자1", "user1@test.com", "user1!", "010-1111-2222"));
 
         // when
         UserEditRequest userEditRequest = new UserEditRequest("user2@", "010-2222-4444");
@@ -114,7 +114,7 @@ class UserServiceTest {
         // then
         User findUser = userRepository.findById(user.getId()).orElseThrow();
         assertThat(findUser.getUserName()).isEqualTo("사용자1");
-        assertThat(findUser.getLoginId()).isEqualTo("user1");
+        assertThat(findUser.getEmail()).isEqualTo("user1@test.com");
         assertThat(findUser.getPassword()).isEqualTo("user2@");
         assertThat(findUser.telNo()).isEqualTo("010-2222-4444");
     }

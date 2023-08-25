@@ -26,7 +26,7 @@ class JwtTokenProviderTest {
     @BeforeEach
     void beforeEach(){
         user = userRepository.save(User.builder()
-                .userName("테스터1").loginId("test1").password("test1!").telNo("010-0000-0000")
+                .userName("테스터1").email("test1@test.com").password("test1!").telNo("010-0000-0000")
                 .build());
 
         jwtTokenProvider = new JwtTokenProvider(new TestJwtTokenExpireDurationStrategy());

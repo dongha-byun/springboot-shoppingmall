@@ -6,6 +6,7 @@ import static springboot.shoppingmall.authorization.LoginAcceptanceTest.*;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -30,12 +31,15 @@ public class UserAcceptanceTest extends AcceptanceTest {
         // given
         ExtractableResponse<Response> 인증번호_발급_결과 = 인증번호_발급_요청("authTest@test.com");
         assertThat(인증번호_발급_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(인증번호_발급_결과.jsonPath().getString("email")).isEqualTo("authTest@test.com");
+        assertThat(인증번호_발급_결과.jsonPath().getString("expireTime")).isNotNull();
 
         // when
         ExtractableResponse<Response> 인증번호_확인_결과 = 인증번호_확인하기_요청("authTest@test.com", "012345");
 
         // then
         assertThat(인증번호_확인_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(인증번호_확인_결과.jsonPath().getString("email")).isEqualTo("authTest@test.com");
     }
 
     /**
@@ -94,14 +98,14 @@ public class UserAcceptanceTest extends AcceptanceTest {
         // given
 
         // when
-        ExtractableResponse<Response> 회원가입_결과 = 회원가입("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
+        ExtractableResponse<Response> 회원가입_결과 = 회원가입("변동하", "dongha@test.com", "dongha1!", "dongha1!", "010-1234-1234");
 
         // then
         assertThat(회원가입_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         UserResponse 회원가입_정보 = 회원가입_결과.as(UserResponse.class);
         assertThat(회원가입_정보.getId()).isNotNull();
         assertThat(회원가입_정보.getName()).isEqualTo("변동하");
-        assertThat(회원가입_정보.getLoginId()).isEqualTo("dongha");
+        assertThat(회원가입_정보.getEmail()).isEqualTo("dongha@test.com");
         assertThat(회원가입_정보.getTelNo()).isEqualTo("010-1234-1234");
     }
 
@@ -114,15 +118,15 @@ public class UserAcceptanceTest extends AcceptanceTest {
     @DisplayName("아이디 조회에 성공한다.")
     void findIdSuccess() {
         // given
-        회원가입("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
+        회원가입("변동하", "dongha@test.com", "dongha1!", "dongha1!", "010-1234-1234");
 
         // when
         ExtractableResponse<Response> response = 아이디_찾기("변동하", "010-1234-1234");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().get("loginId").toString()).isEqualTo(
-                "do****"
+        assertThat(response.jsonPath().get("email").toString()).isEqualTo(
+                "do*************"
         );
     }
 
@@ -135,10 +139,10 @@ public class UserAcceptanceTest extends AcceptanceTest {
     @DisplayName("회원정보 조회에 성공한다.")
     void findPwSuccess() {
         // given
-        회원가입("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
+        회원가입("변동하", "dongha@test.com", "dongha1!", "dongha1!", "010-1234-1234");
 
         // when
-        ExtractableResponse<Response> response = 비밀번호_찾기("변동하", "010-1234-1234","dongha");
+        ExtractableResponse<Response> response = 비밀번호_찾기("변동하", "010-1234-1234","dongha@test.com");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -187,8 +191,8 @@ public class UserAcceptanceTest extends AcceptanceTest {
     @DisplayName("현재 회원등급 / 다음 회원등급이 조회된다.")
     void viewing_user_grade_info() {
         // given
-        회원가입("변동하", "dongha", "dongha1!", "dongha1!", "010-1234-1234");
-        TokenResponse 사용자_로그인 = 로그인("dongha", "dongha1!").as(TokenResponse.class);
+        회원가입("변동하", "dongha@test.com", "dongha1!", "dongha1!", "010-1234-1234");
+        TokenResponse 사용자_로그인 = 로그인("dongha@test.com", "dongha1!").as(TokenResponse.class);
 
         // when
         ExtractableResponse<Response> 회원등급_조회_결과 = 회원등급_조회(사용자_로그인);
@@ -221,11 +225,11 @@ public class UserAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 비밀번호_찾기(String name, String telNo, String loginId) {
+    private ExtractableResponse<Response> 비밀번호_찾기(String name, String telNo, String email) {
         Map<String, String> param = new HashMap<>();
         param.put("name", name);
         param.put("telNo", telNo);
-        param.put("loginId", loginId);
+        param.put("email", email);
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(param)
@@ -234,11 +238,11 @@ public class UserAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 회원가입(String name, String loginId, String password,
+    public static ExtractableResponse<Response> 회원가입(String name, String email, String password,
                                                      String confirmPassword, String telNo) {
         Map<String, String> param = new HashMap<>();
         param.put("name", name);
-        param.put("loginId", loginId);
+        param.put("email", email);
         param.put("password", password);
         param.put("confirmPassword", confirmPassword);
         param.put("telNo", telNo);

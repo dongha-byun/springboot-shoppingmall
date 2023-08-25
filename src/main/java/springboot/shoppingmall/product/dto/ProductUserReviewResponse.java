@@ -1,5 +1,6 @@
 package springboot.shoppingmall.product.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -21,9 +22,12 @@ public class ProductUserReviewResponse {
     private List<ThumbnailInfo> images;
 
     public static ProductUserReviewResponse of(ProductReview review) {
-        List<ThumbnailInfo> images = review.getImages().stream()
-                .map(image -> new ThumbnailInfo(image.getStoredFileName(), image.getViewFileName()))
-                .collect(Collectors.toList());
+        List<ThumbnailInfo> images = new ArrayList<>();
+        if(review.getImages() != null) {
+            images = review.getImages().stream()
+                    .map(image -> new ThumbnailInfo(image.getStoredFileName(), image.getViewFileName()))
+                    .collect(Collectors.toList());
+        }
         return new ProductUserReviewResponse(review.getId(), review.getContent(), review.getScore(),
                 review.getProductName(),
                 DateUtils.toStringOfLocalDateTIme(review.getWriteDate()),

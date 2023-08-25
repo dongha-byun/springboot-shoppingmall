@@ -45,7 +45,7 @@ public class ProductReviewService {
     }
 
     @Transactional
-    public ProductUserReviewResponse createProductReview(Long userId, String loginId, Long orderItemId, Long productId,
+    public ProductUserReviewResponse createProductReview(Long userId, Long orderItemId, Long productId,
                                                          ProductReviewCreateDto createDto, List<ThumbnailInfo> images) {
         orderValidator.validateOrderIsEnd(orderItemId);
 
@@ -63,7 +63,6 @@ public class ProductReviewService {
                 .score(createDto.getScore())
                 .product(product)
                 .userId(userId)
-                .writerLoginId(loginId)
                 .images(reviewImages)
                 .build();
         ProductReview savedReview = reviewRepository.save(productReview);

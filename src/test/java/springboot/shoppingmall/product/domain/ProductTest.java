@@ -20,8 +20,8 @@ public class ProductTest {
                 101L, "stored_file_name", "view_file_name", "상품 설명 입니다.",
                 "test-product-code"
         );
-        ProductQna productQna1 = new ProductQna(1L, "문의 입니다 1", product, user.getId(), user.getLoginId());
-        ProductQna productQna2 = new ProductQna(2L, "문의 입니다 1", product, user.getId(), user.getLoginId());
+        ProductQna productQna1 = new ProductQna(1L, "문의 입니다 1", product, user.getId());
+        ProductQna productQna2 = new ProductQna(2L, "문의 입니다 1", product, user.getId());
 
         // when
         ProductQna findQna1 = product.findQna(1L);

@@ -90,13 +90,13 @@ class PartnersProductQnaRepositoryImplTest {
     void find_partners_product_qna_no_answer() {
         // given
         ProductQna qna1 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 1", product1, writer.getId(), writer.getLoginId())
+                new ProductQna("상품 문의 드립니다. 1", product1, writer.getId())
         );
         ProductQna qna2 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 2", product2, writer.getId(), writer.getLoginId())
+                new ProductQna("상품 문의 드립니다. 2", product2, writer.getId())
         );
         ProductQna qna3 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 3", product3, writer.getId(), writer.getLoginId())
+                new ProductQna("상품 문의 드립니다. 3", product3, writer.getId())
         );
 
         // when
@@ -104,42 +104,13 @@ class PartnersProductQnaRepositoryImplTest {
                 ProductQnaAnswerCompleteType.N);
 
         // then
-        assertThat(qnas).hasSize(3);
-
-        List<Long> ids = qnas.stream()
-                .map(PartnersProductQnaDto::getId)
-                .collect(Collectors.toList());
-        assertThat(ids).containsExactly(
-                qna1.getId(), qna2.getId(), qna3.getId()
-        );
-
-        List<String> writerLoginIds = qnas.stream()
-                .map(PartnersProductQnaDto::getWriterLoginId)
-                .collect(Collectors.toList());
-        assertThat(writerLoginIds).containsExactly(
-                writer.getLoginId(), writer.getLoginId(), writer.getLoginId()
-        );
-
-        List<Boolean> isAnsweredList = qnas.stream()
-                .map(PartnersProductQnaDto::isAnswered)
-                .collect(Collectors.toList());
-        assertThat(isAnsweredList).containsExactly(
-                false, false, false
-        );
-
-        List<String> productNames = qnas.stream()
-                .map(PartnersProductQnaDto::getProductName)
-                .collect(Collectors.toList());
-        assertThat(productNames).containsExactly(
-                product1.getName(), product2.getName(), product3.getName()
-        );
-
-        List<String> imgFileNames = qnas.stream()
-                .map(PartnersProductQnaDto::getImgFileName)
-                .collect(Collectors.toList());
-        assertThat(imgFileNames).containsExactly(
-                product1.getThumbnail(), product2.getThumbnail(), product3.getThumbnail()
-        );
+        assertThat(qnas).hasSize(3)
+                .extracting("id", "isAnswered", "productName", "imgFileName")
+                .containsExactly(
+                        tuple(qna1.getId(), false, product1.getName(), product1.getThumbnail()),
+                        tuple(qna2.getId(), false, product2.getName(), product2.getThumbnail()),
+                        tuple(qna3.getId(), false, product3.getName(), product3.getThumbnail())
+                );
     }
 
     @Test
@@ -147,13 +118,13 @@ class PartnersProductQnaRepositoryImplTest {
     void find_partners_product_qna_has_answer() {
         // given
         ProductQna qna1 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 1", product1, writer.getId(), writer.getLoginId())
+                new ProductQna("상품 문의 드립니다. 1", product1, writer.getId())
         );
         ProductQna qna2 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 2", product2, writer.getId(), writer.getLoginId())
+                new ProductQna("상품 문의 드립니다. 2", product2, writer.getId())
         );
         ProductQna qna3 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 3", product3, writer.getId(), writer.getLoginId())
+                new ProductQna("상품 문의 드립니다. 3", product3, writer.getId())
         );
 
         ProductQnaAnswer answerOfQna1 = answerRepository.save(
@@ -168,35 +139,12 @@ class PartnersProductQnaRepositoryImplTest {
                 partnerId, ProductQnaAnswerCompleteType.Y);
 
         // then
-        assertThat(qnas).hasSize(2);
-
-        List<Long> ids = qnas.stream()
-                .map(PartnersProductQnaDto::getId)
-                .collect(Collectors.toList());
-        assertThat(ids).containsExactly(
-                qna1.getId(), qna3.getId()
-        );
-
-        List<Boolean> isAnsweredList = qnas.stream()
-                .map(PartnersProductQnaDto::isAnswered)
-                .collect(Collectors.toList());
-        assertThat(isAnsweredList).containsExactly(
-                true, true
-        );
-
-        List<String> productNames = qnas.stream()
-                .map(PartnersProductQnaDto::getProductName)
-                .collect(Collectors.toList());
-        assertThat(productNames).containsExactly(
-                product1.getName(), product3.getName()
-        );
-
-        List<String> imgFileNames = qnas.stream()
-                .map(PartnersProductQnaDto::getImgFileName)
-                .collect(Collectors.toList());
-        assertThat(imgFileNames).containsExactly(
-                product1.getThumbnail(), product3.getThumbnail()
-        );
+        assertThat(qnas).hasSize(2)
+                .extracting("id", "isAnswered", "productName", "imgFileName")
+                .containsExactly(
+                        tuple(qna1.getId(), true, product1.getName(), product1.getThumbnail()),
+                        tuple(qna3.getId(), true, product3.getName(), product3.getThumbnail())
+                );
     }
 
     @Test
@@ -204,13 +152,13 @@ class PartnersProductQnaRepositoryImplTest {
     void find_partners_product_qna_all() {
         // given
         ProductQna qna1 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 1", product1, writer.getId(), writer.getLoginId())
+                new ProductQna("상품 문의 드립니다. 1", product1, writer.getId())
         );
         ProductQna qna2 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 2", product2, writer.getId(), writer.getLoginId())
+                new ProductQna("상품 문의 드립니다. 2", product2, writer.getId())
         );
         ProductQna qna3 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 3", product3, writer.getId(), writer.getLoginId())
+                new ProductQna("상품 문의 드립니다. 3", product3, writer.getId())
         );
 
         ProductQnaAnswer answerOfQna1 = answerRepository.save(
@@ -225,34 +173,12 @@ class PartnersProductQnaRepositoryImplTest {
                 partnerId, ProductQnaAnswerCompleteType.ALL);
 
         // then
-        assertThat(qnas).hasSize(3);
-
-        List<Long> ids = qnas.stream()
-                .map(PartnersProductQnaDto::getId)
-                .collect(Collectors.toList());
-        assertThat(ids).containsExactly(
-                qna1.getId(), qna2.getId(), qna3.getId()
-        );
-
-        List<Boolean> isAnsweredList = qnas.stream()
-                .map(PartnersProductQnaDto::isAnswered)
-                .collect(Collectors.toList());
-        assertThat(isAnsweredList).containsExactly(
-                true, false, true
-        );
-
-        List<String> productNames = qnas.stream()
-                .map(PartnersProductQnaDto::getProductName)
-                .collect(Collectors.toList());
-        assertThat(productNames).containsExactly(
-                product1.getName(), product2.getName(), product3.getName()
-        );
-
-        List<String> imgFileNames = qnas.stream()
-                .map(PartnersProductQnaDto::getImgFileName)
-                .collect(Collectors.toList());
-        assertThat(imgFileNames).containsExactly(
-                product1.getThumbnail(), product2.getThumbnail(), product3.getThumbnail()
-        );
+        assertThat(qnas).hasSize(3)
+                .extracting("id", "isAnswered", "productName", "imgFileName")
+                .containsExactly(
+                        tuple(qna1.getId(), true, product1.getName(), product1.getThumbnail()),
+                        tuple(qna2.getId(), false, product2.getName(), product2.getThumbnail()),
+                        tuple(qna3.getId(), true, product3.getName(), product3.getThumbnail())
+                );
     }
 }

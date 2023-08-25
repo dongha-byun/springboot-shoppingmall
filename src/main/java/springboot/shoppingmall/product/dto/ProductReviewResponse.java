@@ -1,6 +1,5 @@
 package springboot.shoppingmall.product.dto;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,15 +14,14 @@ public class ProductReviewResponse {
     private String content;
     private int score;
     private String writeDate;
-    private String writerLoginId;
 
     public static ProductReviewResponse of(ProductReview review) {
         return new ProductReviewResponse(review.getId(), review.getContent(), review.getScore(),
-                DateUtils.toStringOfLocalDateTIme(review.getWriteDate()), review.getWriterLoginId());
+                DateUtils.toStringOfLocalDateTIme(review.getWriteDate()));
     }
 
     public static ProductReviewResponse of(ProductReviewDto dto) {
         return new ProductReviewResponse(dto.getId(), dto.getContent(), dto.getScore(),
-                DateUtils.toStringOfLocalDateTIme(dto.getWriteDate()), dto.getWriterLoginId());
+                DateUtils.toStringOfLocalDateTIme(dto.getWriteDate()));
     }
 }

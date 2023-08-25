@@ -41,7 +41,7 @@ class UserFinderTest {
         User saveUser = userRepository.save(new User("임시사용자1", "tempUser1", "tempUser1!", "010-1234-1234"));
 
         // when
-        User findUser = userFinder.findUserByLoginId(saveUser.getLoginId());
+        User findUser = userFinder.findUserByLoginId(saveUser.getEmail());
 
         // then
         assertThat(findUser).isEqualTo(saveUser);

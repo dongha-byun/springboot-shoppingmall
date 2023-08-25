@@ -46,9 +46,6 @@ public class PartnersProductQnaAcceptanceTest extends AcceptanceProductTest {
         assertThat(문의_목록_조회_결과.jsonPath().getList("data.content")).containsExactly(
                 문의1.getContent(), 문의2.getContent()
         );
-        assertThat(문의_목록_조회_결과.jsonPath().getList("data.writerLoginId")).containsExactly(
-                인수테스터1.getLoginId(), 인수테스터1.getLoginId()
-        );
         assertThat(문의_목록_조회_결과.jsonPath().getList("data.answered")).containsExactly(
                 false, false
         );
@@ -86,9 +83,6 @@ public class PartnersProductQnaAcceptanceTest extends AcceptanceProductTest {
         );
         assertThat(문의_목록_조회_결과.jsonPath().getList("data.content")).containsExactly(
                 문의2.getContent()
-        );
-        assertThat(문의_목록_조회_결과.jsonPath().getList("data.writerLoginId")).containsExactly(
-                인수테스터1.getLoginId()
         );
         assertThat(문의_목록_조회_결과.jsonPath().getList("data.answered")).containsExactly(
                 true

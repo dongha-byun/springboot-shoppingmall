@@ -54,7 +54,7 @@ public class ProductQnaAnswerServiceTest {
         );
         saveUser = userRepository.save(User.builder()
                 .userName("테스터1")
-                .loginId("tester1")
+                .email("tester1@test.com")
                 .password("tester1!")
                 .telNo("010-2222-3333")
                 .build());
@@ -65,7 +65,7 @@ public class ProductQnaAnswerServiceTest {
     void createTest(){
         // given
         ProductQna productQna = productQnaRepository.save(
-                new ProductQna("문의글 작성합니다.", product, saveUser.getId(), saveUser.getLoginId())
+                new ProductQna("문의글 작성합니다.", product, saveUser.getId())
         );
 
         // when

@@ -90,9 +90,6 @@ public class ProductAcceptanceTest extends AcceptanceTest {
         assertThat(상품_정보_조회.jsonPath().getList("qnas.id", Long.class)).containsExactly(
                 문의1.getId(), 문의2.getId()
         );
-        assertThat(상품_정보_조회.jsonPath().getList("qnas.writerLoginId", String.class)).containsExactly(
-                인수테스터1.getLoginId(), 인수테스터1.getLoginId()
-        );
     }
 
     public static ExtractableResponse<Response> 상품_등록_요청_이미지_포함(String productName, int price, int count, Long categoryId, Long subCategoryId) {

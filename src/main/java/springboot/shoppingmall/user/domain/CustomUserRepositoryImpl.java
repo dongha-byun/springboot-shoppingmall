@@ -10,7 +10,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
     private final EntityManager em;
 
     @Override
-    public User findLoginIdByNameAndTelNo(String name, String telNo) {
+    public User findEmailByNameAndTelNo(String name, String telNo) {
         return em.createQuery("select u from User u "
                 + "where 1=1 "
                 + "and u.userName = :userName "
@@ -21,15 +21,15 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
     }
 
     @Override
-    public User findUserByNameAndTelNoAndLoginId(String name, String telNo, String loginId) {
+    public User findUserByNameAndTelNoAndEmail(String name, String telNo, String email) {
         return em.createQuery("select u from User u "
                         + "where 1=1 "
                         + "and u.userName = :userName "
-                        + "and u.loginInfo.loginId = :loginId "
+                        + "and u.loginInfo.email = :email "
                         + "and u.telNo = :telNo", User.class)
                 .setParameter("userName", name)
                 .setParameter("telNo", new TelNo(telNo))
-                .setParameter("loginId", loginId)
+                .setParameter("email", email)
                 .getSingleResult();
     }
 

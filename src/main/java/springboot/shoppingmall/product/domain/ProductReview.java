@@ -49,9 +49,6 @@ public class ProductReview extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "writer_login_id", nullable = false)
-    private String writerLoginId;
-
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
             name = "product_review_images",
@@ -73,16 +70,15 @@ public class ProductReview extends BaseEntity {
     }
 
     @Builder
-    public ProductReview(String content, int score, Product product, Long userId, String writerLoginId,
+    public ProductReview(String content, int score, Product product, Long userId,
                          List<ProductReviewImage> images) {
         this(content, score, images);
-        byUser(userId, writerLoginId);
+        byUser(userId);
         byProduct(product);
     }
 
-    public ProductReview byUser(@NotNull Long userId, @NotNull String writerLoginId) {
+    public ProductReview byUser(@NotNull Long userId) {
         this.userId = userId;
-        this.writerLoginId = writerLoginId;
         return this;
     }
 

@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 public class PartnersProductQnaDto {
     private Long id;
     private String content;
-    private String writerLoginId;
     private Long productId;
     private String productName;
     private String imgFileName;
@@ -19,11 +18,10 @@ public class PartnersProductQnaDto {
     private boolean isAnswered;
 
     @QueryProjection
-    public PartnersProductQnaDto(Long id, String content, String writerLoginId, Long productId, String productName,
+    public PartnersProductQnaDto(Long id, String content, Long productId, String productName,
                                  String imgFileName, LocalDateTime writeDate, boolean isAnswered) {
         this.id = id;
         this.content = content;
-        this.writerLoginId = writerLoginId;
         this.productId = productId;
         this.productName = productName;
         this.imgFileName = imgFileName;

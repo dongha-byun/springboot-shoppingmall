@@ -11,7 +11,7 @@ import springboot.shoppingmall.user.domain.User;
 @Getter
 public class UserCreateDto {
     private String name;
-    private String loginId;
+    private String email;
     private String password;
     private String confirmPassword;
     private String telNo;
@@ -20,7 +20,7 @@ public class UserCreateDto {
     public User toEntity() {
         return User.builder()
                 .userName(name)
-                .loginId(loginId)
+                .email(email)
                 .password(password)
                 .telNo(telNo)
                 .signUpDate(signUpDate)

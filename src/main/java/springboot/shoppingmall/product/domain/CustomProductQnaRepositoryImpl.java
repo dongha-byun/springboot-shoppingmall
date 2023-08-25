@@ -25,7 +25,6 @@ public class CustomProductQnaRepositoryImpl implements CustomProductQnaRepositor
                         productQna.id,
                         productQna.content,
                         productQna.writeDate,
-                        productQna.writerLoginId,
                         new QProductQnaAnswerDto(
                                 productQnaAnswer.id,
                                 productQnaAnswer.answer,

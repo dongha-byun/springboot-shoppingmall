@@ -52,25 +52,18 @@ class CustomProductQnaRepositoryImplTest {
                 )
         );
 
-        ProductQna qna1 = productQnaRepository.save(new ProductQna("문의 드립니다. 1", product, user1.getId(), user1.getLoginId()));
-        ProductQna qna2 = productQnaRepository.save(new ProductQna("문의 드립니다. 2", product, user2.getId(),
-                user2.getLoginId()));
+        ProductQna qna1 = productQnaRepository.save(new ProductQna("문의 드립니다. 1", product, user1.getId()));
+        ProductQna qna2 = productQnaRepository.save(new ProductQna("문의 드립니다. 2", product, user2.getId()));
 
         // when
         List<ProductQnaDto> qnaDtos = customProductQnaRepository.findAllProductQna(product.getId());
-        List<Long> ids = qnaDtos.stream().map(ProductQnaDto::getId).collect(Collectors.toList());
-        List<String> contents = qnaDtos.stream().map(ProductQnaDto::getContent).collect(Collectors.toList());
-        List<String> writerLoginIds = qnaDtos.stream().map(ProductQnaDto::getWriterLoginId).collect(Collectors.toList());
 
         // then
-        assertThat(contents).containsExactly(
-                qna2.getContent(), qna1.getContent()
-        );
-        assertThat(ids).containsExactly(
-                qna2.getId(), qna1.getId()
-        );
-        assertThat(writerLoginIds).containsExactly(
-                user2.getLoginId(), user1.getLoginId()
-        );
+        assertThat(qnaDtos).hasSize(2)
+                .extracting("content", "id")
+                .containsExactly(
+                        tuple("문의 드립니다. 2", qna2.getId()),
+                        tuple("문의 드립니다. 1", qna1.getId())
+                );
     }
 }

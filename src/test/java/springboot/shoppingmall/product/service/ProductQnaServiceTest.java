@@ -52,7 +52,7 @@ class ProductQnaServiceTest {
         );
         saveUser = userRepository.save(User.builder()
                 .userName("테스터1")
-                .loginId("tester1")
+                .email("tester1")
                 .password("tester1!")
                 .telNo("010-2222-3333")
                 .build());
@@ -65,7 +65,7 @@ class ProductQnaServiceTest {
         ProductQnaRequest productQnaRequest = new ProductQnaRequest("제품이 이상헤요.");
 
         // when
-        ProductQnaResponse qna = productQnaService.createQna(saveUser.getId(), saveUser.getLoginId(), product.getId(), productQnaRequest);
+        ProductQnaResponse qna = productQnaService.createQna(saveUser.getId(), saveUser.getEmail(), product.getId(), productQnaRequest);
 
         // then
         assertThat(qna.getId()).isNotNull();
@@ -75,8 +75,8 @@ class ProductQnaServiceTest {
     @DisplayName("상품에 대한 문의 목록을 조회한다.")
     void findQnaAllTest(){
         // given
-        productQnaService.createQna(saveUser.getId(), saveUser.getLoginId(), product.getId(), new ProductQnaRequest("제품이 이상해요 1"));
-        productQnaService.createQna(saveUser.getId(), saveUser.getLoginId(), product.getId(), new ProductQnaRequest("제품이 이상해요 2"));
+        productQnaService.createQna(saveUser.getId(), saveUser.getEmail(), product.getId(), new ProductQnaRequest("제품이 이상해요 1"));
+        productQnaService.createQna(saveUser.getId(), saveUser.getEmail(), product.getId(), new ProductQnaRequest("제품이 이상해요 2"));
 
         // when
         List<ProductQnaResponse> productQnaList = productQnaService.findQnaAllByProduct(product.getId());
@@ -90,7 +90,7 @@ class ProductQnaServiceTest {
     @DisplayName("상품 문의 1건을 조회한다.")
     void findQnaTest(){
         // given
-        ProductQnaResponse qna = productQnaService.createQna(saveUser.getId(), saveUser.getLoginId(),
+        ProductQnaResponse qna = productQnaService.createQna(saveUser.getId(), saveUser.getEmail(),
                 product.getId(),
                 new ProductQnaRequest("제품에 대해 물어볼게 있어요. 1"));
 

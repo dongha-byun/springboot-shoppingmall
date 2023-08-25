@@ -30,7 +30,7 @@ class RefreshTokenRepositoryTest {
         saveUser = userRepository.save(
                 User.builder()
                         .userName("테스터")
-                        .loginId("tester")
+                        .email("tester@test.com")
                         .password("tester1!")
                         .telNo("010-1234-1234")
                         .build()

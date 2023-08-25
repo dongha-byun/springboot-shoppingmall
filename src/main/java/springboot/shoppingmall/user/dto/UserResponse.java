@@ -13,13 +13,13 @@ public class UserResponse {
     private Long id;
     private String name;
     private String telNo;
-    private String loginId;
+    private String email;
     private String signUpDate;
 
     public static UserResponse of(User user) {
         return new UserResponse(
                 user.getId(), user.getUserName(), user.telNo(),
-                user.getLoginId(), DateUtils.toStringOfLocalDateTIme(user.getSignUpDate(), "yyyy-MM-dd")
+                user.getEmail(), DateUtils.toStringOfLocalDateTIme(user.getSignUpDate(), "yyyy-MM-dd")
         );
     }
 }

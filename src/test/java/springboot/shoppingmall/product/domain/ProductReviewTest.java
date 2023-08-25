@@ -29,7 +29,7 @@ class ProductReviewTest {
         ProductReview productReview2 = new ProductReview("리뷰 2 입니다.", 5);
 
         // when
-        ProductReview review1 = productReview1.byProduct(product).byUser(user.getId(), user.getLoginId());
+        ProductReview review1 = productReview1.byProduct(product).byUser(user.getId());
         ProductReview review2 = productReview2.byProduct(product);
 
         // then
@@ -83,14 +83,12 @@ class ProductReviewTest {
                 .score(4)
                 .product(product)
                 .userId(user1.getId())
-                .writerLoginId(user1.getLoginId())
                 .build();
         ProductReview.builder()
                 .content("리뷰 2 입니다.")
                 .score(5)
                 .product(product)
                 .userId(user2.getId())
-                .writerLoginId(user2.getLoginId())
                 .build();
 
         // when
@@ -126,7 +124,6 @@ class ProductReviewTest {
                         .score(3)
                         .product(product)
                         .userId(1L)
-                        .writerLoginId("writerLoginId")
                         .build();
 
         // when

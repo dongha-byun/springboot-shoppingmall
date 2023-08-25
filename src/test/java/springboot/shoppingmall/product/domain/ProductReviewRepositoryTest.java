@@ -194,7 +194,6 @@ class ProductReviewRepositoryTest {
                 .score(score)
                 .product(product)
                 .userId(user.getId())
-                .writerLoginId(user.getLoginId())
                 .images(images)
                 .build();
     }

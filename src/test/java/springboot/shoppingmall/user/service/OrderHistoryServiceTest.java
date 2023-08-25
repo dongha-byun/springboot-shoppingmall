@@ -34,7 +34,7 @@ class OrderHistoryServiceTest {
     void setup(){
         user = User.builder()
                 .userName("사용자")
-                .loginId("user")
+                .email("user@test.com")
                 .password("user1!")
                 .telNo("010-1234-1234")
                 .build();

@@ -102,7 +102,7 @@ class AuthServiceTest {
 
         // then
         assertThat(authorizedUser.getId()).isEqualTo(user.getId());
-        assertThat(authorizedUser.getLoginId()).isEqualTo(user.getLoginId());
+        assertThat(authorizedUser.getEmail()).isEqualTo(user.getEmail());
     }
 
     @Test

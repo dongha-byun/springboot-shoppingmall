@@ -11,16 +11,13 @@ public class ProductQnaDto {
     private Long id;
     private String content;
     private LocalDateTime writeDate;
-    private String writerLoginId;
-
     private ProductQnaAnswerDto answer;
 
     @QueryProjection
-    public ProductQnaDto(Long id, String content, LocalDateTime writeDate, String writerLoginId, ProductQnaAnswerDto answer) {
+    public ProductQnaDto(Long id, String content, LocalDateTime writeDate, ProductQnaAnswerDto answer) {
         this.id = id;
         this.content = content;
         this.writeDate = writeDate;
-        this.writerLoginId = writerLoginId;
         this.answer = answer;
     }
 }

@@ -13,7 +13,7 @@ import springboot.shoppingmall.user.service.dto.UserCreateDto;
 @AllArgsConstructor
 public class SignUpRequest {
     private String name;
-    private String loginId;
+    private String email;
     private String password;
     private String confirmPassword;
     private String telNo;
@@ -21,7 +21,7 @@ public class SignUpRequest {
     public UserCreateDto toDto() {
         return UserCreateDto.builder()
                 .name(name)
-                .loginId(loginId)
+                .email(email)
                 .password(password)
                 .confirmPassword(confirmPassword)
                 .telNo(telNo)

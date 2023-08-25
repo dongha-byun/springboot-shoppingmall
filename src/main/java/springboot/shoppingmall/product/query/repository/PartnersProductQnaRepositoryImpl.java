@@ -3,7 +3,6 @@ package springboot.shoppingmall.product.query.repository;
 import static springboot.shoppingmall.product.domain.QProductQna.*;
 import static springboot.shoppingmall.product.domain.QProductQnaAnswer.*;
 import static springboot.shoppingmall.product.query.ProductQnaAnswerCompleteType.*;
-import static springboot.shoppingmall.user.domain.QUser.*;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -28,7 +27,7 @@ public class PartnersProductQnaRepositoryImpl implements PartnersProductQnaRepos
                                                                  ProductQnaAnswerCompleteType completeType) {
 
         return jpaQueryFactory.select(Projections.constructor(PartnersProductQnaDto.class,
-                        productQna.id, productQna.content, productQna.writerLoginId,
+                        productQna.id, productQna.content,
                         productQna.product.id, productQna.product.name, productQna.product.thumbnail.storedFileName,
                         productQna.writeDate, productQnaAnswer.id.isNotNull()))
                 .from(productQna)

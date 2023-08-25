@@ -13,9 +13,9 @@ public class FindPwResponse {
     private Long userId;
     private String name;
     private String telNo;
-    private String loginId;
+    private String email;
 
     public static FindPwResponse of(User user){
-        return new FindPwResponse(user.getId(), user.getUserName(), user.telNo(), user.getLoginId());
+        return new FindPwResponse(user.getId(), user.getUserName(), user.telNo(), user.getEmail());
     }
 }

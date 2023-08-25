@@ -13,12 +13,13 @@ import springboot.shoppingmall.product.dto.ProductReviewDto;
 import springboot.shoppingmall.product.dto.QProductReviewDto;
 import springboot.shoppingmall.user.domain.QUser;
 
-@RequiredArgsConstructor
 @Repository
 public class CustomProductReviewRepositoryImpl implements CustomProductReviewRepository{
-
-    private final EntityManager em;
     private final JPAQueryFactory jpaQueryFactory;
+
+    public CustomProductReviewRepositoryImpl(EntityManager em) {
+        this.jpaQueryFactory = new JPAQueryFactory(em);
+    }
 
     @Override
     public List<ProductReviewDto> findAllProductReview(Long productId) {
@@ -26,8 +27,7 @@ public class CustomProductReviewRepositoryImpl implements CustomProductReviewRep
                                 productReview.id,
                                 productReview.content,
                                 productReview.score,
-                                productReview.writeDate,
-                                productReview.writerLoginId
+                                productReview.writeDate
                         )
                 ).from(productReview)
                 .orderBy(productReview.writeDate.desc())

@@ -59,7 +59,6 @@ class CustomProductReviewRepositoryImplTest {
                         .score(4)
                         .product(product)
                         .userId(user1.getId())
-                        .writerLoginId(user1.getLoginId())
                         .build()
         );
         ProductReview review2 = productReviewRepository.save(
@@ -68,7 +67,6 @@ class CustomProductReviewRepositoryImplTest {
                         .score(5)
                         .product(product)
                         .userId(user2.getId())
-                        .writerLoginId(user2.getLoginId())
                         .build()
         );
 
@@ -77,10 +75,10 @@ class CustomProductReviewRepositoryImplTest {
 
         // then
         assertThat(reviewDtos).hasSize(2)
-                .extracting("id", "content", "writerLoginId")
+                .extracting("id", "content")
                 .containsExactly(
-                        tuple(review2.getId(), "리뷰 2 입니다.", "user2"),
-                        tuple(review1.getId(), "리뷰 입니다.", "user1")
+                        tuple(review2.getId(), "리뷰 2 입니다."),
+                        tuple(review1.getId(), "리뷰 입니다.")
                 );
     }
 

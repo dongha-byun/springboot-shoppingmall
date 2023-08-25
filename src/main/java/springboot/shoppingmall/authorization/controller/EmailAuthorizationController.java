@@ -3,11 +3,10 @@ package springboot.shoppingmall.authorization.controller;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import springboot.shoppingmall.authorization.domain.EmailAuthorizationCode;
+import springboot.shoppingmall.authorization.service.EmailAuthorizationInfo;
 import springboot.shoppingmall.authorization.service.EmailAuthorizationService;
 
 @RequiredArgsConstructor
@@ -16,15 +15,15 @@ public class EmailAuthorizationController {
     private final EmailAuthorizationService service;
 
     @PostMapping("/send-authorize-code")
-    public ResponseEntity<String> sendAuthorizationCode(@RequestBody AuthorizationMailRequest mailRequest) {
+    public ResponseEntity<EmailAuthorizationResponse> sendAuthorizationCode(@RequestBody AuthorizationMailRequest mailRequest) {
         LocalDateTime now = LocalDateTime.now();
-        EmailAuthorizationCode emailAuthorizationCode = service.createCode(mailRequest.toValue(), now);
-        return ResponseEntity.ok().body(emailAuthorizationCode.getValue());
+        EmailAuthorizationInfo authorizationInfo = service.createCode(mailRequest.toValue(), now);
+        return ResponseEntity.ok().body(EmailAuthorizationResponse.of(authorizationInfo));
     }
 
     @PostMapping("/check-authorized-code")
-    public ResponseEntity<String> checkAuthorizedCode(@RequestBody AuthorizationRequest authorizationRequest) {
-        service.checkCode(authorizationRequest.getEmailValue(), authorizationRequest.getCodeValue());
-        return ResponseEntity.ok().body("ok");
+    public ResponseEntity<EmailAuthorizationSuccessResponse> checkAuthorizedCode(@RequestBody AuthorizationRequest authorizationRequest) {
+        EmailAuthorizationInfo info = service.checkCode(authorizationRequest.getEmailValue(), authorizationRequest.getCodeValue());
+        return ResponseEntity.ok().body(EmailAuthorizationSuccessResponse.of(info));
     }
 }

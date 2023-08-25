@@ -13,14 +13,12 @@ public class ProductReviewDto {
     private String content;
     private int score;
     private LocalDateTime writeDate;
-    private String writerLoginId;
 
     @QueryProjection
-    public ProductReviewDto(Long id, String content, int score, LocalDateTime writeDate, String writerLoginId) {
+    public ProductReviewDto(Long id, String content, int score, LocalDateTime writeDate) {
         this.id = id;
         this.content = content;
         this.score = score;
         this.writeDate = writeDate;
-        this.writerLoginId = writerLoginId;
     }
 }

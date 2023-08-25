@@ -38,7 +38,7 @@ public class User extends BaseEntity {
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name="loginId", column = @Column(name = "login_id")),
+            @AttributeOverride(name="email", column = @Column(name = "email")),
             @AttributeOverride(name="password", column = @Column(name = "password")),
             @AttributeOverride(name="loginFailCount", column = @Column(name = "login_fail_count")),
 
@@ -61,30 +61,30 @@ public class User extends BaseEntity {
     @ColumnDefault("false")
     private boolean isLock = false;
 
-    public User(String userName, String loginId, String password, String telNo) {
-        this(userName, loginId, password, telNo, LocalDateTime.now());
+    public User(String userName, String email, String password, String telNo) {
+        this(userName, email, password, telNo, LocalDateTime.now());
     }
 
     @Builder
-    public User(String userName, String loginId, String password, String telNo, LocalDateTime signUpDate) {
-        this(userName, loginId, password, telNo, signUpDate, 0);
+    public User(String userName, String email, String password, String telNo, LocalDateTime signUpDate) {
+        this(userName, email, password, telNo, signUpDate, 0);
     }
 
-    public User(String userName, String loginId, String password, String telNo, LocalDateTime signUpDate,
+    public User(String userName, String email, String password, String telNo, LocalDateTime signUpDate,
                 int loginFailCount) {
-        this(userName, loginId, password, telNo, signUpDate, loginFailCount, false);
+        this(userName, email, password, telNo, signUpDate, loginFailCount, false);
     }
 
-    public User(String userName, String loginId, String password, String telNo, LocalDateTime signUpDate,
+    public User(String userName, String email, String password, String telNo, LocalDateTime signUpDate,
                 int loginFailCount, boolean isLock) {
-        this(userName, loginId, password, telNo, signUpDate, loginFailCount, isLock,
+        this(userName, email, password, telNo, signUpDate, loginFailCount, isLock,
                 new UserGradeInfo(UserGrade.NORMAL, 0, 0));
     }
 
-    public User(String userName, String loginId, String password, String telNo, LocalDateTime signUpDate,
+    public User(String userName, String email, String password, String telNo, LocalDateTime signUpDate,
                 int loginFailCount, boolean isLock, UserGradeInfo userGradeInfo) {
         this.userName = userName;
-        this.loginInfo = new LoginInfo(loginId, password, loginFailCount);
+        this.loginInfo = new LoginInfo(email, password, loginFailCount);
         this.telNo = new TelNo(telNo);
         this.signUpDate = signUpDate;
         this.isLock = isLock;
@@ -153,8 +153,8 @@ public class User extends BaseEntity {
         return this.loginInfo.getPassword();
     }
 
-    public String getLoginId() {
-        return this.loginInfo.getLoginId();
+    public String getEmail() {
+        return this.loginInfo.getEmail();
     }
 
     public int getLoginFailCount() {

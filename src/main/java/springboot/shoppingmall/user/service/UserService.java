@@ -37,13 +37,13 @@ public class UserService {
         return UserResponse.of(user);
     }
     public FindIdResponse findId(String name, String telNo) {
-        User user = userRepository.findLoginIdByNameAndTelNo(name, telNo);
-        String maskingLoginId = MaskingUtil.maskingLoginId(user.getLoginId());
+        User user = userRepository.findEmailByNameAndTelNo(name, telNo);
+        String maskingLoginId = MaskingUtil.maskingLoginId(user.getEmail());
 
         return new FindIdResponse(maskingLoginId);
     }
-    public FindPwResponse findPw(String name, String telNo, String loginId) {
-        User user = userRepository.findUserByNameAndTelNoAndLoginId(name, telNo, loginId);
+    public FindPwResponse findPw(String name, String telNo, String email) {
+        User user = userRepository.findUserByNameAndTelNoAndEmail(name, telNo, email);
         return FindPwResponse.of(user);
     }
 

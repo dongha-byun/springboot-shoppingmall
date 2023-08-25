@@ -32,7 +32,7 @@ class CartApiControllerTest {
 
         // when
         ResponseEntity<List<CartQueryResponse>> response = cartApiController.findAllCarts(
-                new AuthorizedUser(1L)
+                new AuthorizedUser(1L, "test@test.com")
         );
 
         // then

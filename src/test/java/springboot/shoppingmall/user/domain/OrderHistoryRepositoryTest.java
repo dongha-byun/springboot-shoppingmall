@@ -64,7 +64,7 @@ class OrderHistoryRepositoryTest {
     @BeforeEach
     void setup() {
         user = userRepository.save(User.builder().userName("테스터")
-                .loginId("test1")
+                .email("test1@test.com")
                 .password("test1!")
                 .telNo("010-1234-1234")
                 .build());

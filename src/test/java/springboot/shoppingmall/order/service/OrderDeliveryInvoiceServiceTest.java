@@ -55,7 +55,7 @@ class OrderDeliveryInvoiceServiceTest {
     @BeforeEach
     void beforeEach() {
         user = User.builder()
-                .userName("테스터1").loginId("test1").password("test1!").telNo("010-0000-0000")
+                .userName("테스터1").email("test1@test.com").password("test1!").telNo("010-0000-0000")
                 .build();
         delivery = Delivery.builder()
                 .nickName("수령지 1").receiverName("수령인 1").zipCode("10010")

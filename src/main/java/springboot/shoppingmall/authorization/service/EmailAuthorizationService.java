@@ -18,7 +18,7 @@ public class EmailAuthorizationService {
     private final EmailAuthorizationProcessor emailAuthorizationProcessor;
     private final AuthorizationCodeGenerator codeGenerator;
 
-    public EmailAuthorizationCode createCode(Email email, LocalDateTime requestTime) {
+    public EmailAuthorizationInfo createCode(Email email, LocalDateTime requestTime) {
         // 1. create code
         String code = codeGenerator.generate();
 
@@ -30,23 +30,24 @@ public class EmailAuthorizationService {
         // 비동기 처리 필요
         emailAuthorizationProcessor.sendAuthorizationMail(email.getValue(), authCode.getValue());
 
-        return authCode;
+        return EmailAuthorizationInfo.of(email, authCode);
     }
 
-    public void checkCode(Email email, EmailAuthorizationCode code) {
+    public EmailAuthorizationInfo checkCode(Email email, EmailAuthorizationCode code) {
         EmailAuthorizationCode findCode = store.getCode(email);
         if(!findCode.equals(code)) {
             throw new IllegalArgumentException("인증번호가 맞지 않습니다.");
         }
         store.remove(email);
+        return EmailAuthorizationInfo.of(email, code);
     }
 
-    public void checkCode(Email email, EmailAuthorizationCode code, LocalDateTime checkRequestTime) {
+    public EmailAuthorizationInfo checkCode(Email email, EmailAuthorizationCode code, LocalDateTime checkRequestTime) {
         EmailAuthorizationCode findCode = store.getCode(email);
         if(checkRequestTime.isAfter(findCode.getExpireTime())) {
-            createCode(email, checkRequestTime);
-        } else{
-            checkCode(email, code);
+            return createCode(email, checkRequestTime);
         }
+
+        return checkCode(email, code);
     }
 }

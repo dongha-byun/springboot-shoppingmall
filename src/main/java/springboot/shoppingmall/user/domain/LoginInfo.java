@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class LoginInfo {
     @Column(length = 30, unique = true, nullable = false)
-    private String loginId;
+    private String email;
 
     @Column(length = 400, nullable = false)
     private String password;
@@ -19,8 +19,8 @@ public class LoginInfo {
     @Column(name = "login_fail_count")
     private int loginFailCount = 0;
 
-    public LoginInfo(String loginId, String password, int loginFailCount) {
-        this.loginId = loginId;
+    public LoginInfo(String email, String password, int loginFailCount) {
+        this.email = email;
         this.password = password;
         this.loginFailCount = loginFailCount;
     }
@@ -34,6 +34,6 @@ public class LoginInfo {
     }
 
     public LoginInfo changePassword(String password) {
-        return new LoginInfo(this.loginId, password, 0);
+        return new LoginInfo(this.email, password, 0);
     }
 }

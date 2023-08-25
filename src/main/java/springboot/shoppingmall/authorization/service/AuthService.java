@@ -66,7 +66,7 @@ public class AuthService {
 
         Long userId = jwtTokenProvider.getUserId(token);
         User user = userFinder.findUserById(userId);
-        return new AuthorizedUser(user.getId(), user.getLoginId());
+        return new AuthorizedUser(user.getId(), user.getEmail());
     }
 
     public TokenResponse reCreateAccessToken(String token, String accessIp){
