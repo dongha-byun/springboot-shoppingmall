@@ -17,4 +17,15 @@ public class MaskingUtil {
 
         return loginId.replace(maskingTarget, maskingString);
     }
+
+
+    public static String maskingEmail(String email) {
+        String[] separatedEmail = email.split("@");
+        String id = separatedEmail[0];
+        String maskingString = MASKING_WILD_CARD.repeat(id.length() - 2);
+        String maskingTarget = id.substring(2, id.length());
+
+        String maskedId = id.replace(maskingTarget, maskingString);
+        return maskedId.concat("@".concat(separatedEmail[1]));
+    }
 }

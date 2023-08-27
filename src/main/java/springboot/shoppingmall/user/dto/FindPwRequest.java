@@ -11,5 +11,5 @@ public class FindPwRequest {
 
     private String name;
     private String telNo;
-    private String loginId;
+    private String email;
 }

@@ -5,13 +5,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserFinder;
-import springboot.shoppingmall.user.dto.FindIdResponse;
 import springboot.shoppingmall.user.dto.FindPwResponse;
-import springboot.shoppingmall.user.controller.request.SignUpRequest;
 import springboot.shoppingmall.user.dto.UserEditRequest;
 import springboot.shoppingmall.user.dto.UserGradeInfoDto;
 import springboot.shoppingmall.user.dto.UserResponse;
 import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.user.service.dto.FindEmailRequestDto;
+import springboot.shoppingmall.user.service.dto.FindEmailResultDto;
 import springboot.shoppingmall.user.service.dto.UserCreateDto;
 import springboot.shoppingmall.utils.MaskingUtil;
 
@@ -36,12 +36,17 @@ public class UserService {
         User user = userFinder.findUserById(id);
         return UserResponse.of(user);
     }
-    public FindIdResponse findId(String name, String telNo) {
-        User user = userRepository.findEmailByNameAndTelNo(name, telNo);
-        String maskingLoginId = MaskingUtil.maskingLoginId(user.getEmail());
 
-        return new FindIdResponse(maskingLoginId);
+    public FindEmailResultDto findEmail(FindEmailRequestDto findEmailRequestDto) {
+        User user = userRepository.findEmailByNameAndTelNo(
+                findEmailRequestDto.getName(),
+                findEmailRequestDto.getTelNo()
+        );
+        String maskingEmail = MaskingUtil.maskingEmail(user.getEmail());
+
+        return FindEmailResultDto.of(maskingEmail);
     }
+
     public FindPwResponse findPw(String name, String telNo, String email) {
         User user = userRepository.findUserByNameAndTelNoAndEmail(name, telNo, email);
         return FindPwResponse.of(user);

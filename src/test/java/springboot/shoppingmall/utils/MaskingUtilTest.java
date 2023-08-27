@@ -36,4 +36,17 @@ class MaskingUtilTest {
         assertThat(maskingLoginId).isEqualTo(result);
     }
 
+    @Test
+    @DisplayName("이메일은 아이디 앞 2자리 제외 모두 마스킹하고, 주소는 모두 노출시킨다.")
+    void test() {
+        // given
+        String email = "user1@test.com";
+
+        // when
+        String result = MaskingUtil.maskingEmail(email);
+
+        // then
+        assertThat(result).isEqualTo("us***@test.com");
+    }
+
 }

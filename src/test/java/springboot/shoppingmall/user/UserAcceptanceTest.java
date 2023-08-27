@@ -6,7 +6,6 @@ import static springboot.shoppingmall.authorization.LoginAcceptanceTest.*;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -111,22 +110,22 @@ public class UserAcceptanceTest extends AcceptanceTest {
 
     /**
      * given 회원가입을 하고
-     * when 아이디 찾기를 시도하면
-     * then 마스킹된 아이디가 조회된다.
+     * when 이메일 찾기를 시도하면
+     * then 마스킹된 이메일이 조회된다.
      */
     @Test
-    @DisplayName("아이디 조회에 성공한다.")
-    void findIdSuccess() {
+    @DisplayName("이메일 조회에 성공한다.")
+    void find_email_success() {
         // given
         회원가입("변동하", "dongha@test.com", "dongha1!", "dongha1!", "010-1234-1234");
 
         // when
-        ExtractableResponse<Response> response = 아이디_찾기("변동하", "010-1234-1234");
+        ExtractableResponse<Response> response = 이메일_찾기("변동하", "010-1234-1234");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().get("email").toString()).isEqualTo(
-                "do*************"
+                "do****@test.com"
         );
     }
 
@@ -256,14 +255,14 @@ public class UserAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 아이디_찾기(String name, String telNo) {
+    private ExtractableResponse<Response> 이메일_찾기(String name, String telNo) {
         Map<String, String> param = new HashMap<>();
         param.put("name", name);
         param.put("telNo", telNo);
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(param)
-                .when().get("/find-id")
+                .when().get("/find-email")
                 .then().log().all()
                 .extract();
     }

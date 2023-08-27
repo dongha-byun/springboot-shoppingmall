@@ -17,6 +17,8 @@ import springboot.shoppingmall.user.dto.FindPwResponse;
 import springboot.shoppingmall.user.dto.UserEditRequest;
 import springboot.shoppingmall.user.dto.UserGradeInfoDto;
 import springboot.shoppingmall.user.dto.UserResponse;
+import springboot.shoppingmall.user.service.dto.FindEmailRequestDto;
+import springboot.shoppingmall.user.service.dto.FindEmailResultDto;
 import springboot.shoppingmall.user.service.dto.UserCreateDto;
 
 @Transactional
@@ -68,20 +70,19 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("아이디 찾기")
-    void findId(){
+    @DisplayName("이름과 연락처 정보를 통해 마스킹된 이메일을 찾는다.")
+    void find_email() {
         // given
-        UserCreateDto userCreateDto = new UserCreateDto(
-                "테스터", "tester@test.com", "a", "a",
-                "010-2222-3333", signUpDate
+        userRepository.save(
+                new User("사용자1", "user1@test.com", "test1!", "010-2222-3333")
         );
-        userService.signUp(userCreateDto);
 
         // when
-        FindIdResponse response = userService.findId("테스터", "010-2222-3333");
+        FindEmailRequestDto findEmailRequestDto = new FindEmailRequestDto("사용자1", "010-2222-3333");
+        FindEmailResultDto resultDto = userService.findEmail(findEmailRequestDto);
 
         // then
-        assertThat(response.getEmail()).isEqualTo("te*************");
+        assertThat(resultDto.getEmail()).isEqualTo("us***@test.com");
     }
 
     @Test

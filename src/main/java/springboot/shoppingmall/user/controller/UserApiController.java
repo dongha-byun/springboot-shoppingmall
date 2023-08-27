@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
+import springboot.shoppingmall.user.controller.request.FindEmailRequest;
+import springboot.shoppingmall.user.controller.request.FindEmailResultResponse;
 import springboot.shoppingmall.user.dto.FindIdRequest;
 import springboot.shoppingmall.user.dto.FindIdResponse;
 import springboot.shoppingmall.user.dto.FindPwRequest;
@@ -21,6 +23,7 @@ import springboot.shoppingmall.user.dto.UserGradeInfoDto;
 import springboot.shoppingmall.user.dto.UserGradeInfoResponse;
 import springboot.shoppingmall.user.dto.UserResponse;
 import springboot.shoppingmall.user.service.UserService;
+import springboot.shoppingmall.user.service.dto.FindEmailResultDto;
 import springboot.shoppingmall.user.service.dto.UserCreateDto;
 
 @RestController
@@ -36,17 +39,17 @@ public class UserApiController {
         return ResponseEntity.created(URI.create("/user/"+userResponse.getId())).body(userResponse);
     }
 
-    @GetMapping("/find-id")
-    public ResponseEntity<FindIdResponse> findId(@RequestBody FindIdRequest findIdRequest){
-        FindIdResponse response = userService.findId(findIdRequest.getName(), findIdRequest.getTelNo());
+    @GetMapping("/find-email")
+    public ResponseEntity<FindEmailResultResponse> findEmail(@RequestBody FindEmailRequest findEmailRequest){
+        FindEmailResultDto resultDto = userService.findEmail(findEmailRequest.toDto());
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().body(FindEmailResultResponse.of(resultDto));
     }
 
     @GetMapping("/find-pw")
     public ResponseEntity<FindPwResponse> findPw(@RequestBody FindPwRequest findPwRequest){
         FindPwResponse response = userService.findPw(findPwRequest.getName(), findPwRequest.getTelNo(),
-                findPwRequest.getLoginId());
+                findPwRequest.getEmail());
         return ResponseEntity.ok(response);
     }
 
