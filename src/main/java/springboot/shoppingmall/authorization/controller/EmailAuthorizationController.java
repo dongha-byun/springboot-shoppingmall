@@ -1,5 +1,6 @@
 package springboot.shoppingmall.authorization.controller;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +19,15 @@ public class EmailAuthorizationController {
     public ResponseEntity<EmailAuthorizationResponse> sendAuthorizationCode(@RequestBody AuthorizationMailRequest mailRequest) {
         LocalDateTime now = LocalDateTime.now();
         EmailAuthorizationInfo authorizationInfo = service.createCode(mailRequest.toValue(), now);
-        return ResponseEntity.ok().body(EmailAuthorizationResponse.of(authorizationInfo));
+        return ResponseEntity.created(URI.create("http://localhost:3000/authorized-code-form")).body(EmailAuthorizationResponse.of(authorizationInfo));
     }
 
     @PostMapping("/check-authorized-code")
     public ResponseEntity<EmailAuthorizationSuccessResponse> checkAuthorizedCode(@RequestBody AuthorizationRequest authorizationRequest) {
-        EmailAuthorizationInfo info = service.checkCode(authorizationRequest.getEmailValue(), authorizationRequest.getCodeValue());
+        LocalDateTime now = LocalDateTime.now();
+        EmailAuthorizationInfo info = service.checkCode(
+                authorizationRequest.getEmailValue(), authorizationRequest.getCodeValue(), now
+        );
         return ResponseEntity.ok().body(EmailAuthorizationSuccessResponse.of(info));
     }
 }

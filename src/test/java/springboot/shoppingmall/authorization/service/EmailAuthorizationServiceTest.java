@@ -29,7 +29,7 @@ class EmailAuthorizationServiceTest {
 
 
     @Test
-    @DisplayName("인증코드를 생성하고 이메일을 발송한다.")
+    @DisplayName("1.요청 - 인증코드를 생성하고 이메일을 발송한다.")
     void create_code_and_send_mail() {
         // 이메일에 대해 인증코드를 생성하고 인증코드를 포함한 이메일을 발송한다.
         // 1. 인증코드가 잘 저장됐는지,
@@ -52,7 +52,7 @@ class EmailAuthorizationServiceTest {
     }
 
     @Test
-    @DisplayName("입력한 인증번호가 발급된 인증번호와 같으면 이메일 인증에 성공했다고 판단한다.")
+    @DisplayName("2.성공 - 입력한 인증번호가 발급된 인증번호와 같으면 이메일 인증에 성공했다고 판단한다.")
     void check_auth_code() {
         // 1. 이메일에 대해 인증번호를 발급한다.
         // 2. 인증코드 비교 결과 확인
@@ -64,14 +64,15 @@ class EmailAuthorizationServiceTest {
 
         // when
         Email emailForCheck = new Email(email);
-        service.checkCode(emailForCheck, new EmailAuthorizationCode("012345"));
+        LocalDateTime checkRequestTime = requestTime.plusMinutes(1);
+        service.checkCode(emailForCheck, new EmailAuthorizationCode("012345"), checkRequestTime);
 
         // then
         assertThat(emailForCreate).isEqualTo(emailForCheck);
     }
 
     @Test
-    @DisplayName("틀린 인증번호를 입력하면, 틀렸다고 알려준다. 재발급은 하지 않는다.")
+    @DisplayName("3.실패 - 틀린 인증번호를 입력하면, 틀렸다고 알려준다. 재발급은 하지 않는다.")
     void wrong_auth_code() {
         // 1. 인증번호 저장
         // 2. 틀린 인증번호로 체크하도록 함
@@ -87,11 +88,11 @@ class EmailAuthorizationServiceTest {
         EmailAuthorizationCode checkCode = new EmailAuthorizationCode("093440");
         assertThatIllegalArgumentException().isThrownBy(
                 () -> service.checkCode(email, checkCode, requestTime.plusMinutes(1))
-        );
+        ).withMessageContaining("인증번호가 맞지 않습니다.");
     }
 
     @Test
-    @DisplayName("인증번호 확인 시간이 인증번호 발급시간으로 부터 5분이 지나면, 인증번호가 재발급된다.")
+    @DisplayName("4.실패 - 인증번호 확인 시간이 인증번호 발급시간으로 부터 5분이 지나면, 인증번호가 재발급된다.")
     void auth_check_fail_with_expire() {
         // 1. 인증번호 발급
         // 2. 만료시간 이후 요청시간으로 인증번호 검증
