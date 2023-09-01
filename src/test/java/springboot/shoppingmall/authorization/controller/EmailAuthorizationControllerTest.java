@@ -52,7 +52,8 @@ class EmailAuthorizationControllerTest {
         when(emailAuthorizationService.createCode(any(), any())).thenReturn(
                 new EmailAuthorizationInfo(
                         "test@test.com",
-                        LocalDateTime.of(2023, 8, 11, 12, 0, 0)
+                        LocalDateTime.of(2023, 8, 11, 12, 0, 0),
+                        "인증이 완료되었습니다."
                 )
         );
 
@@ -62,7 +63,8 @@ class EmailAuthorizationControllerTest {
                         .content(content))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(redirectedUrl("http://localhost:3000/authorized-code-form"));
+                .andExpect(redirectedUrl("http://localhost:3000/authorized-code-form"))
+                .andExpect(jsonPath("message", is("인증이 완료되었습니다.")));
     }
 
     @Test

@@ -16,10 +16,10 @@ public class EmailAuthorizationController {
     private final EmailAuthorizationService service;
 
     @PostMapping("/send-authorize-code")
-    public ResponseEntity<EmailAuthorizationResponse> sendAuthorizationCode(@RequestBody AuthorizationMailRequest mailRequest) {
+    public ResponseEntity<EmailAuthorizationSuccessResponse> sendAuthorizationCode(@RequestBody AuthorizationMailRequest mailRequest) {
         LocalDateTime now = LocalDateTime.now();
         EmailAuthorizationInfo authorizationInfo = service.createCode(mailRequest.toValue(), now);
-        return ResponseEntity.created(URI.create("http://localhost:3000/authorized-code-form")).body(EmailAuthorizationResponse.of(authorizationInfo));
+        return ResponseEntity.created(URI.create("http://localhost:3000/authorized-code-form")).body(EmailAuthorizationSuccessResponse.of(authorizationInfo));
     }
 
     @PostMapping("/check-authorized-code")

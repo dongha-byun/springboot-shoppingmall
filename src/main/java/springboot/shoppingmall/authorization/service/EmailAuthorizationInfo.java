@@ -13,8 +13,9 @@ import springboot.shoppingmall.authorization.domain.EmailAuthorizationCode;
 public class EmailAuthorizationInfo {
     private String email;
     private LocalDateTime expireTime;
+    private String message;
 
-    public static EmailAuthorizationInfo of(Email email, EmailAuthorizationCode code) {
-        return new EmailAuthorizationInfo(email.getValue(), code.getExpireTime());
+    public static EmailAuthorizationInfo of(Email email, EmailAuthorizationCode code, String message) {
+        return new EmailAuthorizationInfo(email.getValue(), code.getExpireTime(), message);
     }
 }

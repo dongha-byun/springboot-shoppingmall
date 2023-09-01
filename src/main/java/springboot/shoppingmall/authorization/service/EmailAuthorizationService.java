@@ -30,19 +30,34 @@ public class EmailAuthorizationService {
         // 비동기 처리 필요
         emailAuthorizationProcessor.sendAuthorizationMail(email.getValue(), authCode.getValue());
 
-        return EmailAuthorizationInfo.of(email, authCode);
+        return EmailAuthorizationInfo.of(email, authCode, "인증번호가 발송되었습니다.");
     }
 
     public EmailAuthorizationInfo checkCode(Email email, EmailAuthorizationCode code, LocalDateTime checkRequestTime) {
         EmailAuthorizationCode findCode = store.getCode(email);
         if(checkRequestTime.isAfter(findCode.getExpireTime())) {
-            return createCode(email, checkRequestTime);
+            return reCreateCode(email, checkRequestTime);
         }
 
         if(!findCode.equals(code)) {
             throw new IllegalArgumentException("인증번호가 맞지 않습니다.");
         }
         store.remove(email);
-        return EmailAuthorizationInfo.of(email, code);
+        return EmailAuthorizationInfo.of(email, code, "인증이 완료되었습니다.");
+    }
+
+    private EmailAuthorizationInfo reCreateCode(Email email, LocalDateTime requestTime) {
+        // 1. create code
+        String code = codeGenerator.generate();
+
+        // 2. save code
+        EmailAuthorizationCode authCode = new EmailAuthorizationCode(code, requestTime);
+        store.save(email, authCode);
+
+        // 3. send email
+        // 비동기 처리 필요
+        emailAuthorizationProcessor.sendAuthorizationMail(email.getValue(), authCode.getValue());
+
+        return EmailAuthorizationInfo.of(email, authCode, "인증번호가 재발송되었습니다.");
     }
 }

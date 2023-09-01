@@ -10,8 +10,9 @@ import springboot.shoppingmall.authorization.service.EmailAuthorizationInfo;
 @Getter
 public class EmailAuthorizationSuccessResponse {
     private String email;
+    private String message;
 
     public static EmailAuthorizationSuccessResponse of(EmailAuthorizationInfo info) {
-        return new EmailAuthorizationSuccessResponse(info.getEmail());
+        return new EmailAuthorizationSuccessResponse(info.getEmail(), info.getMessage());
     }
 }
