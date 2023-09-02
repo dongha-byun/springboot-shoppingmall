@@ -1,4 +1,4 @@
-package springboot.shoppingmall.authorization.controller;
+package springboot.shoppingmall.userservice.authentication.email.presentation.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

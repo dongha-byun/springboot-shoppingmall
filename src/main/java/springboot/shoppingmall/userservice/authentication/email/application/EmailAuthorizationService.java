@@ -1,14 +1,15 @@
-package springboot.shoppingmall.authorization.service;
+package springboot.shoppingmall.userservice.authentication.email.application;
 
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.authorization.domain.AuthorizationCodeGenerator;
-import springboot.shoppingmall.authorization.domain.Email;
-import springboot.shoppingmall.authorization.domain.EmailAuthorizationCode;
-import springboot.shoppingmall.authorization.domain.EmailAuthorizationCodeStore;
-import springboot.shoppingmall.authorization.domain.EmailAuthorizationProcessor;
+import springboot.shoppingmall.userservice.authentication.email.application.dto.EmailAuthorizationInfo;
+import springboot.shoppingmall.userservice.authentication.email.domain.AuthorizationCodeGenerator;
+import springboot.shoppingmall.userservice.authentication.email.domain.Email;
+import springboot.shoppingmall.userservice.authentication.email.domain.EmailAuthorizationCode;
+import springboot.shoppingmall.userservice.authentication.email.domain.EmailAuthorizationCodeStore;
+import springboot.shoppingmall.userservice.authentication.email.domain.EmailAuthorizationProcessor;
 
 @Transactional
 @RequiredArgsConstructor
@@ -33,19 +34,6 @@ public class EmailAuthorizationService {
         return EmailAuthorizationInfo.of(email, authCode, "인증번호가 발송되었습니다.");
     }
 
-    public EmailAuthorizationInfo checkCode(Email email, EmailAuthorizationCode code, LocalDateTime checkRequestTime) {
-        EmailAuthorizationCode findCode = store.getCode(email);
-        if(checkRequestTime.isAfter(findCode.getExpireTime())) {
-            return reCreateCode(email, checkRequestTime);
-        }
-
-        if(!findCode.equals(code)) {
-            throw new IllegalArgumentException("인증번호가 맞지 않습니다.");
-        }
-        store.remove(email);
-        return EmailAuthorizationInfo.of(email, code, "인증이 완료되었습니다.");
-    }
-
     private EmailAuthorizationInfo reCreateCode(Email email, LocalDateTime requestTime) {
         // 1. create code
         String code = codeGenerator.generate();
@@ -60,4 +48,19 @@ public class EmailAuthorizationService {
 
         return EmailAuthorizationInfo.of(email, authCode, "인증번호가 재발송되었습니다.");
     }
+
+    public EmailAuthorizationInfo checkCode(Email email, EmailAuthorizationCode code, LocalDateTime checkRequestTime) {
+        EmailAuthorizationCode findCode = store.getCode(email);
+        if(checkRequestTime.isAfter(findCode.getExpireTime())) {
+            return reCreateCode(email, checkRequestTime);
+        }
+
+        if(!findCode.equals(code)) {
+            throw new IllegalArgumentException("인증번호가 맞지 않습니다.");
+        }
+        store.remove(email);
+        return EmailAuthorizationInfo.of(email, code, "인증이 완료되었습니다.");
+    }
+
+
 }

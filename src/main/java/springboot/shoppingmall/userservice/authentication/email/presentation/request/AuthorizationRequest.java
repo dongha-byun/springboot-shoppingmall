@@ -1,10 +1,10 @@
-package springboot.shoppingmall.authorization.controller;
+package springboot.shoppingmall.userservice.authentication.email.presentation.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.authorization.domain.Email;
-import springboot.shoppingmall.authorization.domain.EmailAuthorizationCode;
+import springboot.shoppingmall.userservice.authentication.email.domain.Email;
+import springboot.shoppingmall.userservice.authentication.email.domain.EmailAuthorizationCode;
 
 @NoArgsConstructor
 @AllArgsConstructor

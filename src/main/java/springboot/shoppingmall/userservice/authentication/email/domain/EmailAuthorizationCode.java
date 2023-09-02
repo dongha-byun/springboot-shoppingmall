@@ -1,4 +1,4 @@
-package springboot.shoppingmall.authorization.domain;
+package springboot.shoppingmall.userservice.authentication.email.domain;
 
 import java.time.LocalDateTime;
 import java.util.Objects;

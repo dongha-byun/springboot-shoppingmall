@@ -1,4 +1,4 @@
-package springboot.shoppingmall.authorization.domain;
+package springboot.shoppingmall.userservice.authentication.email.domain;
 
 public interface EmailAuthorizationCodeStore {
     void save(Email email, EmailAuthorizationCode code);

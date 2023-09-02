@@ -1,7 +1,7 @@
-package springboot.shoppingmall.authorization.infra;
+package springboot.shoppingmall.userservice.authentication.email.infra;
 
 import org.springframework.stereotype.Component;
-import springboot.shoppingmall.authorization.domain.AuthorizationCodeGenerator;
+import springboot.shoppingmall.userservice.authentication.email.domain.AuthorizationCodeGenerator;
 
 @Component
 public class RandomAuthorizationCodeGenerator implements AuthorizationCodeGenerator {

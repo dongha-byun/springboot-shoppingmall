@@ -1,4 +1,4 @@
-package springboot.shoppingmall.authorization.domain;
+package springboot.shoppingmall.userservice.authentication.email.domain;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

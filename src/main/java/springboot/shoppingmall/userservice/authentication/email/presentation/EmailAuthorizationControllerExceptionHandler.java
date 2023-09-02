@@ -1,10 +1,11 @@
-package springboot.shoppingmall.authorization.controller;
+package springboot.shoppingmall.userservice.authentication.email.presentation;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import springboot.shoppingmall.userservice.authentication.email.presentation.response.AuthorizationFailResponse;
 
-@RestControllerAdvice(basePackages = "springboot.shoppingmall.authorization.controller")
+@RestControllerAdvice(basePackages = "springboot.shoppingmall.userservice.authentication.email.presentation")
 public class EmailAuthorizationControllerExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)

@@ -2,10 +2,11 @@ package springboot.shoppingmall;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import springboot.shoppingmall.authorization.domain.AuthorizationCodeGenerator;
-import springboot.shoppingmall.authorization.domain.EmailAuthorizationCodeStore;
-import springboot.shoppingmall.authorization.domain.MailNotifier;
-import springboot.shoppingmall.authorization.domain.MemoryEmailAuthorizationCodeStore;
+import springboot.shoppingmall.userservice.authentication.email.domain.AuthorizationCodeGenerator;
+import springboot.shoppingmall.userservice.authentication.email.domain.EmailAuthorizationCodeStore;
+import springboot.shoppingmall.userservice.authentication.email.domain.MailNotifier;
+import springboot.shoppingmall.userservice.authentication.email.domain.MemoryEmailAuthorizationCodeStore;
+
 
 @TestConfiguration
 public class TestEmailAuthorizationConfig {

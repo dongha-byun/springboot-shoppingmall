@@ -1,6 +1,7 @@
-package springboot.shoppingmall.authorization.service;
+package springboot.shoppingmall.userservice.authentication.email.application;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
@@ -10,9 +11,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.TestEmailAuthorizationConfig;
-import springboot.shoppingmall.authorization.domain.Email;
-import springboot.shoppingmall.authorization.domain.EmailAuthorizationCode;
-import springboot.shoppingmall.authorization.domain.EmailAuthorizationCodeStore;
+import springboot.shoppingmall.userservice.authentication.email.application.dto.EmailAuthorizationInfo;
+import springboot.shoppingmall.userservice.authentication.email.domain.Email;
+import springboot.shoppingmall.userservice.authentication.email.domain.EmailAuthorizationCode;
+import springboot.shoppingmall.userservice.authentication.email.domain.EmailAuthorizationCodeStore;
 
 @Import({TestEmailAuthorizationConfig.class})
 @Transactional

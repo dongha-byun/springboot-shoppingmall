@@ -1,6 +1,7 @@
-package springboot.shoppingmall.authorization.domain;
+package springboot.shoppingmall.userservice.authentication.email.domain;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;

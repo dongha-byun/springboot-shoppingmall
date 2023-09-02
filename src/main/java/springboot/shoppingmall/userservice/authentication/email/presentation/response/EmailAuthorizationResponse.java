@@ -1,10 +1,10 @@
-package springboot.shoppingmall.authorization.controller;
+package springboot.shoppingmall.userservice.authentication.email.presentation.response;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.authorization.service.EmailAuthorizationInfo;
+import springboot.shoppingmall.userservice.authentication.email.application.dto.EmailAuthorizationInfo;
 
 @AllArgsConstructor
 @NoArgsConstructor

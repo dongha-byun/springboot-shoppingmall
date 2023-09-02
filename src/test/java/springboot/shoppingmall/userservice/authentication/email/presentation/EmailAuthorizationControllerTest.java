@@ -1,10 +1,13 @@
-package springboot.shoppingmall.authorization.controller;
+package springboot.shoppingmall.userservice.authentication.email.presentation;
 
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
@@ -18,9 +21,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import springboot.shoppingmall.TestEmailAuthorizationConfig;
 import springboot.shoppingmall.authorization.service.AuthService;
-import springboot.shoppingmall.authorization.service.EmailAuthorizationInfo;
-import springboot.shoppingmall.authorization.service.EmailAuthorizationService;
 import springboot.shoppingmall.authorization.service.JwtTokenProvider;
+import springboot.shoppingmall.userservice.authentication.email.application.EmailAuthorizationService;
+import springboot.shoppingmall.userservice.authentication.email.application.dto.EmailAuthorizationInfo;
+import springboot.shoppingmall.userservice.authentication.email.presentation.request.AuthorizationMailRequest;
+import springboot.shoppingmall.userservice.authentication.email.presentation.request.AuthorizationRequest;
 
 @Import({TestEmailAuthorizationConfig.class})
 @WebMvcTest(EmailAuthorizationController.class)
