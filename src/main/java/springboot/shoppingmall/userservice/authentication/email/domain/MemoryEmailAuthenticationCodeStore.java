@@ -5,18 +5,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MemoryEmailAuthorizationCodeStore implements EmailAuthorizationCodeStore {
+public class MemoryEmailAuthenticationCodeStore implements EmailAuthenticationCodeStore {
 
-    private static final Map<Email, EmailAuthorizationCode> store = new ConcurrentHashMap<>();
+    private static final Map<Email, EmailAuthenticationCode> store = new ConcurrentHashMap<>();
 
     @Override
-    public void save(Email email, EmailAuthorizationCode code) {
+    public void save(Email email, EmailAuthenticationCode code) {
         store.put(email, code);
     }
 
     @Override
-    public EmailAuthorizationCode getCode(Email email) {
-        EmailAuthorizationCode code = store.get(email);
+    public EmailAuthenticationCode getCode(Email email) {
+        EmailAuthenticationCode code = store.get(email);
         if(code == null) {
             throw new IllegalArgumentException("인증번호가 존재하지 않습니다.");
         }

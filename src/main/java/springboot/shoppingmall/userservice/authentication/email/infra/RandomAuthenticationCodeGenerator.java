@@ -1,10 +1,10 @@
 package springboot.shoppingmall.userservice.authentication.email.infra;
 
 import org.springframework.stereotype.Component;
-import springboot.shoppingmall.userservice.authentication.email.domain.AuthorizationCodeGenerator;
+import springboot.shoppingmall.userservice.authentication.email.domain.AuthenticationCodeGenerator;
 
 @Component
-public class RandomAuthorizationCodeGenerator implements AuthorizationCodeGenerator {
+public class RandomAuthenticationCodeGenerator implements AuthenticationCodeGenerator {
 
     @Override
     public String generate() {

@@ -8,7 +8,7 @@ import springboot.shoppingmall.userservice.authentication.email.domain.Email;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class AuthorizationMailRequest {
+public class AuthenticationMailRequest {
     private String email;
 
     public Email toValue() {

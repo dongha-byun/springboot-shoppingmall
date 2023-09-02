@@ -5,17 +5,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.userservice.authentication.email.domain.Email;
-import springboot.shoppingmall.userservice.authentication.email.domain.EmailAuthorizationCode;
+import springboot.shoppingmall.userservice.authentication.email.domain.EmailAuthenticationCode;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class EmailAuthorizationInfo {
+public class EmailAuthenticationInfo {
     private String email;
     private LocalDateTime expireTime;
     private String message;
 
-    public static EmailAuthorizationInfo of(Email email, EmailAuthorizationCode code, String message) {
-        return new EmailAuthorizationInfo(email.getValue(), code.getExpireTime(), message);
+    public static EmailAuthenticationInfo of(Email email, EmailAuthenticationCode code, String message) {
+        return new EmailAuthenticationInfo(email.getValue(), code.getExpireTime(), message);
     }
 }

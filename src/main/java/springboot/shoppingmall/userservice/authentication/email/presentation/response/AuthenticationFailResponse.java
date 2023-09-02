@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class AuthorizationFailResponse {
+public class AuthenticationFailResponse {
     private String message;
 }

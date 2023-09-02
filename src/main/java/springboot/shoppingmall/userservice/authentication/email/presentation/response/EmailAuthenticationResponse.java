@@ -4,16 +4,16 @@ import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.userservice.authentication.email.application.dto.EmailAuthorizationInfo;
+import springboot.shoppingmall.userservice.authentication.email.application.dto.EmailAuthenticationInfo;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class EmailAuthorizationResponse {
+public class EmailAuthenticationResponse {
     private String email;
     private LocalDateTime expireTime;
 
-    public static EmailAuthorizationResponse of(EmailAuthorizationInfo info) {
-        return new EmailAuthorizationResponse(info.getEmail(), info.getExpireTime());
+    public static EmailAuthenticationResponse of(EmailAuthenticationInfo info) {
+        return new EmailAuthenticationResponse(info.getEmail(), info.getExpireTime());
     }
 }

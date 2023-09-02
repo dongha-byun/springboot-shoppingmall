@@ -1,6 +1,6 @@
 package springboot.shoppingmall.userservice.authentication.email.domain;
 
-public interface AuthorizationCodeGenerator {
+public interface AuthenticationCodeGenerator {
 
     String generate();
 }

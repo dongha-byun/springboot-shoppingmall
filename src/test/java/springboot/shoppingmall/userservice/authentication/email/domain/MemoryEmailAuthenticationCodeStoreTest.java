@@ -7,31 +7,31 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class MemoryEmailAuthorizationCodeStoreTest {
+class MemoryEmailAuthenticationCodeStoreTest {
 
     @Test
     @DisplayName("이메일에 발송된 인증번호를 저장한다.")
     void save_auth_code_of_email() {
         // given
-        MemoryEmailAuthorizationCodeStore store = new MemoryEmailAuthorizationCodeStore();
+        MemoryEmailAuthenticationCodeStore store = new MemoryEmailAuthenticationCodeStore();
         Email email = new Email("test@test.com");
-        EmailAuthorizationCode code = new EmailAuthorizationCode("testCode");
+        EmailAuthenticationCode code = new EmailAuthenticationCode("testCode");
 
         // when
         store.save(email, code);
 
         // then
         assertThat(store.getCode(new Email("test@test.com"))).isNotNull();
-        assertThat(store.getCode(new Email("test@test.com"))).isEqualTo(new EmailAuthorizationCode("testCode"));
+        assertThat(store.getCode(new Email("test@test.com"))).isEqualTo(new EmailAuthenticationCode("testCode"));
     }
 
     @Test
     @DisplayName("인증코드를 제거한다.")
     void remove_auth_code() {
         // given
-        MemoryEmailAuthorizationCodeStore store = new MemoryEmailAuthorizationCodeStore();
+        MemoryEmailAuthenticationCodeStore store = new MemoryEmailAuthenticationCodeStore();
         Email email = new Email("test@test.com");
-        EmailAuthorizationCode code = new EmailAuthorizationCode("testCode");
+        EmailAuthenticationCode code = new EmailAuthenticationCode("testCode");
         store.save(email, code);
 
         // when
@@ -52,15 +52,15 @@ class MemoryEmailAuthorizationCodeStoreTest {
         String authCode = "009344";
 
         Email email = new Email(emailAddress);
-        EmailAuthorizationCode emailAuthCode = new EmailAuthorizationCode(authCode, requestTime);
+        EmailAuthenticationCode emailAuthCode = new EmailAuthenticationCode(authCode, requestTime);
 
-        MemoryEmailAuthorizationCodeStore store = new MemoryEmailAuthorizationCodeStore();
+        MemoryEmailAuthenticationCodeStore store = new MemoryEmailAuthenticationCodeStore();
 
         // when
         store.save(email, emailAuthCode);
 
         // then
-        EmailAuthorizationCode findAuthCode = store.getCode(email);
+        EmailAuthenticationCode findAuthCode = store.getCode(email);
         assertThat(findAuthCode.getValue()).isEqualTo("009344");
         assertThat(findAuthCode.getExpireTime()).isEqualTo(
                 LocalDateTime.of(2023, 8, 20, 15, 5, 0)

@@ -10,22 +10,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.TestEmailAuthorizationConfig;
-import springboot.shoppingmall.userservice.authentication.email.application.dto.EmailAuthorizationInfo;
+import springboot.shoppingmall.TestEmailAuthenticationConfig;
+import springboot.shoppingmall.userservice.authentication.email.application.dto.EmailAuthenticationInfo;
 import springboot.shoppingmall.userservice.authentication.email.domain.Email;
-import springboot.shoppingmall.userservice.authentication.email.domain.EmailAuthorizationCode;
-import springboot.shoppingmall.userservice.authentication.email.domain.EmailAuthorizationCodeStore;
+import springboot.shoppingmall.userservice.authentication.email.domain.EmailAuthenticationCode;
+import springboot.shoppingmall.userservice.authentication.email.domain.EmailAuthenticationCodeStore;
 
-@Import({TestEmailAuthorizationConfig.class})
+@Import({TestEmailAuthenticationConfig.class})
 @Transactional
 @SpringBootTest
-class EmailAuthorizationServiceTest {
+class EmailAuthenticationServiceTest {
 
     @Autowired
-    EmailAuthorizationCodeStore store;
+    EmailAuthenticationCodeStore store;
 
     @Autowired
-    EmailAuthorizationService service;
+    EmailAuthenticationService service;
 
 
     @Test
@@ -40,15 +40,15 @@ class EmailAuthorizationServiceTest {
         LocalDateTime requestTime = LocalDateTime.of(2023, 8, 21, 15, 0, 0);
 
         // when
-        EmailAuthorizationInfo emailAuthorizationInfo = service.createCode(new Email(email), requestTime);
+        EmailAuthenticationInfo emailAuthenticationInfo = service.createCode(new Email(email), requestTime);
 
         // then
         // 1. 인증코드 저장 확인
         LocalDateTime expireTime = LocalDateTime.of(2023, 8, 21, 15, 5, 0);
-        assertThat(emailAuthorizationInfo).isNotNull();
-        assertThat(emailAuthorizationInfo.getEmail()).isEqualTo("test@test.com");
-        assertThat(emailAuthorizationInfo.getExpireTime()).isEqualTo(expireTime);
-        assertThat(emailAuthorizationInfo.getMessage()).isEqualTo("인증번호가 발송되었습니다.");
+        assertThat(emailAuthenticationInfo).isNotNull();
+        assertThat(emailAuthenticationInfo.getEmail()).isEqualTo("test@test.com");
+        assertThat(emailAuthenticationInfo.getExpireTime()).isEqualTo(expireTime);
+        assertThat(emailAuthenticationInfo.getMessage()).isEqualTo("인증번호가 발송되었습니다.");
 
         // 2. 이메일 발송 여부 확인 -> 성공/실패 저장으로
     }
@@ -65,16 +65,16 @@ class EmailAuthorizationServiceTest {
 
         // when
         Email emailForCheck = new Email("authTest@test.com");
-        EmailAuthorizationCode checkCode = new EmailAuthorizationCode("012345");
+        EmailAuthenticationCode checkCode = new EmailAuthenticationCode("012345");
         LocalDateTime checkRequestTime = LocalDateTime.of(2023, 8, 21, 15, 1, 0);
-        EmailAuthorizationInfo emailAuthorizationInfo =
+        EmailAuthenticationInfo emailAuthenticationInfo =
                 service.checkCode(emailForCheck, checkCode, checkRequestTime);
 
 
         // then
-        assertThat(emailAuthorizationInfo).isNotNull();
-        assertThat(emailAuthorizationInfo.getEmail()).isEqualTo("authTest@test.com");
-        assertThat(emailAuthorizationInfo.getMessage()).isEqualTo("인증이 완료되었습니다.");
+        assertThat(emailAuthenticationInfo).isNotNull();
+        assertThat(emailAuthenticationInfo.getEmail()).isEqualTo("authTest@test.com");
+        assertThat(emailAuthenticationInfo.getMessage()).isEqualTo("인증이 완료되었습니다.");
     }
 
     @Test
@@ -87,11 +87,11 @@ class EmailAuthorizationServiceTest {
         // given
         Email email = new Email("test@test.com");
         LocalDateTime requestTime = LocalDateTime.of(2023, 8, 15, 23, 0 ,0);
-        EmailAuthorizationCode authCode = new EmailAuthorizationCode("093444", requestTime);
+        EmailAuthenticationCode authCode = new EmailAuthenticationCode("093444", requestTime);
         store.save(email, authCode);
 
         // when & then
-        EmailAuthorizationCode checkCode = new EmailAuthorizationCode("093440");
+        EmailAuthenticationCode checkCode = new EmailAuthenticationCode("093440");
         assertThatIllegalArgumentException().isThrownBy(
                 () -> service.checkCode(email, checkCode, requestTime.plusMinutes(1))
         ).withMessageContaining("인증번호가 맞지 않습니다.");
@@ -110,22 +110,22 @@ class EmailAuthorizationServiceTest {
         Email email = new Email(mailAddress);
         String authCode = "093344";
         LocalDateTime requestTime = LocalDateTime.of(2023, 8, 20, 21, 0, 0);
-        EmailAuthorizationCode emailAuthCode = new EmailAuthorizationCode(authCode, requestTime);
+        EmailAuthenticationCode emailAuthCode = new EmailAuthenticationCode(authCode, requestTime);
 
         store.save(email, emailAuthCode);
 
         // when
         LocalDateTime checkRequestTime = LocalDateTime.of(2023, 8, 20, 21, 5, 1);
-        EmailAuthorizationInfo emailAuthorizationInfo = service.checkCode(email, emailAuthCode, checkRequestTime);
+        EmailAuthenticationInfo emailAuthenticationInfo = service.checkCode(email, emailAuthCode, checkRequestTime);
 
         // then
-        assertThat(emailAuthorizationInfo.getEmail()).isEqualTo("test@test.com");
-        assertThat(emailAuthorizationInfo.getExpireTime()).isEqualTo(
+        assertThat(emailAuthenticationInfo.getEmail()).isEqualTo("test@test.com");
+        assertThat(emailAuthenticationInfo.getExpireTime()).isEqualTo(
                 LocalDateTime.of(2023, 8, 20, 21, 10, 1)
         );
-        assertThat(emailAuthorizationInfo.getMessage()).isEqualTo("인증번호가 재발송되었습니다.");
+        assertThat(emailAuthenticationInfo.getMessage()).isEqualTo("인증번호가 재발송되었습니다.");
 
-        EmailAuthorizationCode reCreateAuthCode = store.getCode(email);
+        EmailAuthenticationCode reCreateAuthCode = store.getCode(email);
         assertThat(reCreateAuthCode.getValue()).isEqualTo("012345");
         assertThat(reCreateAuthCode.getExpireTime()).isEqualTo(
                 LocalDateTime.of(2023, 8, 20, 21, 10, 1)

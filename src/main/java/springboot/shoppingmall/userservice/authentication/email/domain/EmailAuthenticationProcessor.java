@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class EmailAuthorizationProcessor {
+public class EmailAuthenticationProcessor {
     private final MailNotifier mailNotifier;
 
     @Value("${authorization.mail.signup.title}")

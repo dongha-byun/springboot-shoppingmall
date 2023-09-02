@@ -7,15 +7,15 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Getter
-public class EmailAuthorizationCode {
+public class EmailAuthenticationCode {
     private String value;
     private LocalDateTime expireTime;
 
-    public EmailAuthorizationCode(String value) {
+    public EmailAuthenticationCode(String value) {
         this.value = value;
     }
 
-    public EmailAuthorizationCode(String value, LocalDateTime requestTime) {
+    public EmailAuthenticationCode(String value, LocalDateTime requestTime) {
         this.value = value;
         this.expireTime = requestTime.plusMinutes(5);
     }
@@ -28,7 +28,7 @@ public class EmailAuthorizationCode {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        EmailAuthorizationCode that = (EmailAuthorizationCode) o;
+        EmailAuthenticationCode that = (EmailAuthenticationCode) o;
         return Objects.equals(getValue(), that.getValue());
     }
 

@@ -4,12 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.userservice.authentication.email.domain.Email;
-import springboot.shoppingmall.userservice.authentication.email.domain.EmailAuthorizationCode;
+import springboot.shoppingmall.userservice.authentication.email.domain.EmailAuthenticationCode;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class AuthorizationRequest {
+public class AuthenticationRequest {
     private String email;
     private String code;
 
@@ -17,7 +17,7 @@ public class AuthorizationRequest {
         return new Email(this.email);
     }
 
-    public EmailAuthorizationCode getCodeValue() {
-        return new EmailAuthorizationCode(this.code);
+    public EmailAuthenticationCode getCodeValue() {
+        return new EmailAuthenticationCode(this.code);
     }
 }
