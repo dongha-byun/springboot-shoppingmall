@@ -25,7 +25,7 @@ public class AuthenticationEmailAcceptanceTest extends AcceptanceTest {
     void email_auth_check() {
         // given
         ExtractableResponse<Response> 인증번호_발급_결과 = 인증번호_발급_요청("authTest@test.com");
-        assertThat(인증번호_발급_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(인증번호_발급_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(인증번호_발급_결과.jsonPath().getString("email")).isEqualTo("authTest@test.com");
         assertThat(인증번호_발급_결과.jsonPath().getString("expireTime")).isNotNull();
 
@@ -33,7 +33,7 @@ public class AuthenticationEmailAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 인증번호_확인_결과 = 인증번호_확인하기_요청("authTest@test.com", "012345");
 
         // then
-        assertThat(인증번호_확인_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(인증번호_확인_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(인증번호_확인_결과.jsonPath().getString("email")).isEqualTo("authTest@test.com");
     }
 

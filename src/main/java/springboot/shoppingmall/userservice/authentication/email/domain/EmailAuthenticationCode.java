@@ -36,4 +36,8 @@ public class EmailAuthenticationCode {
     public int hashCode() {
         return Objects.hash(getValue());
     }
+
+    public boolean isValidAt(LocalDateTime requestTime) {
+        return this.expireTime.isAfter(requestTime);
+    }
 }

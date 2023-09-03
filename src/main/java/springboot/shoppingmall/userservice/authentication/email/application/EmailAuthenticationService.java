@@ -51,7 +51,7 @@ public class EmailAuthenticationService {
 
     public EmailAuthenticationInfo checkCode(Email email, EmailAuthenticationCode code, LocalDateTime checkRequestTime) {
         EmailAuthenticationCode findCode = store.getCode(email);
-        if(checkRequestTime.isAfter(findCode.getExpireTime())) {
+        if(!findCode.isValidAt(checkRequestTime)) {
             return reCreateCode(email, checkRequestTime);
         }
 
