@@ -25,7 +25,7 @@ class TelNoTest {
     }
 
     @Test
-    @DisplayName("00-0000-0000 형태의 데이터는 객체를 생성할 수 없다.")
+    @DisplayName("00-0000-0000 형태의 데이터는 입력할 수 없다.")
     void telNo_validate_fail_test() {
         // given
         String input = "02-1234-1233";

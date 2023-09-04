@@ -75,12 +75,29 @@ class UserFinderTest {
         List<User> userList = userFinder.findUserOverTheUserGrade(UserGrade.REGULAR);
 
         // then
-        assertThat(userList).hasSize(2);
-        List<Long> ids = userList.stream()
-                .map(User::getId)
-                .collect(Collectors.toList());
-        assertThat(ids).containsExactly(
-                regularUser.getId(), vipUser.getId()
+        assertThat(userList)
+                .hasSize(2)
+                .extracting("id", "userGradeInfo.grade")
+                .containsExactly(
+                        tuple(regularUser.getId(), UserGrade.REGULAR),
+                        tuple(vipUser.getId(), UserGrade.VIP)
+                );
+    }
+
+    @Test
+    @DisplayName("이름과 연락처로 가입된 이메일 정보를 조회한다.")
+    void find_email_by_name_telNo() {
+        // given
+        User savedUser = userRepository.save(
+                new User(
+                        "가입사용자", "addUser@test.com", "test1!", "010-2233-4455"
+                )
         );
+
+        // when
+        User findUser = userFinder.findEmailByNameAndTelNo("가입사용자", "010-2233-4455");
+
+        // then
+        assertThat(findUser.getId()).isEqualTo(savedUser.getId());
     }
 }

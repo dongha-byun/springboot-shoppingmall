@@ -28,6 +28,10 @@ public class UserService {
         if(!createDto.getPassword().equals(createDto.getConfirmPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않아 회원가입에 실패했습니다.");
         }
+        User originUser = userRepository.findUserByLoginInfoEmail(createDto.getEmail()).orElse(null);
+        if(originUser != null) {
+            throw new IllegalArgumentException("이미 가입된 정보가 있습니다.");
+        }
         User user = userRepository.save(createDto.toEntity());
         return UserResponse.of(user);
     }

@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import java.time.LocalDateTime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.TestEmailAuthenticationConfig;
 import springboot.shoppingmall.userservice.authentication.email.application.dto.EmailAuthenticationInfo;
 import springboot.shoppingmall.userservice.authentication.email.domain.Email;
@@ -17,7 +17,6 @@ import springboot.shoppingmall.userservice.authentication.email.domain.EmailAuth
 import springboot.shoppingmall.userservice.authentication.email.domain.EmailAuthenticationCodeStore;
 
 @Import({TestEmailAuthenticationConfig.class})
-@Transactional
 @SpringBootTest
 class EmailAuthenticationServiceTest {
 
@@ -27,6 +26,10 @@ class EmailAuthenticationServiceTest {
     @Autowired
     EmailAuthenticationService service;
 
+    @BeforeEach
+    void setUp() {
+        store.clear();
+    }
 
     @Test
     @DisplayName("1.요청 - 인증코드를 생성하고 이메일을 발송한다.")

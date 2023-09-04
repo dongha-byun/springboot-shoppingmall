@@ -27,4 +27,8 @@ public class UserFinder {
     public List<User> findUserOverTheUserGrade(UserGrade userGrade) {
         return userRepository.findUserOverTheUserGrade(userGrade.overGrades());
     }
+
+    public User findEmailByNameAndTelNo(String name, String telNo) {
+        return userRepository.findEmailByNameAndTelNo(name, telNo);
+    }
 }

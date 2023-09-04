@@ -1,7 +1,6 @@
 package springboot.shoppingmall.userservice.authentication.email.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
@@ -38,9 +37,8 @@ class MemoryEmailAuthenticationCodeStoreTest {
         store.remove(new Email("test@test.com"));
 
         // then
-        assertThatIllegalArgumentException().isThrownBy(
-                () -> store.getCode(new Email("test@test.com"))
-        );
+        EmailAuthenticationCode findCode = store.getCode(new Email("test@test.com"));
+        assertThat(findCode).isNull();
     }
 
     @Test

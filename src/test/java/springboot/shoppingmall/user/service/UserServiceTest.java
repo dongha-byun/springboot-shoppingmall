@@ -54,6 +54,23 @@ class UserServiceTest {
         );
     }
 
+    @Test
+    @DisplayName("이미 가입이 된 이메일 정보로는 가입할 수 없다.")
+    void duplicate_email_fail() {
+        // given
+        userRepository.save(
+                new User("기존 가입자", "user@test.com", "user1!", "010-1234-1234")
+        );
+
+        // when & then
+        UserCreateDto userCreateDto = new UserCreateDto("신규 가입자", "user@test.com",
+                "user1!", "user1!", "010-1235-1235", LocalDateTime.now());
+
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> userService.signUp(userCreateDto)
+        ).withMessageContaining("이미 가입된 정보가 있습니다.");
+    }
+
     @DisplayName("비밀번호와 비밀번호 확인 정보가 다른 경우, 회원가입이 불가능하다.")
     @Test
     void sign_up_fail_with_password_confirmPassword_not_collect() {
