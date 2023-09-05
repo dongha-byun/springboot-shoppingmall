@@ -8,11 +8,10 @@ import springboot.shoppingmall.user.domain.UserFinder;
 import springboot.shoppingmall.user.dto.FindPwResponse;
 import springboot.shoppingmall.user.dto.UserEditRequest;
 import springboot.shoppingmall.user.dto.UserGradeInfoDto;
-import springboot.shoppingmall.user.dto.UserResponse;
 import springboot.shoppingmall.user.domain.UserRepository;
 import springboot.shoppingmall.user.service.dto.FindEmailRequestDto;
 import springboot.shoppingmall.user.service.dto.FindEmailResultDto;
-import springboot.shoppingmall.user.service.dto.UserCreateDto;
+import springboot.shoppingmall.user.service.dto.SignUpRequestDto;
 import springboot.shoppingmall.user.service.dto.UserDto;
 import springboot.shoppingmall.utils.MaskingUtil;
 
@@ -26,10 +25,10 @@ public class UserService {
     private final SignUpValidator signUpValidator;
 
     @Transactional
-    public UserDto signUp(UserCreateDto createDto){
-        signUpValidator.validateSignUp(createDto);
+    public UserDto signUp(SignUpRequestDto signUpRequestDto){
+        signUpValidator.validateSignUp(signUpRequestDto);
 
-        User user = userRepository.save(createDto.toEntity());
+        User user = userRepository.save(signUpRequestDto.toEntity());
         return UserDto.of(user);
     }
 

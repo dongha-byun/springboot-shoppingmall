@@ -22,7 +22,7 @@ import springboot.shoppingmall.user.dto.UserResponse;
 import springboot.shoppingmall.user.service.UserService;
 import springboot.shoppingmall.user.service.dto.FindEmailRequestDto;
 import springboot.shoppingmall.user.service.dto.FindEmailResultDto;
-import springboot.shoppingmall.user.service.dto.UserCreateDto;
+import springboot.shoppingmall.user.service.dto.SignUpRequestDto;
 import springboot.shoppingmall.user.service.dto.UserDto;
 
 @RestController
@@ -32,8 +32,8 @@ public class UserApiController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<UserResponse> signUp(@RequestBody SignUpRequest signUpRequest){
-        UserCreateDto userCreateDto = signUpRequest.toDto();
-        UserDto userDto = userService.signUp(userCreateDto);
+        SignUpRequestDto signUpRequestDto = signUpRequest.toDto();
+        UserDto userDto = userService.signUp(signUpRequestDto);
         UserResponse response = UserResponse.of(userDto);
 
         return ResponseEntity.created(URI.create("/user/"+response.getId())).body(response);

@@ -12,14 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.user.domain.User;
 import springboot.shoppingmall.user.domain.UserGrade;
 import springboot.shoppingmall.user.domain.UserRepository;
-import springboot.shoppingmall.user.dto.FindIdResponse;
 import springboot.shoppingmall.user.dto.FindPwResponse;
 import springboot.shoppingmall.user.dto.UserEditRequest;
 import springboot.shoppingmall.user.dto.UserGradeInfoDto;
-import springboot.shoppingmall.user.dto.UserResponse;
 import springboot.shoppingmall.user.service.dto.FindEmailRequestDto;
 import springboot.shoppingmall.user.service.dto.FindEmailResultDto;
-import springboot.shoppingmall.user.service.dto.UserCreateDto;
+import springboot.shoppingmall.user.service.dto.SignUpRequestDto;
 import springboot.shoppingmall.user.service.dto.UserDto;
 
 @Transactional
@@ -38,13 +36,13 @@ class UserServiceTest {
     @Test
     void save_user() {
         // given
-        UserCreateDto userCreateDto = new UserCreateDto(
+        SignUpRequestDto signUpRequestDto = new SignUpRequestDto(
                 "테스터", "tester@test.com", "a", "a",
                 "010-2222-3333", signUpDate
         );
 
         // when
-        UserDto userDto = userService.signUp(userCreateDto);
+        UserDto userDto = userService.signUp(signUpRequestDto);
 
         // then
         assertAll(
@@ -65,11 +63,11 @@ class UserServiceTest {
         );
 
         // when & then
-        UserCreateDto userCreateDto = new UserCreateDto("신규 가입자", "user@test.com",
+        SignUpRequestDto signUpRequestDto = new SignUpRequestDto("신규 가입자", "user@test.com",
                 "user1!", "user1!", "010-1235-1235", LocalDateTime.now());
 
         assertThatIllegalArgumentException().isThrownBy(
-                () -> userService.signUp(userCreateDto)
+                () -> userService.signUp(signUpRequestDto)
         ).withMessageContaining("이미 가입된 정보가 있습니다.");
     }
 
@@ -77,14 +75,14 @@ class UserServiceTest {
     @Test
     void sign_up_fail_with_password_confirmPassword_not_collect() {
         // given
-        UserCreateDto userCreateDto = new UserCreateDto(
+        SignUpRequestDto signUpRequestDto = new SignUpRequestDto(
                 "테스터", "tester", "a", "b",
                 "010-2222-3333", signUpDate
         );
 
         // when & then
         assertThatIllegalArgumentException().isThrownBy(
-                () -> userService.signUp(userCreateDto)
+                () -> userService.signUp(signUpRequestDto)
         );
     }
 
@@ -108,11 +106,11 @@ class UserServiceTest {
     @DisplayName("비밀번호 찾기")
     void findPw(){
         // given
-        UserCreateDto userCreateDto = new UserCreateDto(
+        SignUpRequestDto signUpRequestDto = new SignUpRequestDto(
                 "테스터", "tester@test.com", "a", "a",
                 "010-2222-3333", signUpDate
         );
-        userService.signUp(userCreateDto);
+        userService.signUp(signUpRequestDto);
 
         // when
         FindPwResponse response = userService.findPw("테스터", "010-2222-3333", "tester@test.com");

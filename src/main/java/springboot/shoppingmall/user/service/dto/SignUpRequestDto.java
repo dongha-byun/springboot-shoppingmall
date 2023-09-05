@@ -9,7 +9,7 @@ import springboot.shoppingmall.user.domain.User;
 @Builder
 @AllArgsConstructor
 @Getter
-public class UserCreateDto {
+public class SignUpRequestDto {
     private String name;
     private String email;
     private String password;
