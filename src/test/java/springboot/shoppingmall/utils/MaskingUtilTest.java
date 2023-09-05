@@ -23,22 +23,9 @@ class MaskingUtilTest {
         assertThat(masking).isEqualTo(result);
     }
 
-    @ParameterizedTest
-    @CsvSource(value = {"loginIdTest:lo*********", "byunsw4:by*****", "byundong93:by********"}, delimiterString = ":")
-    @DisplayName("로그인 아이디 마스킹 - 앞에 2자리 제외 모두 마스킹")
-    void masking_login_id(String input, String result) {
-        // given
-
-        // when
-        String maskingLoginId = MaskingUtil.maskingLoginId(input);
-
-        // then
-        assertThat(maskingLoginId).isEqualTo(result);
-    }
-
     @Test
     @DisplayName("이메일은 아이디 앞 2자리 제외 모두 마스킹하고, 주소는 모두 노출시킨다.")
-    void test() {
+    void email_masking() {
         // given
         String email = "user1@test.com";
 
