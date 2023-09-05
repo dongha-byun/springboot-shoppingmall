@@ -12,15 +12,26 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import springboot.shoppingmall.authorization.service.AuthService;
-import springboot.shoppingmall.authorization.service.JwtTokenProvider;
+import springboot.shoppingmall.authorization.configuration.AuthenticationConfig;
+import springboot.shoppingmall.providers.config.PartnersConfiguration;
 import springboot.shoppingmall.user.controller.request.SignUpRequest;
 import springboot.shoppingmall.user.service.UserService;
 import springboot.shoppingmall.user.service.dto.UserDto;
 
-@WebMvcTest(UserApiController.class)
+@WebMvcTest(
+        controllers = UserApiController.class,
+        excludeFilters = {
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                                PartnersConfiguration.class, AuthenticationConfig.class
+                        }
+                )
+        }
+)
 class UserApiControllerTest {
 
     @Autowired
@@ -28,12 +39,6 @@ class UserApiControllerTest {
 
     @MockBean
     UserService userService;
-
-    @MockBean
-    AuthService authService;
-
-    @MockBean
-    JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     ObjectMapper objectMapper;

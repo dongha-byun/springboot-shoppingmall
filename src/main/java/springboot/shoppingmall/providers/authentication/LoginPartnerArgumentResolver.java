@@ -20,7 +20,6 @@ import springboot.shoppingmall.authorization.service.JwtTokenProvider;
 
 @Slf4j
 @RequiredArgsConstructor
-@Component
 public class LoginPartnerArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtTokenProvider jwtTokenProvider;
