@@ -20,6 +20,7 @@ import springboot.shoppingmall.user.dto.UserResponse;
 import springboot.shoppingmall.user.service.dto.FindEmailRequestDto;
 import springboot.shoppingmall.user.service.dto.FindEmailResultDto;
 import springboot.shoppingmall.user.service.dto.UserCreateDto;
+import springboot.shoppingmall.user.service.dto.UserDto;
 
 @Transactional
 @SpringBootTest
@@ -43,14 +44,15 @@ class UserServiceTest {
         );
 
         // when
-        UserResponse userResponse = userService.signUp(userCreateDto);
+        UserDto userDto = userService.signUp(userCreateDto);
 
         // then
         assertAll(
-                () -> assertThat(userResponse.getName()).isEqualTo("테스터"),
-                () -> assertThat(userResponse.getEmail()).isEqualTo("tester@test.com"),
-                () -> assertThat(userResponse.getTelNo()).isEqualTo("010-2222-3333"),
-                () -> assertThat(userResponse.getSignUpDate()).isEqualTo("2023-05-04")
+                () -> assertThat(userDto.getId()).isNotNull(),
+                () -> assertThat(userDto.getName()).isEqualTo("테스터"),
+                () -> assertThat(userDto.getEmail()).isEqualTo("tester@test.com"),
+                () -> assertThat(userDto.getTelNo()).isEqualTo("010-2222-3333"),
+                () -> assertThat(userDto.getSignUpDate()).isEqualTo(LocalDateTime.of(2023, 5, 4, 12, 30, 11))
         );
     }
 

@@ -42,6 +42,29 @@ public class UserAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     *  given: 이미 회원가입된 이메일이 존재함.
+     *  when: 가입된 이메일 정보로 회원가입을 시도하면,
+     *  then: 회원가입에 실패한다.
+     */
+    @Test
+    @DisplayName("이미 가입된 이메일로는 회원가입을 할 수 없다.")
+    void sign_up_fail_by_duplicate_email() {
+        // given
+        ExtractableResponse<Response> 회원가입_성공 = 회원가입("변동하", "dongha@test.com", "dongha1!", "dongha1!", "010-1234-1234");
+        assertThat(회원가입_성공.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // when
+        ExtractableResponse<Response> 중복메일_시도_결과 =
+                회원가입("중복이메일사용자", "dongha@test.com", "dongha1!", "dongha1!", "010-1234-1234");
+
+        // then
+        assertThat(중복메일_시도_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(중복메일_시도_결과.jsonPath().getString("message")).isEqualTo(
+                "이미 가입된 정보가 있습니다."
+        );
+    }
+
+    /**
      * given 회원가입을 하고
      * when 이메일 찾기를 시도하면
      * then 마스킹된 이메일이 조회된다.
