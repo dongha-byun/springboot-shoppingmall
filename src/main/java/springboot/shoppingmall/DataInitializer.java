@@ -1,5 +1,6 @@
 package springboot.shoppingmall;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -10,9 +11,14 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
+import springboot.shoppingmall.coupon.domain.Coupon;
+import springboot.shoppingmall.coupon.domain.UsingDuration;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.providers.domain.Provider;
-import springboot.shoppingmall.user.domain.User;
+import springboot.shoppingmall.delivery.domain.Delivery;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserGrade;
+import springboot.shoppingmall.userservice.user.domain.UserGradeInfo;
 
 //@Component
 @RequiredArgsConstructor
@@ -34,6 +40,34 @@ public class DataInitializer {
 
         @Transactional
         public void init(){
+            List<Provider> providers = insertPartners();
+            List<User> users = insertUser();
+            List<Category> categories = insertCategory();
+
+            insertDelivery(users);
+            insertProducts(categories, providers);
+            insertCoupon(providers, users);
+        }
+
+        private void insertDelivery(List<User> users) {
+            users.forEach(
+                    user -> {
+                        Delivery delivery = Delivery.builder()
+                                .nickName("집")
+                                .receiverName(user.getUserName())
+                                .receiverPhoneNumber(user.getTelNo().getTelNo())
+                                .zipCode("07122")
+                                .address("서울시 영등포구 당산동")
+                                .detailAddress("102호")
+                                .requestMessage("무인 택배함에 넣어주세요.")
+                                .userId(user.getId())
+                                .build();
+                        em.persist(delivery);
+                    }
+            );
+        }
+
+        private List<Provider> insertPartners() {
             Provider provider1 = new Provider(
                     "부실건설", "변부실", "서울시 영등포구", "02-1234-2222"
                     , "110-33-444222", "test1", "test1!"
@@ -49,19 +83,18 @@ public class DataInitializer {
             em.persist(provider1);
             em.persist(provider2);
 
-            insertUser();
-            List<Category> categories = insertCategory();
-            insertProducts(categories, provider1, provider2);
+            return Arrays.asList(provider1, provider2);
         }
 
-        private void insertProducts(List<Category> categories, Provider... providers) {
+
+        private void insertProducts(List<Category> categories, List<Provider> providers) {
             for (Category category : categories) {
                 Long categoryId = category.getId();
                 List<Category> subCategories = category.getSubCategories();
                 for (Category subCategory : subCategories) {
                     Long subCategoryId = subCategory.getId();
                     for(int i=1; i<=100; i++){
-                        Provider provider = providers[i%2];
+                        Provider provider = providers.get(i%2);
                         em.persist(new Product("상품_"+categoryId+"_"+subCategoryId+"_"+i, 190 * i,
                                 501-i, category, subCategory, provider.getId(),
                                 null, null, i + "번째 상품 설명 입니다.",
@@ -71,10 +104,70 @@ public class DataInitializer {
             }
         }
 
-        private void insertUser() {
-            em.persist(new User("사용자1", "user1", "a", "010-1234-1234"));
-            em.persist(new User("사용자2", "user2", "a", "010-2345-2345"));
+        private List<User> insertUser() {
+            User user1 = new User("사용자1", "user1", "a", "010-1234-1234",
+                    LocalDateTime.of(2023, 3, 15, 23, 44, 11)
+            );
+            User user2 = new User("사용자2", "user2", "a", "010-2345-2345",
+                    LocalDateTime.of(2023, 4, 1, 11, 22, 11)
+            );
+            User user3 = new User("사용자3", "user3", "a", "010-3456-3456",
+                    LocalDateTime.of(2023, 4, 15, 23, 44, 11),
+                    0, false,
+                    new UserGradeInfo(
+                            UserGrade.VIP, UserGrade.VIP.getMinOrderCondition(), UserGrade.VIP.getMinAmountCondition())
+            );
+            em.persist(user1);
+            em.persist(user2);
+            em.persist(user3);
+
+            return Arrays.asList(user1, user2, user3);
         }
+
+        private void insertCoupon(List<Provider> providers, List<User> users) {
+            Coupon coupon1OfPartners1 = new Coupon(
+                    "할인쿠폰 #1",
+                    new UsingDuration(
+                            LocalDateTime.of(2023, 3, 5, 0, 0, 0),
+                            LocalDateTime.of(2023, 11, 1, 23, 59, 59)
+                    ), 5, providers.get(0).getId()
+            );
+            Coupon coupon2OfPartners1 = new Coupon(
+                    "할인쿠폰 #2",
+                    new UsingDuration(
+                            LocalDateTime.of(2023, 6, 5, 0, 0, 0),
+                            LocalDateTime.of(2023, 9, 1, 23, 59, 59)
+                    ), 8, providers.get(0).getId()
+            );
+            Coupon coupon1OfPartners2 = new Coupon(
+                    "입점 기념 할인쿠폰 #1",
+                    new UsingDuration(
+                            LocalDateTime.of(2023, 1, 1, 0, 0, 0),
+                            LocalDateTime.of(2023, 6, 30, 23, 59, 59)
+                    ), 10, providers.get(1).getId()
+            );
+            Coupon coupon2OfPartners2 = new Coupon(
+                    "입점 기념 할인쿠폰 #2",
+                    new UsingDuration(
+                            LocalDateTime.of(2023, 7, 1, 0, 0, 0),
+                            LocalDateTime.of(2024, 12, 31, 23, 59, 59)
+                    ), 7, providers.get(1).getId()
+            );
+            users.forEach(
+                    user -> {
+                        coupon1OfPartners1.addUserCoupon(user.getId());
+                        coupon2OfPartners1.addUserCoupon(user.getId());
+                        coupon1OfPartners2.addUserCoupon(user.getId());
+                        coupon2OfPartners2.addUserCoupon(user.getId());
+                    }
+            );
+
+            em.persist(coupon1OfPartners1);
+            em.persist(coupon2OfPartners1);
+            em.persist(coupon1OfPartners2);
+            em.persist(coupon2OfPartners2);
+        }
+
 
         private List<Category> insertCategory() {
             Category category1 = new Category("식품");
