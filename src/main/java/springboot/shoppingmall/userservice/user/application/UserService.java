@@ -38,7 +38,7 @@ public class UserService {
     }
 
     public FindEmailResultDto findEmail(FindEmailRequestDto findEmailRequestDto) {
-        User user = userRepository.findEmailByNameAndTelNo(
+        User user = userFinder.findEmailOf(
                 findEmailRequestDto.getName(),
                 findEmailRequestDto.getTelNo()
         );
@@ -48,7 +48,7 @@ public class UserService {
     }
 
     public FindPwResponse findPw(String name, String telNo, String email) {
-        User user = userRepository.findUserByNameAndTelNoAndEmail(name, telNo, email);
+        User user = userFinder.findUserOf(name, telNo, email);
         return FindPwResponse.of(user);
     }
 

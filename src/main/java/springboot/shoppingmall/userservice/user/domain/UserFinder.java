@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 public class UserFinder {
 
     private final UserRepository userRepository;
+    private final UserQueryRepository userQueryRepository;
 
     public User findUserById(Long userId) {
         return userRepository.findById(userId)
@@ -25,10 +26,14 @@ public class UserFinder {
     }
 
     public List<User> findUserOverTheUserGrade(UserGrade userGrade) {
-        return userRepository.findUserOverTheUserGrade(userGrade.overGrades());
+        return userQueryRepository.findUserOverTheUserGrade(userGrade.overGrades());
     }
 
-    public User findEmailByNameAndTelNo(String name, String telNo) {
-        return userRepository.findEmailByNameAndTelNo(name, telNo);
+    public User findEmailOf(String name, String telNo) {
+        return userQueryRepository.findEmailOf(name, telNo);
+    }
+
+    public User findUserOf(String name, String telNo, String email) {
+        return userQueryRepository.findUserOf(name, telNo, email);
     }
 }

@@ -94,7 +94,7 @@ class UserFinderTest {
         );
 
         // when
-        User findUser = userFinder.findEmailByNameAndTelNo("가입사용자", "010-2233-4455");
+        User findUser = userFinder.findEmailOf("가입사용자", "010-2233-4455");
 
         // then
         assertThat(findUser.getId()).isEqualTo(savedUser.getId());
