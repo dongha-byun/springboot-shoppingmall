@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.coupon.domain.Coupon;
-import springboot.shoppingmall.user.domain.UserGrade;
 
 @NoArgsConstructor
 @Getter

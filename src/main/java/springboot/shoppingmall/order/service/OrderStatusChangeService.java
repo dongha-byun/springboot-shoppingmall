@@ -10,8 +10,8 @@ import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.pay.domain.PayHistoryRepository;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserFinder;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserFinder;
 
 @Transactional
 @RequiredArgsConstructor

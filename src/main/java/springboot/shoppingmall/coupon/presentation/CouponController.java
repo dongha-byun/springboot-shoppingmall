@@ -16,7 +16,6 @@ import springboot.shoppingmall.common.validation.bean.BeanValidationException;
 import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
 import springboot.shoppingmall.providers.authentication.LoginPartner;
 
-@Slf4j
 @RequiredArgsConstructor
 @BeanValidation
 @RestController

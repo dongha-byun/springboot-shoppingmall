@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import springboot.shoppingmall.category.domain.Category;
-import springboot.shoppingmall.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.User;
 
 public class ProductTest {
 

@@ -3,7 +3,6 @@ package springboot.shoppingmall.order.service;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,14 +18,12 @@ import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
-import springboot.shoppingmall.order.dto.DeliveryEndRequest;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
-import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.user.domain.Delivery;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest

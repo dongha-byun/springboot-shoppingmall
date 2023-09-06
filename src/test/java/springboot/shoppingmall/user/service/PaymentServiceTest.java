@@ -3,7 +3,6 @@ package springboot.shoppingmall.user.service;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.user.domain.Payment;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserRepository;
 import springboot.shoppingmall.user.dto.PaymentRequest;
 import springboot.shoppingmall.user.service.dto.PaymentDto;
 

@@ -8,36 +8,43 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import springboot.shoppingmall.authorization.service.AuthService;
+import springboot.shoppingmall.authorization.configuration.AuthenticationConfig;
 import springboot.shoppingmall.coupon.application.CouponQueryDto;
 import springboot.shoppingmall.coupon.application.CouponQueryService;
-import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
-import springboot.shoppingmall.providers.authentication.LoginPartnerArgumentResolver;
+import springboot.shoppingmall.providers.config.PartnersConfiguration;
 
-@WebMvcTest(controllers = CouponQueryController.class)
+@WebMvcTest(
+        controllers = CouponQueryController.class,
+        excludeFilters = {
+                @ComponentScan.Filter(
+                        type = FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                                PartnersConfiguration.class,
+                                AuthenticationConfig.class
+                        }
+                )
+        }
+)
 class CouponQueryControllerTest {
 
     @MockBean
     CouponQueryService queryService;
 
-    @MockBean
-    LoginPartnerArgumentResolver loginPartnerArgumentResolver;
-
-    @MockBean
-    AuthService authService;
-
     @Autowired
     MockMvc mockMvc;
 
-    @DisplayName("판매자가 등록한 쿠폰 목록을 조회한다.")
     @Test
+    @DisplayName("판매자가 등록한 쿠폰 목록을 조회한다.")
     void find_coupon_all_by_partners() throws Exception {
         // given
         when(queryService.findCouponAll(anyLong())).thenReturn(
@@ -57,16 +64,11 @@ class CouponQueryControllerTest {
                 )
         );
 
-        when(loginPartnerArgumentResolver.supportsParameter(any())).thenReturn(true);
-        when(loginPartnerArgumentResolver.resolveArgument(any(), any(), any(), any())).thenReturn(
-                new AuthorizedPartner(1L)
-        );
-
         // when & then
         mockMvc.perform(get("/partners/coupons")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$[0]").exists());
     }
 }

@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
 import springboot.shoppingmall.coupon.presentation.CouponResponse;
-import springboot.shoppingmall.user.domain.UserGrade;
+import springboot.shoppingmall.userservice.user.domain.UserGrade;
 
 public class CouponAcceptanceTest extends AcceptanceTest {
 

@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.coupon.domain.Coupon;
 import springboot.shoppingmall.coupon.domain.CouponRepository;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserFinder;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserFinder;
 
 @RequiredArgsConstructor
 @Transactional

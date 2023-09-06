@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,8 +20,8 @@ import springboot.shoppingmall.product.domain.ProductQnaRepository;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.query.ProductQnaAnswerCompleteType;
 import springboot.shoppingmall.product.query.dto.PartnersProductQnaDto;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest

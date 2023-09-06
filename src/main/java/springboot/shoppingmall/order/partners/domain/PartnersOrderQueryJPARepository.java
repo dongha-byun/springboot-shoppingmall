@@ -2,7 +2,7 @@ package springboot.shoppingmall.order.partners.domain;
 
 import static springboot.shoppingmall.order.domain.QOrder.order;
 import static springboot.shoppingmall.order.domain.QOrderItem.*;
-import static springboot.shoppingmall.user.domain.QUser.user;
+import static springboot.shoppingmall.userservice.user.domain.QUser.user;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;

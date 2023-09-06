@@ -34,14 +34,13 @@ import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.dto.ProductResponse;
-import springboot.shoppingmall.user.UserAcceptanceTest;
 import springboot.shoppingmall.user.domain.Delivery;
 import springboot.shoppingmall.user.domain.DeliveryRepository;
 import springboot.shoppingmall.user.domain.PayType;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserGrade;
-import springboot.shoppingmall.user.domain.UserGradeInfo;
-import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserGrade;
+import springboot.shoppingmall.userservice.user.domain.UserGradeInfo;
+import springboot.shoppingmall.userservice.user.domain.UserRepository;
 import springboot.shoppingmall.user.dto.DeliveryResponse;
 public class OrderAcceptanceTest extends AcceptanceProductTest {
 
@@ -322,7 +321,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         ExtractableResponse<Response> 구매확정_에서_환불요청_변경_결과 = 주문_환불_요청(배송완료_주문, 구매확정_주문_상품, "환불 신청 합니다.");
 
         // then: 구매확정된 주문이라 환불처리가 불가능하고
-        assertThat(구매확정_에서_환불요청_변경_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(구매확정_에서_환불요청_변경_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
         // when: 구매확정된 주문을 교환처리를 시도하면
         ExtractableResponse<Response> 구매확정_에서_교환요청_변경_결과 = 주문_교환_요청(배송완료_주문, 구매확정_주문_상품, "교환 신청 합니다.");

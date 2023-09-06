@@ -1,7 +1,6 @@
 package springboot.shoppingmall.cart.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,8 +12,8 @@ import springboot.shoppingmall.cart.web.CartRequest;
 import springboot.shoppingmall.cart.web.CartResponse;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserFinder;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserFinder;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)

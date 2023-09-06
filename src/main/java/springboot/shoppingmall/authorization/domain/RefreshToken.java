@@ -11,7 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.BaseEntity;
-import springboot.shoppingmall.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.User;
 
 @Getter
 @NoArgsConstructor

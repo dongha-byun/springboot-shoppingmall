@@ -11,10 +11,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import springboot.shoppingmall.order.domain.QOrderItem;
-import springboot.shoppingmall.pay.domain.QPayHistory;
-import springboot.shoppingmall.providers.domain.QProvider;
 import springboot.shoppingmall.user.dto.OrderHistoryDto;
+import springboot.shoppingmall.userservice.user.domain.User;
 
 @RequiredArgsConstructor
 @Repository

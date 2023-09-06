@@ -18,11 +18,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import springboot.shoppingmall.authorization.AuthorizedUser;
 import springboot.shoppingmall.authorization.service.AuthService;
 import springboot.shoppingmall.authorization.service.JwtTokenProvider;
-import springboot.shoppingmall.coupon.application.CouponQueryDto;
 import springboot.shoppingmall.coupon.application.UsableCouponDto;
 import springboot.shoppingmall.coupon.application.UserCouponQueryService;
 import springboot.shoppingmall.coupon.domain.UserCouponQueryDto;
-import springboot.shoppingmall.user.domain.UserGrade;
+import springboot.shoppingmall.userservice.user.domain.UserGrade;
 
 @WebMvcTest(controllers = UserCouponQueryController.class)
 class UserCouponQueryControllerTest {

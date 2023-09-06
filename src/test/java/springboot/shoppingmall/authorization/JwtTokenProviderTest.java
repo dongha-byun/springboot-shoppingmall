@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.authorization.service.JwtTokenProvider;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest

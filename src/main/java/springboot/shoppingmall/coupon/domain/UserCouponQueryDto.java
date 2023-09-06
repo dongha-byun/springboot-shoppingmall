@@ -4,7 +4,7 @@ import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.user.domain.UserGrade;
+import springboot.shoppingmall.userservice.user.domain.UserGrade;
 
 @NoArgsConstructor
 @Getter

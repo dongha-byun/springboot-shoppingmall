@@ -2,10 +2,7 @@ package springboot.shoppingmall.order.service;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,10 +29,10 @@ import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.user.domain.Delivery;
 import springboot.shoppingmall.user.domain.PayType;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserGrade;
-import springboot.shoppingmall.user.domain.UserGradeInfo;
-import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserGrade;
+import springboot.shoppingmall.userservice.user.domain.UserGradeInfo;
+import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest

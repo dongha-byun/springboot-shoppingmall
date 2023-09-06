@@ -16,8 +16,8 @@ import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.dto.ProductQnaRequest;
 import springboot.shoppingmall.product.dto.ProductQnaResponse;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest

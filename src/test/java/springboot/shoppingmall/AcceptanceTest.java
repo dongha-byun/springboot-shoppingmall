@@ -5,7 +5,7 @@ import static springboot.shoppingmall.admin.AdminApproveProviderAcceptanceTest.�
 import static springboot.shoppingmall.authorization.LoginAcceptanceTest.로그인;
 import static springboot.shoppingmall.providers.ProviderAcceptanceTest.판매_승인요청_등록_요청;
 import static springboot.shoppingmall.providers.PartnersLoginAcceptanceTest.판매자_로그인_요청;
-import static springboot.shoppingmall.user.UserAcceptanceTest.회원가입;
+import static springboot.shoppingmall.userservice.user.UserAcceptanceTest.회원가입;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -25,7 +25,7 @@ import springboot.shoppingmall.db.DatabaseCleanUtil;
 import springboot.shoppingmall.message.MessageProvider;
 import springboot.shoppingmall.product.configuration.TestFileConfiguration;
 import springboot.shoppingmall.providers.web.ProviderTokenResponse;
-import springboot.shoppingmall.user.dto.UserResponse;
+import springboot.shoppingmall.userservice.user.presentation.response.UserResponse;
 
 @Import({
         TestFileConfiguration.class,

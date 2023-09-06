@@ -2,7 +2,6 @@ package springboot.shoppingmall.order.validator;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderFinder;
 import springboot.shoppingmall.order.domain.OrderItem;
 

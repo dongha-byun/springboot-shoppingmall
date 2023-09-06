@@ -25,9 +25,9 @@ import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.user.domain.Delivery;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserGradeInfo;
-import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserGradeInfo;
+import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Import(TestOrderConfig.class)
 @Transactional

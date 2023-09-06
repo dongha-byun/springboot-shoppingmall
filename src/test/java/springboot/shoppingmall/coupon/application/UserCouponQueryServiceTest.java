@@ -13,9 +13,9 @@ import springboot.shoppingmall.coupon.domain.Coupon;
 import springboot.shoppingmall.coupon.domain.CouponRepository;
 import springboot.shoppingmall.coupon.domain.UserCouponQueryDto;
 import springboot.shoppingmall.coupon.domain.UsingDuration;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserGrade;
-import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserGrade;
+import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest

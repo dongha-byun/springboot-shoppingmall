@@ -23,8 +23,8 @@ import springboot.shoppingmall.order.partners.controller.PartnersOrderQueryRespo
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserRepository;
 import springboot.shoppingmall.utils.DateUtils;
 
 @Transactional

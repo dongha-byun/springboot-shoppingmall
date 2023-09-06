@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.user.domain.Delivery;
 import springboot.shoppingmall.user.domain.DeliveryRepository;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserFinder;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserFinder;
 import springboot.shoppingmall.user.dto.DeliveryRequest;
 import springboot.shoppingmall.user.dto.DeliveryResponse;
 

@@ -1,37 +1,26 @@
 package springboot.shoppingmall.order.service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.coupon.domain.Coupon;
 import springboot.shoppingmall.coupon.domain.OrderCodeCreator;
 import springboot.shoppingmall.coupon.domain.UserCoupon;
 import springboot.shoppingmall.coupon.domain.UserCouponRepository;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
-import springboot.shoppingmall.order.domain.OrderFinder;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
-import springboot.shoppingmall.order.domain.OrderSequence;
-import springboot.shoppingmall.order.domain.OrderSequenceRepository;
 import springboot.shoppingmall.order.dto.DeliveryInfoRequest;
-import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
-import springboot.shoppingmall.order.dto.OrderItemRequest;
-import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.pay.domain.PayHistory;
 import springboot.shoppingmall.pay.domain.PayHistoryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserFinder;
-import springboot.shoppingmall.utils.DateUtils;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserFinder;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)

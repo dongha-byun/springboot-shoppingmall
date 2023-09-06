@@ -3,9 +3,6 @@ package springboot.shoppingmall.user.domain;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -29,6 +26,8 @@ import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.providers.domain.Provider;
 import springboot.shoppingmall.providers.domain.ProviderRepository;
 import springboot.shoppingmall.user.dto.OrderHistoryDto;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest

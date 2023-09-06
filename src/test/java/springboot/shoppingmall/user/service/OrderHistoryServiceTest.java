@@ -15,8 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.user.domain.OrderHistoryRepository;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserFinder;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserFinder;
 import springboot.shoppingmall.user.dto.OrderHistoryDto;
 
 @ExtendWith(MockitoExtension.class)

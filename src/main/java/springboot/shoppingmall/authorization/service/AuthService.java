@@ -11,8 +11,8 @@ import springboot.shoppingmall.authorization.exception.ExpireTokenException;
 import springboot.shoppingmall.authorization.exception.NotExistsRefreshTokenException;
 import springboot.shoppingmall.authorization.exception.TryLoginLockedUserException;
 import springboot.shoppingmall.authorization.exception.WrongPasswordException;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserFinder;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserFinder;
 
 @Service
 @RequiredArgsConstructor

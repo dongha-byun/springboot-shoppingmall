@@ -2,7 +2,7 @@ package springboot.shoppingmall.coupon.domain;
 
 import static springboot.shoppingmall.coupon.domain.QCoupon.*;
 import static springboot.shoppingmall.coupon.domain.QUserCoupon.*;
-import static springboot.shoppingmall.user.domain.QUser.*;
+import static springboot.shoppingmall.userservice.user.domain.QUser.user;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;

@@ -3,14 +3,12 @@ package springboot.shoppingmall.product.domain;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import springboot.shoppingmall.category.domain.Category;
-import springboot.shoppingmall.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.User;
 
 class ProductReviewTest {
 

@@ -33,8 +33,8 @@ import springboot.shoppingmall.product.dto.ProductReviewRequest;
 import springboot.shoppingmall.product.dto.ProductUserReviewResponse;
 import springboot.shoppingmall.user.domain.Delivery;
 import springboot.shoppingmall.user.domain.DeliveryRepository;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
 
@@ -141,7 +141,7 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
         ExtractableResponse<Response> 리뷰_작성_요청_결과 = 리뷰_작성_요청(배송이_완료되지_않은_주문, 상품, 로그인정보, "리뷰 작성 합니다.", 4);
 
         // then
-        assertThat(리뷰_작성_요청_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(리뷰_작성_요청_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -169,12 +169,13 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
      */
     @Test
     @DisplayName("이미 등록된 리뷰가 있으면 추가로 등록할 수 없다.")
-    void create_review_test_fail_by_already_exists_review() {
+    void create_review_fail_by_already_exists_review() {
         // given - before each
         리뷰_작성_요청(배송완료_주문, 상품, 로그인정보, "리뷰 작성 합니다.1", 4);
 
         // when
-        ExtractableResponse<Response> 리뷰_작성_요청_결과 = 리뷰_작성_요청(배송완료_주문, 상품, 로그인정보, "리뷰 작성 합니다.2", 4);
+        ExtractableResponse<Response> 리뷰_작성_요청_결과 =
+                리뷰_작성_요청(배송완료_주문, 상품, 로그인정보, "리뷰 작성 합니다.2", 4);
 
         // then
         assertThat(리뷰_작성_요청_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());

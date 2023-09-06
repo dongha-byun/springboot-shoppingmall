@@ -17,8 +17,8 @@ import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.providers.domain.Provider;
 import springboot.shoppingmall.providers.domain.ProviderRepository;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserRepository;
 import springboot.shoppingmall.cart.web.CartRequest;
 import springboot.shoppingmall.cart.web.CartResponse;
 

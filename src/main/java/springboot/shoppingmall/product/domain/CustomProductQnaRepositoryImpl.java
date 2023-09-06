@@ -2,7 +2,6 @@ package springboot.shoppingmall.product.domain;
 
 import static springboot.shoppingmall.product.domain.QProductQna.*;
 import static springboot.shoppingmall.product.domain.QProductQnaAnswer.*;
-import static springboot.shoppingmall.user.domain.QUser.*;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;

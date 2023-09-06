@@ -1,7 +1,7 @@
 package springboot.shoppingmall.authorization;
 
 import static org.assertj.core.api.Assertions.*;
-import static springboot.shoppingmall.user.UserAcceptanceTest.회원가입;
+import static springboot.shoppingmall.userservice.user.UserAcceptanceTest.회원가입;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;

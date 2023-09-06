@@ -39,6 +39,11 @@ public class ProductReviewApiController {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> illegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
     @PostMapping("/orders/{orderId}/{orderItemId}/products/{productId}/reviews")
     public ResponseEntity<ProductUserReviewResponse> createReview(@AuthenticationStrategy AuthorizedUser user,
                                                                   @PathVariable("orderId") Long orderId,

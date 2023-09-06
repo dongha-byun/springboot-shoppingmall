@@ -1,17 +1,13 @@
 package springboot.shoppingmall.product.domain;
 
 import static springboot.shoppingmall.product.domain.QProductReview.productReview;
-import static springboot.shoppingmall.user.domain.QUser.*;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import javax.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import springboot.shoppingmall.product.dto.ProductReviewDto;
-import springboot.shoppingmall.product.dto.QProductReviewDto;
-import springboot.shoppingmall.user.domain.QUser;
 
 @Repository
 public class CustomProductReviewRepositoryImpl implements CustomProductReviewRepository{

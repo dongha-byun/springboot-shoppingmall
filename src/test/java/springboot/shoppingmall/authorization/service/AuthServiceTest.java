@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,9 +17,9 @@ import springboot.shoppingmall.authorization.domain.RefreshTokenRepository;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.authorization.exception.TryLoginLockedUserException;
 import springboot.shoppingmall.authorization.exception.WrongPasswordException;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserFinder;
-import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserFinder;
+import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest

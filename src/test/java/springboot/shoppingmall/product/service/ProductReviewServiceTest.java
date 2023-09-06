@@ -27,8 +27,8 @@ import springboot.shoppingmall.product.domain.ProductReviewRepository;
 import springboot.shoppingmall.product.dto.ProductReviewResponse;
 import springboot.shoppingmall.product.dto.ProductUserReviewResponse;
 import springboot.shoppingmall.product.service.dto.ProductReviewCreateDto;
-import springboot.shoppingmall.user.domain.User;
-import springboot.shoppingmall.user.domain.UserRepository;
+import springboot.shoppingmall.userservice.user.domain.User;
+import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest

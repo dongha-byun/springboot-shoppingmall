@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.BaseEntity;
+import springboot.shoppingmall.userservice.user.domain.User;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
