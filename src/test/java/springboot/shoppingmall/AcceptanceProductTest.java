@@ -2,7 +2,7 @@ package springboot.shoppingmall;
 
 import static springboot.shoppingmall.category.CategoryAcceptanceTest.카테고리_등록;
 import static springboot.shoppingmall.product.ProductAcceptanceTest.상품_등록_요청;
-import static springboot.shoppingmall.user.DeliveryAcceptanceTest.배송지_추가_요청;
+import static springboot.shoppingmall.delivery.DeliveryAcceptanceTest.배송지_추가_요청;
 
 import org.junit.jupiter.api.BeforeEach;
 import springboot.shoppingmall.category.dto.CategoryResponse;

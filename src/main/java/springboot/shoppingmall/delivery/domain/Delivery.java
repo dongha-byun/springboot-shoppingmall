@@ -1,19 +1,15 @@
-package springboot.shoppingmall.user.domain;
+package springboot.shoppingmall.delivery.domain;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.BaseEntity;
-import springboot.shoppingmall.userservice.user.domain.User;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -35,15 +31,12 @@ public class Delivery extends BaseEntity {
     private String address;
     private String detailAddress;
     private String requestMessage;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    private Long userId;
 
     @Builder
     public Delivery(String nickName, String receiverName, String receiverPhoneNumber,
                     String zipCode, String address, String detailAddress,
-                    String requestMessage, User user) {
+                    String requestMessage, Long userId) {
         this.nickName = nickName;
         this.receiverName = receiverName;
         this.receiverPhoneNumber = receiverPhoneNumber;
@@ -51,12 +44,11 @@ public class Delivery extends BaseEntity {
         this.address = address;
         this.detailAddress = detailAddress;
         this.requestMessage = requestMessage;
-        this.user = user;
+        this.userId = userId;
     }
 
-    public Delivery createBy(User user){
-        this.user = user;
-        user.addDelivery(this);
+    public Delivery createBy(Long userId){
+        this.userId = userId;
         return this;
     }
 }

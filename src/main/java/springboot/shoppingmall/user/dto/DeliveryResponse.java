@@ -3,7 +3,7 @@ package springboot.shoppingmall.user.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.user.domain.Delivery;
+import springboot.shoppingmall.delivery.domain.Delivery;
 
 @Getter
 @NoArgsConstructor

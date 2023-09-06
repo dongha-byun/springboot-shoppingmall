@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import springboot.shoppingmall.BaseEntity;
-import springboot.shoppingmall.user.domain.Delivery;
 import springboot.shoppingmall.user.domain.Payment;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -54,9 +53,6 @@ public class User extends BaseEntity {
 
     @Embedded
     private UserGradeInfo userGradeInfo;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Delivery> deliveries = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments = new ArrayList<>();
@@ -101,14 +97,6 @@ public class User extends BaseEntity {
 
     public boolean isEqualPassword(String password) {
         return this.loginInfo.checkPasswordEqual(password);
-    }
-
-    public void addDelivery(Delivery delivery){
-        this.getDeliveries().add(delivery);
-    }
-
-    public void removeDelivery(Delivery delivery){
-        this.getDeliveries().remove(delivery);
     }
 
     public void addPayment(Payment payment) {

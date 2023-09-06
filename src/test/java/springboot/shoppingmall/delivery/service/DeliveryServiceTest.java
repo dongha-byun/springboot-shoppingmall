@@ -1,4 +1,4 @@
-package springboot.shoppingmall.user.service;
+package springboot.shoppingmall.delivery.service;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.delivery.application.DeliveryService;
 import springboot.shoppingmall.userservice.user.domain.User;
 import springboot.shoppingmall.userservice.user.domain.UserRepository;
 import springboot.shoppingmall.user.dto.DeliveryResponse;

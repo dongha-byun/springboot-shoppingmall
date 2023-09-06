@@ -3,7 +3,6 @@ package springboot.shoppingmall.order.domain;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,7 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.user.domain.Delivery;
+import springboot.shoppingmall.delivery.domain.Delivery;
 
 public class OrderTest {
 

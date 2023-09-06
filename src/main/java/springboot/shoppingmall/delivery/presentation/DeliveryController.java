@@ -1,4 +1,4 @@
-package springboot.shoppingmall.user.controller;
+package springboot.shoppingmall.delivery.presentation;
 
 import java.net.URI;
 import java.util.List;
@@ -14,7 +14,7 @@ import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
 import springboot.shoppingmall.user.dto.DeliveryRequest;
 import springboot.shoppingmall.user.dto.DeliveryResponse;
-import springboot.shoppingmall.user.service.DeliveryService;
+import springboot.shoppingmall.delivery.application.DeliveryService;
 
 @RequiredArgsConstructor
 @RestController

@@ -27,7 +27,7 @@ import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.order.exception.OverQuantityException;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.user.domain.Delivery;
+import springboot.shoppingmall.delivery.domain.Delivery;
 import springboot.shoppingmall.user.domain.PayType;
 import springboot.shoppingmall.userservice.user.domain.User;
 import springboot.shoppingmall.userservice.user.domain.UserGrade;
@@ -62,13 +62,14 @@ class OrderServiceTest {
         user = User.builder()
                 .userName("테스터1").email("test1@test.com").password("test1!").telNo("010-0000-0000")
                 .build();
+        userRepository.save(user);
+
         delivery = Delivery.builder()
                 .nickName("수령지 1").receiverName("수령인 1").receiverPhoneNumber("010-1234-1234")
                 .zipCode("10010").address("서울시 동작구 사당동").detailAddress("101호")
-                .requestMessage("도착 시 연락주세요.").build();
-
-        user.addDelivery(delivery);
-        userRepository.save(user);
+                .requestMessage("도착 시 연락주세요.")
+                .userId(user.getId())
+                .build();
 
         Category category = categoryRepository.save(new Category("상위 1"));
         Category subCategory = categoryRepository.save(new Category("하위 1").changeParent(category));

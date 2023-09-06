@@ -1,14 +1,12 @@
-package springboot.shoppingmall.user.service;
+package springboot.shoppingmall.delivery.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.user.domain.Delivery;
-import springboot.shoppingmall.user.domain.DeliveryRepository;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserFinder;
+import springboot.shoppingmall.delivery.domain.Delivery;
+import springboot.shoppingmall.delivery.domain.DeliveryRepository;
 import springboot.shoppingmall.user.dto.DeliveryRequest;
 import springboot.shoppingmall.user.dto.DeliveryResponse;
 
@@ -18,21 +16,20 @@ import springboot.shoppingmall.user.dto.DeliveryResponse;
 public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
-    private final UserFinder userFinder;
 
     @Transactional
     public DeliveryResponse create(Long userId, DeliveryRequest deliveryRequest) {
-        User user = userFinder.findUserById(userId);
-        Delivery delivery = deliveryRepository.save(DeliveryRequest.to(deliveryRequest).createBy(user));
+        Delivery delivery = deliveryRepository.save(DeliveryRequest.to(deliveryRequest).createBy(userId));
         return DeliveryResponse.of(delivery);
     }
 
     @Transactional
     public void delete(Long userId, Long deliveryId) {
-        User user = userFinder.findUserById(userId);
         Delivery delivery = findDeliveryById(deliveryId);
 
-        user.removeDelivery(delivery);
+        if(delivery.getUserId().equals(userId)) {
+            deliveryRepository.delete(delivery);
+        }
     }
 
     private Delivery findDeliveryById(Long deliveryId) {
@@ -43,8 +40,11 @@ public class DeliveryService {
     }
 
     public List<DeliveryResponse> findAllDelivery(Long userId) {
-        User user = userFinder.findUserById(userId);
-        return user.getDeliveries().stream()
+        List<Delivery> deliveries = deliveryRepository.findAll().stream()
+                .filter(
+                        delivery -> delivery.getUserId().equals(userId)
+                ).collect(Collectors.toList());
+        return deliveries.stream()
                 .map(DeliveryResponse::of).collect(Collectors.toList());
     }
 }

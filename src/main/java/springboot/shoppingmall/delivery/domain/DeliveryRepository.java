@@ -1,4 +1,4 @@
-package springboot.shoppingmall.user.domain;
+package springboot.shoppingmall.delivery.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

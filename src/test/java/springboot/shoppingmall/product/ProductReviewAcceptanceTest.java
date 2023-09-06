@@ -31,8 +31,8 @@ import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.dto.ProductResponse;
 import springboot.shoppingmall.product.dto.ProductReviewRequest;
 import springboot.shoppingmall.product.dto.ProductUserReviewResponse;
-import springboot.shoppingmall.user.domain.Delivery;
-import springboot.shoppingmall.user.domain.DeliveryRepository;
+import springboot.shoppingmall.delivery.domain.Delivery;
+import springboot.shoppingmall.delivery.domain.DeliveryRepository;
 import springboot.shoppingmall.userservice.user.domain.User;
 import springboot.shoppingmall.userservice.user.domain.UserRepository;
 

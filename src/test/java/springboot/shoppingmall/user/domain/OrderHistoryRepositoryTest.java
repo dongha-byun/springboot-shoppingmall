@@ -14,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
+import springboot.shoppingmall.delivery.domain.Delivery;
+import springboot.shoppingmall.delivery.domain.DeliveryRepository;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
@@ -67,13 +69,14 @@ class OrderHistoryRepositoryTest {
                 .password("test1!")
                 .telNo("010-1234-1234")
                 .build());
-        delivery = deliveryRepository.save(Delivery.builder().user(user)
+        delivery = deliveryRepository.save(Delivery.builder()
                 .address("주소지 1")
                 .detailAddress("상세 주소지 1")
                 .nickName("배송지 1")
                 .receiverName("수령인 1")
                 .requestMessage("요구사항 1")
                 .zipCode("10001")
+                .userId(user.getId())
                 .build());
         OrderDeliveryInfo orderDeliveryInfo = new OrderDeliveryInfo(
                 delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
