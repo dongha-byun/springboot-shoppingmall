@@ -49,7 +49,7 @@ public class ProductReview extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "product_review_images",
             joinColumns = @JoinColumn(name = "review_id")

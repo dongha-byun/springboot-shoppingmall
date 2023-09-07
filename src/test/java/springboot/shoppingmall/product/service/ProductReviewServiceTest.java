@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
@@ -23,6 +24,7 @@ import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.domain.ProductReview;
+import springboot.shoppingmall.product.domain.ProductReviewImage;
 import springboot.shoppingmall.product.domain.ProductReviewRepository;
 import springboot.shoppingmall.product.dto.ProductReviewResponse;
 import springboot.shoppingmall.product.dto.ProductUserReviewResponse;
@@ -297,6 +299,51 @@ class ProductReviewServiceTest {
         assertThat(product.getScore()).isEqualTo(3.4);
     }
 
+    @Test
+    @DisplayName("자신의 리뷰에 이미지를 등록할 수 있다.")
+    void create_review_with_image() {
+        // given
+        User user = saveUser("구매자", "buyer@test.com", "user1!", "010-2222-3333");
+        Category category = categoryRepository.save(new Category("상위 카테고리"));
+        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
+        Product product = productRepository.save(
+                new Product(
+                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
+                        category, subCategory, 10L,
+                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                        "test-product-code"
+                )
+        );
+        Order endOrder = saveOrder("test-order-code-1", user, product);
+
+        // when
+        ProductReviewCreateDto createDto = new ProductReviewCreateDto("리뷰 남깁니다. 1", 5);
+        List<ThumbnailInfo> reviewImages = Arrays.asList(
+                new ThumbnailInfo("stored-file-name1", "view-file-name1"),
+                new ThumbnailInfo("stored-file-name2", "view-file-name2"),
+                new ThumbnailInfo("stored-file-name3", "view-file-name3"),
+                new ThumbnailInfo("stored-file-name4", "view-file-name4"),
+                new ThumbnailInfo("stored-file-name5", "view-file-name5")
+        );
+        ProductUserReviewResponse productReview = service.createProductReview(user.getId(), endOrder.getId(),
+                product.getId(), createDto, reviewImages);
+
+        em.flush();
+        em.clear();
+        // then
+        ProductReview findReview = productReviewRepository.findById(productReview.getId()).orElseThrow();
+        assertThat(findReview).isNotNull();
+        assertThat(findReview.getImages()).hasSize(5)
+                .extracting("storedFileName", "viewFileName")
+                .containsExactly(
+                        tuple("stored-file-name1", "view-file-name1"),
+                        tuple("stored-file-name2", "view-file-name2"),
+                        tuple("stored-file-name3", "view-file-name3"),
+                        tuple("stored-file-name4", "view-file-name4"),
+                        tuple("stored-file-name5", "view-file-name5")
+                );
+    }
+
     private Order saveOrder(String orderCode, User user, Product product) {
         List<OrderItem> items = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
         return orderRepository.save(
@@ -304,8 +351,8 @@ class ProductReviewServiceTest {
         );
     }
 
-    private User saveUser(String name, String user1, String password, String telNo) {
-        return userRepository.save(new User(name, user1, password, telNo));
+    private User saveUser(String name, String email, String password, String telNo) {
+        return userRepository.save(new User(name, email, password, telNo));
     }
 
     private ProductReview saveReview(String content, int score, Product product, User user) {

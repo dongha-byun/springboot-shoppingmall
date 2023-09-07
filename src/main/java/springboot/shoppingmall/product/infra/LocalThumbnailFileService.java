@@ -2,6 +2,7 @@ package springboot.shoppingmall.product.infra;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -40,6 +41,10 @@ public class LocalThumbnailFileService implements ThumbnailFileService {
 
     @Override
     public List<ThumbnailInfo> save(List<MultipartFile> images) throws IOException {
+        if(images == null || images.isEmpty()) {
+            return new ArrayList<>();
+        }
+
         return images.stream()
                 .map(file -> {
                     try {

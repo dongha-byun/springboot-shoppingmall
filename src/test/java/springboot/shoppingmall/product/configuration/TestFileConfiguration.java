@@ -3,6 +3,7 @@ package springboot.shoppingmall.product.configuration;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +30,20 @@ public class TestFileConfiguration {
 
             @Override
             public List<ThumbnailInfo> save(List<MultipartFile> images) throws IOException {
-                return new ArrayList<>();
+                if(images == null || images.isEmpty()) {
+                    return new ArrayList<>();
+                }
+
+                return images.stream()
+                        .map(
+                                image -> {
+                                    try {
+                                        return save(image);
+                                    } catch (IOException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+                        ).collect(Collectors.toList());
             }
         };
     }
