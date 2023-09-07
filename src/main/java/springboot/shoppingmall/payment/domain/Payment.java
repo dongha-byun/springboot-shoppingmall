@@ -1,4 +1,4 @@
-package springboot.shoppingmall.user.domain;
+package springboot.shoppingmall.payment.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

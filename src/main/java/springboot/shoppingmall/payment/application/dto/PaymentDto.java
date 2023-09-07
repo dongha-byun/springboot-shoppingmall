@@ -1,11 +1,11 @@
-package springboot.shoppingmall.user.service.dto;
+package springboot.shoppingmall.payment.application.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.user.domain.CardCompany;
-import springboot.shoppingmall.user.domain.PayType;
-import springboot.shoppingmall.user.domain.Payment;
+import springboot.shoppingmall.payment.domain.CardCompany;
+import springboot.shoppingmall.payment.domain.PayType;
+import springboot.shoppingmall.payment.domain.Payment;
 
 @AllArgsConstructor
 @NoArgsConstructor

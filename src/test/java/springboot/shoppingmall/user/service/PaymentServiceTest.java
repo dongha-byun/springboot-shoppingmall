@@ -10,11 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.user.domain.Payment;
+import springboot.shoppingmall.payment.application.PaymentService;
+import springboot.shoppingmall.payment.domain.Payment;
 import springboot.shoppingmall.userservice.user.domain.User;
 import springboot.shoppingmall.userservice.user.domain.UserRepository;
-import springboot.shoppingmall.user.dto.PaymentRequest;
-import springboot.shoppingmall.user.service.dto.PaymentDto;
+import springboot.shoppingmall.payment.presentation.request.PaymentRequest;
+import springboot.shoppingmall.payment.application.dto.PaymentDto;
 
 @Transactional
 @SpringBootTest

@@ -1,15 +1,15 @@
-package springboot.shoppingmall.user.service;
+package springboot.shoppingmall.payment.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.user.domain.Payment;
+import springboot.shoppingmall.payment.domain.Payment;
 import springboot.shoppingmall.userservice.user.domain.User;
 import springboot.shoppingmall.userservice.user.domain.UserFinder;
-import springboot.shoppingmall.user.dto.PaymentRequest;
-import springboot.shoppingmall.user.service.dto.PaymentDto;
+import springboot.shoppingmall.payment.presentation.request.PaymentRequest;
+import springboot.shoppingmall.payment.application.dto.PaymentDto;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)

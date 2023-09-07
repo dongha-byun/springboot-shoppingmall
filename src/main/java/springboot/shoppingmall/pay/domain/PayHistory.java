@@ -2,8 +2,6 @@ package springboot.shoppingmall.pay.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -11,7 +9,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.BaseEntity;
-import springboot.shoppingmall.user.domain.PayType;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter

@@ -1,4 +1,4 @@
-package springboot.shoppingmall.user.dto;
+package springboot.shoppingmall.orderhistory.application.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDateTime;

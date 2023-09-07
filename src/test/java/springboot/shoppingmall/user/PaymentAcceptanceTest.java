@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
-import springboot.shoppingmall.user.dto.PaymentResponse;
+import springboot.shoppingmall.payment.presentation.response.PaymentResponse;
 
 public class PaymentAcceptanceTest extends AcceptanceTest {
 

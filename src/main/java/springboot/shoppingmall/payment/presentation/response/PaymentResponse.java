@@ -1,9 +1,9 @@
-package springboot.shoppingmall.user.dto;
+package springboot.shoppingmall.payment.presentation.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.user.service.dto.PaymentDto;
+import springboot.shoppingmall.payment.application.dto.PaymentDto;
 
 @Getter
 @NoArgsConstructor

@@ -6,6 +6,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import springboot.shoppingmall.payment.domain.CardCompany;
+import springboot.shoppingmall.payment.domain.PayType;
+import springboot.shoppingmall.payment.domain.Payment;
 import springboot.shoppingmall.userservice.user.domain.User;
 
 class PaymentTest {

@@ -6,6 +6,7 @@ import static springboot.shoppingmall.utils.DateUtils.toStringOfLocalDateTIme;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,9 @@ import springboot.shoppingmall.userservice.user.domain.UserRepository;
 @Transactional
 @SpringBootTest
 class OrderStatusChangeServiceTest {
+
+    @Autowired
+    EntityManager em;
     @Autowired
     OrderStatusChangeService orderStatusChangeService;
 
@@ -118,6 +122,9 @@ class OrderStatusChangeServiceTest {
         String cancelReason = "단순변심으로 구매 취소합니다.";
         LocalDateTime cancelDate = LocalDateTime.of(2023, 5, 9, 13, 10, 12);
         OrderItemResponse cancelItem = orderStatusChangeService.cancel(orderId, orderItemId, cancelDate, cancelReason);
+
+        em.flush();
+        em.clear();
 
         // then
         assertThat(cancelItem.getOrderStatusName()).isEqualTo(OrderStatus.CANCEL.getStatusName());

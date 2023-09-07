@@ -1,4 +1,4 @@
-package springboot.shoppingmall.user.dto;
+package springboot.shoppingmall.delivery.presentation.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

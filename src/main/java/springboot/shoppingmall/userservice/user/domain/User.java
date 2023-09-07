@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import springboot.shoppingmall.BaseEntity;
-import springboot.shoppingmall.user.domain.Payment;
+import springboot.shoppingmall.payment.domain.Payment;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter

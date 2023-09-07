@@ -28,7 +28,7 @@ import springboot.shoppingmall.order.exception.OverQuantityException;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.delivery.domain.Delivery;
-import springboot.shoppingmall.user.domain.PayType;
+import springboot.shoppingmall.payment.domain.PayType;
 import springboot.shoppingmall.userservice.user.domain.User;
 import springboot.shoppingmall.userservice.user.domain.UserGrade;
 import springboot.shoppingmall.userservice.user.domain.UserGradeInfo;

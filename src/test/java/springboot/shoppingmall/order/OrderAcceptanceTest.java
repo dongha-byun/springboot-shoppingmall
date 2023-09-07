@@ -36,12 +36,12 @@ import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.dto.ProductResponse;
 import springboot.shoppingmall.delivery.domain.Delivery;
 import springboot.shoppingmall.delivery.domain.DeliveryRepository;
-import springboot.shoppingmall.user.domain.PayType;
+import springboot.shoppingmall.payment.domain.PayType;
 import springboot.shoppingmall.userservice.user.domain.User;
 import springboot.shoppingmall.userservice.user.domain.UserGrade;
 import springboot.shoppingmall.userservice.user.domain.UserGradeInfo;
 import springboot.shoppingmall.userservice.user.domain.UserRepository;
-import springboot.shoppingmall.user.dto.DeliveryResponse;
+import springboot.shoppingmall.delivery.presentation.response.DeliveryResponse;
 public class OrderAcceptanceTest extends AcceptanceProductTest {
 
     @Autowired

@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
-import springboot.shoppingmall.user.dto.DeliveryRequest;
-import springboot.shoppingmall.user.dto.DeliveryResponse;
+import springboot.shoppingmall.delivery.presentation.request.DeliveryRequest;
+import springboot.shoppingmall.delivery.presentation.response.DeliveryResponse;
 import springboot.shoppingmall.delivery.application.DeliveryService;
 
 @RequiredArgsConstructor

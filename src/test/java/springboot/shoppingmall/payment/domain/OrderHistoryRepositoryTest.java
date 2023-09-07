@@ -1,4 +1,4 @@
-package springboot.shoppingmall.user.domain;
+package springboot.shoppingmall.payment.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -21,13 +21,15 @@ import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.orderhistory.domain.OrderHistoryRepository;
 import springboot.shoppingmall.pay.domain.PayHistory;
 import springboot.shoppingmall.pay.domain.PayHistoryRepository;
+import springboot.shoppingmall.payment.domain.PayType;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.providers.domain.Provider;
 import springboot.shoppingmall.providers.domain.ProviderRepository;
-import springboot.shoppingmall.user.dto.OrderHistoryDto;
+import springboot.shoppingmall.orderhistory.application.dto.OrderHistoryDto;
 import springboot.shoppingmall.userservice.user.domain.User;
 import springboot.shoppingmall.userservice.user.domain.UserRepository;
 

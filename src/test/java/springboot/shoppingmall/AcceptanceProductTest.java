@@ -9,7 +9,7 @@ import springboot.shoppingmall.category.dto.CategoryResponse;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.dto.ProductResponse;
-import springboot.shoppingmall.user.dto.DeliveryResponse;
+import springboot.shoppingmall.delivery.presentation.response.DeliveryResponse;
 
 public class AcceptanceProductTest extends AcceptanceTest{
 

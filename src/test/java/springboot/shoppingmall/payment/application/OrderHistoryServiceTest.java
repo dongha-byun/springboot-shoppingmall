@@ -1,4 +1,4 @@
-package springboot.shoppingmall.user.service;
+package springboot.shoppingmall.payment.application;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,10 +14,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import springboot.shoppingmall.order.domain.OrderStatus;
-import springboot.shoppingmall.user.domain.OrderHistoryRepository;
+import springboot.shoppingmall.orderhistory.application.OrderHistoryService;
+import springboot.shoppingmall.orderhistory.domain.OrderHistoryRepository;
 import springboot.shoppingmall.userservice.user.domain.User;
 import springboot.shoppingmall.userservice.user.domain.UserFinder;
-import springboot.shoppingmall.user.dto.OrderHistoryDto;
+import springboot.shoppingmall.orderhistory.application.dto.OrderHistoryDto;
 
 @ExtendWith(MockitoExtension.class)
 class OrderHistoryServiceTest {

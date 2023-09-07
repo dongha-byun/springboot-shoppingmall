@@ -1,4 +1,4 @@
-package springboot.shoppingmall.user.domain;
+package springboot.shoppingmall.payment.domain;
 
 import lombok.Getter;
 

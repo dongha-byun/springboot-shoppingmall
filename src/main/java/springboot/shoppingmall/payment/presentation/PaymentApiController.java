@@ -1,4 +1,4 @@
-package springboot.shoppingmall.user.controller;
+package springboot.shoppingmall.payment.presentation;
 
 import java.net.URI;
 import java.util.List;
@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
-import springboot.shoppingmall.user.domain.Payment;
-import springboot.shoppingmall.user.dto.PaymentRequest;
-import springboot.shoppingmall.user.dto.PaymentResponse;
-import springboot.shoppingmall.user.service.PaymentService;
-import springboot.shoppingmall.user.service.dto.PaymentDto;
+import springboot.shoppingmall.payment.domain.Payment;
+import springboot.shoppingmall.payment.presentation.request.PaymentRequest;
+import springboot.shoppingmall.payment.presentation.response.PaymentResponse;
+import springboot.shoppingmall.payment.application.PaymentService;
+import springboot.shoppingmall.payment.application.dto.PaymentDto;
 
 @RequiredArgsConstructor
 @RestController

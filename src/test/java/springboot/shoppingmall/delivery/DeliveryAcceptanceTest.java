@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
-import springboot.shoppingmall.user.dto.DeliveryResponse;
+import springboot.shoppingmall.delivery.presentation.response.DeliveryResponse;
 
 public class DeliveryAcceptanceTest extends AcceptanceTest {
 

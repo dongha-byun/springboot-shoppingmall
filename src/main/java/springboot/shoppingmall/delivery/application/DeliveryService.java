@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.delivery.domain.Delivery;
 import springboot.shoppingmall.delivery.domain.DeliveryRepository;
-import springboot.shoppingmall.user.dto.DeliveryRequest;
-import springboot.shoppingmall.user.dto.DeliveryResponse;
+import springboot.shoppingmall.delivery.presentation.request.DeliveryRequest;
+import springboot.shoppingmall.delivery.presentation.response.DeliveryResponse;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)

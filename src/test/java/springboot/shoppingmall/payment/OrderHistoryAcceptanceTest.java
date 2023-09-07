@@ -1,4 +1,4 @@
-package springboot.shoppingmall.user;
+package springboot.shoppingmall.payment;
 
 import static org.assertj.core.api.Assertions.*;
 import static springboot.shoppingmall.category.CategoryAcceptanceTest.카테고리_등록;
@@ -20,7 +20,7 @@ import springboot.shoppingmall.AcceptanceTest;
 import springboot.shoppingmall.category.dto.CategoryResponse;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.product.dto.ProductResponse;
-import springboot.shoppingmall.user.dto.DeliveryResponse;
+import springboot.shoppingmall.delivery.presentation.response.DeliveryResponse;
 
 public class OrderHistoryAcceptanceTest extends AcceptanceTest {
 

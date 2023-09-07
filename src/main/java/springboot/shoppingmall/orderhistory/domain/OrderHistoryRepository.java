@@ -1,8 +1,8 @@
-package springboot.shoppingmall.user.domain;
+package springboot.shoppingmall.orderhistory.domain;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import springboot.shoppingmall.user.dto.OrderHistoryDto;
+import springboot.shoppingmall.orderhistory.application.dto.OrderHistoryDto;
 import springboot.shoppingmall.userservice.user.domain.User;
 
 public interface OrderHistoryRepository {

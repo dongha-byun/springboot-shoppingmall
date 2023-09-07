@@ -1,10 +1,11 @@
-package springboot.shoppingmall.user.dto;
+package springboot.shoppingmall.orderhistory.presentation.response;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.orderhistory.application.dto.OrderHistoryDto;
 
 @AllArgsConstructor
 @NoArgsConstructor

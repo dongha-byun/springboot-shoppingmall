@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.delivery.application.DeliveryService;
 import springboot.shoppingmall.userservice.user.domain.User;
 import springboot.shoppingmall.userservice.user.domain.UserRepository;
-import springboot.shoppingmall.user.dto.DeliveryResponse;
-import springboot.shoppingmall.user.dto.DeliveryRequest;
+import springboot.shoppingmall.delivery.presentation.response.DeliveryResponse;
+import springboot.shoppingmall.delivery.presentation.request.DeliveryRequest;
 
 @Transactional
 @SpringBootTest
