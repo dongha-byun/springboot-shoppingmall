@@ -31,7 +31,7 @@ public class CartQueryRepositoryImpl implements CartQueryRepository {
                 .from(cart)
                 .join(product).on(product.id.eq(cart.product.id))
                 .join(provider).on(provider.id.eq(product.partnerId))
-                .where(cart.user.id.eq(userId))
+                .where(cart.userId.eq(userId))
                 .fetch();
     }
 }

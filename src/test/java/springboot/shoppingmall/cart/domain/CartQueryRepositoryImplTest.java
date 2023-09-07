@@ -65,7 +65,7 @@ class CartQueryRepositoryImplTest {
                         , provider.getId(), "stored1", "real2", "상품 설명 입니다.", "test-product-code")
         );
 
-        cart1 = cartRepository.save(new Cart(3, product1, user1));
+        cart1 = cartRepository.save(new Cart(3, product1, user1.getId()));
     }
 
     @Test
@@ -98,7 +98,7 @@ class CartQueryRepositoryImplTest {
                         provider.getId(), "stored2", "real2", "상품 설명 입니다.",
                         "test-product-code")
         );
-        Cart cart2 = cartRepository.save(new Cart(5, product2, user1));
+        Cart cart2 = cartRepository.save(new Cart(5, product2, user1.getId()));
 
         // when
         List<CartDto> cartDtos = cartQueryRepository.findAllCartByUserId(user1.getId());
