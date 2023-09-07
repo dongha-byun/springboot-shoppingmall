@@ -43,9 +43,7 @@ public class Payment extends BaseEntity {
 
     private String cvc;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    private Long userId;
 
     public Payment(Long id, PayType type, CardCompany cardCom, String cardNo1, String cardNo2, String cardNo3, String cardNo4,
                    String expireMM, String expireYY, String cvc) {
@@ -76,11 +74,7 @@ public class Payment extends BaseEntity {
     }
 
     public Payment byUser(User user) {
-        this.user = user;
-        if(user != null){
-            user.addPayment(this);
-        }
-
+        this.userId = user.getId();
         return this;
     }
 }

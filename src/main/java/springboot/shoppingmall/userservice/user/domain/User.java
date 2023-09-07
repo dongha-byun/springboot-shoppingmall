@@ -54,8 +54,6 @@ public class User extends BaseEntity {
     @Embedded
     private UserGradeInfo userGradeInfo;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Payment> payments = new ArrayList<>();
     @ColumnDefault("false")
     private boolean isLock = false;
 
@@ -97,18 +95,6 @@ public class User extends BaseEntity {
 
     public boolean isEqualPassword(String password) {
         return this.loginInfo.checkPasswordEqual(password);
-    }
-
-    public void addPayment(Payment payment) {
-        this.payments.add(payment);
-    }
-
-    public void removePayment(Long paymentId) {
-        List<Payment> payments = this.payments.stream()
-                .filter(payment -> !payment.getId().equals(paymentId))
-                .collect(Collectors.toList());
-        this.payments.clear();
-        this.payments.addAll(payments);
     }
 
     public String telNo() {

@@ -70,11 +70,8 @@ class PaymentServiceTest {
         em.clear();
 
         // then
-        User findUser = userRepository.findById(user.getId())
-                        .orElseThrow(
-                                () -> new IllegalArgumentException("사용자 조회 실패")
-                        );
-        assertThat(findUser.getPayments()).isEmpty();
+        List<PaymentDto> allPayments = paymentService.findAllPayments(user.getId());
+        assertThat(allPayments).isNull();
     }
 
     @Test
