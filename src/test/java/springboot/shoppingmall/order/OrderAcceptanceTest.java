@@ -263,7 +263,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         ExtractableResponse<Response> 출고중_에서_주문취소_변경_결과 = 주문_주문취소_요청(주문, 출고중_주문_상품, cancelReason);
 
         // then : 준비 중인 주문이 아니므로, 주문 취소 상태로 변경되지 않고
-        assertThat(출고중_에서_주문취소_변경_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(출고중_에서_주문취소_변경_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
         // when : 출고중인 주문 상태를 배송 중으로 변경하면
         LocalDateTime deliveryStartDate = LocalDateTime.of(2023, 5, 1, 0, 0, 0);
@@ -327,7 +327,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         ExtractableResponse<Response> 구매확정_에서_교환요청_변경_결과 = 주문_교환_요청(배송완료_주문, 구매확정_주문_상품, "교환 신청 합니다.");
 
         // then: 구매확정된 주문이라 교환처리가 불가능하다.
-        assertThat(구매확정_에서_교환요청_변경_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(구매확정_에서_교환요청_변경_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
     }
 

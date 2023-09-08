@@ -16,8 +16,6 @@ import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.providers.domain.Provider;
 import springboot.shoppingmall.providers.domain.ProviderRepository;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest
@@ -25,9 +23,6 @@ class CartQueryRepositoryImplTest {
 
     @Autowired
     CartQueryRepository cartQueryRepository;
-
-    @Autowired
-    UserRepository userRepository;
 
     @Autowired
     ProductRepository productRepository;
@@ -41,7 +36,7 @@ class CartQueryRepositoryImplTest {
     @Autowired
     ProviderRepository providerRepository;
 
-    User user1;
+    Long userId = 100L;
     Category category;
     Category subCategory;
     Product product1;
@@ -50,9 +45,6 @@ class CartQueryRepositoryImplTest {
 
     @BeforeEach
     void setup() {
-        user1 = userRepository.save(new User(
-                "테스터", "tester", "tester1!", "010-2222-3333"
-        ));
         category = categoryRepository.save(new Category("상위 카테고리 1"));
         subCategory = categoryRepository.save(new Category("하위 카테고리 1").changeParent(category));
         provider = providerRepository.save(new Provider(
@@ -65,7 +57,7 @@ class CartQueryRepositoryImplTest {
                         , provider.getId(), "stored1", "real2", "상품 설명 입니다.", "test-product-code")
         );
 
-        cart1 = cartRepository.save(new Cart(3, product1, user1.getId()));
+        cart1 = cartRepository.save(new Cart(3, product1, userId));
     }
 
     @Test
@@ -74,7 +66,7 @@ class CartQueryRepositoryImplTest {
         // given
 
         // when
-        List<CartDto> cartDtos = cartQueryRepository.findAllCartByUserId(user1.getId());
+        List<CartDto> cartDtos = cartQueryRepository.findAllCartByUserId(userId);
         CartDto cartDto = cartDtos.get(0);
 
         // then
@@ -98,10 +90,10 @@ class CartQueryRepositoryImplTest {
                         provider.getId(), "stored2", "real2", "상품 설명 입니다.",
                         "test-product-code")
         );
-        Cart cart2 = cartRepository.save(new Cart(5, product2, user1.getId()));
+        Cart cart2 = cartRepository.save(new Cart(5, product2, userId));
 
         // when
-        List<CartDto> cartDtos = cartQueryRepository.findAllCartByUserId(user1.getId());
+        List<CartDto> cartDtos = cartQueryRepository.findAllCartByUserId(userId);
 
         // then
         assertThat(cartDtos).hasSize(2)

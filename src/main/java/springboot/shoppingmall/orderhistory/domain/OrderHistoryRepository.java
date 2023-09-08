@@ -6,5 +6,5 @@ import springboot.shoppingmall.orderhistory.application.dto.OrderHistoryDto;
 import springboot.shoppingmall.userservice.user.domain.User;
 
 public interface OrderHistoryRepository {
-    List<OrderHistoryDto> queryOrderHistory(User user, LocalDateTime startDate, LocalDateTime endDate);
+    List<OrderHistoryDto> queryOrderHistory(Long userId, LocalDateTime startDate, LocalDateTime endDate);
 }

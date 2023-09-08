@@ -1,4 +1,4 @@
-package springboot.shoppingmall.payment.domain;
+package springboot.shoppingmall.orderhistory.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -147,7 +147,7 @@ class OrderHistoryRepositoryTest {
                 LocalDateTime.of(2023, 2, 1, 0, 0, 0);
         LocalDateTime endDate =
                 LocalDateTime.of(2023, 6, 1, 23, 59, 59);
-        List<OrderHistoryDto> orderHistories = orderHistoryRepository.queryOrderHistory(user, startDate, endDate);
+        List<OrderHistoryDto> orderHistories = orderHistoryRepository.queryOrderHistory(user.getId(), startDate, endDate);
 
         // then
         assertThat(orderHistories).hasSize(2);

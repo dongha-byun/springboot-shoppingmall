@@ -21,7 +21,7 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository{
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<OrderHistoryDto> queryOrderHistory(User user, LocalDateTime startDate, LocalDateTime endDate) {
+    public List<OrderHistoryDto> queryOrderHistory(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
         return jpaQueryFactory.select(
                         Projections.constructor(OrderHistoryDto.class,
                                 order.id, orderItem.id, order.orderDate, orderItem.orderStatus,
@@ -33,7 +33,7 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository{
                 .join(provider).on(provider.id.eq(orderItem.product.partnerId))
                 .join(payHistory).on(payHistory.orderId.eq(order.id))
                 .where(
-                        order.userId.eq(user.getId())
+                        order.userId.eq(userId)
                                 .and(order.orderDate.between(startDate, endDate))
                 )
                 .orderBy(order.orderDate.desc())

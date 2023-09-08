@@ -1,4 +1,4 @@
-package springboot.shoppingmall.payment;
+package springboot.shoppingmall.orderhistory;
 
 import static org.assertj.core.api.Assertions.*;
 import static springboot.shoppingmall.category.CategoryAcceptanceTest.카테고리_등록;
