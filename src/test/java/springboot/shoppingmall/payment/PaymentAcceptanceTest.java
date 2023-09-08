@@ -1,4 +1,4 @@
-package springboot.shoppingmall.user;
+package springboot.shoppingmall.payment;
 
 import static org.assertj.core.api.Assertions.*;
 

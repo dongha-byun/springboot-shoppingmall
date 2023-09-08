@@ -11,12 +11,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.BaseEntity;
 import springboot.shoppingmall.userservice.user.domain.User;
 
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(name = "payment")
@@ -28,7 +31,7 @@ public class Payment extends BaseEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private PayType type;
+    private PayType payType;
 
     @Enumerated(EnumType.STRING)
     private CardCompany cardCom;
@@ -45,36 +48,8 @@ public class Payment extends BaseEntity {
 
     private Long userId;
 
-    public Payment(Long id, PayType type, CardCompany cardCom, String cardNo1, String cardNo2, String cardNo3, String cardNo4,
-                   String expireMM, String expireYY, String cvc) {
-        this.id = id;
-        this.type = type;
-        this.cardCom = cardCom;
-        this.cardNo1 = cardNo1;
-        this.cardNo2 = cardNo2;
-        this.cardNo3 = cardNo3;
-        this.cardNo4 = cardNo4;
-        this.expireMM = expireMM;
-        this.expireYY = expireYY;
-        this.cvc = cvc;
-    }
-
-    @Builder
-    public Payment(PayType type, CardCompany cardCom, String cardNo1, String cardNo2, String cardNo3, String cardNo4,
-                   String expireMM, String expireYY, String cvc) {
-        this.type = type;
-        this.cardCom = cardCom;
-        this.cardNo1 = cardNo1;
-        this.cardNo2 = cardNo2;
-        this.cardNo3 = cardNo3;
-        this.cardNo4 = cardNo4;
-        this.expireMM = expireMM;
-        this.expireYY = expireYY;
-        this.cvc = cvc;
-    }
-
-    public Payment byUser(User user) {
-        this.userId = user.getId();
+    public Payment byUser(Long userId) {
+        this.userId = userId;
         return this;
     }
 }

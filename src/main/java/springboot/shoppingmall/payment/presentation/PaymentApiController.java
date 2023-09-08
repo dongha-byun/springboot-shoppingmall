@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
+import springboot.shoppingmall.payment.application.dto.PaymentCreateDto;
 import springboot.shoppingmall.payment.domain.Payment;
 import springboot.shoppingmall.payment.presentation.request.PaymentRequest;
 import springboot.shoppingmall.payment.presentation.response.PaymentResponse;
@@ -28,8 +29,9 @@ public class PaymentApiController {
     @PostMapping("/payments")
     public ResponseEntity<PaymentResponse> createPayment(@AuthenticationStrategy AuthorizedUser user,
                                                          @RequestBody PaymentRequest paymentRequest) {
-        Payment payment = paymentService.createPayment(user.getId(), paymentRequest);
-        PaymentResponse paymentResponse = PaymentResponse.of(PaymentDto.of(payment));
+        PaymentCreateDto createDto = paymentRequest.toDto();
+        PaymentDto paymentDto = paymentService.createPayment(user.getId(), createDto);
+        PaymentResponse paymentResponse = PaymentResponse.of(paymentDto);
         return ResponseEntity.created(URI.create("/payments/"+paymentResponse.getId())).body(paymentResponse);
     }
 
