@@ -3,21 +3,14 @@ package springboot.shoppingmall.payment.application;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
-import javax.persistence.EntityManager;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.payment.application.PaymentService;
 import springboot.shoppingmall.payment.application.dto.PaymentCreateDto;
 import springboot.shoppingmall.payment.domain.CardCompany;
 import springboot.shoppingmall.payment.domain.PayType;
-import springboot.shoppingmall.payment.domain.Payment;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserRepository;
-import springboot.shoppingmall.payment.presentation.request.PaymentRequest;
 import springboot.shoppingmall.payment.application.dto.PaymentDto;
 
 @Transactional
@@ -25,20 +18,9 @@ import springboot.shoppingmall.payment.application.dto.PaymentDto;
 class PaymentServiceTest {
 
     @Autowired
-    EntityManager em;
-
-    @Autowired
     PaymentService paymentService;
 
-    @Autowired
-    UserRepository userRepository;
-
-    User user;
-
-    @BeforeEach
-    void beforeEach() {
-        user = userRepository.save(new User("결제수단테스트사용자", "paymentUser", "paymentUser1!", "010-1234-1234"));
-    }
+    Long userId = 10L;
 
     @Test
     @DisplayName("결제수단을 추가한다.")
@@ -50,7 +32,7 @@ class PaymentServiceTest {
                 .payType(PayType.CARD).cardCom(CardCompany.SH)
                 .build();
         // when
-        PaymentDto paymentDto = paymentService.createPayment(user.getId(), createDto);
+        PaymentDto paymentDto = paymentService.createPayment(userId, createDto);
 
         // then
         assertThat(paymentDto.getId()).isNotNull();
@@ -65,13 +47,13 @@ class PaymentServiceTest {
                 .expireMM("10").expireYY("32").cvc("333")
                 .payType(PayType.CARD).cardCom(CardCompany.SH)
                 .build();
-        PaymentDto paymentDto = paymentService.createPayment(user.getId(), createDto);
+        PaymentDto paymentDto = paymentService.createPayment(userId, createDto);
 
         // when
-        paymentService.deletePayment(user.getId(), paymentDto.getId());
+        paymentService.deletePayment(userId, paymentDto.getId());
 
         // then
-        List<PaymentDto> allPayments = paymentService.findAllPayments(user.getId());
+        List<PaymentDto> allPayments = paymentService.findAllPayments(userId);
         assertThat(allPayments).hasSize(0);
     }
 
@@ -84,16 +66,16 @@ class PaymentServiceTest {
                 .expireMM("10").expireYY("32").cvc("333")
                 .payType(PayType.CARD).cardCom(CardCompany.SH)
                 .build();
-        PaymentDto paymentDto1 = paymentService.createPayment(user.getId(), createDto1);
+        PaymentDto paymentDto1 = paymentService.createPayment(userId, createDto1);
         PaymentCreateDto createDto2 = PaymentCreateDto.builder()
                 .cardNo1("9871").cardNo2("2430").cardNo3("2099").cardNo4("2109")
                 .expireMM("02").expireYY("21").cvc("311")
                 .payType(PayType.CARD).cardCom(CardCompany.KB)
                 .build();
-        PaymentDto paymentDto2 = paymentService.createPayment(user.getId(), createDto2);
+        PaymentDto paymentDto2 = paymentService.createPayment(userId, createDto2);
 
         // when
-        List<PaymentDto> allPayments = paymentService.findAllPayments(user.getId());
+        List<PaymentDto> allPayments = paymentService.findAllPayments(userId);
 
         // then
         assertThat(allPayments).hasSize(2)

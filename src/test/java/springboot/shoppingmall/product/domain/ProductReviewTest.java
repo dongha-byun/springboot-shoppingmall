@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import springboot.shoppingmall.category.domain.Category;
-import springboot.shoppingmall.userservice.user.domain.User;
 
 class ProductReviewTest {
 
@@ -16,7 +15,7 @@ class ProductReviewTest {
     @DisplayName("상품 리뷰 등록 테스트")
     void addReview() {
         // given
-        User user = new User("사용자1", "user1", "user1!", "010-2222-3333");
+        Long userId = 10L;
         Product product = new Product(
                 "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
                 new Category("상위 카테고리"), new Category("하위 카테고리"), 10L,
@@ -27,7 +26,7 @@ class ProductReviewTest {
         ProductReview productReview2 = new ProductReview("리뷰 2 입니다.", 5);
 
         // when
-        ProductReview review1 = productReview1.byProduct(product).byUser(user.getId());
+        ProductReview review1 = productReview1.byProduct(product).byUser(userId);
         ProductReview review2 = productReview2.byProduct(product);
 
         // then
@@ -67,8 +66,8 @@ class ProductReviewTest {
     @DisplayName("상품 리뷰 목록 조회 테스트")
     void findAllReviewByProduct() {
         // given
-        User user1 = new User("사용자1", "user1", "user1!", "010-2222-3333");
-        User user2 = new User("사용자2", "user2", "user2@", "010-4444-5555");
+        Long user1Id = 10L;
+        Long user2Id = 20L;
         Product product = new Product(
                 "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
                 new Category("상위 카테고리"), new Category("하위 카테고리"), 10L,
@@ -80,13 +79,13 @@ class ProductReviewTest {
                 .content("리뷰 입니다.")
                 .score(4)
                 .product(product)
-                .userId(user1.getId())
+                .userId(user1Id)
                 .build();
         ProductReview.builder()
                 .content("리뷰 2 입니다.")
                 .score(5)
                 .product(product)
-                .userId(user2.getId())
+                .userId(user2Id)
                 .build();
 
         // when
@@ -96,8 +95,8 @@ class ProductReviewTest {
         assertThat(productReviews.getReviews()).hasSize(2)
                 .extracting("content", "score", "userId")
                 .containsExactly(
-                        tuple("리뷰 입니다.", 4, user1.getId()),
-                        tuple("리뷰 2 입니다.", 5, user2.getId())
+                        tuple("리뷰 입니다.", 4, user1Id),
+                        tuple("리뷰 2 입니다.", 5, user2Id)
                 );
     }
 

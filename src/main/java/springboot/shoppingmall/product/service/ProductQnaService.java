@@ -9,7 +9,6 @@ import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
 import springboot.shoppingmall.product.domain.ProductQna;
 import springboot.shoppingmall.product.domain.ProductQnaRepository;
-import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.dto.ProductQnaDto;
 import springboot.shoppingmall.product.dto.ProductQnaRequest;
 import springboot.shoppingmall.product.dto.ProductQnaResponse;
@@ -23,7 +22,7 @@ public class ProductQnaService {
     private final ProductFinder productFinder;
 
     @Transactional
-    public ProductQnaResponse createQna(Long userId, String loginId, Long productId, ProductQnaRequest productQnaRequest) {
+    public ProductQnaResponse createQna(Long userId, Long productId, ProductQnaRequest productQnaRequest) {
         Product product = productFinder.findProductById(productId);
         ProductQna productQna = productQnaRepository.save(ProductQna.builder()
                 .content(productQnaRequest.getContent())

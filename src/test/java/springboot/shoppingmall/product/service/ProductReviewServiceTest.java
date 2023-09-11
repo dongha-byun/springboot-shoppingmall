@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,13 +23,10 @@ import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.domain.ProductReview;
-import springboot.shoppingmall.product.domain.ProductReviewImage;
 import springboot.shoppingmall.product.domain.ProductReviewRepository;
 import springboot.shoppingmall.product.dto.ProductReviewResponse;
 import springboot.shoppingmall.product.dto.ProductUserReviewResponse;
 import springboot.shoppingmall.product.service.dto.ProductReviewCreateDto;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest
@@ -44,9 +40,6 @@ class ProductReviewServiceTest {
 
     @Autowired
     ProductRepository productRepository;
-
-    @Autowired
-    UserRepository userRepository;
 
     @Autowired
     ProductReviewRepository productReviewRepository;
@@ -73,10 +66,10 @@ class ProductReviewServiceTest {
      * 리뷰를 남긴 주문은 구매확정 처리가 되어 교환/환불이 불가하다.
      */
     @Test
-    @DisplayName("상품 리뷰 등록 테스트 - 리뷰가 등록되면 구매확정 처리 한다.")
+    @DisplayName("리뷰가 등록되면 해당 주문상품은 구매확정 처리가 된다.")
     void createReviewTest() {
         // given
-        User user = saveUser("사용자1", "user1", "user1!", "010-2222-3333");
+        Long userId = 10L;
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product = productRepository.save(
@@ -87,13 +80,13 @@ class ProductReviewServiceTest {
                         "test-product-code"
                 )
         );
-        Order endOrder = saveOrder("test-order-code", user, product);
+        Order endOrder = saveOrder("test-order-code", userId, product);
 
         // when
         OrderItem savedOrderItem = endOrder.getItems().get(0);
         ProductReviewCreateDto createDto = new ProductReviewCreateDto("리뷰 등록 합니다.", 3);
         ProductUserReviewResponse response = service.createProductReview(
-                user.getId(), savedOrderItem.getId(), product.getId(), createDto, new ArrayList<>()
+                userId, savedOrderItem.getId(), product.getId(), createDto, new ArrayList<>()
         );
 
         // then
@@ -110,7 +103,7 @@ class ProductReviewServiceTest {
     @DisplayName("자신이 이미 리뷰를 등록한 상품에 추가로 리뷰를 등록할 수 없다.")
     void createReviewTest_fail() {
         // given
-        User user = saveUser("사용자1", "user1", "user1!", "010-2222-3333");
+        Long userId = 10L;
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product = productRepository.save(
@@ -121,15 +114,15 @@ class ProductReviewServiceTest {
                         "test-product-code"
                 )
         );
-        Order endOrder = saveOrder("test-order-code", user, product);
+        Order endOrder = saveOrder("test-order-code", userId, product);
 
         ProductReviewCreateDto createDto = new ProductReviewCreateDto("리뷰 등록 합니다.", 3);
         OrderItem savedItem = endOrder.getItems().get(0);
-        service.createProductReview(user.getId(), savedItem.getId(), product.getId(), createDto, new ArrayList<>());
+        service.createProductReview(userId, savedItem.getId(), product.getId(), createDto, new ArrayList<>());
 
         // when & then
         assertThatThrownBy(
-                () -> service.createProductReview(user.getId(), savedItem.getId(), product.getId(), createDto, new ArrayList<>())
+                () -> service.createProductReview(userId, savedItem.getId(), product.getId(), createDto, new ArrayList<>())
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -137,8 +130,8 @@ class ProductReviewServiceTest {
     @DisplayName("상품에 등록된 리뷰 목록을 조회한다.")
     void findAllReviewByProduct() {
         // given
-        User user1 = saveUser("사용자1", "user1", "user1!", "010-2222-3333");
-        User user2 = saveUser("사용자2", "user2", "user1!", "010-2222-3333");
+        Long user1Id = 10L;
+        Long user2Id = 20L;
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product = productRepository.save(
@@ -150,8 +143,8 @@ class ProductReviewServiceTest {
                 )
         );
 
-        ProductReview review1 = saveReview("리뷰 입니다.", 4, product, user1);
-        ProductReview review2 = saveReview("리뷰 2 입니다.", 5, product, user2);
+        ProductReview review1 = saveReview("리뷰 입니다.", 4, product, user1Id);
+        ProductReview review2 = saveReview("리뷰 2 입니다.", 5, product, user2Id);
 
         // when
         List<ProductReviewResponse> reviews = service.findAllReview(product.getId());
@@ -169,7 +162,7 @@ class ProductReviewServiceTest {
     @DisplayName("사용자가 자신이 작성한 리뷰를 삭제한다.")
     void deleteProductReview() {
         // given
-        User user = saveUser("사용자1", "user1", "user1!", "010-2222-3333");
+        Long userId = 10L;
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product1 = productRepository.save(
@@ -189,34 +182,32 @@ class ProductReviewServiceTest {
                 )
         );
 
-        ProductReview review1 = saveReview("리뷰 입니다.", 4, product1, user);
-        ProductReview review2 = saveReview("리뷰 2 입니다.", 5, product2, user);
+        ProductReview review1 = saveReview("리뷰 입니다.", 4, product1, userId);
+        ProductReview review2 = saveReview("리뷰 2 입니다.", 5, product2, userId);
 
         em.flush();
         em.clear();
 
         // when
-        service.deleteProductReview(user.getId(), review1.getId());
+        service.deleteProductReview(userId, review1.getId());
 
         em.flush();
         em.clear();
 
         // then
-        List<ProductReview> reviews = productReviewRepository.findAllByUserId(user.getId());
-        assertThat(reviews).hasSize(1);
-
-        List<Long> ids = reviews.stream()
-                .map(ProductReview::getId)
-                .collect(Collectors.toList());
-        assertThat(ids).containsExactly(review2.getId());
-        assertThat(ids).doesNotContain(review1.getId());
+        List<ProductReview> reviews = productReviewRepository.findAllByUserId(userId);
+        assertThat(reviews).hasSize(1)
+                .extracting("id", "content")
+                .containsExactly(
+                        tuple(review2.getId(), "리뷰 2 입니다.")
+                );
     }
 
     @Test
     @DisplayName("사용자가 자신이 작성한 리뷰 목록을 조회한다.")
     void findAllReviewByUser() {
         // given
-        User user = saveUser("사용자1", "user1", "user1!", "010-2222-3333");
+        Long userId = 10L;
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product1 = productRepository.save(
@@ -236,11 +227,11 @@ class ProductReviewServiceTest {
                 )
         );
 
-        ProductReview review1 = saveReview("리뷰 입니다.", 4, product1, user);
-        ProductReview review2 = saveReview("리뷰 2 입니다.", 5, product2, user);
+        ProductReview review1 = saveReview("리뷰 입니다.", 4, product1, userId);
+        ProductReview review2 = saveReview("리뷰 2 입니다.", 5, product2, userId);
 
         // when
-        List<ProductUserReviewResponse> reviews = service.findAllUserReview(user.getId());
+        List<ProductUserReviewResponse> reviews = service.findAllUserReview(userId);
 
         // then
         assertThat(reviews).hasSize(2)
@@ -259,12 +250,11 @@ class ProductReviewServiceTest {
         // 상품 평점이 갱신된다.
 
         // given
-        User user1 = saveUser("사용자1", "user1", "user1!", "010-1111-3333");
-        User user2 = saveUser("사용자2", "user2", "user2!", "010-2222-3333");
-        User user3 = saveUser("사용자3", "user3", "user3!", "010-3333-3333");
-        User user4 = saveUser("사용자4", "user4", "user4!", "010-4444-3333");
-        User user5 = saveUser("사용자5", "user5", "user5!", "010-5555-3333");
-
+        Long user1Id = 10L;
+        Long user2Id = 20L;
+        Long user3Id = 30L;
+        Long user4Id = 40L;
+        Long user5Id = 50L;
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product = productRepository.save(
@@ -276,26 +266,26 @@ class ProductReviewServiceTest {
                 )
         );
 
-        Order endOrder1 = saveOrder("test-order-code-1", user1, product);
-        Order endOrder2 = saveOrder("test-order-code-2", user2, product);
-        Order endOrder3 = saveOrder("test-order-code-3", user3, product);
-        Order endOrder4 = saveOrder("test-order-code-4", user4, product);
-        Order endOrder5 = saveOrder("test-order-code-5", user5, product);
+        Order endOrder1 = saveOrder("test-order-code-1", user1Id, product);
+        Order endOrder2 = saveOrder("test-order-code-2", user2Id, product);
+        Order endOrder3 = saveOrder("test-order-code-3", user3Id, product);
+        Order endOrder4 = saveOrder("test-order-code-4", user4Id, product);
+        Order endOrder5 = saveOrder("test-order-code-5", user5Id, product);
 
         // when & then
-        service.createProductReview(user1.getId(), endOrder1.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 1", 5), new ArrayList<>());
+        service.createProductReview(user1Id, endOrder1.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 1", 5), new ArrayList<>());
         assertThat(product.getScore()).isEqualTo(5.0);
 
-        service.createProductReview(user2.getId(), endOrder2.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 2", 4), new ArrayList<>());
+        service.createProductReview(user2Id, endOrder2.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 2", 4), new ArrayList<>());
         assertThat(product.getScore()).isEqualTo(4.5);
 
-        service.createProductReview(user3.getId(), endOrder3.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 3", 2), new ArrayList<>());
+        service.createProductReview(user3Id, endOrder3.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 3", 2), new ArrayList<>());
         assertThat(product.getScore()).isEqualTo(3.7);
 
-        service.createProductReview(user4.getId(), endOrder4.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 4", 2), new ArrayList<>());
+        service.createProductReview(user4Id, endOrder4.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 4", 2), new ArrayList<>());
         assertThat(product.getScore()).isEqualTo(3.3);
 
-        service.createProductReview(user5.getId(), endOrder5.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 5", 4), new ArrayList<>());
+        service.createProductReview(user5Id, endOrder5.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 5", 4), new ArrayList<>());
         assertThat(product.getScore()).isEqualTo(3.4);
     }
 
@@ -303,7 +293,7 @@ class ProductReviewServiceTest {
     @DisplayName("자신의 리뷰에 이미지를 등록할 수 있다.")
     void create_review_with_image() {
         // given
-        User user = saveUser("구매자", "buyer@test.com", "user1!", "010-2222-3333");
+        Long userId = 10L;
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product = productRepository.save(
@@ -314,7 +304,7 @@ class ProductReviewServiceTest {
                         "test-product-code"
                 )
         );
-        Order endOrder = saveOrder("test-order-code-1", user, product);
+        Order endOrder = saveOrder("test-order-code-1", userId, product);
 
         // when
         ProductReviewCreateDto createDto = new ProductReviewCreateDto("리뷰 남깁니다. 1", 5);
@@ -325,7 +315,7 @@ class ProductReviewServiceTest {
                 new ThumbnailInfo("stored-file-name4", "view-file-name4"),
                 new ThumbnailInfo("stored-file-name5", "view-file-name5")
         );
-        ProductUserReviewResponse productReview = service.createProductReview(user.getId(), endOrder.getId(),
+        ProductUserReviewResponse productReview = service.createProductReview(userId, endOrder.getId(),
                 product.getId(), createDto, reviewImages);
 
         em.flush();
@@ -344,24 +334,20 @@ class ProductReviewServiceTest {
                 );
     }
 
-    private Order saveOrder(String orderCode, User user, Product product) {
+    private Order saveOrder(String orderCode, Long userId, Product product) {
         List<OrderItem> items = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
         return orderRepository.save(
-                new Order(orderCode, user.getId(), items, orderDeliveryInfo)
+                new Order(orderCode, userId, items, orderDeliveryInfo)
         );
     }
 
-    private User saveUser(String name, String email, String password, String telNo) {
-        return userRepository.save(new User(name, email, password, telNo));
-    }
-
-    private ProductReview saveReview(String content, int score, Product product, User user) {
+    private ProductReview saveReview(String content, int score, Product product, Long userId) {
         return productReviewRepository.save(
                 ProductReview.builder()
                         .content(content)
                         .score(score)
                         .product(product)
-                        .userId(user.getId())
+                        .userId(userId)
                         .build()
         );
     }

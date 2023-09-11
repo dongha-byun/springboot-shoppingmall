@@ -33,10 +33,8 @@ class PartnersOrderQueryServiceTest {
 
     @Autowired
     PartnersOrderQueryRepository queryRepository;
-
     @Autowired
     ProductRepository productRepository;
-
     @Autowired
     OrderRepository orderRepository;
     @Autowired
@@ -55,7 +53,6 @@ class PartnersOrderQueryServiceTest {
     Order order1;
     Order order2;
     Order order3;
-
 
     @BeforeEach
     void setUp() {
@@ -137,23 +134,13 @@ class PartnersOrderQueryServiceTest {
                 partnersOrderQueryService.findPartnersOrders(partnersId, startDate, endDate);
 
         // then
-        assertThat(partnersReadyOrders).hasSize(3);
-        List<String> orderStatusNames = partnersReadyOrders.stream()
-                .map(PartnersOrderQueryResponse::getOrderStatusName)
-                .collect(Collectors.toList());
-        assertThat(orderStatusNames).containsExactly(
-                OrderStatus.READY.getStatusName(),
-                OrderStatus.READY.getStatusName(),
-                OrderStatus.OUTING.getStatusName()
-        );
-
-        // 송장번호 check
-        List<String> invoiceNumbers = partnersReadyOrders.stream()
-                .map(PartnersOrderQueryResponse::getInvoiceNumber)
-                .collect(Collectors.toList());
-        assertThat(invoiceNumbers).containsExactly(
-                null, null, invoiceNumber
-        );
+        assertThat(partnersReadyOrders).hasSize(3)
+                .extracting("orderStatusName", "invoiceNumber")
+                .containsExactly(
+                        tuple("상품 준비중", null),
+                        tuple("상품 준비중", null),
+                        tuple("상품 출고", "test-invoice-number")
+                );
     }
 
     @Test
@@ -188,13 +175,13 @@ class PartnersOrderQueryServiceTest {
                 partnersOrderQueryService.findPartnersOrders(partnersId, startDate, endDate);
 
         // then
-        assertThat(partnersDeliveryOrders).hasSize(3);
-        List<Long> ids = partnersDeliveryOrders.stream()
-                .map(PartnersOrderQueryResponse::getOrderItemId)
-                .collect(Collectors.toList());
-        assertThat(ids).containsExactly(
-                savedOrder1Item.getId(), savedOrder2Item.getId(), savedOrder3Item.getId()
-        );
+        assertThat(partnersDeliveryOrders).hasSize(3)
+                .extracting("orderItemId", "orderStatusName", "invoiceNumber")
+                .containsExactly(
+                        tuple(savedOrder1Item.getId(), "배송중", "test-invoice-number1"),
+                        tuple(savedOrder2Item.getId(), "배송중", "test-invoice-number2"),
+                        tuple(savedOrder3Item.getId(), "배송중", "test-invoice-number3")
+                );
     }
 
     @Test

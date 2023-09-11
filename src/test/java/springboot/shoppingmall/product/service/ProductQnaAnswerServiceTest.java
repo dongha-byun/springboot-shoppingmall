@@ -16,8 +16,6 @@ import springboot.shoppingmall.product.domain.ProductQna;
 import springboot.shoppingmall.product.domain.ProductQnaRepository;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.dto.ProductQnaAnswerResponse;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest
@@ -25,8 +23,6 @@ public class ProductQnaAnswerServiceTest {
 
     @Autowired
     ProductQnaAnswerService productQnaAnswerService;
-    @Autowired
-    UserRepository userRepository;
 
     @Autowired
     ProductRepository productRepository;
@@ -38,7 +34,7 @@ public class ProductQnaAnswerServiceTest {
     CategoryRepository categoryRepository;
 
     Product product;
-    User saveUser;
+    Long userId = 10L;
 
     @BeforeEach
     void setUp(){
@@ -52,12 +48,6 @@ public class ProductQnaAnswerServiceTest {
                         "test-product-code"
                 )
         );
-        saveUser = userRepository.save(User.builder()
-                .userName("테스터1")
-                .email("tester1@test.com")
-                .password("tester1!")
-                .telNo("010-2222-3333")
-                .build());
     }
 
     @Test
@@ -65,11 +55,12 @@ public class ProductQnaAnswerServiceTest {
     void createTest(){
         // given
         ProductQna productQna = productQnaRepository.save(
-                new ProductQna("문의글 작성합니다.", product, saveUser.getId())
+                new ProductQna("문의글 작성합니다.", product, userId)
         );
 
         // when
-        ProductQnaAnswerResponse qnaAnswer = productQnaAnswerService.createQnaAnswer(productQna.getId(), "답변 드립니다. 감사합니다");
+        ProductQnaAnswerResponse qnaAnswer =
+                productQnaAnswerService.createQnaAnswer(productQna.getId(), "답변 드립니다. 감사합니다");
 
         // then
         assertThat(qnaAnswer).isNotNull();

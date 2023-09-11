@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +13,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest
 class ProductReviewRepositoryTest {
-
-    @Autowired
-    EntityManager em;
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -31,16 +25,13 @@ class ProductReviewRepositoryTest {
     ProductRepository productRepository;
 
     @Autowired
-    UserRepository userRepository;
-
-    @Autowired
     ProductReviewRepository productReviewRepository;
 
     @Test
     @DisplayName("내가 등록한 리뷰 목록 조회")
     void findAllReviewByUser() {
         // given
-        User user = userRepository.save(new User("사용자1", "user1", "user1!", "010-2222-3333"));
+        Long userId = 10L;
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product1 = productRepository.save(
@@ -61,14 +52,14 @@ class ProductReviewRepositoryTest {
         );
 
         ProductReview review1 = productReviewRepository.save(
-                createReview("리뷰 입니다.", 4, product1, user)
+                createReview("리뷰 입니다.", 4, product1, userId)
         );
         ProductReview review2 = productReviewRepository.save(
-                createReview("리뷰 2 입니다.", 5, product2, user)
+                createReview("리뷰 2 입니다.", 5, product2, userId)
         );
 
         // when
-        List<ProductReview> reviews = productReviewRepository.findAllByUserId(user.getId());
+        List<ProductReview> reviews = productReviewRepository.findAllByUserId(userId);
 
         // then
         assertThat(reviews).hasSize(2);
@@ -81,7 +72,7 @@ class ProductReviewRepositoryTest {
     @DisplayName("사용자가 상품에 리뷰를 작성한 적이 있다.")
     void exists_user_and_product_true() {
         // given
-        User user = userRepository.save(new User("사용자1", "user1", "user1!", "010-2222-3333"));
+        Long userId = 10L;
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product1 = productRepository.save(
@@ -94,11 +85,11 @@ class ProductReviewRepositoryTest {
         );
 
         productReviewRepository.save(
-                createReview("리뷰 입니다.", 4, product1, user)
+                createReview("리뷰 입니다.", 4, product1, userId)
         );
 
         // when
-        boolean isExists = productReviewRepository.existsByUserIdAndProduct(user.getId(), product1);
+        boolean isExists = productReviewRepository.existsByUserIdAndProduct(userId, product1);
 
         // then
         assertThat(isExists).isTrue();
@@ -108,7 +99,7 @@ class ProductReviewRepositoryTest {
     @DisplayName("사용자가 상품에 리뷰를 작성한 적이 없다.")
     void exists_user_and_product_false() {
         // given
-        User user = userRepository.save(new User("사용자1", "user1", "user1!", "010-2222-3333"));
+        Long userId = 10L;
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product1 = productRepository.save(
@@ -129,11 +120,11 @@ class ProductReviewRepositoryTest {
         );
 
         productReviewRepository.save(
-                createReview("리뷰 입니다.", 4, product1, user)
+                createReview("리뷰 입니다.", 4, product1, userId)
         );
 
         // when
-        boolean isExists = productReviewRepository.existsByUserIdAndProduct(user.getId(), product2);
+        boolean isExists = productReviewRepository.existsByUserIdAndProduct(userId, product2);
 
         // then
         assertThat(isExists).isFalse();
@@ -143,7 +134,7 @@ class ProductReviewRepositoryTest {
     @DisplayName("리뷰 저장 시, 이미지를 첨부할 수 있다.")
     void save_review_with_images() {
         // given
-        User user = userRepository.save(new User("사용자1", "user1", "user1!", "010-2222-3333"));
+        Long userId = 10L;
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product = productRepository.save(
@@ -162,11 +153,8 @@ class ProductReviewRepositoryTest {
                 new ProductReviewImage("stored-file-name-3", "view-file-name-3")
         );
         ProductReview savedReview = productReviewRepository.save(
-                createReviewWithImages("리뷰 입니다.", 3, product, user, images)
+                createReviewWithImages("리뷰 입니다.", 3, product, userId, images)
         );
-
-        em.flush();
-        em.clear();
 
         // then
         ProductReview findReview = productReviewRepository.findById(savedReview.getId()).orElseThrow();
@@ -180,18 +168,18 @@ class ProductReviewRepositoryTest {
                 );
     }
 
-    private ProductReview createReview(String content, int score, Product product, User user) {
-        return createReviewWithImages(content, score, product, user, new ArrayList<>());
+    private ProductReview createReview(String content, int score, Product product, Long userId) {
+        return createReviewWithImages(content, score, product, userId, new ArrayList<>());
     }
 
     private ProductReview createReviewWithImages(
-            String content, int score, Product product, User user, List<ProductReviewImage> images
+            String content, int score, Product product, Long userId, List<ProductReviewImage> images
     ) {
         return ProductReview.builder()
                 .content(content)
                 .score(score)
                 .product(product)
-                .userId(user.getId())
+                .userId(userId)
                 .images(images)
                 .build();
     }

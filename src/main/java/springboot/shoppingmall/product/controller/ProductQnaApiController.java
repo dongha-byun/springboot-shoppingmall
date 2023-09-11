@@ -29,8 +29,7 @@ public class ProductQnaApiController {
                                                         @RequestBody ProductQnaRequest request){
         String email = user.getEmail();
 
-        //ProductQnaResponse productQnaResponse = productQnaService.createQna(user.getId(), productId, request);
-        ProductQnaResponse productQnaResponse = productQnaService.createQna(user.getId(), email, productId, request);
+        ProductQnaResponse productQnaResponse = productQnaService.createQna(user.getId(), productId, request);
         return ResponseEntity.created(URI.create("/qna/"+productQnaResponse.getId())).body(productQnaResponse);
     }
 
