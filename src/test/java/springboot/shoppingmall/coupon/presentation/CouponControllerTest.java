@@ -1,13 +1,17 @@
 package springboot.shoppingmall.coupon.presentation;
 
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -61,5 +65,30 @@ class CouponControllerTest {
                         "지급대상은 필수 항목 입니다.",
                         "1% 이상 할인율을 책정해야 합니다."
                 )));
+    }
+
+    @Test
+    @DisplayName("쿠폰 명, 유효기간, 지급대상, 할인율을 모두 입력하면, 쿠폰을 생성할 수 있다.")
+    void create_coupon() throws Exception {
+        // given
+        CouponCreateRequest createRequest = CouponCreateRequest.builder()
+                .name("1주년 기념 감사쿠폰")
+                .fromDate("2023-06-01")
+                .toDate("2023-12-31")
+                .userGrade("NORMAL")
+                .discountRate(5)
+                .build();
+        String content = objectMapper.writeValueAsString(createRequest);
+
+        when(couponService.create(any())).thenReturn(10L);
+
+        // when & then
+        mockMvc.perform(post("/coupons")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.couponId", is(10)))
+                .andExpect(jsonPath("$.message", is("쿠폰이 정상적으로 등록되었습니다.")));
     }
 }

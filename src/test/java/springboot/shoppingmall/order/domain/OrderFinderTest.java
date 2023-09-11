@@ -15,8 +15,6 @@ import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest
@@ -30,11 +28,9 @@ class OrderFinderTest {
     CategoryRepository categoryRepository;
     @Autowired
     ProductRepository productRepository;
-    @Autowired
-    UserRepository userRepository;
 
     OrderFinder orderFinder;
-    User user;
+    Long userId = 10L;
     Product product;
     OrderDeliveryInfo orderDeliveryInfo;
 
@@ -43,7 +39,6 @@ class OrderFinderTest {
     @BeforeEach
     void beforeEach() {
         orderFinder = new OrderFinder(orderRepository, orderItemRepository);
-        user = userRepository.save(new User("테스트유저", "testUser", "testUser!", "010-1234-1234"));
         Category category = categoryRepository.save(new Category("의류"));
         Category subCategory = categoryRepository.save(new Category("바지").changeParent(category));
         LocalDateTime now = LocalDateTime.now();
@@ -71,7 +66,7 @@ class OrderFinderTest {
     void findOrderById() {
         // given
         Order order = orderRepository.save(
-                new Order(UUID.randomUUID().toString(), user.getId(), orderItems, orderDeliveryInfo)
+                new Order(UUID.randomUUID().toString(), userId, orderItems, orderDeliveryInfo)
         );
 
         // when
@@ -88,7 +83,7 @@ class OrderFinderTest {
         String invoiceNumber = "invoiceNumber1";
         Order order = orderRepository.save(
                 new Order(
-                        UUID.randomUUID().toString(), user.getId(), orderItems, orderDeliveryInfo
+                        UUID.randomUUID().toString(), userId, orderItems, orderDeliveryInfo
                 )
         );
         OrderItem savedOrderItem = order.getItems().get(0);

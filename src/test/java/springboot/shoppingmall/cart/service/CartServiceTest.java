@@ -3,40 +3,36 @@ package springboot.shoppingmall.cart.service;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.cart.domain.Cart;
+import springboot.shoppingmall.cart.domain.CartRepository;
 import springboot.shoppingmall.cart.dto.CartDto;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.providers.domain.Provider;
-import springboot.shoppingmall.providers.domain.ProviderRepository;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserRepository;
 import springboot.shoppingmall.cart.web.CartRequest;
 import springboot.shoppingmall.cart.web.CartResponse;
+import springboot.shoppingmall.providers.domain.Provider;
+import springboot.shoppingmall.providers.domain.ProviderRepository;
 
 @Transactional
 @SpringBootTest
 class CartServiceTest {
 
     @Autowired
-    EntityManager em;
-
-    @Autowired
     CartService cartService;
 
     @Autowired
-    ProviderRepository providerRepository;
+    CartRepository cartRepository;
 
     @Autowired
-    UserRepository userRepository;
+    ProviderRepository providerRepository;
 
     @Autowired
     ProductRepository productRepository;
@@ -47,7 +43,7 @@ class CartServiceTest {
     Product product;
     Product product2;
     Product product3;
-    User saveUser;
+    Long userId = 10L;
 
     @BeforeEach
     void setUp(){
@@ -55,31 +51,24 @@ class CartServiceTest {
         Category subCategory = categoryRepository.save(new Category("하위 1").changeParent(category));
 
         Provider provider = providerRepository.save(
-                new Provider("단절통신", "통신사대표", "서울시 영등포구 여의도2동", "02-3331-2321",
-                        "110-22-331223", "cut_communication", "cut_communication1!")
+                new Provider("판매업체", "판매대표", "판매업체 주소", "031-222-3311", "222-33-112233", "test1", "test1!")
         );
 
         product = productRepository.save(
                 new Product("상품 1", 22000, 10, category, subCategory,
                         provider.getId(), "product_stored_file_name1", "product_view_file_name1",
-                        "상품 설명 입니다.", "test-product-code")
+                        "상품 1 설명 입니다.", "test-product-code1")
         );
         product2 = productRepository.save(
                 new Product("상품 2", 32000, 5, category, subCategory,
-                        provider.getId(), "product_stored_file_name1", "product_view_file_name1",
-                        "상품 설명 입니다.", "test-product-code")
+                        provider.getId(), "product_stored_file_name2", "product_view_file_name2",
+                        "상품 2 설명 입니다.", "test-product-code2")
         );
         product3 = productRepository.save(
                 new Product("상품 3", 42000, 3, category, subCategory,
-                        provider.getId(), "product_stored_file_name1", "product_view_file_name1",
-                        "상품 설명 입니다.", "test-product-code")
+                        provider.getId(), "product_stored_file_name3", "product_view_file_name3",
+                        "상품 3 설명 입니다.", "test-product-code3")
         );
-        saveUser = userRepository.save(User.builder()
-                .userName("테스터1")
-                .email("tester1@test.com")
-                .password("tester1!")
-                .telNo("010-2222-3333")
-                .build());
     }
 
     @Test
@@ -89,7 +78,7 @@ class CartServiceTest {
         CartRequest cartRequest = new CartRequest(2, product.getId());
 
         // when
-        CartResponse cartResponse = cartService.create(saveUser.getId(), cartRequest);
+        CartResponse cartResponse = cartService.create(userId, cartRequest);
 
         // then
         assertThat(cartResponse.getId()).isNotNull();
@@ -101,14 +90,12 @@ class CartServiceTest {
     @DisplayName("장바구니 목록 조회 테스트")
     void findAllTest(){
         // given
-        cartService.create(saveUser.getId(), new CartRequest(2, product.getId()));
-        cartService.create(saveUser.getId(), new CartRequest(1, product2.getId()));
-        cartService.create(saveUser.getId(), new CartRequest(5, product3.getId()));
+        saveCart(2, product);
+        saveCart(1, product2);
+        saveCart(5, product3);
 
-        em.flush();
-        em.clear();
         // when
-        List<CartDto> carts = cartService.findAllByUser(saveUser.getId());
+        List<CartDto> carts = cartService.findAllByUser(userId);
 
         // then
         assertThat(carts).hasSize(3);
@@ -118,18 +105,18 @@ class CartServiceTest {
     @DisplayName("장바구니 목록 제거 테스트")
     void deleteTest(){
         // given
-        CartResponse cartResponse = cartService.create(saveUser.getId(), new CartRequest(2, product.getId()));
-        cartService.create(saveUser.getId(), new CartRequest(1, product2.getId()));
+        Cart cart = saveCart(2, product);
+        saveCart(1, product2);
 
         // when
-        cartService.delete(saveUser.getId(), cartResponse.getId());
-
-        em.flush();
-        em.clear();
+        cartService.delete(userId, cart.getId());
 
         // then
-        List<CartDto> carts = cartService.findAllByUser(saveUser.getId());
+        List<CartDto> carts = cartService.findAllByUser(userId);
         assertThat(carts).hasSize(1);
     }
 
+    private Cart saveCart(int quantity, Product product) {
+        return cartRepository.save(new Cart(quantity, product, userId));
+    }
 }

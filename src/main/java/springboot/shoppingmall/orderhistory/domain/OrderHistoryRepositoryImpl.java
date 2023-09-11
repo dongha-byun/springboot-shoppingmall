@@ -12,7 +12,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import springboot.shoppingmall.orderhistory.application.dto.OrderHistoryDto;
-import springboot.shoppingmall.userservice.user.domain.User;
 
 @RequiredArgsConstructor
 @Repository

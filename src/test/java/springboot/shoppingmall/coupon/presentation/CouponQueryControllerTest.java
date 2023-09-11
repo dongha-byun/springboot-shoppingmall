@@ -69,6 +69,6 @@ class CouponQueryControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0]").exists());
+                .andExpect(jsonPath("$.id", hasSize(2)));
     }
 }

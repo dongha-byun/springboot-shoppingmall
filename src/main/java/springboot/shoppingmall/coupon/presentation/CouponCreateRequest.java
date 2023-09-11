@@ -29,7 +29,7 @@ public class CouponCreateRequest {
     public CouponCreateDto toDto(Long partnerId) {
         return new CouponCreateDto(
                 name, DateUtils.toStartDate(fromDate), DateUtils.toEndDate(toDate),
-                UserGrade.valueOf(userGrade), discountRate, partnerId
+                userGrade, discountRate, partnerId
         );
     }
 }

@@ -62,7 +62,7 @@ class CouponServiceTest {
         int discountRate = 5;
         Long partnersId = 1L;
         CouponCreateDto couponCreateDto = new CouponCreateDto(
-                name, fromDate, toDate, UserGrade.REGULAR, discountRate, partnersId
+                name, fromDate, toDate, "REGULAR", discountRate, partnersId
         );
 
         // when

@@ -4,23 +4,22 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.coupon.client.UserCouponService;
 import springboot.shoppingmall.coupon.domain.Coupon;
 import springboot.shoppingmall.coupon.domain.CouponRepository;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserFinder;
 
 @RequiredArgsConstructor
 @Transactional
 @Service
 public class CouponService {
     private final CouponRepository couponRepository;
-    private final UserFinder userFinder;
+    private final UserCouponService userCouponService;
 
     public Long create(CouponCreateDto couponCreateDto) {
-        List<User> targetUserList = userFinder.findUserOverTheUserGrade(couponCreateDto.getGrade());
+        List<Long> targetUserList = userCouponService.getUserIdsAboveTheGrade(couponCreateDto.getGrade());
         Coupon savedCoupon = couponRepository.save(couponCreateDto.toEntity());
         targetUserList.forEach(
-                user -> savedCoupon.addUserCoupon(user.getId())
+                savedCoupon::addUserCoupon
         );
 
         return savedCoupon.getId();
