@@ -1,4 +1,4 @@
-package springboot.shoppingmall.cart.service;
+package springboot.shoppingmall.cart.application;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -7,9 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.cart.domain.Cart;
 import springboot.shoppingmall.cart.domain.CartQueryRepository;
 import springboot.shoppingmall.cart.domain.CartRepository;
-import springboot.shoppingmall.cart.dto.CartDto;
-import springboot.shoppingmall.cart.web.CartRequest;
-import springboot.shoppingmall.cart.web.CartResponse;
+import springboot.shoppingmall.cart.application.dto.CartCreateDto;
+import springboot.shoppingmall.cart.application.dto.CartDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
 
@@ -22,12 +21,12 @@ public class CartService {
     private final ProductFinder productFinder;
 
     @Transactional
-    public CartResponse create(Long userId, CartRequest cartRequest) {
-        Product product = productFinder.findProductById(cartRequest.getProductId());
+    public CartDto create(Long userId, CartCreateDto cartCreateDto) {
+        Product product = productFinder.findProductById(cartCreateDto.getProductId());
         Cart saveCart = cartRepository.save(
-                new Cart(cartRequest.getQuantity(), product, userId)
+                new Cart(cartCreateDto.getQuantity(), product, userId)
         );
-        return CartResponse.of(saveCart);
+        return CartDto.of(saveCart);
     }
 
     public List<CartDto> findAllByUser(Long userId) {

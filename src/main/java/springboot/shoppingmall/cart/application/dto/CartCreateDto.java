@@ -1,13 +1,15 @@
-package springboot.shoppingmall.cart.web;
+package springboot.shoppingmall.cart.application.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
-public class CartRequest {
+public class CartCreateDto {
     private int quantity;
     private Long productId;
 }

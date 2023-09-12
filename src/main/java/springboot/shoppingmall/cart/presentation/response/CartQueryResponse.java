@@ -1,9 +1,9 @@
-package springboot.shoppingmall.cart.web;
+package springboot.shoppingmall.cart.presentation.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.cart.dto.CartDto;
+import springboot.shoppingmall.cart.application.dto.CartDto;
 
 @AllArgsConstructor
 @NoArgsConstructor

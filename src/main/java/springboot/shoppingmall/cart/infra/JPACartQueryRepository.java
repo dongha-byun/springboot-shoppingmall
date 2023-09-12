@@ -1,4 +1,4 @@
-package springboot.shoppingmall.cart.domain;
+package springboot.shoppingmall.cart.infra;
 
 import static springboot.shoppingmall.cart.domain.QCart.*;
 import static springboot.shoppingmall.product.domain.QProduct.*;
@@ -9,13 +9,14 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import javax.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
-import springboot.shoppingmall.cart.dto.CartDto;
+import springboot.shoppingmall.cart.application.dto.CartDto;
+import springboot.shoppingmall.cart.domain.CartQueryRepository;
 
 @Repository
-public class CartQueryRepositoryImpl implements CartQueryRepository {
+public class JPACartQueryRepository implements CartQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
-    public CartQueryRepositoryImpl(EntityManager em) {
+    public JPACartQueryRepository(EntityManager em) {
         this.jpaQueryFactory = new JPAQueryFactory(em);
     }
 

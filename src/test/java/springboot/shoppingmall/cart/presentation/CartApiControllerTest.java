@@ -1,4 +1,4 @@
-package springboot.shoppingmall.cart.web;
+package springboot.shoppingmall.cart.presentation;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -10,8 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import springboot.shoppingmall.authorization.AuthorizedUser;
-import springboot.shoppingmall.cart.dto.CartDto;
-import springboot.shoppingmall.cart.service.CartService;
+import springboot.shoppingmall.cart.application.dto.CartDto;
+import springboot.shoppingmall.cart.application.CartService;
+import springboot.shoppingmall.cart.presentation.response.CartQueryResponse;
 
 class CartApiControllerTest {
 

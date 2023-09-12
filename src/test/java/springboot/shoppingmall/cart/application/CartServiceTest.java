@@ -1,4 +1,4 @@
-package springboot.shoppingmall.cart.service;
+package springboot.shoppingmall.cart.application;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -11,13 +11,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.cart.domain.Cart;
 import springboot.shoppingmall.cart.domain.CartRepository;
-import springboot.shoppingmall.cart.dto.CartDto;
+import springboot.shoppingmall.cart.application.dto.CartCreateDto;
+import springboot.shoppingmall.cart.application.dto.CartDto;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.cart.web.CartRequest;
-import springboot.shoppingmall.cart.web.CartResponse;
 import springboot.shoppingmall.providers.domain.Provider;
 import springboot.shoppingmall.providers.domain.ProviderRepository;
 
@@ -72,18 +71,18 @@ class CartServiceTest {
     }
 
     @Test
-    @DisplayName("장바구니 추가 테스트")
-    void createCartTest(){
+    @DisplayName("장바구니를 추가한다.")
+    void create(){
         // given
-        CartRequest cartRequest = new CartRequest(2, product.getId());
+        CartCreateDto cartCreateDto = new CartCreateDto(2, product.getId());
 
         // when
-        CartResponse cartResponse = cartService.create(userId, cartRequest);
+        CartDto cartDto = cartService.create(userId, cartCreateDto);
 
         // then
-        assertThat(cartResponse.getId()).isNotNull();
-        assertThat(cartResponse.getQuantity()).isEqualTo(2);
-        assertThat(cartResponse.getProductId()).isEqualTo(product.getId());
+        assertThat(cartDto.getId()).isNotNull();
+        assertThat(cartDto.getQuantity()).isEqualTo(2);
+        assertThat(cartDto.getProductId()).isEqualTo(product.getId());
     }
 
     @Test

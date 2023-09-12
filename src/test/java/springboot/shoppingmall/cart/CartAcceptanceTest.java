@@ -18,7 +18,7 @@ import springboot.shoppingmall.AcceptanceTest;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.category.dto.CategoryResponse;
 import springboot.shoppingmall.product.dto.ProductResponse;
-import springboot.shoppingmall.cart.web.CartResponse;
+import springboot.shoppingmall.cart.presentation.response.CartResponse;
 
 public class CartAcceptanceTest extends AcceptanceTest {
     ProductResponse 상품1;

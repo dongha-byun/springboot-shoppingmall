@@ -1,4 +1,4 @@
-package springboot.shoppingmall.cart.web;
+package springboot.shoppingmall.cart.presentation;
 
 import java.net.URI;
 import java.util.List;
@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
-import springboot.shoppingmall.cart.dto.CartDto;
-import springboot.shoppingmall.cart.service.CartService;
+import springboot.shoppingmall.cart.application.dto.CartDto;
+import springboot.shoppingmall.cart.application.CartService;
+import springboot.shoppingmall.cart.presentation.request.CartRequest;
+import springboot.shoppingmall.cart.presentation.response.CartQueryResponse;
+import springboot.shoppingmall.cart.presentation.response.CartResponse;
 
 @RequiredArgsConstructor
 @RestController
@@ -24,8 +27,9 @@ public class CartApiController {
     @PostMapping("/carts")
     public ResponseEntity<CartResponse> createCart(@AuthenticationStrategy AuthorizedUser user,
                                                    @RequestBody CartRequest cartRequest){
-        CartResponse cartResponse = cartService.create(user.getId(), cartRequest);
-        return ResponseEntity.created(URI.create("/carts/"+cartResponse.getId())).body(cartResponse);
+        CartDto cartDto = cartService.create(user.getId(), cartRequest.toDto());
+        CartResponse response = CartResponse.of(cartDto);
+        return ResponseEntity.created(URI.create("/carts/"+response.getId())).body(response);
     }
 
     @DeleteMapping("/carts/{id}")
