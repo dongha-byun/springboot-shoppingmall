@@ -1,18 +1,19 @@
 package springboot.shoppingmall.cart.application;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.cart.application.dto.CartDto;
 import springboot.shoppingmall.cart.domain.Cart;
 import springboot.shoppingmall.cart.domain.CartRepository;
-import springboot.shoppingmall.cart.application.dto.CartCreateDto;
-import springboot.shoppingmall.cart.application.dto.CartDto;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.domain.Product;
@@ -22,10 +23,7 @@ import springboot.shoppingmall.providers.domain.ProviderRepository;
 
 @Transactional
 @SpringBootTest
-class CartServiceTest {
-
-    @Autowired
-    CartService cartService;
+class CartQueryServiceTest {
 
     @Autowired
     CartQueryService cartQueryService;
@@ -34,16 +32,17 @@ class CartServiceTest {
     CartRepository cartRepository;
 
     @Autowired
+    CategoryRepository categoryRepository;
+
+    @Autowired
     ProviderRepository providerRepository;
 
     @Autowired
     ProductRepository productRepository;
 
-    @Autowired
-    CategoryRepository categoryRepository;
-
     Product product, product2, product3;
-    Long userId = 10L;
+
+    Long userId = 1L;
 
     @BeforeEach
     void setUp(){
@@ -72,33 +71,24 @@ class CartServiceTest {
     }
 
     @Test
-    @DisplayName("장바구니에 상품을 추가한다.")
-    void create(){
-        // given
-        CartCreateDto cartCreateDto = new CartCreateDto(2, product.getId());
-
-        // when
-        CartDto cartDto = cartService.create(userId, cartCreateDto);
-
-        // then
-        assertThat(cartDto.getId()).isNotNull();
-        assertThat(cartDto.getQuantity()).isEqualTo(2);
-        assertThat(cartDto.getProductId()).isEqualTo(product.getId());
-    }
-
-    @Test
-    @DisplayName("장바구니에 담은 상품을 제거한다.")
-    void delete(){
+    @DisplayName("사용자의 장바구니 목록을 조회한다.")
+    void find_all_carts_by_user() {
         // given
         Cart cart = saveCart(2, product);
-        saveCart(1, product2);
+        Cart cart2 = saveCart(1, product2);
+        Cart cart3 = saveCart(5, product3);
 
         // when
-        cartService.delete(userId, cart.getId());
+        List<CartDto> carts = cartQueryService.findAllByUser(userId);
 
         // then
-        List<CartDto> carts = cartQueryService.findAllByUser(userId);
-        assertThat(carts).hasSize(1);
+        assertThat(carts).hasSize(3)
+                .extracting("id", "quantity", "productId")
+                .containsExactly(
+                        tuple(cart.getId(), 2, product.getId()),
+                        tuple(cart2.getId(), 1, product2.getId()),
+                        tuple(cart3.getId(), 5, product3.getId())
+                );
     }
 
     private Cart saveCart(int quantity, Product product) {
