@@ -1,3 +1,4 @@
+
 plugins {
 	id 'org.springframework.boot' version '2.7.4'
 	id 'io.spring.dependency-management' version '1.0.14.RELEASE'
@@ -23,6 +24,7 @@ repositories {
 
 ext {
 	snippetsDir = file('build/generated-snippets')
+	set('springCloudVersion', "2021.0.5")
 }
 
 dependencies {
@@ -72,6 +74,15 @@ dependencies {
 
 	// spring webFlux
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	// spring eureka client
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
 }
 
 test {
