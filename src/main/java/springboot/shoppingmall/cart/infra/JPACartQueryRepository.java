@@ -10,6 +10,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 import springboot.shoppingmall.cart.application.dto.CartDto;
+import springboot.shoppingmall.cart.application.dto.CartQueryDto;
 import springboot.shoppingmall.cart.domain.CartQueryRepository;
 
 @Repository
@@ -21,16 +22,16 @@ public class JPACartQueryRepository implements CartQueryRepository {
     }
 
     @Override
-    public List<CartDto> findAllCartByUserId(Long userId) {
+    public List<CartQueryDto> findAllCartByUserId(Long userId) {
         return jpaQueryFactory
-                .select(Projections.constructor(CartDto.class,
+                .select(Projections.constructor(CartQueryDto.class,
                         cart.id, cart.quantity, product.id,
                         product.name, product.price,
                         provider.id, provider.name,
                         product.thumbnail.storedFileName
                         ))
                 .from(cart)
-                .join(product).on(product.id.eq(cart.product.id))
+                .join(product).on(product.id.eq(cart.productId))
                 .join(provider).on(provider.id.eq(product.partnerId))
                 .where(cart.userId.eq(userId))
                 .fetch();

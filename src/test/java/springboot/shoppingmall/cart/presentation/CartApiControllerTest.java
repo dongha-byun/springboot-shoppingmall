@@ -11,8 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import springboot.shoppingmall.authorization.AuthorizedUser;
 import springboot.shoppingmall.cart.application.CartQueryService;
-import springboot.shoppingmall.cart.application.dto.CartDto;
+
 import springboot.shoppingmall.cart.application.CartService;
+import springboot.shoppingmall.cart.application.dto.CartQueryDto;
 import springboot.shoppingmall.cart.presentation.response.CartQueryResponse;
 
 class CartApiControllerTest {
@@ -25,10 +26,10 @@ class CartApiControllerTest {
         CartQueryService mockCartQueryService = mock(CartQueryService.class);
         CartApiController cartApiController = new CartApiController(mockCartService, mockCartQueryService);
 
-        List<CartDto> carts = Arrays.asList(
-                new CartDto(1L, 3, 10L, "상품1", 1200, 100L, "상품판매자1", "product1"),
-                new CartDto(2L, 4, 20L, "상품2", 1700, 100L, "상품판매자2", "product2"),
-                new CartDto(3L, 5, 30L, "상품3", 2200, 100L, "상품판매자3", "product3")
+        List<CartQueryDto> carts = Arrays.asList(
+                new CartQueryDto(1L, 3, 10L, "상품1", 1200, 100L, "상품판매자1", "product1"),
+                new CartQueryDto(2L, 4, 20L, "상품2", 1700, 100L, "상품판매자2", "product2"),
+                new CartQueryDto(3L, 5, 30L, "상품3", 2200, 100L, "상품판매자3", "product3")
         );
         when(mockCartQueryService.findAllByUser(anyLong())).thenReturn(carts);
 

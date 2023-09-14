@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.cart.application.dto.CartDto;
+import springboot.shoppingmall.cart.application.dto.CartQueryDto;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.domain.Product;
@@ -57,7 +58,7 @@ class CartQueryRepositoryImplTest {
                         , provider.getId(), "stored1", "real2", "상품 설명 입니다.", "test-product-code")
         );
 
-        cart1 = cartRepository.save(new Cart(3, product1, userId));
+        cart1 = cartRepository.save(new Cart(3, product1.getId(), userId));
     }
 
     @Test
@@ -66,19 +67,15 @@ class CartQueryRepositoryImplTest {
         // given
 
         // when
-        List<CartDto> cartDtos = cartQueryRepository.findAllCartByUserId(userId);
-        CartDto cartDto = cartDtos.get(0);
+        List<CartQueryDto> carts = cartQueryRepository.findAllCartByUserId(userId);
 
         // then
-        assertThat(cartDto).isNotNull();
-        assertThat(cartDto.getId()).isEqualTo(cart1.getId());
-        assertThat(cartDto.getProductId()).isEqualTo(cart1.getProduct().getId());
-        assertThat(cartDto.getProductName()).isEqualTo(cart1.getProduct().getName());
-        assertThat(cartDto.getQuantity()).isEqualTo(cart1.getQuantity());
-        assertThat(cartDto.getPrice()).isEqualTo(cart1.getProduct().getPrice());
-        assertThat(cartDto.getPartnersId()).isEqualTo(provider.getId());
-        assertThat(cartDto.getPartnersName()).isEqualTo(provider.getName());
-        assertThat(cartDto.getStoredImgFileName()).isEqualTo(product1.getThumbnail());
+        assertThat(carts).hasSize(1)
+                .extracting("id", "productName", "quantity", "productImageFileName")
+                .containsExactly(
+                        tuple(cart1.getId(), "상품 1", 3, "stored1")
+                );
+
     }
 
     @Test
@@ -90,14 +87,14 @@ class CartQueryRepositoryImplTest {
                         provider.getId(), "stored2", "real2", "상품 설명 입니다.",
                         "test-product-code")
         );
-        Cart cart2 = cartRepository.save(new Cart(5, product2, userId));
+        Cart cart2 = cartRepository.save(new Cart(5, product2.getId(), userId));
 
         // when
-        List<CartDto> cartDtos = cartQueryRepository.findAllCartByUserId(userId);
+        List<CartQueryDto> carts = cartQueryRepository.findAllCartByUserId(userId);
 
         // then
-        assertThat(cartDtos).hasSize(2)
-                .extracting("id", "partnersName", "partnersId", "storedImgFileName")
+        assertThat(carts).hasSize(2)
+                .extracting("id", "partnersName", "partnersId", "productImageFileName")
                 .containsExactly(
                         tuple(cart1.getId(), "(주)파산은행", provider.getId(), "stored1"),
                         tuple(cart2.getId(), "(주)파산은행", provider.getId(), "stored2")

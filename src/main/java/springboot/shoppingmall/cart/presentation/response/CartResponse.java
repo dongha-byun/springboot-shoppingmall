@@ -11,16 +11,12 @@ import springboot.shoppingmall.cart.application.dto.CartDto;
 public class CartResponse {
     private Long id;
     private Long productId;
-    private String productName;
-    private int price;
     private int quantity;
 
     public static CartResponse of(CartDto cartDto) {
         return new CartResponse(
                 cartDto.getId(),
                 cartDto.getProductId(),
-                cartDto.getProductName(),
-                cartDto.getPrice(),
                 cartDto.getQuantity()
         );
     }

@@ -30,16 +30,14 @@ public class Cart extends BaseEntity {
     @Column(nullable = false)
     private int quantity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
+    private Long productId;
 
     private Long userId;
 
     @Builder
-    public Cart(int quantity, Product product, Long userId) {
+    public Cart(int quantity, Long productId, Long userId) {
         this.quantity = quantity;
-        this.product = product;
+        this.productId = productId;
         this.userId = userId;
     }
 }

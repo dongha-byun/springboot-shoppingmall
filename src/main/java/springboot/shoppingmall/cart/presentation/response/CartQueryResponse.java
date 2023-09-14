@@ -3,7 +3,7 @@ package springboot.shoppingmall.cart.presentation.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.cart.application.dto.CartDto;
+import springboot.shoppingmall.cart.application.dto.CartQueryDto;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,12 +18,12 @@ public class CartQueryResponse {
     private String partnersName;
     private String storedImgFileName;
 
-    public static CartQueryResponse of(CartDto cartDto) {
+    public static CartQueryResponse of(CartQueryDto cartDto) {
         return new CartQueryResponse(
                 cartDto.getId(), cartDto.getQuantity(), cartDto.getProductId(),
-                cartDto.getProductName(), cartDto.getPrice(),
+                cartDto.getProductName(), cartDto.getProductPrice(),
                 cartDto.getPartnersId(), cartDto.getPartnersName(),
-                cartDto.getStoredImgFileName()
+                cartDto.getProductImageFileName()
         );
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.cart.application.dto.CartDto;
+import springboot.shoppingmall.cart.application.dto.CartQueryDto;
 import springboot.shoppingmall.cart.domain.Cart;
 import springboot.shoppingmall.cart.domain.CartRepository;
 import springboot.shoppingmall.category.domain.Category;
@@ -79,7 +80,7 @@ class CartQueryServiceTest {
         Cart cart3 = saveCart(5, product3);
 
         // when
-        List<CartDto> carts = cartQueryService.findAllByUser(userId);
+        List<CartQueryDto> carts = cartQueryService.findAllByUser(userId);
 
         // then
         assertThat(carts).hasSize(3)
@@ -92,6 +93,6 @@ class CartQueryServiceTest {
     }
 
     private Cart saveCart(int quantity, Product product) {
-        return cartRepository.save(new Cart(quantity, product, userId));
+        return cartRepository.save(new Cart(quantity, product.getId(), userId));
     }
 }

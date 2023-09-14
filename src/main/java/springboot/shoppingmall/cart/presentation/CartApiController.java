@@ -16,6 +16,7 @@ import springboot.shoppingmall.authorization.AuthorizedUser;
 import springboot.shoppingmall.cart.application.CartQueryService;
 import springboot.shoppingmall.cart.application.dto.CartDto;
 import springboot.shoppingmall.cart.application.CartService;
+import springboot.shoppingmall.cart.application.dto.CartQueryDto;
 import springboot.shoppingmall.cart.presentation.request.CartRequest;
 import springboot.shoppingmall.cart.presentation.response.CartQueryResponse;
 import springboot.shoppingmall.cart.presentation.response.CartResponse;
@@ -43,7 +44,7 @@ public class CartApiController {
 
     @GetMapping("/carts")
     public ResponseEntity<List<CartQueryResponse>> findAllCarts(@AuthenticationStrategy AuthorizedUser user){
-        List<CartDto> carts = cartQueryService.findAllByUser(user.getId());
+        List<CartQueryDto> carts = cartQueryService.findAllByUser(user.getId());
         List<CartQueryResponse> cartQueryResponses = carts.stream()
                 .map(CartQueryResponse::of)
                 .collect(Collectors.toList());

@@ -1,8 +1,8 @@
 package springboot.shoppingmall.cart.domain;
 
 import java.util.List;
-import springboot.shoppingmall.cart.application.dto.CartDto;
+import springboot.shoppingmall.cart.application.dto.CartQueryDto;
 
 public interface CartQueryRepository {
-    List<CartDto> findAllCartByUserId(Long userId);
+    List<CartQueryDto> findAllCartByUserId(Long userId);
 }

@@ -4,7 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.cart.application.dto.CartDto;
+import springboot.shoppingmall.cart.application.dto.CartQueryDto;
 import springboot.shoppingmall.cart.domain.CartQueryRepository;
 
 @RequiredArgsConstructor
@@ -13,7 +13,7 @@ import springboot.shoppingmall.cart.domain.CartQueryRepository;
 public class CartQueryService {
     private final CartQueryRepository cartQueryRepository;
 
-    public List<CartDto> findAllByUser(Long userId) {
+    public List<CartQueryDto> findAllByUser(Long userId) {
         return cartQueryRepository.findAllCartByUserId(userId);
     }
 }
