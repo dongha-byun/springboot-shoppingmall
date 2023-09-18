@@ -1,7 +1,12 @@
 package springboot.shoppingmall.order;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -15,8 +20,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.client.RestTemplate;
 import springboot.shoppingmall.AcceptanceProductTest;
 import springboot.shoppingmall.authorization.LoginAcceptanceTest;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
@@ -31,6 +40,7 @@ import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.DeliveryEndRequest;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderResponse;
+import springboot.shoppingmall.order.service.dto.ResponseUserInformation;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.dto.ProductResponse;
@@ -57,11 +67,20 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
     @Autowired
     DeliveryRepository deliveryRepository;
 
+    @Autowired
+    ObjectMapper objectMapper;
+    @Autowired
+    RestTemplate restTemplate;
+
+    MockRestServiceServer mockRestServiceServer;
+
     OrderResponse 배송완료_주문;
 
     @BeforeEach
     void order_acceptance_beforeEach(){
         super.acceptance_product_beforeEach();
+
+        mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
 
         Product product1 = productRepository.findById(상품.getId()).orElseThrow();
         Product product2 = productRepository.findById(상품2.getId()).orElseThrow();
@@ -97,8 +116,9 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
      */
     @Test
     @DisplayName("주문 생성 테스트")
-    void createOrderTest() {
+    void createOrderTest() throws JsonProcessingException {
         // given
+        mockOrderUserInformationServerForGetDiscountRate(인수테스터1.getId(), 0);
 
         // when
         ExtractableResponse<Response> 주문_생성_결과 = 주문_생성_요청(상품, 3, 3000, 배송지);
@@ -128,8 +148,9 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
      */
     @Test
     @DisplayName("여러 상품 주문 테스트")
-    void order_with_many_products() {
+    void order_with_many_products() throws JsonProcessingException {
         // given
+        mockOrderUserInformationServerForGetDiscountRate(인수테스터1.getId(), 0);
         Map<String, Object> item1 = new HashMap<>();
         item1.put("productId", 상품.getId());
         item1.put("quantity", 3);
@@ -208,8 +229,9 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
      */
     @Test
     @DisplayName("주문 상태 변경 : 준비중 -> 출고중")
-    void statusChangeTest1(){
+    void statusChangeTest1() throws JsonProcessingException {
         // given
+        mockOrderUserInformationServerForGetDiscountRate(인수테스터1.getId(), 0);
         OrderResponse 주문 = 주문_생성_요청(상품, 3, 3000, 배송지).as(OrderResponse.class);
         OrderItemResponse 주문_상품 = 주문.getItems().get(0);
 
@@ -244,8 +266,10 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
      */
     @Test
     @DisplayName("주문 배송 완료 테스트")
-    void 배송_완료_테스트() {
+    void 배송_완료_테스트() throws JsonProcessingException {
         // given
+        mockOrderUserInformationServerForGetDiscountRate(인수테스터1.getId(), 0);
+
         OrderResponse 주문 = 주문_생성_요청(상품, 3, 3000, 배송지).as(OrderResponse.class);
         OrderItemResponse 준비중_주문_상품 = 첫_번째_주문_상품(주문);
         assertThat(준비중_주문_상품.getOrderStatusName()).isEqualTo(OrderStatus.READY.getStatusName());
@@ -409,8 +433,10 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
      */
     @Test
     @DisplayName("주문 시 쿠폰을 사용하면, 결제금액이 할인된다.")
-    void order_used_coupon() {
+    void order_used_coupon() throws JsonProcessingException {
         // given
+        mockOrderUserInformationServerForGetDiscountRate(인수테스터1.getId(), 0);
+
         Coupon coupon1 = createCoupon("할인쿠폰#1", 5);
         Coupon coupon2 = createCoupon("할인쿠폰#2", 8);
         coupon1.addUserCoupon(인수테스터1.getId());
@@ -582,6 +608,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
     }
 
     public static ExtractableResponse<Response> 주문_생성_요청(ProductResponse product, int quantity, int deliveryFee, DeliveryResponse delivery) {
+
         Map<String, Object> itemMap = new HashMap<>();
         itemMap.put("productId", product.getId());
         itemMap.put("quantity", quantity);
@@ -640,5 +667,20 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
                 .when().post("/orders")
                 .then().log().all()
                 .extract();
+    }
+
+    private void mockOrderUserInformationServerForGetDiscountRate(long userId, int discountRate) throws JsonProcessingException {
+        ResponseUserInformation response = new ResponseUserInformation(discountRate);
+        String responseContent = objectMapper.writeValueAsString(response);
+
+        mockRestServiceServer.expect(
+                        requestTo("/user/" + userId + "/grade-info")
+                )
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(
+                        withStatus(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(responseContent)
+                );
     }
 }

@@ -19,19 +19,17 @@ import springboot.shoppingmall.pay.domain.PayHistory;
 import springboot.shoppingmall.pay.domain.PayHistoryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserFinder;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
 public class OrderService {
     private final ProductFinder productFinder;
-    private final UserFinder userFinder;
     private final UserCouponRepository userCouponRepository;
     private final OrderRepository orderRepository;
     private final PayHistoryRepository payHistoryRepository;
     private final OrderCodeCreator orderCodeCreator;
+    private final OrderUserInformationService orderUserInformationService;
 
     @Transactional
     public OrderResponse createOrder(Long userId, OrderRequest orderRequest) {
@@ -44,8 +42,10 @@ public class OrderService {
         Order newOrder = Order.createOrder(orderCode, userId, items, orderDeliveryInfo);
 
         // 회원등급 할인 금액 적용
-        User user = userFinder.findUserById(userId);
-        newOrder.gradeDiscount(user.discountRate());
+        // 주문자 할인율 조회, 구매자 정보 조회 OrderUserInfo
+        // 사용자 ID 주고, 할인율 받아오면, 할인 계산할때 사용
+        int discountRate = orderUserInformationService.getOrderUserDiscountRate(userId);
+        newOrder.gradeDiscount(discountRate);
 
         // 쿠폰에 따른 할인 금액 적용
         newOrder.getItems()

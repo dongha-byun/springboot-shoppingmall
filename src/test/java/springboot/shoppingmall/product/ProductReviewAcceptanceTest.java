@@ -178,7 +178,7 @@ public class ProductReviewAcceptanceTest extends AcceptanceProductTest {
                 리뷰_작성_요청(배송완료_주문, 상품, 로그인정보, "리뷰 작성 합니다.2", 4);
 
         // then
-        assertThat(리뷰_작성_요청_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(리뷰_작성_요청_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
