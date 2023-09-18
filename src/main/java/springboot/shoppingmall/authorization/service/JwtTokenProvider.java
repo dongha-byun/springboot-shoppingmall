@@ -63,13 +63,6 @@ public class JwtTokenProvider {
         }
     }
 
-    public String createExpireToken(){
-        return Jwts.builder()
-                .setExpiration(new Date())
-                .signWith(secretKey, SignatureAlgorithm.HS256)
-                .compact();
-    }
-
     public boolean validateIpToken(String accessToken, String accessIp) {
         Claims claims = getBodyOfToken(accessToken);
         String tokenIp = (String) claims.get(CLAIM_ACCESS_IP);
