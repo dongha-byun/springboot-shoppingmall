@@ -1,4 +1,4 @@
-package springboot.shoppingmall.order.partners.dto;
+package springboot.shoppingmall.order.partners.application.dto;
 
 import java.time.LocalDateTime;
 import lombok.Getter;
@@ -7,19 +7,18 @@ import springboot.shoppingmall.order.domain.OrderStatus;
 
 @NoArgsConstructor
 @Getter
-public class PartnersDeliveryOrderQueryDto extends PartnersOrderQueryDto{
+public class PartnersReadyOrderQueryDto extends PartnersOrderQueryDto {
     private String receiverName;        // 수령인
     private String receiverPhoneNumber; // 수령인 연락처
     private String address;             // 배송지 주소
     private String detailAddress;       // 배송지 상세주소
     private String requestMessage;      // 배송요청사항
 
-    public PartnersDeliveryOrderQueryDto(Long orderItemId, Long orderId, String orderCode, LocalDateTime orderDate,
-                                         String productCode,
-                                         String productName, int quantity, String invoiceNumber, int totalPrice,
-                                         String userName, String userTelNo, OrderStatus orderStatus,
-                                         String receiverName, String receiverPhoneNumber,
-                                         String address, String detailAddress, String requestMessage) {
+    public PartnersReadyOrderQueryDto(Long orderItemId, Long orderId, String orderCode, LocalDateTime orderDate, String productCode,
+                                      String productName, int quantity, String invoiceNumber, int totalPrice,
+                                      String userName, String userTelNo, OrderStatus orderStatus,
+                                      String receiverName, String receiverPhoneNumber,
+                                      String address, String detailAddress, String requestMessage) {
         super(orderItemId, orderId, orderCode, orderDate, productCode, productName, quantity, invoiceNumber, totalPrice,
                 userName, userTelNo, orderStatus);
         this.receiverName = receiverName;

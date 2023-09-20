@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.EntityManager;
 import springboot.shoppingmall.order.domain.OrderStatus;
-import springboot.shoppingmall.order.partners.dto.PartnersCancelOrderQueryDto;
-import springboot.shoppingmall.order.partners.dto.PartnersDeliveryOrderQueryDto;
-import springboot.shoppingmall.order.partners.dto.PartnersEndOrderQueryDto;
-import springboot.shoppingmall.order.partners.dto.PartnersReadyOrderQueryDto;
+import springboot.shoppingmall.order.partners.application.dto.PartnersCancelOrderQueryDto;
+import springboot.shoppingmall.order.partners.application.dto.PartnersDeliveryOrderQueryDto;
+import springboot.shoppingmall.order.partners.application.dto.PartnersEndOrderQueryDto;
+import springboot.shoppingmall.order.partners.application.dto.PartnersReadyOrderQueryDto;
 
 public class PartnersOrderQueryJPARepository implements PartnersOrderQueryRepository{
 

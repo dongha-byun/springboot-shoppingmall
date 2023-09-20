@@ -1,19 +1,17 @@
-package springboot.shoppingmall.order.partners.dto;
+package springboot.shoppingmall.order.partners.presentation.response;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.order.domain.OrderStatus;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class PartnersOrderQueryDto {
+public class PartnersOrderQueryResponse {
     private Long orderItemId;
     private Long orderId;
     private String orderCode;
-    private LocalDateTime orderDate;
+    private String orderDate;
     private String productCode;
     private String productName;
     private int quantity;
@@ -21,5 +19,5 @@ public class PartnersOrderQueryDto {
     private int totalPrice;
     private String userName;
     private String userTelNo;
-    private OrderStatus orderStatus;
+    private String orderStatusName;
 }

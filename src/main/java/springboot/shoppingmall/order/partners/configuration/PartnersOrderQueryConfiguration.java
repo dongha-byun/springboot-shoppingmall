@@ -3,14 +3,13 @@ package springboot.shoppingmall.order.partners.configuration;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryRepository;
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryType;
-import springboot.shoppingmall.order.partners.service.PartnersCancelOrderQueryService;
-import springboot.shoppingmall.order.partners.service.PartnersEndOrderQueryService;
-import springboot.shoppingmall.order.partners.service.PartnersDeliveryOrderQueryService;
-import springboot.shoppingmall.order.partners.service.PartnersOrderQueryService;
-import springboot.shoppingmall.order.partners.service.PartnersReadyOrderQueryService;
+import springboot.shoppingmall.order.partners.application.PartnersCancelOrderQueryService;
+import springboot.shoppingmall.order.partners.application.PartnersEndOrderQueryService;
+import springboot.shoppingmall.order.partners.application.PartnersDeliveryOrderQueryService;
+import springboot.shoppingmall.order.partners.application.PartnersOrderQueryService;
+import springboot.shoppingmall.order.partners.application.PartnersReadyOrderQueryService;
 
 //@Configuration
 public class PartnersOrderQueryConfiguration {

@@ -1,4 +1,4 @@
-package springboot.shoppingmall.order.partners.controller;
+package springboot.shoppingmall.order.partners.presentation;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -17,12 +17,14 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import springboot.shoppingmall.authorization.configuration.AuthenticationConfig;
-import springboot.shoppingmall.order.partners.configuration.PartnersOrderQueryConfiguration;
-import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryRepository;
-import springboot.shoppingmall.order.partners.service.PartnersCancelOrderQueryService;
-import springboot.shoppingmall.order.partners.service.PartnersDeliveryOrderQueryService;
-import springboot.shoppingmall.order.partners.service.PartnersEndOrderQueryService;
-import springboot.shoppingmall.order.partners.service.PartnersReadyOrderQueryService;
+import springboot.shoppingmall.order.partners.presentation.response.PartnersCancelOrderQueryResponse;
+import springboot.shoppingmall.order.partners.presentation.response.PartnersDeliveryOrderQueryResponse;
+import springboot.shoppingmall.order.partners.presentation.response.PartnersEndOrderQueryResponse;
+import springboot.shoppingmall.order.partners.presentation.response.PartnersReadyOrderQueryResponse;
+import springboot.shoppingmall.order.partners.application.PartnersCancelOrderQueryService;
+import springboot.shoppingmall.order.partners.application.PartnersDeliveryOrderQueryService;
+import springboot.shoppingmall.order.partners.application.PartnersEndOrderQueryService;
+import springboot.shoppingmall.order.partners.application.PartnersReadyOrderQueryService;
 import springboot.shoppingmall.providers.config.PartnersConfiguration;
 
 @WebMvcTest(

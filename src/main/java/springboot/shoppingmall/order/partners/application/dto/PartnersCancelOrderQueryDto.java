@@ -1,4 +1,4 @@
-package springboot.shoppingmall.order.partners.dto;
+package springboot.shoppingmall.order.partners.application.dto;
 
 import java.time.LocalDateTime;
 import lombok.Getter;

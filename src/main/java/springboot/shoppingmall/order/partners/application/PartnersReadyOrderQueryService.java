@@ -1,14 +1,14 @@
-package springboot.shoppingmall.order.partners.service;
+package springboot.shoppingmall.order.partners.application;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import springboot.shoppingmall.order.partners.controller.PartnersOrderQueryResponse;
-import springboot.shoppingmall.order.partners.controller.PartnersReadyOrderQueryResponse;
+import springboot.shoppingmall.order.partners.presentation.response.PartnersOrderQueryResponse;
+import springboot.shoppingmall.order.partners.presentation.response.PartnersReadyOrderQueryResponse;
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryRepository;
-import springboot.shoppingmall.order.partners.dto.PartnersReadyOrderQueryDto;
+import springboot.shoppingmall.order.partners.application.dto.PartnersReadyOrderQueryDto;
 
 @RequiredArgsConstructor
 @Slf4j

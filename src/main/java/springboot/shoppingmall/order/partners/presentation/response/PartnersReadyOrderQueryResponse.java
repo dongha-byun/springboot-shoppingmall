@@ -1,11 +1,10 @@
-package springboot.shoppingmall.order.partners.controller;
+package springboot.shoppingmall.order.partners.presentation.response;
 
 import static springboot.shoppingmall.utils.DateUtils.*;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.order.partners.dto.PartnersReadyOrderQueryDto;
-import springboot.shoppingmall.utils.DateUtils;
+import springboot.shoppingmall.order.partners.application.dto.PartnersReadyOrderQueryDto;
 
 @NoArgsConstructor
 @Getter

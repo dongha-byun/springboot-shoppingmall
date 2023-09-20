@@ -1,8 +1,8 @@
-package springboot.shoppingmall.order.partners.controller;
+package springboot.shoppingmall.order.partners.presentation.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.order.partners.dto.PartnersDeliveryOrderQueryDto;
+import springboot.shoppingmall.order.partners.application.dto.PartnersDeliveryOrderQueryDto;
 import springboot.shoppingmall.utils.DateUtils;
 
 @NoArgsConstructor

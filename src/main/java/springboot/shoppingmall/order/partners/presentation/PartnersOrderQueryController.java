@@ -1,4 +1,4 @@
-package springboot.shoppingmall.order.partners.controller;
+package springboot.shoppingmall.order.partners.presentation;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,12 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import springboot.shoppingmall.order.partners.presentation.response.PartnersOrderQueryResponse;
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryType;
-import springboot.shoppingmall.order.partners.service.PartnersCancelOrderQueryService;
-import springboot.shoppingmall.order.partners.service.PartnersDeliveryOrderQueryService;
-import springboot.shoppingmall.order.partners.service.PartnersEndOrderQueryService;
-import springboot.shoppingmall.order.partners.service.PartnersOrderQueryService;
-import springboot.shoppingmall.order.partners.service.PartnersReadyOrderQueryService;
+import springboot.shoppingmall.order.partners.application.PartnersCancelOrderQueryService;
+import springboot.shoppingmall.order.partners.application.PartnersDeliveryOrderQueryService;
+import springboot.shoppingmall.order.partners.application.PartnersEndOrderQueryService;
+import springboot.shoppingmall.order.partners.application.PartnersOrderQueryService;
+import springboot.shoppingmall.order.partners.application.PartnersReadyOrderQueryService;
 import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
 import springboot.shoppingmall.providers.authentication.LoginPartner;
 import springboot.shoppingmall.utils.DateUtils;

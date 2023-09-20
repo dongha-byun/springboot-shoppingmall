@@ -19,7 +19,7 @@ import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
-import springboot.shoppingmall.order.partners.dto.PartnersReadyOrderQueryDto;
+import springboot.shoppingmall.order.partners.application.dto.PartnersReadyOrderQueryDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.userservice.user.domain.User;

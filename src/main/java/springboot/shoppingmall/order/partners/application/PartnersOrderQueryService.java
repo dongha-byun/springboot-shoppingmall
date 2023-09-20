@@ -1,9 +1,8 @@
-package springboot.shoppingmall.order.partners.service;
+package springboot.shoppingmall.order.partners.application;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import springboot.shoppingmall.order.partners.controller.PartnersOrderQueryResponse;
-import springboot.shoppingmall.order.partners.dto.PartnersOrderQueryDto;
+import springboot.shoppingmall.order.partners.presentation.response.PartnersOrderQueryResponse;
 
 public interface PartnersOrderQueryService {
 
