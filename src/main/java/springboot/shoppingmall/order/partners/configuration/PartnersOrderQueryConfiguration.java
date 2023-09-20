@@ -12,7 +12,7 @@ import springboot.shoppingmall.order.partners.service.PartnersDeliveryOrderQuery
 import springboot.shoppingmall.order.partners.service.PartnersOrderQueryService;
 import springboot.shoppingmall.order.partners.service.PartnersReadyOrderQueryService;
 
-@Configuration
+//@Configuration
 public class PartnersOrderQueryConfiguration {
 
     private final PartnersOrderQueryRepository repository;

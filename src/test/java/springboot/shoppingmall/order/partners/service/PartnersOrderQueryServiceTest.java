@@ -43,16 +43,11 @@ class PartnersOrderQueryServiceTest {
     UserRepository userRepository;
 
     User user;
-    Product product1;
-    Product product2;
-    Product product3;
-    LocalDateTime startDate;
-    LocalDateTime endDate;
+    Product product1, product2, product3;
+    LocalDateTime startDate, endDate;
     Long partnersId = 10L;
 
-    Order order1;
-    Order order2;
-    Order order3;
+    Order order1, order2, order3;
 
     @BeforeEach
     void setUp() {
