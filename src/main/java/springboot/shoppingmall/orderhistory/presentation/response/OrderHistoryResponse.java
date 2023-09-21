@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.orderhistory.application.dto.OrderHistoryDto;
+import springboot.shoppingmall.utils.DateUtils;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,7 +14,7 @@ import springboot.shoppingmall.orderhistory.application.dto.OrderHistoryDto;
 public class OrderHistoryResponse {
     private Long orderId;
     private Long orderItemId;
-    private LocalDateTime orderDate;
+    private String orderDate;
     private OrderStatus orderStatus;
     private String orderStatusName;
     private Long productId;
@@ -25,7 +26,7 @@ public class OrderHistoryResponse {
 
     public static OrderHistoryResponse to(OrderHistoryDto dto) {
         return new OrderHistoryResponse(
-                dto.getOrderId(), dto.getOrderItemId(), dto.getOrderDate(),
+                dto.getOrderId(), dto.getOrderItemId(), DateUtils.toStringOfLocalDateTIme(dto.getOrderDate()),
                 dto.getOrderStatus(), dto.getOrderStatusName(),
                 dto.getProductId(), dto.getProductName(), dto.getTid(), dto.getOrderPrice(),
                 dto.getProviderId(), dto.getProviderName()
