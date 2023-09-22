@@ -1,20 +1,26 @@
 package springboot.shoppingmall.coupon.application;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import springboot.shoppingmall.coupon.domain.Coupon;
 import springboot.shoppingmall.coupon.domain.CouponRepository;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserGrade;
-import springboot.shoppingmall.userservice.user.domain.UserGradeInfo;
-import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest
@@ -24,34 +30,24 @@ class CouponServiceTest {
     CouponService couponService;
 
     @Autowired
-    UserRepository userRepository;
+    CouponRepository couponRepository;
 
     @Autowired
-    CouponRepository couponRepository;
+    RestTemplate restTemplate;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    MockRestServiceServer mockRestServiceServer;
 
     @BeforeEach
     void beforeEach() {
-        사용자_추가("쿠폰테스터1", "coupon_tester1", "010-1111-2222", UserGrade.REGULAR);
-        사용자_추가("쿠폰테스터2", "coupon_tester2", "010-2222-3333", UserGrade.VIP);
-        사용자_추가("쿠폰테스터3", "coupon_tester3", "010-3333-4444", UserGrade.VVIP);
-        사용자_추가("쿠폰테스터4", "coupon_tester4", "010-3333-4444", UserGrade.NORMAL);
-    }
-
-    private void 사용자_추가(String name, String loginId, String telNo, UserGrade userGrade) {
-        userRepository.save(
-                new User(
-                        name, loginId, "coupon_tester_1!", telNo,
-                        LocalDateTime.of(2023, 9, 12, 15, 20, 15),
-                        0, false,
-                        new UserGradeInfo(userGrade, userGrade.getMinOrderCondition(), userGrade.getMinAmountCondition()
-                        )
-                )
-        );
+        mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
     }
 
     @Test
     @DisplayName("쿠폰 생성 - 특정 회원등급 이상의 회원들에게 쿠폰을 발급한다.")
-    void create_coupon_for_user() {
+    void create_coupon_for_user() throws JsonProcessingException {
         // 단골회원(REGULAR) 등급 이상인 회원들에게
         // 사용기한이 2023-05-28 ~ 2023-07-28 인
         // 할인율 7%의 쿠폰을 발급해준다.
@@ -65,6 +61,9 @@ class CouponServiceTest {
                 name, fromDate, toDate, "REGULAR", discountRate, partnersId
         );
 
+        String resultContent = objectMapper.writeValueAsString(Arrays.asList(10L, 20L, 30L));
+        mockRestServiceServerWithGetUsersAboveTargetGrade(couponCreateDto.getGrade(), resultContent);
+
         // when
         Long couponId = couponService.create(couponCreateDto);
 
@@ -73,5 +72,18 @@ class CouponServiceTest {
         assertThat(savedCoupon).isNotNull();
         assertThat(savedCoupon.getId()).isEqualTo(couponId);
         assertThat(savedCoupon.getUserCoupons()).hasSize(3);
+    }
+
+    private void mockRestServiceServerWithGetUsersAboveTargetGrade(String targetGrade, String resultContent) {
+        mockRestServiceServer
+                .expect(
+                        requestTo("/users/aboveGrade?targetGrade="+targetGrade)
+                )
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(
+                        withStatus(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(resultContent)
+                );
     }
 }

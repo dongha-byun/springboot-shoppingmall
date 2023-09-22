@@ -7,7 +7,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import springboot.shoppingmall.product.dto.ProductQnaDto;
+import springboot.shoppingmall.product.application.dto.ProductQnaDto;
 import springboot.shoppingmall.product.dto.QProductQnaAnswerDto;
 import springboot.shoppingmall.product.dto.QProductQnaDto;
 

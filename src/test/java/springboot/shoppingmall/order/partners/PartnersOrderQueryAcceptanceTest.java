@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static springboot.shoppingmall.order.OrderAcceptanceTest.*;
 import static springboot.shoppingmall.utils.DateUtils.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceProductTest;
-import springboot.shoppingmall.order.controller.OrderDeliveryRequest;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.DeliveryEndRequest;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
@@ -30,8 +30,9 @@ public class PartnersOrderQueryAcceptanceTest extends AcceptanceProductTest {
      */
     @Test
     @DisplayName("판매자가 배송 준비중 / 상품 출고 상태의 주문 목록을 조회한다.")
-    void partners_order_query_find_ready() {
+    void partners_order_query_find_ready() throws JsonProcessingException {
         // given
+        mockOrderUserInformationServerForGetDiscountRate(인수테스터1.getId(), 1);
         int quantity1 = 2;
         int quantity2 = 10;
         OrderResponse 주문1 = 주문_생성_요청(상품, quantity1, 0, 배송지).as(OrderResponse.class);

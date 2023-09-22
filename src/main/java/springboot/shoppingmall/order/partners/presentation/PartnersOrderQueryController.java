@@ -26,7 +26,7 @@ import springboot.shoppingmall.utils.DateUtils;
 @RestController
 public class PartnersOrderQueryController {
 
-    private final Map<PartnersOrderQueryType, PartnersOrderQueryService> partnersOrderQueryServiceMap;
+    //private final Map<PartnersOrderQueryType, PartnersOrderQueryService> partnersOrderQueryServiceMap;
     private final PartnersReadyOrderQueryService partnersReadyOrderQueryService;
     private final PartnersDeliveryOrderQueryService partnersDeliveryOrderQueryService;
     private final PartnersEndOrderQueryService partnersEndOrderQueryService;

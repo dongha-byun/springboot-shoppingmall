@@ -20,8 +20,6 @@ import springboot.shoppingmall.product.domain.ProductQnaRepository;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.query.ProductQnaAnswerCompleteType;
 import springboot.shoppingmall.product.query.dto.PartnersProductQnaDto;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest
@@ -42,23 +40,17 @@ class PartnersProductQnaRepositoryImplTest {
     @Autowired
     ProductQnaAnswerRepository answerRepository;
 
-    @Autowired
-    UserRepository userRepository;
     Long partnerId = 1L;
-    User writer;
-    Product product1;
-    Product product2;
-    Product product3;
+    Long writerId = 10L;
+
+    ProductQna productQna1, productQna2, productQna3;
 
     @BeforeEach
     void setup() {
-        writer = userRepository.save(
-                new User("테스트문의작성자", "testQnaWriter", "testQnaWriter1!", "010-2222-3333")
-        );
         Category category = categoryRepository.save(new Category("식품 분류"));
         Category subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
         LocalDateTime now = LocalDateTime.now();
-        product1 = productRepository.save(
+        Product product1 = productRepository.save(
                 new Product(
                         "product1", 1000, 10, 1.0, 10, now,
                         category, subCategory, partnerId,
@@ -66,7 +58,7 @@ class PartnersProductQnaRepositoryImplTest {
                         "test-product-code"
                 )
         );
-        product2 = productRepository.save(
+        Product product2 = productRepository.save(
                 new Product(
                         "product2", 1200, 11, 1.5, 20,
                         now.plusDays(1), category, subCategory, partnerId,
@@ -74,7 +66,7 @@ class PartnersProductQnaRepositoryImplTest {
                         "test-product-code"
                 )
         );
-        product3 = productRepository.save(
+        Product product3 = productRepository.save(
                 new Product(
                         "product3", 1500, 12, 3.0, 15,
                         now.plusDays(2), category, subCategory, partnerId,
@@ -82,21 +74,22 @@ class PartnersProductQnaRepositoryImplTest {
                         "test-product-code"
                 )
         );
+
+        productQna1 = productQnaRepository.save(
+                new ProductQna("상품 문의 드립니다. 1", product1, writerId)
+        );
+        productQna2 = productQnaRepository.save(
+                new ProductQna("상품 문의 드립니다. 2", product2, writerId)
+        );
+        productQna3 = productQnaRepository.save(
+                new ProductQna("상품 문의 드립니다. 3", product3, writerId)
+        );
     }
 
     @Test
     @DisplayName("판매자가 등록한 상품에 등록된 답변 미등록 문의글 목록 조회")
     void find_partners_product_qna_no_answer() {
         // given
-        ProductQna qna1 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 1", product1, writer.getId())
-        );
-        ProductQna qna2 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 2", product2, writer.getId())
-        );
-        ProductQna qna3 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 3", product3, writer.getId())
-        );
 
         // when
         List<PartnersProductQnaDto> qnas = partnersProductQnaRepository.findPartnersProductQnaAll(partnerId,
@@ -106,9 +99,9 @@ class PartnersProductQnaRepositoryImplTest {
         assertThat(qnas).hasSize(3)
                 .extracting("id", "isAnswered", "productName", "imgFileName")
                 .containsExactly(
-                        tuple(qna1.getId(), false, product1.getName(), product1.getThumbnail()),
-                        tuple(qna2.getId(), false, product2.getName(), product2.getThumbnail()),
-                        tuple(qna3.getId(), false, product3.getName(), product3.getThumbnail())
+                        tuple(productQna1.getId(), false, "product1", "storedFileName1"),
+                        tuple(productQna2.getId(), false, "product2", "storedFileName2"),
+                        tuple(productQna3.getId(), false, "product3", "storedFileName3")
                 );
     }
 
@@ -116,21 +109,11 @@ class PartnersProductQnaRepositoryImplTest {
     @DisplayName("판매자가 등록한 상품에 등록된 답변 등록된 문의글 목록 조회")
     void find_partners_product_qna_has_answer() {
         // given
-        ProductQna qna1 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 1", product1, writer.getId())
-        );
-        ProductQna qna2 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 2", product2, writer.getId())
-        );
-        ProductQna qna3 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 3", product3, writer.getId())
-        );
-
         ProductQnaAnswer answerOfQna1 = answerRepository.save(
-                ProductQnaAnswer.createQnaAnswer("문의 1 에 대한 답변 드립니다.", qna1)
+                ProductQnaAnswer.createQnaAnswer("문의 1 에 대한 답변 드립니다.", productQna1)
         );
         ProductQnaAnswer answerOfQna3 = answerRepository.save(
-                ProductQnaAnswer.createQnaAnswer("문의 3 에 대한 답변 드립니다.", qna3)
+                ProductQnaAnswer.createQnaAnswer("문의 3 에 대한 답변 드립니다.", productQna3)
         );
 
         // when
@@ -141,8 +124,8 @@ class PartnersProductQnaRepositoryImplTest {
         assertThat(qnas).hasSize(2)
                 .extracting("id", "isAnswered", "productName", "imgFileName")
                 .containsExactly(
-                        tuple(qna1.getId(), true, product1.getName(), product1.getThumbnail()),
-                        tuple(qna3.getId(), true, product3.getName(), product3.getThumbnail())
+                        tuple(productQna1.getId(), true, "product1", "storedFileName1"),
+                        tuple(productQna3.getId(), true, "product3", "storedFileName3")
                 );
     }
 
@@ -150,21 +133,11 @@ class PartnersProductQnaRepositoryImplTest {
     @DisplayName("판매자가 등록한 상품에 등록된 모든 문의글 목록 조회")
     void find_partners_product_qna_all() {
         // given
-        ProductQna qna1 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 1", product1, writer.getId())
-        );
-        ProductQna qna2 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 2", product2, writer.getId())
-        );
-        ProductQna qna3 = productQnaRepository.save(
-                new ProductQna("상품 문의 드립니다. 3", product3, writer.getId())
-        );
-
         ProductQnaAnswer answerOfQna1 = answerRepository.save(
-                ProductQnaAnswer.createQnaAnswer("문의 1 에 대한 답변 드립니다.", qna1)
+                ProductQnaAnswer.createQnaAnswer("문의 1 에 대한 답변 드립니다.", productQna1)
         );
         ProductQnaAnswer answerOfQna3 = answerRepository.save(
-                ProductQnaAnswer.createQnaAnswer("문의 3 에 대한 답변 드립니다.", qna3)
+                ProductQnaAnswer.createQnaAnswer("문의 3 에 대한 답변 드립니다.", productQna3)
         );
 
         // when
@@ -175,9 +148,9 @@ class PartnersProductQnaRepositoryImplTest {
         assertThat(qnas).hasSize(3)
                 .extracting("id", "isAnswered", "productName", "imgFileName")
                 .containsExactly(
-                        tuple(qna1.getId(), true, product1.getName(), product1.getThumbnail()),
-                        tuple(qna2.getId(), false, product2.getName(), product2.getThumbnail()),
-                        tuple(qna3.getId(), true, product3.getName(), product3.getThumbnail())
+                        tuple(productQna1.getId(), true, "product1", "storedFileName1"),
+                        tuple(productQna2.getId(), false, "product2", "storedFileName2"),
+                        tuple(productQna3.getId(), true, "product3", "storedFileName3")
                 );
     }
 }

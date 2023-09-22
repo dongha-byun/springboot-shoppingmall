@@ -16,8 +16,6 @@ import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.product.dto.ProductDto;
-import springboot.shoppingmall.product.query.ProductQueryOrderType;
 import springboot.shoppingmall.product.query.dto.ProductQueryDto;
 import springboot.shoppingmall.providers.domain.Provider;
 import springboot.shoppingmall.providers.domain.ProviderRepository;

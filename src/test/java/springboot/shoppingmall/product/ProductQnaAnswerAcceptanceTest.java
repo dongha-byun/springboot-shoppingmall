@@ -17,8 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceTest;
 import springboot.shoppingmall.category.dto.CategoryResponse;
-import springboot.shoppingmall.product.dto.ProductQnaResponse;
-import springboot.shoppingmall.product.dto.ProductResponse;
+import springboot.shoppingmall.product.presentation.response.ProductQnaResponse;
+import springboot.shoppingmall.product.presentation.response.ProductResponse;
 
 public class ProductQnaAnswerAcceptanceTest extends AcceptanceTest {
 

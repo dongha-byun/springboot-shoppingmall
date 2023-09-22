@@ -1,12 +1,8 @@
 package springboot.shoppingmall.order;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -20,14 +16,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.client.RestTemplate;
 import springboot.shoppingmall.AcceptanceProductTest;
-import springboot.shoppingmall.authorization.LoginAcceptanceTest;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.authorization.exception.ErrorCode;
 import springboot.shoppingmall.coupon.domain.Coupon;
@@ -40,18 +31,16 @@ import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.DeliveryEndRequest;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderResponse;
-import springboot.shoppingmall.order.service.dto.ResponseUserInformation;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.product.dto.ProductResponse;
+import springboot.shoppingmall.product.presentation.response.ProductResponse;
 import springboot.shoppingmall.delivery.domain.Delivery;
 import springboot.shoppingmall.delivery.domain.DeliveryRepository;
 import springboot.shoppingmall.payment.domain.PayType;
 import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserGrade;
-import springboot.shoppingmall.userservice.user.domain.UserGradeInfo;
 import springboot.shoppingmall.userservice.user.domain.UserRepository;
 import springboot.shoppingmall.delivery.presentation.response.DeliveryResponse;
+
 public class OrderAcceptanceTest extends AcceptanceProductTest {
 
     @Autowired
@@ -67,20 +56,11 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
     @Autowired
     DeliveryRepository deliveryRepository;
 
-    @Autowired
-    ObjectMapper objectMapper;
-    @Autowired
-    RestTemplate restTemplate;
-
-    MockRestServiceServer mockRestServiceServer;
-
     OrderResponse 배송완료_주문;
 
     @BeforeEach
     void order_acceptance_beforeEach(){
         super.acceptance_product_beforeEach();
-
-        mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
 
         Product product1 = productRepository.findById(상품.getId()).orElseThrow();
         Product product2 = productRepository.findById(상품2.getId()).orElseThrow();
@@ -183,19 +163,9 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
      */
     @Test
     @DisplayName("회원등급 할인을 받아서 여러 상품을 구매한다.")
-    void order_with_many_products_and_discount_grade() {
+    void order_with_many_products_and_discount_grade() throws JsonProcessingException {
         // given
-        String loginId = "vip_user1";
-        String password = "vip_user1!";
-        userRepository.save(
-                new User(
-                        "VIP 회원", loginId, password, "010-2344-2344",
-                        LocalDateTime.of(2022, 12, 22, 13, 15, 10),
-                        0, false, new UserGradeInfo(UserGrade.VIP, 50, 150000)
-                )
-        );
-        TokenResponse VIP_로그인정보 = LoginAcceptanceTest.로그인(loginId, password).as(TokenResponse.class);
-
+        mockOrderUserInformationServerForGetDiscountRate(인수테스터1.getId(), 5);
         Map<String, Object> item1 = new HashMap<>();
         item1.put("productId", 상품.getId());
         item1.put("quantity", 3);
@@ -207,14 +177,15 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
         List<Map<String, Object>> 주문_상품_목록 = Arrays.asList(item1, item2);
 
         // when
-        ExtractableResponse<Response> 결과 = 주문_상품_다건_생성_요청(주문_상품_목록, 3000, 배송지, VIP_로그인정보);
+        ExtractableResponse<Response> 결과 = 주문_상품_다건_생성_요청(주문_상품_목록, 3000, 배송지);
 
         // then
         assertThat(결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(결과.jsonPath().getList("items")).hasSize(2);
-        assertThat(결과.jsonPath().getList("items.gradeDiscountAmount", Integer.class)).containsExactly(
-                (상품.getPrice() * 3) * UserGrade.VIP.getDiscountRate() / 100,
-                (상품2.getPrice() * 5) * UserGrade.VIP.getDiscountRate() / 100
+        assertThat(결과.jsonPath().getList("items.gradeDiscountAmount", Integer.class))
+                .containsExactly(
+                (상품.getPrice() * 3) * 5 / 100,
+                (상품2.getPrice() * 5) * 5 / 100
         );
     }
 
@@ -266,7 +237,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
      */
     @Test
     @DisplayName("주문 배송 완료 테스트")
-    void 배송_완료_테스트() throws JsonProcessingException {
+    void delivery_end() throws JsonProcessingException {
         // given
         mockOrderUserInformationServerForGetDiscountRate(인수테스터1.getId(), 0);
 
@@ -435,7 +406,7 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
     @DisplayName("주문 시 쿠폰을 사용하면, 결제금액이 할인된다.")
     void order_used_coupon() throws JsonProcessingException {
         // given
-        mockOrderUserInformationServerForGetDiscountRate(인수테스터1.getId(), 0);
+        mockOrderUserInformationServerForGetDiscountRate(인수테스터1.getId(), 1);
 
         Coupon coupon1 = createCoupon("할인쿠폰#1", 5);
         Coupon coupon2 = createCoupon("할인쿠폰#2", 8);
@@ -669,18 +640,4 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
                 .extract();
     }
 
-    private void mockOrderUserInformationServerForGetDiscountRate(long userId, int discountRate) throws JsonProcessingException {
-        ResponseUserInformation response = new ResponseUserInformation(discountRate);
-        String responseContent = objectMapper.writeValueAsString(response);
-
-        mockRestServiceServer.expect(
-                        requestTo("/user/" + userId + "/grade-info")
-                )
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(
-                        withStatus(HttpStatus.OK)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .body(responseContent)
-                );
-    }
 }

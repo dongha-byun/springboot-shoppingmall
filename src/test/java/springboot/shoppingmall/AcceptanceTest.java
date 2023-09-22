@@ -1,12 +1,17 @@
 package springboot.shoppingmall;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static springboot.shoppingmall.admin.AdminApproveProviderAcceptanceTest.판매_승인_요청;
 import static springboot.shoppingmall.authorization.LoginAcceptanceTest.로그인;
 import static springboot.shoppingmall.providers.ProviderAcceptanceTest.판매_승인요청_등록_요청;
 import static springboot.shoppingmall.providers.PartnersLoginAcceptanceTest.판매자_로그인_요청;
 import static springboot.shoppingmall.userservice.user.UserAcceptanceTest.회원가입;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -19,10 +24,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestTemplate;
 import springboot.shoppingmall.authorization.dto.TokenResponse;
 import springboot.shoppingmall.db.DatabaseCleanUtil;
 import springboot.shoppingmall.message.MessageProvider;
+import springboot.shoppingmall.order.service.dto.ResponseUserInformation;
 import springboot.shoppingmall.product.configuration.TestFileConfiguration;
 import springboot.shoppingmall.providers.web.ProviderTokenResponse;
 import springboot.shoppingmall.userservice.user.presentation.response.UserResponse;
@@ -58,6 +68,13 @@ public class AcceptanceTest {
     public static String password = "1q2w3e4r!";
     public static String 판매자_로그인토큰;
 
+    static ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    RestTemplate restTemplate;
+
+    static MockRestServiceServer mockRestServiceServer;
+
     protected Long partnerId;
 
     @BeforeEach
@@ -80,6 +97,8 @@ public class AcceptanceTest {
         assertThat(판매_승인_요청_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         판매자_로그인토큰 = 판매자_로그인_요청(loginId, password).as(ProviderTokenResponse.class).getAccessToken();
+
+        mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
     }
 
     @AfterEach
@@ -105,5 +124,20 @@ public class AcceptanceTest {
         assertThat(response.jsonPath().getList(path, type)).containsExactly(
                 results
         );
+    }
+
+    public static void mockOrderUserInformationServerForGetDiscountRate(long userId, int discountRate) throws JsonProcessingException {
+        ResponseUserInformation response = new ResponseUserInformation(discountRate);
+        String responseContent = objectMapper.writeValueAsString(response);
+
+        mockRestServiceServer.expect(
+                        requestTo("/user/" + userId + "/grade-info")
+                )
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(
+                        withStatus(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(responseContent)
+                );
     }
 }

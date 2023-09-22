@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.AcceptanceProductTest;
-import springboot.shoppingmall.product.dto.ProductQnaAnswerResponse;
-import springboot.shoppingmall.product.dto.ProductQnaResponse;
+import springboot.shoppingmall.product.presentation.response.ProductQnaAnswerResponse;
+import springboot.shoppingmall.product.presentation.response.ProductQnaResponse;
 
 public class PartnersProductQnaAcceptanceTest extends AcceptanceProductTest {
 

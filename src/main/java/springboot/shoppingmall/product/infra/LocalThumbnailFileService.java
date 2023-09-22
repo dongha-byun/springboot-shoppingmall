@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import springboot.shoppingmall.product.controller.ThumbnailFileService;
-import springboot.shoppingmall.product.service.ThumbnailInfo;
+import springboot.shoppingmall.product.presentation.ThumbnailFileService;
+import springboot.shoppingmall.product.application.ThumbnailInfo;
 
 @Component
 public class LocalThumbnailFileService implements ThumbnailFileService {

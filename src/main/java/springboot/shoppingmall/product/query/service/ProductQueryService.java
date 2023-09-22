@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryFinder;
-import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.dto.ProductDto;
 import springboot.shoppingmall.product.query.ProductQueryOrderType;
 import springboot.shoppingmall.product.query.dto.ProductQueryDto;
 import springboot.shoppingmall.product.query.dto.ProductQueryResponse;

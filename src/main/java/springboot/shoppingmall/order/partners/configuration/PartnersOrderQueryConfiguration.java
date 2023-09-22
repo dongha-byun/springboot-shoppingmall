@@ -2,7 +2,9 @@ package springboot.shoppingmall.order.partners.configuration;
 
 import java.util.HashMap;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryRepository;
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryType;
 import springboot.shoppingmall.order.partners.application.PartnersCancelOrderQueryService;
@@ -11,16 +13,13 @@ import springboot.shoppingmall.order.partners.application.PartnersDeliveryOrderQ
 import springboot.shoppingmall.order.partners.application.PartnersOrderQueryService;
 import springboot.shoppingmall.order.partners.application.PartnersReadyOrderQueryService;
 
-//@Configuration
+@RequiredArgsConstructor
+@Configuration
 public class PartnersOrderQueryConfiguration {
 
     private final PartnersOrderQueryRepository repository;
 
-    public PartnersOrderQueryConfiguration(PartnersOrderQueryRepository repository) {
-        this.repository = repository;
-    }
-
-    @Bean
+    //@Bean
     public Map<PartnersOrderQueryType, PartnersOrderQueryService> partnersOrderQueryServiceMap() {
         Map<PartnersOrderQueryType, PartnersOrderQueryService> map = new HashMap<>();
         map.put(PartnersOrderQueryType.READY, partnersReadyOrderQueryService());

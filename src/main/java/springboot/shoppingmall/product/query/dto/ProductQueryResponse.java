@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.dto.ProductDto;
 
 @AllArgsConstructor
 @NoArgsConstructor

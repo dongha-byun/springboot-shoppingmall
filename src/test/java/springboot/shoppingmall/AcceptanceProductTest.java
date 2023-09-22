@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import springboot.shoppingmall.category.dto.CategoryResponse;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderResponse;
-import springboot.shoppingmall.product.dto.ProductResponse;
+import springboot.shoppingmall.product.presentation.response.ProductResponse;
 import springboot.shoppingmall.delivery.presentation.response.DeliveryResponse;
 
 public class AcceptanceProductTest extends AcceptanceTest{

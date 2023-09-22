@@ -7,7 +7,6 @@ import java.util.Objects;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -23,7 +22,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.BaseEntity;
-import springboot.shoppingmall.product.service.ThumbnailInfo;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter

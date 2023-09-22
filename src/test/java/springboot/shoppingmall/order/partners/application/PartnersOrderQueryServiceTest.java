@@ -46,6 +46,7 @@ class PartnersOrderQueryServiceTest {
     Product product1, product2, product3;
     LocalDateTime startDate, endDate;
     Long partnersId = 10L;
+    Long userId = 100L;
 
     Order order1, order2, order3;
 
@@ -87,19 +88,19 @@ class PartnersOrderQueryServiceTest {
                 "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요"
         );
         order1 = Order.createOrder(
-                "test-order-code1", user.getId(),
+                "test-order-code1", userId,
                 List.of(new OrderItem(product1, 3, OrderStatus.READY)),
                 orderDeliveryInfo
         );
 
         order2 = Order.createOrder(
-                "test-order-code2", user.getId(),
+                "test-order-code2", userId,
                 List.of(new OrderItem(product2, 4, OrderStatus.READY)),
                 orderDeliveryInfo
         );
 
         order3 = Order.createOrder(
-                "test-order-code3", user.getId(),
+                "test-order-code3", userId,
                 List.of(new OrderItem(product3, 5, OrderStatus.READY)),
                 orderDeliveryInfo
         );

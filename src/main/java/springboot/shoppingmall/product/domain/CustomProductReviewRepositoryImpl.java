@@ -7,7 +7,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import javax.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
-import springboot.shoppingmall.product.dto.ProductReviewDto;
+import springboot.shoppingmall.product.application.dto.ProductReviewDto;
 
 @Repository
 public class CustomProductReviewRepositoryImpl implements CustomProductReviewRepository{
