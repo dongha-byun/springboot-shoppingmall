@@ -18,9 +18,6 @@ import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.delivery.domain.DeliveryRepository;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest
@@ -30,16 +27,10 @@ class OrderValidatorTest {
     OrderValidator orderValidator;
 
     @Autowired
-    UserRepository userRepository;
-
-    @Autowired
     CategoryRepository categoryRepository;
 
     @Autowired
     ProductRepository productRepository;
-
-    @Autowired
-    DeliveryRepository deliveryRepository;
 
     @Autowired
     OrderRepository orderRepository;
@@ -49,7 +40,7 @@ class OrderValidatorTest {
     @DisplayName("주문이 완료된 주문인지 검증 - 성공")
     void order_is_end_success_test() {
         // given
-        User user = userRepository.save(new User("사용자1", "user1", "user1!", "010-2222-3333"));
+        Long userId = 10L;
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product = productRepository.save(
@@ -68,7 +59,7 @@ class OrderValidatorTest {
         );
 
         Order savedOrder = orderRepository.save(
-                new Order("test-order-code", user.getId(), orderItems, orderDeliveryInfo)
+                new Order("test-order-code", userId, orderItems, orderDeliveryInfo)
         );
 
         // when

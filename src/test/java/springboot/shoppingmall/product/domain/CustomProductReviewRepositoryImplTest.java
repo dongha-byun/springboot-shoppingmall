@@ -11,9 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
-import springboot.shoppingmall.product.dto.ProductReviewDto;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserRepository;
+import springboot.shoppingmall.product.application.dto.ProductReviewDto;
 
 @Transactional
 @SpringBootTest
@@ -26,20 +24,17 @@ class CustomProductReviewRepositoryImplTest {
     ProductRepository productRepository;
 
     @Autowired
-    UserRepository userRepository;
-
-    @Autowired
     ProductReviewRepository productReviewRepository;
 
     @Autowired
     CustomProductReviewRepositoryImpl customProductReviewRepository;
 
     @Test
-    @DisplayName("상품의 리뷰 목록 조회 - dto 로 조회")
+    @DisplayName("특정 상품에 작성된 리뷰 목록들을 조회한다.")
     void find_review_of_product_test() {
         // given
-        User user1 = userRepository.save(new User("사용자1", "user1", "user1!", "010-2222-3333"));
-        User user2 = userRepository.save(new User("사용자2", "user2", "user2!", "010-4444-3333"));
+        Long user1Id = 10L;
+        Long user2Id = 20L;
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product = productRepository.save(
@@ -51,22 +46,8 @@ class CustomProductReviewRepositoryImplTest {
                 )
         );
 
-        ProductReview review1 = productReviewRepository.save(
-                ProductReview.builder()
-                        .content("리뷰 입니다.")
-                        .score(4)
-                        .product(product)
-                        .userId(user1.getId())
-                        .build()
-        );
-        ProductReview review2 = productReviewRepository.save(
-                ProductReview.builder()
-                        .content("리뷰 2 입니다.")
-                        .score(5)
-                        .product(product)
-                        .userId(user2.getId())
-                        .build()
-        );
+        ProductReview review1 = saveReview("리뷰 입니다.", 4, product, user1Id);
+        ProductReview review2 = saveReview("리뷰 2 입니다.", 5, product, user2Id);
 
         // when
         List<ProductReviewDto> reviewDtos = customProductReviewRepository.findAllProductReview(product.getId());
@@ -78,6 +59,17 @@ class CustomProductReviewRepositoryImplTest {
                         tuple(review2.getId(), "리뷰 2 입니다."),
                         tuple(review1.getId(), "리뷰 입니다.")
                 );
+    }
+
+    private ProductReview saveReview(String content, int score, Product product, Long user1Id) {
+        return productReviewRepository.save(
+                ProductReview.builder()
+                        .content(content)
+                        .score(score)
+                        .product(product)
+                        .userId(user1Id)
+                        .build()
+        );
     }
 
 }

@@ -11,16 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
-import springboot.shoppingmall.product.dto.ProductQnaDto;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserRepository;
+import springboot.shoppingmall.product.application.dto.ProductQnaDto;
 
 @Transactional
 @SpringBootTest
 class CustomProductQnaRepositoryImplTest {
-
-    @Autowired
-    UserRepository userRepository;
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -35,11 +30,11 @@ class CustomProductQnaRepositoryImplTest {
     CustomProductQnaRepositoryImpl customProductQnaRepository;
 
     @Test
-    @DisplayName("상품 별 문의목록 조회")
-    void find_all_product_qna_test() {
+    @DisplayName("특정 상품에 등록된 문의 목록을 조회한다.")
+    void find_all_product_qna() {
         // given
-        User user1 = userRepository.save(new User("사용자1", "user1", "user1!", "010-2222-3333"));
-        User user2 = userRepository.save(new User("사용자2", "user2", "user2!", "010-4444-3333"));
+        Long user1Id = 10L;
+        Long user2Id = 20L;
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
         Product product = productRepository.save(
@@ -51,8 +46,8 @@ class CustomProductQnaRepositoryImplTest {
                 )
         );
 
-        ProductQna qna1 = productQnaRepository.save(new ProductQna("문의 드립니다. 1", product, user1.getId()));
-        ProductQna qna2 = productQnaRepository.save(new ProductQna("문의 드립니다. 2", product, user2.getId()));
+        ProductQna qna1 = saveProductQna("문의 드립니다. 1", product, user1Id);
+        ProductQna qna2 = saveProductQna("문의 드립니다. 2", product, user2Id);
 
         // when
         List<ProductQnaDto> qnaDtos = customProductQnaRepository.findAllProductQna(product.getId());
@@ -64,5 +59,9 @@ class CustomProductQnaRepositoryImplTest {
                         tuple("문의 드립니다. 2", qna2.getId()),
                         tuple("문의 드립니다. 1", qna1.getId())
                 );
+    }
+
+    private ProductQna saveProductQna(String content, Product product, Long user1Id) {
+        return productQnaRepository.save(new ProductQna(content, product, user1Id));
     }
 }
