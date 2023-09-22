@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.multipart.MultipartFile;
-import springboot.shoppingmall.product.controller.ThumbnailFileService;
-import springboot.shoppingmall.product.service.ThumbnailInfo;
+import springboot.shoppingmall.product.presentation.ThumbnailFileService;
+import springboot.shoppingmall.product.application.ThumbnailInfo;
 
 @TestConfiguration
 public class TestFileConfiguration {

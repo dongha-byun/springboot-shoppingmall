@@ -30,7 +30,7 @@ public class ProductApiController {
     private final ProductService productService;
     private final ThumbnailFileService thumbnailFileService;
 
-    @PostMapping(value = "/products")
+    @PostMapping("/products")
     public ResponseEntity<ProductResponse> createProduct(@LoginPartner AuthorizedPartner partner,
                                                          @RequestPart(name = "data") ProductRequest productRequest,
                                                          @RequestPart(name = "file") MultipartFile showImgFile) throws IOException {
