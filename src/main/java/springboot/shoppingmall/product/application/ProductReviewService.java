@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.order.domain.OrderFinder;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.validator.OrderValidator;
+import springboot.shoppingmall.product.application.dto.ProductUserReviewDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
 import springboot.shoppingmall.product.domain.ProductReview;
@@ -27,24 +28,20 @@ public class ProductReviewService {
     private final OrderFinder orderFinder;
     private final OrderValidator orderValidator;
 
-    public List<ProductReviewResponse> findAllReview(Long productId) {
-        List<ProductReviewDto> reviewDtos = reviewRepository.findAllProductReview(productId);
-        return reviewDtos.stream()
-                .map(
-                        ProductReviewResponse::of
-                ).collect(Collectors.toList());
+    public List<ProductReviewDto> findAllReview(Long productId) {
+        return reviewRepository.findAllProductReview(productId);
     }
 
-    public List<ProductUserReviewResponse> findAllUserReview(Long userId) {
+    public List<ProductUserReviewDto> findAllUserReview(Long userId) {
         List<ProductReview> reviews = reviewRepository.findAllByUserId(userId);
 
         return reviews.stream()
-                .map(ProductUserReviewResponse::of).collect(Collectors.toList());
+                .map(ProductUserReviewDto::of).collect(Collectors.toList());
     }
 
     @Transactional
-    public ProductUserReviewResponse createProductReview(Long userId, Long orderItemId, Long productId,
-                                                         ProductReviewCreateDto createDto, List<ThumbnailInfo> images) {
+    public ProductUserReviewDto createProductReview(Long userId, Long orderItemId, Long productId,
+                                                    ProductReviewCreateDto createDto, List<ThumbnailInfo> images) {
         orderValidator.validateOrderIsEnd(orderItemId);
 
         Product product = productFinder.findProductById(productId);
@@ -72,7 +69,7 @@ public class ProductReviewService {
         OrderItem orderItem = orderFinder.findOrderItemById(orderItemId);
         orderItem.finish();
 
-        return ProductUserReviewResponse.of(savedReview);
+        return ProductUserReviewDto.of(savedReview);
     }
 
     @Transactional

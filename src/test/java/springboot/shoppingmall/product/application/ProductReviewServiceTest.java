@@ -20,6 +20,8 @@ import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.product.application.dto.ProductReviewDto;
+import springboot.shoppingmall.product.application.dto.ProductUserReviewDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.domain.ProductReview;
@@ -85,14 +87,14 @@ class ProductReviewServiceTest {
         // when
         OrderItem savedOrderItem = endOrder.getItems().get(0);
         ProductReviewCreateDto createDto = new ProductReviewCreateDto("리뷰 등록 합니다.", 3);
-        ProductUserReviewResponse response = service.createProductReview(
+        ProductUserReviewDto productReviewDto = service.createProductReview(
                 userId, savedOrderItem.getId(), product.getId(), createDto, new ArrayList<>()
         );
 
         // then
-        assertThat(response.getId()).isNotNull();
-        assertThat(response.getContent()).isEqualTo("리뷰 등록 합니다.");
-        assertThat(response.getProductName()).isEqualTo("상품 1");
+        assertThat(productReviewDto.getId()).isNotNull();
+        assertThat(productReviewDto.getContent()).isEqualTo("리뷰 등록 합니다.");
+        assertThat(productReviewDto.getProductName()).isEqualTo("상품 1");
 
         Order finishOrder = orderRepository.findById(endOrder.getId()).orElseThrow();
         assertThat(finishOrder.getItems().get(0).getOrderStatus()).isEqualTo(OrderStatus.FINISH);
@@ -147,7 +149,7 @@ class ProductReviewServiceTest {
         ProductReview review2 = saveReview("리뷰 2 입니다.", 5, product, user2Id);
 
         // when
-        List<ProductReviewResponse> reviews = service.findAllReview(product.getId());
+        List<ProductReviewDto> reviews = service.findAllReview(product.getId());
 
         // then
         assertThat(reviews).hasSize(2)
@@ -231,7 +233,7 @@ class ProductReviewServiceTest {
         ProductReview review2 = saveReview("리뷰 2 입니다.", 5, product2, userId);
 
         // when
-        List<ProductUserReviewResponse> reviews = service.findAllUserReview(userId);
+        List<ProductUserReviewDto> reviews = service.findAllUserReview(userId);
 
         // then
         assertThat(reviews).hasSize(2)
@@ -315,13 +317,13 @@ class ProductReviewServiceTest {
                 new ThumbnailInfo("stored-file-name4", "view-file-name4"),
                 new ThumbnailInfo("stored-file-name5", "view-file-name5")
         );
-        ProductUserReviewResponse productReview = service.createProductReview(userId, endOrder.getId(),
+        ProductUserReviewDto productReviewDto = service.createProductReview(userId, endOrder.getId(),
                 product.getId(), createDto, reviewImages);
 
         em.flush();
         em.clear();
         // then
-        ProductReview findReview = productReviewRepository.findById(productReview.getId()).orElseThrow();
+        ProductReview findReview = productReviewRepository.findById(productReviewDto.getId()).orElseThrow();
         assertThat(findReview).isNotNull();
         assertThat(findReview.getImages()).hasSize(5)
                 .extracting("storedFileName", "viewFileName")

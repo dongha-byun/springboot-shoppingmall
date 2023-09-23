@@ -66,7 +66,7 @@ class ProductQnaAnswerApiControllerTest {
     }
 
     @Test
-    @DisplayName("문의 내용을 필수로 입력해야한다.")
+    @DisplayName("답변 내용을 필수로 입력해야 한다.")
     void required_content() throws Exception {
         // given
         ProductQnaAnswerRequest productQnaAnswerRequest = new ProductQnaAnswerRequest();

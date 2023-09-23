@@ -3,6 +3,7 @@ package springboot.shoppingmall.product.presentation;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
+import springboot.shoppingmall.product.application.dto.ProductReviewDto;
+import springboot.shoppingmall.product.application.dto.ProductUserReviewDto;
 import springboot.shoppingmall.product.presentation.request.ProductReviewRequest;
 import springboot.shoppingmall.product.presentation.response.ProductReviewResponse;
 import springboot.shoppingmall.product.presentation.response.ProductUserReviewResponse;
@@ -49,23 +52,28 @@ public class ProductReviewApiController {
                                                                   @PathVariable("orderId") Long orderId,
                                                                   @PathVariable("orderItemId") Long orderItemId,
                                                                   @PathVariable("productId") Long productId,
-                                                                  @Valid @RequestPart(name = "data") ProductReviewRequest reviewRequest,
-                                                                  @RequestPart(name = "file", required = false) List<MultipartFile> images,
-                                                                  BindingResult bindingResult) throws IOException {
+                                                                  @RequestPart(name = "data") @Valid ProductReviewRequest reviewRequest,
+                                                                  BindingResult bindingResult,
+                                                                  @RequestPart(name = "file", required = false) List<MultipartFile> images) throws IOException {
         if(bindingResult.hasErrors()){
             throw new ContentNotBlankException("리뷰 내용은 필수 입니다.");
         }
 
         List<ThumbnailInfo> reviewImages = thumbnailFileService.save(images);
         ProductReviewCreateDto createDto = reviewRequest.toDto();
-        ProductUserReviewResponse reviewResponse =
-                productReviewService.createProductReview(user.getId(), orderItemId, productId, createDto, reviewImages);
+        ProductUserReviewDto dto = productReviewService.createProductReview(
+                user.getId(), orderItemId, productId, createDto, reviewImages
+        );
+        ProductUserReviewResponse reviewResponse = ProductUserReviewResponse.of(dto);
         return ResponseEntity.created(URI.create("/products/" + productId + "/reviews/" + reviewResponse.getId())).body(reviewResponse);
     }
 
     @GetMapping("/products/{productId}/reviews")
     public ResponseEntity<List<ProductReviewResponse>> findAllByProduct(@PathVariable("productId") Long productId) {
-        List<ProductReviewResponse> reviews = productReviewService.findAllReview(productId);
+        List<ProductReviewDto> dtos = productReviewService.findAllReview(productId);
+        List<ProductReviewResponse> reviews = dtos.stream()
+                .map(ProductReviewResponse::of)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(reviews);
     }
 
@@ -78,8 +86,11 @@ public class ProductReviewApiController {
 
     @GetMapping("/users/reviews")
     public ResponseEntity<List<ProductUserReviewResponse>> findAllByUser(@AuthenticationStrategy AuthorizedUser user) {
-        List<ProductUserReviewResponse> reviews = productReviewService.findAllUserReview(user.getId());
-        return ResponseEntity.ok(reviews);
+        List<ProductUserReviewDto> dtos = productReviewService.findAllUserReview(user.getId());
+        List<ProductUserReviewResponse> reviews = dtos.stream()
+                .map(ProductUserReviewResponse::of)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok().body(reviews);
     }
 
 }

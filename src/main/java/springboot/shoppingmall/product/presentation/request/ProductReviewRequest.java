@@ -14,7 +14,7 @@ import springboot.shoppingmall.product.application.dto.ProductReviewCreateDto;
 @AllArgsConstructor
 public class ProductReviewRequest implements Serializable {
 
-    @NotBlank(message = "review content can not be null")
+    @NotBlank(message = "리뷰 내용은 필수항목 입니다.")
     private String content;
 
     @Max(value = 5)

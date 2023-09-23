@@ -69,11 +69,11 @@ class ProductQnaServiceTest {
         productQnaService.createQna(userId, product.getId(), new ProductQnaCreateDto("제품이 이상해요 2"));
 
         // when
-        List<ProductQnaResponse> productQnaList = productQnaService.findQnaAllByProduct(product.getId());
+        List<ProductQnaDto> qnaDtos = productQnaService.findQnaAllByProduct(product.getId());
 
         // then
-        assertThat(productQnaList).hasSize(2);
-        assertThat(productQnaList.get(0).getWriteDate()).isNotNull();
+        assertThat(qnaDtos).hasSize(2);
+        assertThat(qnaDtos.get(0).getWriteDate()).isNotNull();
     }
 
     @Test

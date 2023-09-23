@@ -34,11 +34,8 @@ public class ProductQnaService {
         return ProductQnaDto.of(productQna);
     }
 
-    public List<ProductQnaResponse> findQnaAllByProduct(Long productId){
-        List<ProductQnaDto> qnaDtos = productQnaRepository.findAllProductQna(productId);
-        return qnaDtos.stream()
-                .map(ProductQnaResponse::of)
-                .collect(Collectors.toList());
+    public List<ProductQnaDto> findQnaAllByProduct(Long productId){
+        return productQnaRepository.findAllProductQna(productId);
     }
 
     public ProductQnaResponse findQnaByProduct(Long productId, Long qnaId){
