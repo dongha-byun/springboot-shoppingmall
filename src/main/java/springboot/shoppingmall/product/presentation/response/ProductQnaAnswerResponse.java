@@ -25,6 +25,9 @@ public class ProductQnaAnswerResponse {
     }
 
     public static ProductQnaAnswerResponse of(ProductQnaAnswerDto dto) {
+        if(dto == null) {
+            return null;
+        }
         return new ProductQnaAnswerResponse(dto.getId(), dto.getAnswer(),
                 DateUtils.toStringOfLocalDateTIme(dto.getAnswerDate()));
     }

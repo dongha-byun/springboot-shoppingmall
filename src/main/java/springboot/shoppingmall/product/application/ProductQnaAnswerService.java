@@ -3,14 +3,13 @@ package springboot.shoppingmall.product.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.product.application.dto.ProductQnaAnswerDto;
 import springboot.shoppingmall.product.domain.ProductQna;
 import springboot.shoppingmall.product.domain.ProductQnaAnswer;
 import springboot.shoppingmall.product.domain.ProductQnaAnswerRepository;
 import springboot.shoppingmall.product.domain.ProductQnaRepository;
-import springboot.shoppingmall.product.presentation.response.ProductQnaAnswerResponse;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Service
 public class ProductQnaAnswerService {
 
@@ -18,11 +17,11 @@ public class ProductQnaAnswerService {
     private final ProductQnaAnswerRepository productQnaAnswerRepository;
 
     @Transactional
-    public ProductQnaAnswerResponse createQnaAnswer(Long qnaId, String content) {
+    public ProductQnaAnswerDto createQnaAnswer(Long qnaId, String content) {
         ProductQna productQna = findQnaById(qnaId);
         ProductQnaAnswer answer = ProductQnaAnswer.createQnaAnswer(content, productQna);
 
-        return ProductQnaAnswerResponse.of(productQnaAnswerRepository.save(answer));
+        return ProductQnaAnswerDto.of(productQnaAnswerRepository.save(answer));
     }
 
     private ProductQna findQnaById(Long qnaId) {

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
+import springboot.shoppingmall.product.application.dto.ProductQnaCreateDto;
+import springboot.shoppingmall.product.application.dto.ProductQnaDto;
 import springboot.shoppingmall.product.presentation.request.ProductQnaRequest;
 import springboot.shoppingmall.product.presentation.response.ProductQnaResponse;
 import springboot.shoppingmall.product.application.ProductQnaService;
@@ -26,10 +28,11 @@ public class ProductQnaApiController {
     @PostMapping("/products/{id}/qna")
     public ResponseEntity<ProductQnaResponse> createQna(@AuthenticationStrategy AuthorizedUser user,
                                                         @PathVariable("id") Long productId,
-                                                        @RequestBody ProductQnaRequest request){
-        String email = user.getEmail();
+                                                        @RequestBody ProductQnaRequest productQnaRequest){
+        ProductQnaCreateDto createDto = productQnaRequest.toDto();
+        ProductQnaDto dto = productQnaService.createQna(user.getId(), productId, createDto);
+        ProductQnaResponse productQnaResponse = ProductQnaResponse.of(dto);
 
-        ProductQnaResponse productQnaResponse = productQnaService.createQna(user.getId(), productId, request);
         return ResponseEntity.created(URI.create("/qna/"+productQnaResponse.getId())).body(productQnaResponse);
     }
 

@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.product.application.dto.ProductQnaCreateDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
 import springboot.shoppingmall.product.domain.ProductQna;
@@ -22,15 +23,15 @@ public class ProductQnaService {
     private final ProductFinder productFinder;
 
     @Transactional
-    public ProductQnaResponse createQna(Long userId, Long productId, ProductQnaRequest productQnaRequest) {
+    public ProductQnaDto createQna(Long userId, Long productId, ProductQnaCreateDto createDto) {
         Product product = productFinder.findProductById(productId);
         ProductQna productQna = productQnaRepository.save(ProductQna.builder()
-                .content(productQnaRequest.getContent())
+                .content(createDto.getContent())
                 .product(product)
                 .writerId(userId)
                 .build());
 
-        return ProductQnaResponse.of(productQna);
+        return ProductQnaDto.of(productQna);
     }
 
     public List<ProductQnaResponse> findQnaAllByProduct(Long productId){

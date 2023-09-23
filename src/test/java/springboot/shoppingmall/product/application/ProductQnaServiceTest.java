@@ -12,9 +12,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
+import springboot.shoppingmall.product.application.dto.ProductQnaCreateDto;
+import springboot.shoppingmall.product.application.dto.ProductQnaDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.product.presentation.request.ProductQnaRequest;
 import springboot.shoppingmall.product.presentation.response.ProductQnaResponse;
 
 @Transactional
@@ -51,10 +52,10 @@ class ProductQnaServiceTest {
     @DisplayName("상품에 대한 문의글을 등록한다.")
     void createTest(){
         // given
-        ProductQnaRequest productQnaRequest = new ProductQnaRequest("제품이 이상헤요.");
+        ProductQnaCreateDto productQnaCreateDto = new ProductQnaCreateDto("제품이 이상헤요.");
 
         // when
-        ProductQnaResponse qna = productQnaService.createQna(userId, product.getId(), productQnaRequest);
+        ProductQnaDto qna = productQnaService.createQna(userId, product.getId(), productQnaCreateDto);
 
         // then
         assertThat(qna.getId()).isNotNull();
@@ -64,8 +65,8 @@ class ProductQnaServiceTest {
     @DisplayName("상품에 대한 문의 목록을 조회한다.")
     void findQnaAllTest(){
         // given
-        productQnaService.createQna(userId, product.getId(), new ProductQnaRequest("제품이 이상해요 1"));
-        productQnaService.createQna(userId, product.getId(), new ProductQnaRequest("제품이 이상해요 2"));
+        productQnaService.createQna(userId, product.getId(), new ProductQnaCreateDto("제품이 이상해요 1"));
+        productQnaService.createQna(userId, product.getId(), new ProductQnaCreateDto("제품이 이상해요 2"));
 
         // when
         List<ProductQnaResponse> productQnaList = productQnaService.findQnaAllByProduct(product.getId());
@@ -79,8 +80,8 @@ class ProductQnaServiceTest {
     @DisplayName("상품 문의 1건을 조회한다.")
     void findQnaTest(){
         // given
-        ProductQnaResponse qna = productQnaService.createQna(userId, product.getId(),
-                new ProductQnaRequest("제품에 대해 물어볼게 있어요. 1"));
+        ProductQnaCreateDto createDto = new ProductQnaCreateDto("제품에 대해 물어볼게 있어요. 1");
+        ProductQnaDto qna = productQnaService.createQna(userId, product.getId(), createDto);
 
         // when
         ProductQnaResponse findQna = productQnaService.findQnaByProduct(product.getId(), qna.getId());

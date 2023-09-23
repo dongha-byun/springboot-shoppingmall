@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
+import springboot.shoppingmall.product.application.dto.ProductQnaAnswerDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductQna;
 import springboot.shoppingmall.product.domain.ProductQnaRepository;
@@ -52,18 +53,30 @@ public class ProductQnaAnswerServiceTest {
 
     @Test
     @DisplayName("상품 문의의 답변을 추가한다.")
-    void createTest(){
+    void create(){
         // given
         ProductQna productQna = productQnaRepository.save(
                 new ProductQna("문의글 작성합니다.", product, userId)
         );
 
         // when
-        ProductQnaAnswerResponse qnaAnswer =
+        ProductQnaAnswerDto dto =
                 productQnaAnswerService.createQnaAnswer(productQna.getId(), "답변 드립니다. 감사합니다");
 
         // then
-        assertThat(qnaAnswer).isNotNull();
-        assertThat(qnaAnswer.getAnswer()).contains("답변 드립니다. 감사합니다");
+        assertThat(dto).isNotNull();
+        assertThat(dto.getAnswer()).contains("답변 드립니다. 감사합니다");
     }
+
+    @Test
+    @DisplayName("존재하지 않는 답변에 문의를 등록할 수 없다.")
+    void create_fail_with_no_qna() {
+        // given
+
+        // when & then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> productQnaAnswerService.createQnaAnswer(999L, "답변 드립니다. 감사합니다.")
+        );
+    }
+
 }

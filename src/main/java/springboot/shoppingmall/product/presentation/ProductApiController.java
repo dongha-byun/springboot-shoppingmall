@@ -5,6 +5,8 @@ import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
+import springboot.shoppingmall.common.validation.bean.BeanValidation;
+import springboot.shoppingmall.common.validation.bean.BeanValidationException;
 import springboot.shoppingmall.product.application.dto.ProductDto;
 import springboot.shoppingmall.product.presentation.request.ProductRequest;
 import springboot.shoppingmall.product.presentation.response.ProductResponse;
@@ -23,6 +27,7 @@ import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
 import springboot.shoppingmall.providers.authentication.LoginPartner;
 
 @Slf4j
+@BeanValidation
 @RequiredArgsConstructor
 @RestController
 public class ProductApiController {
@@ -32,8 +37,13 @@ public class ProductApiController {
 
     @PostMapping("/products")
     public ResponseEntity<ProductResponse> createProduct(@LoginPartner AuthorizedPartner partner,
-                                                         @RequestPart(name = "data") ProductRequest productRequest,
+                                                         @RequestPart(name = "data") @Validated ProductRequest productRequest,
+                                                         BindingResult bindingResult,
                                                          @RequestPart(name = "file") MultipartFile showImgFile) throws IOException {
+        if(bindingResult.hasErrors()) {
+            throw new BeanValidationException(bindingResult);
+        }
+
         ThumbnailInfo thumbnailInfo = thumbnailFileService.save(showImgFile);
 
         ProductCreateDto productCreateDto = productRequest.toDto(thumbnailInfo);
