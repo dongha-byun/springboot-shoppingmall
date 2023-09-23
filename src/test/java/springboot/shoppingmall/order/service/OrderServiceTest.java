@@ -28,7 +28,6 @@ import springboot.shoppingmall.coupon.domain.Coupon;
 import springboot.shoppingmall.coupon.domain.CouponRepository;
 import springboot.shoppingmall.coupon.domain.UserCoupon;
 import springboot.shoppingmall.coupon.domain.UserCouponRepository;
-import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.DeliveryInfoRequest;
 import springboot.shoppingmall.order.dto.OrderItemRequest;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
@@ -120,10 +119,10 @@ class OrderServiceTest {
         assertThat(order.getId()).isNotNull();
         assertThat(order.getDeliveryInfo().getReceiverPhoneNumber()).isEqualTo("010-1234-1234");
         assertThat(order.getItems()).hasSize(2)
-                .extracting("orderStatusName")
+                .extracting("productName","orderStatusName")
                 .containsExactly(
-                        tuple("상품 준비중"),
-                        tuple("상품 준비중")
+                        tuple("상품 1", "상품 준비중"),
+                        tuple("상품 2", "상품 준비중")
                 );
 
         // 각각의 상품의 재고가 각 주문 수량 만큼 감소한다.
