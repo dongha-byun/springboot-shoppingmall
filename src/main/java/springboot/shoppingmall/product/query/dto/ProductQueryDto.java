@@ -1,10 +1,11 @@
 package springboot.shoppingmall.product.query.dto;
 
-import com.querydsl.core.annotations.QueryProjection;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 public class ProductQueryDto {
@@ -14,21 +15,9 @@ public class ProductQueryDto {
     private int quantity;
     private double score;
     private int salesVolume;
+    private LocalDateTime registerDate;
     private String storedThumbnailName;
     private String viewThumbnailName;
-    private String partnerName;
-
-    @QueryProjection
-    public ProductQueryDto(Long id, String name, int price, int quantity, double score, int salesVolume,
-                           String storedThumbnailName, String viewThumbnailName, String partnerName) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.quantity = quantity;
-        this.score = score;
-        this.salesVolume = salesVolume;
-        this.storedThumbnailName = storedThumbnailName;
-        this.viewThumbnailName = viewThumbnailName;
-        this.partnerName = partnerName;
-    }
+    private Long partnersId;
+    private String partnersName;
 }

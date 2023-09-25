@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.category.domain.Category;
@@ -25,7 +26,6 @@ public class ProductQueryApiController {
 
     private final ProductQueryService productQueryService;
     private final CategoryFinder categoryFinder;
-
 
     @GetMapping("/products")
     public ResponseEntity<PagingDataResponse<List<ProductQueryResponse>>> queryProductsBySort(
@@ -108,4 +108,13 @@ public class ProductQueryApiController {
                 new PagingDataResponse<>(count, category.getName(), subCategory.getName(),productQueryResponses)
         );
     }
+
+    @GetMapping("/products/{id}")
+    public ResponseEntity<ProductQueryResponse> findProduct(@PathVariable("id") Long id) {
+        ProductQueryDto dto = productQueryService.findProductOf(id);
+        ProductQueryResponse response = ProductQueryResponse.of(dto);
+
+        return ResponseEntity.ok(response);
+    }
+
 }

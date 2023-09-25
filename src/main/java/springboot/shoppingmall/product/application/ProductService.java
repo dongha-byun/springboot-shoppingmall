@@ -7,23 +7,19 @@ import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryFinder;
 import springboot.shoppingmall.product.application.dto.ProductCreateDto;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.domain.ProductFinder;
 import springboot.shoppingmall.product.application.dto.ProductDto;
-import springboot.shoppingmall.product.presentation.response.ProductResponse;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.providers.domain.Provider;
 import springboot.shoppingmall.providers.domain.ProviderFinder;
 
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryFinder categoryFinder;
-    private final ProductFinder productFinder;
     private final ProviderFinder providerFinder;
 
-    @Transactional
     public ProductDto saveProduct(Long partnerId, ProductCreateDto createDto){
         ThumbnailInfo thumbnailInfo = createDto.getThumbnailInfo();
         Category category = categoryFinder.findById(createDto.getCategoryId());
@@ -45,11 +41,5 @@ public class ProductService {
                         .build()
         );
         return ProductDto.of(product);
-    }
-
-    public ProductResponse findProduct(Long id){
-        Product product = productFinder.findProductById(id);
-        Provider provider = providerFinder.findById(product.getPartnerId());
-        return ProductResponse.of(product, provider);
     }
 }

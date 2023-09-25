@@ -4,6 +4,7 @@ import static springboot.shoppingmall.product.domain.QProduct.*;
 import static springboot.shoppingmall.product.query.ProductQueryOrderType.*;
 import static springboot.shoppingmall.providers.domain.QProvider.*;
 
+import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -23,9 +24,18 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
     }
 
     @Override
-    public List<Product> queryProducts(Category category, Category subCategory, ProductQueryOrderType orderType) {
-        return defaultQueryProductsByCategory(category, subCategory)
-                .orderBy(orderBy(orderType))
+    public List<ProductQueryDto> queryProducts(Category category, Category subCategory, ProductQueryOrderType orderType) {
+        return jpaQueryFactory.select(
+                        projectionsConstructorOfProductQueryDto()
+                )
+                .from(product)
+                .join(provider).on(provider.id.eq(product.partnerId))
+                .where(
+                        allCategoryEq(category, subCategory)
+                )
+                .orderBy(
+                        orderBy(orderType)
+                )
                 .fetch();
     }
 
@@ -48,10 +58,17 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
     }
 
     @Override
-    public List<Product> queryPartnersProducts(Long partnerId, Category category, Category subCategory,
+    public List<ProductQueryDto> queryPartnersProducts(Long partnerId, Category category, Category subCategory,
                                                int limit, int offset) {
-        return defaultQueryProductsByCategory(category, subCategory)
-                .where(product.partnerId.eq(partnerId))
+        return jpaQueryFactory.select(
+                        projectionsConstructorOfProductQueryDto()
+                ).from(product)
+                .join(provider).on(provider.id.eq(product.partnerId))
+                .where(
+                        product.partnerId.eq(partnerId)
+                                .and(product.category.eq(category))
+                                .and(product.subCategory.eq(subCategory))
+                )
                 .orderBy(orderBy(RECENT))
                 .limit(limit)
                 .offset(offset)
@@ -60,11 +77,10 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
 
     @Override
     public List<ProductQueryDto> searchProducts(String searchKeyword, ProductQueryOrderType orderType,
-                                                    int limit, int offset) {
-        return jpaQueryFactory.select(Projections.constructor(ProductQueryDto.class,
-                        product.id, product.name, product.price, product.count, product.score, product.salesVolume,
-                        product.thumbnail.storedFileName, product.thumbnail.viewFileName,
-                        provider.name))
+                                                int limit, int offset) {
+        return jpaQueryFactory.select(
+                        projectionsConstructorOfProductQueryDto()
+                )
                 .from(product)
                 .join(provider).on(provider.id.eq(product.partnerId))
                 .where(
@@ -78,6 +94,17 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
                 .fetch();
     }
 
+    @Override
+    public ProductQueryDto findProductOf(Long productId) {
+        return jpaQueryFactory.select(
+                        projectionsConstructorOfProductQueryDto()
+                )
+                .from(product)
+                .join(provider).on(product.partnerId.eq(provider.id))
+                .where(product.id.eq(productId))
+                .fetchOne();
+    }
+
     private BooleanExpression searchProductName(String searchText) {
         return product.name.contains(searchText);
     }
@@ -87,6 +114,18 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
                 .where(
                         allCategoryEq(category, subCategory)
                 );
+    }
+
+    private ConstructorExpression<ProductQueryDto> projectionsConstructorOfProductQueryDto() {
+        return Projections.constructor(ProductQueryDto.class,
+                product.id, product.name,
+                product.price, product.count,
+                product.score, product.salesVolume,
+                product.registerDate,
+                product.thumbnail.storedFileName,
+                product.thumbnail.viewFileName,
+                provider.id, provider.name
+        );
     }
 
     private BooleanExpression allCategoryEq(Category category, Category subCategory) {

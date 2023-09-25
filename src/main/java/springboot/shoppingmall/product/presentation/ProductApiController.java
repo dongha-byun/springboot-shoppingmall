@@ -7,14 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import springboot.shoppingmall.authorization.AuthenticationStrategy;
-import springboot.shoppingmall.authorization.AuthorizedUser;
 import springboot.shoppingmall.common.validation.bean.BeanValidation;
 import springboot.shoppingmall.common.validation.bean.BeanValidationException;
 import springboot.shoppingmall.product.application.dto.ProductDto;
@@ -51,12 +47,5 @@ public class ProductApiController {
         ProductResponse response = ProductResponse.of(productDto);
 
         return ResponseEntity.created(URI.create("/products/"+response.getId())).body(response);
-    }
-
-    @GetMapping("/products/{id}")
-    public ResponseEntity<ProductResponse> getProduct(@AuthenticationStrategy(required = false) AuthorizedUser user,
-                                                      @PathVariable("id") Long id){
-        ProductResponse productResponse = productService.findProduct(id);
-        return ResponseEntity.ok(productResponse);
     }
 }

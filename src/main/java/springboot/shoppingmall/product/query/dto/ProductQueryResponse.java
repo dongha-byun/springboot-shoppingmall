@@ -16,17 +16,18 @@ public class ProductQueryResponse {
     private int price;
     private int count;
     private String thumbnail;
-    private String partnerName;
+    private Long partnersId;
+    private String partnersName;
 
     public static ProductQueryResponse of(Product product) {
         return new ProductQueryResponse(product.getId(), product.getName(), product.getScore(), product.getSalesVolume(),
                 product.getPrice(), product.getCount(), product.getThumbnail(),
-                null);
+                null, null);
     }
 
     public static ProductQueryResponse of(ProductQueryDto dto) {
         return new ProductQueryResponse(dto.getId(), dto.getName(), dto.getScore(), dto.getSalesVolume(),
                 dto.getPrice(), dto.getQuantity(), dto.getStoredThumbnailName(),
-                dto.getPartnerName());
+                dto.getPartnersId(), dto.getPartnersName());
     }
 }

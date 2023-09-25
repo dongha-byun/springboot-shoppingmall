@@ -44,7 +44,7 @@ public class ProductServiceTest {
         );
     }
 
-    @DisplayName("상품을 생성한다. - createDto 버전")
+    @DisplayName("상품을 생성한다.")
     @Test
     void save_product() {
         // give

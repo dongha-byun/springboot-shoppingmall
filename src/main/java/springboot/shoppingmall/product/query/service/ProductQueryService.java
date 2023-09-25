@@ -70,4 +70,8 @@ public class ProductQueryService {
                                                 int limit, int offset) {
         return productQueryRepository.searchProducts(searchKeyword, orderType, limit, offset);
     }
+
+    public ProductQueryDto findProductOf(Long productId) {
+        return productQueryRepository.findProductOf(productId);
+    }
 }

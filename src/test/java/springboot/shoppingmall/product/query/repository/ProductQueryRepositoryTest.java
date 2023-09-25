@@ -36,12 +36,7 @@ class ProductQueryRepositoryTest {
     @Autowired
     ProviderRepository providerRepository;
 
-    Category category;
-    Category subCategory;
-
-    Product 생선1;
-    Product 생선2;
-    Product 생선3;
+    Category category, subCategory;
 
     LocalDateTime now;
     Provider partners;
@@ -54,144 +49,147 @@ class ProductQueryRepositoryTest {
         );
         category = categoryRepository.save(new Category("식품 분류"));
         subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
-        now = LocalDateTime.now();
-        생선1 = productRepository.save(
-                new Product(
-                        "생선1", 1000, 10, 1.0, 10, now,
-                        category, subCategory, partners.getId(),
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        partners.generateProductCode()
-                )
-        );
-        생선2 = productRepository.save(
-                new Product(
-                        "생선2", 1200, 11, 1.5, 20, now.plusDays(1),
-                        category, subCategory, partners.getId(),
-                        "storedFileName2", "viewFileName2", "상품 설명 입니다.",
-                        partners.generateProductCode()
-                )
-        );
-        생선3 = productRepository.save(
-                new Product(
-                        "생선3", 1500, 12, 3.0, 15, now.plusDays(2),
-                        category, subCategory, partners.getId(),
-                        "storedFileName3", "viewFileName3", "상품 설명 입니다.",
-                        partners.generateProductCode()
-                )
-        );
+        now = LocalDateTime.of(2023, 8, 11, 15, 45, 11);
+
+        saveProduct("생선3", 1500, 12, 3.0, 15, now.minusDays(2));
+        saveProduct("생선1", 1000, 10, 1.0, 10, now);
+        saveProduct("생선2", 1200, 11, 1.5, 20, now.plusDays(1));
+        saveProduct("생선4", 2300, 9, 2.0, 8, now.plusDays(3));
+        saveProduct("생선5", 9900, 1, 2.5, 11, now.plusDays(4));
+        saveProduct("생선6", 3900, 3, 3.5, 30, now.plusDays(5));
+        saveProduct("생선7", 1350, 7, 4.8, 2, now.plusDays(6));
     }
 
     @Test
-    @DisplayName("상품 목록 조회 테스트 - 평점 높은 순")
+    @DisplayName("상품목록을 평점이 높은 순으로 조회한다.")
     void sort_product_by_score() {
         // given
 
         // when
-        List<Product> products = productQueryRepository.queryProducts(category, subCategory, SCORE);
+        List<ProductQueryDto> products = productQueryRepository.queryProducts(category, subCategory, SCORE);
 
         // then
-        assertThat(products).hasSize(3);
-        List<String> names = products.stream()
-                .map(Product::getName).collect(Collectors.toList());
-        assertThat(names).containsExactly(
-                "생선3", "생선2", "생선1"
-        );
+        assertThat(products).hasSize(7)
+                .extracting("name", "score")
+                .containsExactly(
+                        tuple("생선7", 4.8),
+                        tuple("생선6", 3.5),
+                        tuple("생선3", 3.0),
+                        tuple("생선5", 2.5),
+                        tuple("생선4", 2.0),
+                        tuple("생선2", 1.5),
+                        tuple("생선1", 1.0)
+                );
     }
 
     @Test
-    @DisplayName("상품 목록 조회 테스트 - 최신 순")
+    @DisplayName("상품목록을 최신순으로 조회한다.")
     void sort_product_by_date() {
         // given
 
         // when
-        List<Product> products = productQueryRepository.queryProducts(category, subCategory, RECENT);
+        List<ProductQueryDto> products = productQueryRepository.queryProducts(category, subCategory, RECENT);
 
         // then
-        assertThat(products).hasSize(3);
-
-        List<String> names = products.stream()
-                .map(Product::getName).collect(Collectors.toList());
-        assertThat(names).containsExactly(
-                "생선3", "생선2", "생선1"
-        );
+        assertThat(products).hasSize(7)
+                .extracting("name", "registerDate")
+                .containsExactly(
+                        tuple("생선7", LocalDateTime.of(2023, 8, 17, 15, 45, 11)),
+                        tuple("생선6", LocalDateTime.of(2023, 8, 16, 15, 45, 11)),
+                        tuple("생선5", LocalDateTime.of(2023, 8, 15, 15, 45, 11)),
+                        tuple("생선4", LocalDateTime.of(2023, 8, 14, 15, 45, 11)),
+                        tuple("생선2", LocalDateTime.of(2023, 8, 12, 15, 45, 11)),
+                        tuple("생선1", LocalDateTime.of(2023, 8, 11, 15, 45, 11)),
+                        tuple("생선3", LocalDateTime.of(2023, 8, 9, 15, 45, 11))
+                );
     }
 
     @Test
-    @DisplayName("상품 목록 조회 테스트 - 낮은 가격 순")
+    @DisplayName("상품목록을 낮은 가격 순으로 조회한다.")
     void sort_product_by_price() {
         // given
 
         // when
-        List<Product> products = productQueryRepository.queryProducts(category, subCategory, PRICE);
+        List<ProductQueryDto> products = productQueryRepository.queryProducts(category, subCategory, PRICE);
 
         // then
-        assertThat(products).hasSize(3);
-        List<String> names = products.stream()
-                .map(Product::getName).collect(Collectors.toList());
-        assertThat(names).containsExactly(
-                "생선1", "생선2", "생선3"
-        );
+        assertThat(products).hasSize(7)
+                .extracting("name", "price")
+                .containsExactly(
+                        tuple("생선1", 1000),
+                        tuple("생선2", 1200),
+                        tuple("생선7", 1350),
+                        tuple("생선3", 1500),
+                        tuple("생선4", 2300),
+                        tuple("생선6", 3900),
+                        tuple("생선5", 9900)
+                );
     }
 
     @Test
-    @DisplayName("상품 목록 조회 테스트 - 판매량 높은 순")
+    @DisplayName("상품목록을 판매량이 높은 순으로 조회한다.")
     void sort_product_by_salesCount() {
         // given
 
         // when
-        List<Product> products = productQueryRepository.queryProducts(category, subCategory, SELL);
+        List<ProductQueryDto> products = productQueryRepository.queryProducts(category, subCategory, SELL);
 
         // then
-        assertThat(products).hasSize(3);
-        List<String> names = products.stream()
-                .map(Product::getName).collect(Collectors.toList());
-        assertThat(names).containsExactly(
-                "생선2", "생선3", "생선1"
-        );
+        assertThat(products).hasSize(7)
+                .extracting("name", "salesVolume")
+                .containsExactly(
+                        tuple("생선6", 30),
+                        tuple("생선2", 20),
+                        tuple("생선3", 15),
+                        tuple("생선5", 11),
+                        tuple("생선1", 10),
+                        tuple("생선4", 8),
+                        tuple("생선7", 2)
+                );
     }
 
     @Test
-    @DisplayName("상품 검색 테스트 - 검색 시, 정렬 초기화")
+    @DisplayName("상품을 상품명으로 검색한다.")
     void search_products_no_order() {
         // given
 
         // when
-        List<ProductQueryDto> productDtos =
-                productQueryRepository.searchProducts("생선", RECENT, 10, 0);
+        List<ProductQueryDto> products =
+                productQueryRepository.searchProducts("생선", RECENT, 5, 0);
 
         // then
-        assertThat(productDtos).hasSize(3);
-        List<Long> ids = productDtos.stream()
-                .map(ProductQueryDto::getId)
-                .collect(Collectors.toList());
-        assertThat(ids).containsExactly(
-                생선3.getId(), 생선2.getId(), 생선1.getId()
-        );
-
+        assertThat(products).hasSize(5)
+                .extracting("name", "registerDate")
+                .containsExactly(
+                        tuple("생선7", LocalDateTime.of(2023, 8, 17, 15, 45, 11)),
+                        tuple("생선6", LocalDateTime.of(2023, 8, 16, 15, 45, 11)),
+                        tuple("생선5", LocalDateTime.of(2023, 8, 15, 15, 45, 11)),
+                        tuple("생선4", LocalDateTime.of(2023, 8, 14, 15, 45, 11)),
+                        tuple("생선2", LocalDateTime.of(2023, 8, 12, 15, 45, 11))
+                );
     }
 
     @Test
-    @DisplayName("상품 페이징 테스트 - 7개 중 뒤에 3개 조회(limit : 3 / offset : 4)")
+    @DisplayName("상품 목록 조회 시, 특정 부분만 조회한다.")
     void paging_test() {
         // given
-        saveMoreProducts();
 
         // when
         // 7 개 중 뒤에 3개 조회이므로, 가장 나중에 등록된 3개가 최신순으로 조회되면 됨
         List<Product> products = productQueryRepository.queryProducts(category, subCategory, RECENT, 3, 4);
 
         // then
-        assertThat(products).hasSize(3);
-        List<Long> ids = products.stream()
-                .map(Product::getId)
-                .collect(Collectors.toList());
-        assertThat(ids).containsExactly(
-                생선3.getId(), 생선2.getId(), 생선1.getId()
-        );
+        assertThat(products).hasSize(3)
+                .extracting("name", "registerDate")
+                .containsExactly(
+                        tuple("생선2", LocalDateTime.of(2023, 8, 12, 15, 45, 11)),
+                        tuple("생선1", LocalDateTime.of(2023, 8, 11, 15, 45, 11)),
+                        tuple("생선3", LocalDateTime.of(2023, 8, 9, 15, 45, 11))
+                );
     }
 
     @Test
-    @DisplayName("총 상품 갯수 조회")
+    @DisplayName("총 상품 갯수를 조회한다.")
     void total_count_test() {
         // given
 
@@ -199,134 +197,53 @@ class ProductQueryRepositoryTest {
         int totalCount = productQueryRepository.countByCategoryAndSubCategory(category, subCategory);
 
         // then
-        assertThat(totalCount).isEqualTo(3);
+        assertThat(totalCount).isEqualTo(7);
     }
 
     @Test
-    @DisplayName("판매자가 등록한 상품 목록조회")
+    @DisplayName("판매자가 자신이 등록한 상품목록을 조회한다.")
     void find_all_partners_products() {
         // given
-        Long partnerId = 10L;
-        Product product1 = productRepository.save(
-                new Product(
-                        "product1", 1500, 12, 3.0, 15, now.plusDays(3),
-                        category, subCategory, partnerId,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        partners.generateProductCode()
-                )
-        );
-        Product product2 = productRepository.save(
-                new Product(
-                        "product2", 1500, 12, 3.0, 15, now.plusDays(2),
-                        category, subCategory, partnerId,
-                        "storedFileName2", "viewFileName2", "상품 설명 입니다.",
-                        partners.generateProductCode()
-                )
-        );
-        Product product3 = productRepository.save(
-                new Product(
-                        "product3", 1500, 12, 3.0, 15, now.plusDays(1),
-                        category, subCategory, partnerId,
-                        "storedFileName3", "viewFileName3", "상품 설명 입니다.",
-                        partners.generateProductCode()
-                )
-        );
-        Product product4 = productRepository.save(
-                new Product(
-                        "product4", 1500, 12, 3.0, 15, now,
-                        category, subCategory, partnerId,
-                        "storedFileName4", "viewFileName4", "상품 설명 입니다.",
-                        partners.generateProductCode()
-                )
-        );
 
         // when
-        List<Product> products = productQueryRepository.queryPartnersProducts(partnerId, category, subCategory, 10, 0);
+        List<ProductQueryDto> products =
+                productQueryRepository.queryPartnersProducts(partners.getId(), category, subCategory, 10, 0);
 
         // then
-        assertThat(products).hasSize(4);
-        List<Long> ids = products.stream()
-                .map(Product::getId)
-                .collect(Collectors.toList());
-        assertThat(ids).containsExactly(
-                product1.getId(), product2.getId(), product3.getId(), product4.getId()
-        );
+        assertThat(products).hasSize(7)
+                .extracting("name", "registerDate")
+                .containsExactly(
+                        tuple("생선7", LocalDateTime.of(2023, 8, 17, 15, 45, 11)),
+                        tuple("생선6", LocalDateTime.of(2023, 8, 16, 15, 45, 11)),
+                        tuple("생선5", LocalDateTime.of(2023, 8, 15, 15, 45, 11)),
+                        tuple("생선4", LocalDateTime.of(2023, 8, 14, 15, 45, 11)),
+                        tuple("생선2", LocalDateTime.of(2023, 8, 12, 15, 45, 11)),
+                        tuple("생선1", LocalDateTime.of(2023, 8, 11, 15, 45, 11)),
+                        tuple("생선3", LocalDateTime.of(2023, 8, 9, 15, 45, 11))
+                );
     }
 
     @Test
     @DisplayName("판매자가 등록한 상품의 갯수 조회")
     void count_partners_products() {
         // given
-        Long partnerId = 10L;
-        productRepository.save(
-                new Product("product1", 1500, 12, 3.0, 15, now.plusDays(3),
-                        category, subCategory, partnerId,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        partners.generateProductCode()
-                )
-        );
-        productRepository.save(
-                new Product(
-                        "product2", 1500, 12, 3.0, 15, now.plusDays(2),
-                        category, subCategory, partnerId,
-                        "storedFileName2", "viewFileName2", "상품 설명 입니다.",
-                        partners.generateProductCode()
-                )
-        );
-        productRepository.save(
-                new Product(
-                        "product3", 1500, 12, 3.0, 15, now.plusDays(1),
-                        category, subCategory, partnerId,
-                        "storedFileName3", "viewFileName3", "상품 설명 입니다.",
-                        partners.generateProductCode()
-                )
-        );
-        productRepository.save(
-                new Product(
-                        "product4", 1500, 12, 3.0, 15, now,
-                        category, subCategory, partnerId,
-                        "storedFileName4", "viewFileName4", "상품 설명 입니다.",
-                        partners.generateProductCode()
-                )
-        );
 
         // when
-        int count = productQueryRepository.countByPartnerIdAndCategoryAndSubCategory(partnerId, category, subCategory);
+        int count = productQueryRepository.countByPartnerIdAndCategoryAndSubCategory(partners.getId(), category, subCategory);
 
         // then
-        assertThat(count).isEqualTo(4);
+        assertThat(count).isEqualTo(7);
     }
 
-    private void saveMoreProducts() {
+    private void saveProduct(String name, int price, int quantity, double score, int salesVolume, LocalDateTime regDate) {
+        String storedFileName = "storedFileName-" + name;
+        String viewFileName = "viewFileName-" + name;
+        String detail = name + " 상품 설명입니다.";
         productRepository.save(
                 new Product(
-                        "생선4", 1500, 12, 3.0, 15, now.plusDays(3),
+                        name, price, quantity, score, salesVolume, regDate,
                         category, subCategory, partners.getId(),
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        partners.generateProductCode()
-                )
-        );
-        productRepository.save(
-                new Product(
-                        "생선5", 1500, 12, 3.0, 15, now.plusDays(4),
-                        category, subCategory, partners.getId(),
-                        "storedFileName2", "viewFileName2", "상품 설명 입니다.",
-                        partners.generateProductCode()
-                )
-        );
-        productRepository.save(
-                new Product(
-                        "생선6", 1500, 12, 3.0, 15, now.plusDays(5),
-                        category, subCategory, partners.getId(),
-                        "storedFileName3", "viewFileName3", "상품 설명 입니다.",
-                        partners.generateProductCode()
-                )
-        );
-        productRepository.save(
-                new Product(
-                        "생선7", 1500, 12, 3.0, 15, now.plusDays(6),
-                        category, subCategory, partners.getId(),
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
+                        storedFileName, viewFileName, detail,
                         partners.generateProductCode()
                 )
         );
