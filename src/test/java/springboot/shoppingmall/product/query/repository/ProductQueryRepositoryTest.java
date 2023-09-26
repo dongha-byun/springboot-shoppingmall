@@ -176,7 +176,8 @@ class ProductQueryRepositoryTest {
 
         // when
         // 7 개 중 뒤에 3개 조회이므로, 가장 나중에 등록된 3개가 최신순으로 조회되면 됨
-        List<Product> products = productQueryRepository.queryProducts(category, subCategory, RECENT, 3, 4);
+        List<ProductQueryDto> products = productQueryRepository.queryProducts(category, subCategory, RECENT, 3,
+                4);
 
         // then
         assertThat(products).hasSize(3)
@@ -224,7 +225,7 @@ class ProductQueryRepositoryTest {
     }
 
     @Test
-    @DisplayName("판매자가 등록한 상품의 갯수 조회")
+    @DisplayName("판매자가 자신이 등록한 상품의 갯수를 조회한다.")
     void count_partners_products() {
         // given
 
@@ -233,6 +234,30 @@ class ProductQueryRepositoryTest {
 
         // then
         assertThat(count).isEqualTo(7);
+    }
+
+    @Test
+    @DisplayName("판매자가 등록한 상품 목록을 조회한다.")
+    void find_partners_products_all() {
+        // given
+
+        // when
+        List<ProductQueryDto> products = productQueryRepository.queryPartnersProducts(
+                partners.getId(), category, subCategory, 10, 0
+        );
+
+        // then
+        assertThat(products).hasSize(7)
+                .extracting("name", "quantity", "price")
+                .containsExactly(
+                        tuple("생선7", 7, 1350),
+                        tuple("생선6", 3, 3900),
+                        tuple("생선5", 1, 9900),
+                        tuple("생선4", 9, 2300),
+                        tuple("생선2", 11, 1200),
+                        tuple("생선1", 10, 1000),
+                        tuple("생선3", 12, 1500)
+                );
     }
 
     private void saveProduct(String name, int price, int quantity, double score, int salesVolume, LocalDateTime regDate) {

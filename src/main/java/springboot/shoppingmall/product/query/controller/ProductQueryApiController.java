@@ -2,8 +2,8 @@ package springboot.shoppingmall.product.query.controller;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +19,6 @@ import springboot.shoppingmall.product.query.service.ProductQueryService;
 import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
 import springboot.shoppingmall.providers.authentication.LoginPartner;
 
-@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class ProductQueryApiController {
@@ -37,8 +36,12 @@ public class ProductQueryApiController {
 
         Category category = categoryFinder.findById(categoryId);
         Category subCategory = categoryFinder.findById(subCategoryId);
-        List<ProductQueryResponse> products = productQueryService.findProductByOrder(categoryId,
-                subCategoryId, ProductQueryOrderType.valueOf(orderType), limit, offset);
+        List<ProductQueryDto> dtos = productQueryService.findProductByOrder(
+                categoryId, subCategoryId, ProductQueryOrderType.valueOf(orderType), limit, offset
+        );
+        List<ProductQueryResponse> products = dtos.stream()
+                .map(ProductQueryResponse::of)
+                .collect(Collectors.toList());
         int totalCount = productQueryService.getTotalCount(categoryId, subCategoryId);
 
         return ResponseEntity.ok(new PagingDataResponse<>(totalCount, category.getName(), subCategory.getName(), products));
@@ -52,8 +55,12 @@ public class ProductQueryApiController {
             @RequestParam(name = "limit", defaultValue = "10", required = false) int limit,
             @RequestParam(name = "offset", defaultValue = "0", required = false) int offset){
 
-        List<ProductQueryResponse> products = productQueryService.findProductByOrder(categoryId,
-                subCategoryId, ProductQueryOrderType.valueOf(orderType), limit, offset);
+        List<ProductQueryDto> dtos = productQueryService.findProductByOrder(
+                categoryId, subCategoryId, ProductQueryOrderType.valueOf(orderType), limit, offset
+        );
+        List<ProductQueryResponse> products = dtos.stream()
+                .map(ProductQueryResponse::of)
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(new PagingDataResponse<>(products));
     }
@@ -100,12 +107,17 @@ public class ProductQueryApiController {
 
         Category category = categoryFinder.findById(categoryId);
         Category subCategory = categoryFinder.findById(subCategoryId);
-        List<ProductQueryResponse> productQueryResponses = productQueryService.findPartnersProductsAll(partner.getId(),
-                categoryId, subCategoryId, limit, offset);
+        List<ProductQueryDto> products = productQueryService.findPartnersProductsAll(
+                partner.getId(), categoryId, subCategoryId, limit, offset
+        );
+
+        List<ProductQueryResponse> responses = products.stream()
+                .map(ProductQueryResponse::of)
+                .collect(Collectors.toList());
         int count = productQueryService.countPartnersProducts(partner.getId(), categoryId, subCategoryId);
 
         return ResponseEntity.ok().body(
-                new PagingDataResponse<>(count, category.getName(), subCategory.getName(),productQueryResponses)
+                new PagingDataResponse<>(count, category.getName(), subCategory.getName(), responses)
         );
     }
 

@@ -40,7 +40,7 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
     }
 
     @Override
-    public List<Product> searchProducts(Category category, Category subCategory, String searchKeyword) {
+    public List<ProductQueryDto> searchProducts(Category category, Category subCategory, String searchKeyword) {
         return defaultQueryProductsByCategory(category, subCategory)
                 .where(
                         searchProductName(searchKeyword)
@@ -48,7 +48,7 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
     }
 
     @Override
-    public List<Product> queryProducts(Category category, Category subCategory, ProductQueryOrderType orderType,
+    public List<ProductQueryDto> queryProducts(Category category, Category subCategory, ProductQueryOrderType orderType,
                                        int limit, int offset) {
         return defaultQueryProductsByCategory(category, subCategory)
                 .orderBy(orderBy(orderType))
@@ -109,8 +109,11 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
         return product.name.contains(searchText);
     }
 
-    private JPAQuery<Product> defaultQueryProductsByCategory(Category category, Category subCategory) {
-        return jpaQueryFactory.selectFrom(product)
+    private JPAQuery<ProductQueryDto> defaultQueryProductsByCategory(Category category, Category subCategory) {
+        return jpaQueryFactory.select(
+                        projectionsConstructorOfProductQueryDto()
+                ).from(product)
+                .join(provider).on(provider.id.eq(product.partnerId))
                 .where(
                         allCategoryEq(category, subCategory)
                 );
