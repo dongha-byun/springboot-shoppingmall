@@ -2,7 +2,9 @@ package springboot.shoppingmall.product.presentation;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +31,6 @@ import springboot.shoppingmall.product.application.ProductReviewService;
 import springboot.shoppingmall.product.application.ThumbnailInfo;
 import springboot.shoppingmall.product.application.dto.ProductReviewCreateDto;
 
-@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class ProductReviewApiController {
@@ -38,13 +39,19 @@ public class ProductReviewApiController {
     private final ThumbnailFileService thumbnailFileService;
 
     @ExceptionHandler(ContentNotBlankException.class)
-    public ResponseEntity<String> handleNotBlankException(ContentNotBlankException exception) {
-        return ResponseEntity.badRequest().body(exception.getMessage());
+    public ResponseEntity<Map<String, String>> handleNotBlankException(ContentNotBlankException e) {
+        Map<String, String> params = new HashMap<>();
+        params.put("message", e.getMessage());
+
+        return ResponseEntity.badRequest().body(params);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> illegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<Map<String, String>> illegalArgumentException(IllegalArgumentException e) {
+        Map<String, String> params = new HashMap<>();
+        params.put("message", e.getMessage());
+
+        return ResponseEntity.badRequest().body(params);
     }
 
     @PostMapping("/orders/{orderId}/{orderItemId}/products/{productId}/reviews")
@@ -57,6 +64,10 @@ public class ProductReviewApiController {
                                                                   @RequestPart(name = "file", required = false) List<MultipartFile> images) throws IOException {
         if(bindingResult.hasErrors()){
             throw new ContentNotBlankException("리뷰 내용은 필수 입니다.");
+        }
+
+        if(images != null && images.size() > 5) {
+            throw new IllegalArgumentException("이미지는 최대 5장까지 첨부할 수 있습니다.");
         }
 
         List<ThumbnailInfo> reviewImages = thumbnailFileService.save(images);
@@ -77,6 +88,8 @@ public class ProductReviewApiController {
         return ResponseEntity.ok(reviews);
     }
 
+    // @RequestParam("id") String id
+    // ~~~~ ?Id=byun 이라는 요청이 오면 id 변수에 byun 을 넣어준다.
     @DeleteMapping("/users/reviews/{reviewId}")
     public ResponseEntity<ProductReviewResponse> deleteReview(@AuthenticationStrategy AuthorizedUser user,
                                                               @PathVariable("reviewId") Long reviewId) {
