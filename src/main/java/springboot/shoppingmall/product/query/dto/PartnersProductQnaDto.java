@@ -1,12 +1,13 @@
 package springboot.shoppingmall.product.query.dto;
 
-import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDateTime;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
 public class PartnersProductQnaDto {
     private Long id;
     private String content;
@@ -16,16 +17,4 @@ public class PartnersProductQnaDto {
 
     private LocalDateTime writeDate;
     private boolean isAnswered;
-
-    @QueryProjection
-    public PartnersProductQnaDto(Long id, String content, Long productId, String productName,
-                                 String imgFileName, LocalDateTime writeDate, boolean isAnswered) {
-        this.id = id;
-        this.content = content;
-        this.productId = productId;
-        this.productName = productName;
-        this.imgFileName = imgFileName;
-        this.writeDate = writeDate;
-        this.isAnswered = isAnswered;
-    }
 }

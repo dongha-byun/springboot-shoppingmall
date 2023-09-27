@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,6 +139,47 @@ class ProductQueryApiControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data", hasSize(3)));
+    }
+
+    @Test
+    @DisplayName("판매자가 자신이 등록한 상품들을 조회한다.")
+    void find_partners_products() throws Exception {
+        // given
+        LocalDateTime registerDate = LocalDateTime.of(2023, 8, 1, 0, 0, 0);
+        Long partnersId = 100L;
+        String partnersName = "파트너즈";
+        List<ProductQueryDto> products = Arrays.asList(
+                getProductQueryDto(10L, "상품 1", 1200, 10, 1.5, 100, partnersId, partnersName,
+                        registerDate.minusDays(1)),
+                getProductQueryDto(20L, "상품 2", 2200, 20, 2.5, 150, partnersId, partnersName,
+                        registerDate.minusDays(2)),
+                getProductQueryDto(30L, "상품 3", 3200, 30, 3.5, 200, partnersId, partnersName,
+                        registerDate.minusDays(3)),
+                getProductQueryDto(40L, "상품 4", 4200, 40, 4.5, 170, partnersId, partnersName,
+                        registerDate.minusDays(4)),
+                getProductQueryDto(50L, "상품 5", 5200, 50, 5.0, 120, partnersId, partnersName, registerDate.minusDays(5))
+        );
+
+        when(categoryFinder.findById(1L)).thenReturn(new Category("상위 카테고리"));
+        when(categoryFinder.findById(11L)).thenReturn(new Category("하위 카테고리"));
+        when(productQueryService.findPartnersProductsAll(any(), anyLong(), anyLong(), anyInt(), anyInt())).thenReturn(
+                products
+        );
+        when(productQueryService.countPartnersProducts(any(), anyLong(), anyLong())).thenReturn(products.size());
+
+        // when & then
+        mockMvc.perform(
+                        get("/partners/products"
+                                + "?categoryId={categoryId}"
+                                + "&subCategoryId={subCategoryId}"
+                                + "&limit={limit}"
+                                + "&offset={offset}",
+                                1, 11, 10, 0)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalCount", is(5)));
     }
 
     private ProductQueryDto getProductQueryDto(
