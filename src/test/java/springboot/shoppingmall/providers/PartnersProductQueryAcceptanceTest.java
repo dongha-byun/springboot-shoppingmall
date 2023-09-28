@@ -2,7 +2,7 @@ package springboot.shoppingmall.providers;
 
 import static org.assertj.core.api.Assertions.*;
 import static springboot.shoppingmall.category.CategoryAcceptanceTest.카테고리_등록;
-import static springboot.shoppingmall.product.ProductAcceptanceTest.*;
+import static springboot.shoppingmall.product.ProductAcceptanceTest.상품_등록_요청;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
