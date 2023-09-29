@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +18,7 @@ import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.order.partners.application.dto.PartnersDeliveryOrderQueryDto;
 import springboot.shoppingmall.order.partners.application.dto.PartnersReadyOrderQueryDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
@@ -26,7 +26,6 @@ import springboot.shoppingmall.userservice.user.domain.User;
 import springboot.shoppingmall.userservice.user.domain.UserRepository;
 import springboot.shoppingmall.utils.DateUtils;
 
-@Slf4j
 @Transactional
 @SpringBootTest
 class PartnersOrderQueryRepositoryTest {
@@ -36,6 +35,7 @@ class PartnersOrderQueryRepositoryTest {
 
     @Autowired
     UserRepository userRepository;
+
     @Autowired
     ProductRepository productRepository;
 
@@ -46,15 +46,15 @@ class PartnersOrderQueryRepositoryTest {
     PartnersOrderQueryRepository partnersOrderQueryRepository;
 
     User user;
-    Product product1;
-    Product product2;
-    Product product3;
-    LocalDateTime startDate;
-    LocalDateTime endDate;
 
-    Order order1;
-    Order order2;
-    Order order3;
+    Product product1, product2, product3;
+
+    Order order1, order2, order3;
+
+    OrderDeliveryInfo orderDeliveryInfo;
+
+    LocalDateTime orderDate;
+
     @BeforeEach
     void setUp() {
         user = userRepository.save(
@@ -62,10 +62,10 @@ class PartnersOrderQueryRepositoryTest {
         );
         Category category = categoryRepository.save(new Category("식품 분류"));
         Category subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime registerDate = LocalDateTime.of(2021, 8, 15, 0, 0, 0);
         product1 = productRepository.save(
                 new Product(
-                        "생선1", 1000, 10, 1.0, 10, now,
+                        "생선1", 1000, 10, 1.0, 10, registerDate,
                         category, subCategory, 1L,
                         "storedFileName1", "viewFileName1", "상품 설명 입니다.",
                         "test-product-code"
@@ -73,7 +73,7 @@ class PartnersOrderQueryRepositoryTest {
         );
         product2 = productRepository.save(
                 new Product(
-                        "생선2", 1200, 11, 1.5, 20, now.plusDays(1),
+                        "생선2", 1200, 11, 1.5, 20, registerDate,
                         category, subCategory, 1L,
                         "storedFileName2", "viewFileName2", "상품 설명 입니다.",
                         "test-product-code"
@@ -81,90 +81,104 @@ class PartnersOrderQueryRepositoryTest {
         );
         product3 = productRepository.save(
                 new Product(
-                        "생선3", 1500, 12, 3.0, 15, now.plusDays(2),
+                        "생선3", 1500, 12, 3.0, 15, registerDate,
                         category, subCategory, 1L,
                         "storedFileName3", "viewFileName3", "상품 설명 입니다.",
                         "test-product-code"
                 )
         );
 
-        OrderDeliveryInfo orderDeliveryInfo = new OrderDeliveryInfo(
+        orderDeliveryInfo = new OrderDeliveryInfo(
                 "수령인1", "01234", "010-1234-1234",
-                "서울시 테스트구 테스트동", "임시아파트 테스트동", "택배 보관함에 넣어주세요"
-        );
-        order1 = Order.createOrder(
-                "test-order-code1", user.getId(),
-                List.of(new OrderItem(product1, 3, OrderStatus.READY)),
-                orderDeliveryInfo
+                "테스트구 테스트로", "테스트호 테스트동", "택배 보관함에 넣어주세요"
         );
 
-        order2 = Order.createOrder(
-                "test-order-code2", user.getId(),
-                List.of(new OrderItem(product2, 4, OrderStatus.READY)),
+        orderDate = LocalDateTime.of(2023, 8, 13, 12, 0, 0);
+        order1 = getOrder("test-order-code1", product1, 3, orderDate.plusDays(1));
+        order2 = getOrder("test-order-code2", product2, 4, orderDate.plusDays(2));
+        order3 = getOrder("test-order-code3", product3, 5, orderDate.plusDays(4));
+    }
+
+    private Order getOrder(String orderCode, Product product, int quantity, LocalDateTime orderDate) {
+        return new Order(
+                orderCode, user.getId(),
+                List.of(new OrderItem(product, quantity, OrderStatus.READY)),
+                orderDate,
                 orderDeliveryInfo
         );
-
-        order3 = Order.createOrder(
-                "test-order-code3", user.getId(),
-                List.of(new OrderItem(product3, 5, OrderStatus.READY)),
-                orderDeliveryInfo
-        );
-
-        String startDateStr = DateUtils.toStringOfLocalDateTIme(now.minusMonths(3), "yyyy-MM-dd");
-        String endDateStr = DateUtils.toStringOfLocalDateTIme(now, "yyyy-MM-dd");
-        startDate = DateUtils.toStartDate(startDateStr);
-        endDate = DateUtils.toEndDate(endDateStr);
     }
 
     @Test
-    @DisplayName("판매자 - 준비 중인 주문 내역 목록 조회")
+    @DisplayName("판매자가 준비 중인 주문 내역 목록을 조회한다.")
     void find_partner_order_ready() {
         // given
         Order savedOrder1 = orderRepository.save(order1);
 
         Order savedOrder2 = orderRepository.save(order2);
-        OrderItem orderItem = savedOrder2.getItems().get(0);
+        OrderItem orderItem = getFirstOrderItemOf(savedOrder2);
         String invoiceNumber = "test-invoice-number";
         orderItem.outing(invoiceNumber);
 
         Order savedOrder3 = orderRepository.save(order3);
 
         // when
+        LocalDateTime startDate = LocalDateTime.of(2023, 8, 13, 0, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(2023, 8, 31, 0, 0, 0);
         List<PartnersReadyOrderQueryDto> readyOrders =
                 partnersOrderQueryRepository.findPartnersReadyOrders(1L, startDate, endDate);
 
         // then
-        assertThat(readyOrders).hasSize(3);
-
-        List<Long> ids = readyOrders.stream()
-                .map(PartnersReadyOrderQueryDto::getOrderItemId)
-                .collect(Collectors.toList());
-        assertThat(ids).containsExactly(
-                savedOrder1.getItems().get(0).getId(),
-                savedOrder2.getItems().get(0).getId(),
-                savedOrder3.getItems().get(0).getId()
-        );
-
-        List<String> userNames = readyOrders.stream()
-                .map(PartnersReadyOrderQueryDto::getUserName)
-                .collect(Collectors.toList());
-        assertThat(userNames).containsExactly(
-                user.getUserName(), user.getUserName(), user.getUserName()
-        );
-
-        List<String> userTelNo = readyOrders.stream()
-                .map(PartnersReadyOrderQueryDto::getUserTelNo)
-                .collect(Collectors.toList());
-         assertThat(userTelNo).containsExactly(
-                user.telNo(), user.telNo(), user.telNo()
-        );
-
-        List<OrderStatus> orderStatuses = readyOrders.stream()
-                .map(PartnersReadyOrderQueryDto::getOrderStatus)
-                .collect(Collectors.toList());
-        assertThat(orderStatuses).containsExactly(
-                OrderStatus.READY, OrderStatus.OUTING, OrderStatus.READY
-        );
+        assertThat(readyOrders).hasSize(3)
+                .extracting("orderItemId", "userName", "orderStatus", "receiverName", "invoiceNumber")
+                .containsExactly(
+                        tuple(getFirstOrderItemIdOf(savedOrder1), "주문 테스터", OrderStatus.READY, "수령인1", null),
+                        tuple(getFirstOrderItemIdOf(savedOrder2), "주문 테스터", OrderStatus.OUTING, "수령인1", "test-invoice-number"),
+                        tuple(getFirstOrderItemIdOf(savedOrder3), "주문 테스터", OrderStatus.READY, "수령인1", null)
+                );
     }
 
+    @Test
+    @DisplayName("판매자가 배송중인 주문 목록을 조회한다.")
+    void find_partners_order_delivery() {
+        // given
+        Order savedOrder1 = orderRepository.save(order1);
+
+        Order savedOrder2 = orderRepository.save(order2);
+        OrderItem orderItem2 = getFirstOrderItemOf(savedOrder2);
+        orderItem2.outing("test-invoice-number-2");
+        orderItem2.delivery(LocalDateTime.of(2023, 8, 20, 12, 30, 0));
+
+        Order savedOrder3 = orderRepository.save(order3);
+        OrderItem orderItem3 = getFirstOrderItemOf(savedOrder3);
+        orderItem3.outing("test-invoice-number-3");
+        orderItem3.delivery(LocalDateTime.of(2023, 8, 21, 12, 30, 0));
+
+        // when
+        LocalDateTime startDate = LocalDateTime.of(2023, 8, 13, 0, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(2023, 8, 31, 0, 0, 0);
+        List<PartnersDeliveryOrderQueryDto> deliveryOrders =
+                partnersOrderQueryRepository.findPartnersDeliveryOrders(1L, startDate, endDate);
+
+        // then
+        assertThat(deliveryOrders).hasSize(2)
+                .extracting("orderItemId", "orderStatus", "receiverName", "invoiceNumber")
+                .containsExactly(
+                        tuple(getFirstOrderItemIdOf(savedOrder2), OrderStatus.DELIVERY, "수령인1", "test-invoice-number-2"),
+                        tuple(getFirstOrderItemIdOf(savedOrder3), OrderStatus.DELIVERY, "수령인1", "test-invoice-number-3")
+                );
+    }
+
+    @Test
+    @DisplayName("판매자가 배송이 완료된 주문 목록을 조회한다.")
+    void find_partners_end_orders() {
+
+    }
+
+    private OrderItem getFirstOrderItemOf(Order order) {
+        return order.getItems().get(0);
+    }
+
+    private Long getFirstOrderItemIdOf(Order order) {
+        return getFirstOrderItemOf(order).getId();
+    }
 }

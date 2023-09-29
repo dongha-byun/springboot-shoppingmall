@@ -2,13 +2,13 @@ package springboot.shoppingmall.order.partners.application.dto;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.order.domain.OrderStatus;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
 public class PartnersOrderQueryDto {
     private Long orderItemId;
     private Long orderId;
