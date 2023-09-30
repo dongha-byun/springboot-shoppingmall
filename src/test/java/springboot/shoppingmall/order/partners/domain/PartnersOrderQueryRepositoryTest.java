@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,13 +17,14 @@ import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.order.partners.application.dto.PartnersCancelOrderQueryDto;
 import springboot.shoppingmall.order.partners.application.dto.PartnersDeliveryOrderQueryDto;
+import springboot.shoppingmall.order.partners.application.dto.PartnersEndOrderQueryDto;
 import springboot.shoppingmall.order.partners.application.dto.PartnersReadyOrderQueryDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.userservice.user.domain.User;
 import springboot.shoppingmall.userservice.user.domain.UserRepository;
-import springboot.shoppingmall.utils.DateUtils;
 
 @Transactional
 @SpringBootTest
@@ -109,7 +109,7 @@ class PartnersOrderQueryRepositoryTest {
     }
 
     @Test
-    @DisplayName("판매자가 준비 중인 주문 내역 목록을 조회한다.")
+    @DisplayName("판매자가 준비 중인 주문 내역들을 조회한다.")
     void find_partner_order_ready() {
         // given
         Order savedOrder1 = orderRepository.save(order1);
@@ -138,7 +138,7 @@ class PartnersOrderQueryRepositoryTest {
     }
 
     @Test
-    @DisplayName("판매자가 배송중인 주문 목록을 조회한다.")
+    @DisplayName("판매자가 배송중인 주문 내역들을 조회한다.")
     void find_partners_order_delivery() {
         // given
         Order savedOrder1 = orderRepository.save(order1);
@@ -169,9 +169,86 @@ class PartnersOrderQueryRepositoryTest {
     }
 
     @Test
-    @DisplayName("판매자가 배송이 완료된 주문 목록을 조회한다.")
+    @DisplayName("판매자가 배송이 완료된 주문 내역들을 조회한다.")
     void find_partners_end_orders() {
+        // given
+        Order savedOrder1 = orderRepository.save(order1);
 
+        Order savedOrder2 = orderRepository.save(order2);
+        OrderItem orderItem2 = getFirstOrderItemOf(savedOrder2);
+        orderItem2.outing("test-invoice-number-2");
+        orderItem2.delivery(LocalDateTime.of(2023, 8, 20, 12, 30, 0));
+        orderItem2.deliveryComplete(LocalDateTime.of(2023, 8, 22, 12, 30, 0), "현관문 앞");
+
+        Order savedOrder3 = orderRepository.save(order3);
+        OrderItem orderItem3 = getFirstOrderItemOf(savedOrder3);
+        orderItem3.outing("test-invoice-number-3");
+        orderItem3.delivery(LocalDateTime.of(2023, 8, 21, 12, 30, 0));
+        orderItem3.deliveryComplete(LocalDateTime.of(2023, 8, 23, 11, 11, 0), "경비실");
+
+        // when
+        LocalDateTime startDate = LocalDateTime.of(2023, 8, 13, 0, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(2023, 8, 31, 0, 0, 0);
+        List<PartnersEndOrderQueryDto> endOrders =
+                partnersOrderQueryRepository.findPartnersEndOrders(1L, startDate, endDate);
+
+        // then
+        assertThat(endOrders).hasSize(2)
+                .extracting("orderItemId", "orderStatus", "deliveryDate", "deliveryPlace")
+                .containsExactly(
+                        tuple(getFirstOrderItemIdOf(savedOrder2), OrderStatus.DELIVERY_END, LocalDateTime.of(2023, 8, 22, 12, 30, 0), "현관문 앞"),
+                        tuple(getFirstOrderItemIdOf(savedOrder3), OrderStatus.DELIVERY_END, LocalDateTime.of(2023, 8, 23, 11, 11, 0), "경비실")
+                );
+    }
+
+    @Test
+    @DisplayName("판매자가 주문의 취소/환불/교환 된 주문 내역들을 조회한다.")
+    void find_partners_cancel_orders() {
+        // given
+        Order savedOrder1 = orderRepository.save(order1);
+        OrderItem orderItem1 = getFirstOrderItemOf(savedOrder1);
+        orderItem1.cancel(LocalDateTime.of(2023, 8, 25, 11, 0, 0), "배송이 너무 늦어서 그냥 취소합니다.");
+
+        Order savedOrder2 = orderRepository.save(order2);
+        OrderItem orderItem2 = getFirstOrderItemOf(savedOrder2);
+        orderItem2.outing("test-invoice-number-2");
+        orderItem2.delivery(LocalDateTime.of(2023, 8, 20, 12, 30, 0));
+        orderItem2.deliveryComplete(LocalDateTime.of(2023, 8, 22, 12, 30, 0), "현관문 앞");
+        orderItem2.refund(LocalDateTime.of(2023, 8, 23, 12, 30, 0), "생각했던 색상이 아니에요.");
+
+        Order savedOrder3 = orderRepository.save(order3);
+        OrderItem orderItem3 = getFirstOrderItemOf(savedOrder3);
+        orderItem3.outing("test-invoice-number-3");
+        orderItem3.delivery(LocalDateTime.of(2023, 8, 21, 12, 30, 0));
+        orderItem3.deliveryComplete(LocalDateTime.of(2023, 8, 23, 11, 11, 0), "경비실");
+        orderItem3.exchange(LocalDateTime.of(2023, 8, 24, 8, 0, 0), "사이즈가 좀 커요.");
+
+        // when
+        LocalDateTime startDate = LocalDateTime.of(2023, 8, 13, 0, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(2023, 8, 31, 0, 0, 0);
+        List<PartnersCancelOrderQueryDto> endOrders =
+                partnersOrderQueryRepository.findPartnersCancelOrders(1L, startDate, endDate);
+
+        // then
+        assertThat(endOrders).hasSize(3)
+                .extracting("orderItemId", "orderStatus", "invoiceNumber",
+                        "cancelDate", "cancelReason",
+                        "refundDate", "refundReason",
+                        "exchangeDate", "exchangeReason")
+                .containsExactly(
+                        tuple(getFirstOrderItemIdOf(savedOrder1), OrderStatus.CANCEL, null,
+                                LocalDateTime.of(2023, 8, 25, 11, 0, 0), "배송이 너무 늦어서 그냥 취소합니다.",
+                                null, null,
+                                null, null),
+                        tuple(getFirstOrderItemIdOf(savedOrder2), OrderStatus.REFUND, "test-invoice-number-2",
+                                null, null,
+                                LocalDateTime.of(2023, 8, 23, 12, 30, 0), "생각했던 색상이 아니에요.",
+                                null, null),
+                        tuple(getFirstOrderItemIdOf(savedOrder3), OrderStatus.EXCHANGE, "test-invoice-number-3",
+                                null, null,
+                                null, null,
+                                LocalDateTime.of(2023, 8, 24, 8, 0, 0), "사이즈가 좀 커요.")
+                );
     }
 
     private OrderItem getFirstOrderItemOf(Order order) {

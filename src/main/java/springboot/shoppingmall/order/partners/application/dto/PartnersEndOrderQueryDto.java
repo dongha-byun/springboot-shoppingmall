@@ -1,15 +1,27 @@
 package springboot.shoppingmall.order.partners.application.dto;
 
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import springboot.shoppingmall.order.domain.OrderStatus;
 
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Setter
-public class PartnersEndOrderQueryDto extends PartnersOrderQueryDto{
+public class PartnersEndOrderQueryDto {
+    private Long orderItemId;
+    private Long orderId;
+    private String orderCode;
+    private LocalDateTime orderDate;
+    private String productCode;
+    private String productName;
+    private int quantity;
+    private String invoiceNumber;
+    private int totalPrice;
+    private String userName;
+    private String userTelNo;
+    private OrderStatus orderStatus;
     private String receiverName;        // 수령인
     private String receiverPhoneNumber; // 수령인 연락처
     private String address;             // 배송지 주소
@@ -18,20 +30,4 @@ public class PartnersEndOrderQueryDto extends PartnersOrderQueryDto{
     private LocalDateTime deliveryDate; // 배송완료 시간
     private String deliveryPlace;       // 배송장소
 
-    public PartnersEndOrderQueryDto(Long orderItemId, Long orderId, String orderCode, LocalDateTime orderDate, String productCode,
-                                    String productName, int quantity, String invoiceNumber, int totalPrice,
-                                    String userName, String userTelNo, OrderStatus orderStatus,
-                                    String receiverName, String receiverPhoneNumber,
-                                    String address, String detailAddress, String requestMessage,
-                                    LocalDateTime deliveryDate, String deliveryPlace) {
-        super(orderItemId, orderId, orderCode, orderDate, productCode, productName, quantity, invoiceNumber, totalPrice,
-                userName, userTelNo, orderStatus);
-        this.receiverName = receiverName;
-        this.receiverPhoneNumber = receiverPhoneNumber;
-        this.address = address;
-        this.detailAddress = detailAddress;
-        this.requestMessage = requestMessage;
-        this.deliveryDate = deliveryDate;
-        this.deliveryPlace = deliveryPlace;
-    }
 }

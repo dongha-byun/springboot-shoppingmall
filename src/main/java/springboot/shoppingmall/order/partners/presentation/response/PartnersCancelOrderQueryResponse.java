@@ -35,7 +35,7 @@ public class PartnersCancelOrderQueryResponse extends PartnersOrderQueryResponse
         this.exchangeReason = exchangeReason;
     }
 
-    public static PartnersCancelOrderQueryResponse to(PartnersCancelOrderQueryDto dto) {
+    public static PartnersCancelOrderQueryResponse of(PartnersCancelOrderQueryDto dto) {
         return new PartnersCancelOrderQueryResponse(
                 dto.getOrderItemId(), dto.getOrderId(), dto.getOrderCode(), toStringOfLocalDateTIme(dto.getOrderDate()),
                 dto.getProductCode(), dto.getProductName(), dto.getQuantity(), dto.getInvoiceNumber(),

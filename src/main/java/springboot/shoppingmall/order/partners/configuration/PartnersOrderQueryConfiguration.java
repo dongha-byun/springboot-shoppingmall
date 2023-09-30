@@ -19,16 +19,15 @@ public class PartnersOrderQueryConfiguration {
 
     private final PartnersOrderQueryRepository repository;
 
-    //@Bean
-    public Map<PartnersOrderQueryType, PartnersOrderQueryService> partnersOrderQueryServiceMap() {
-        Map<PartnersOrderQueryType, PartnersOrderQueryService> map = new HashMap<>();
-        map.put(PartnersOrderQueryType.READY, partnersReadyOrderQueryService());
-        map.put(PartnersOrderQueryType.DELIVERY, partnersDeliveryOrderQueryService());
-        map.put(PartnersOrderQueryType.END, partnersEndOrderQueryService());
-        map.put(PartnersOrderQueryType.CANCEL, partnersCancelOrderQueryService());
-
-        return map;
-    }
+//    public Map<PartnersOrderQueryType, PartnersOrderQueryService> partnersOrderQueryServiceMap() {
+//        Map<PartnersOrderQueryType, PartnersOrderQueryService> map = new HashMap<>();
+//        map.put(PartnersOrderQueryType.READY, partnersReadyOrderQueryService());
+//        map.put(PartnersOrderQueryType.DELIVERY, partnersDeliveryOrderQueryService());
+//        map.put(PartnersOrderQueryType.END, partnersEndOrderQueryService());
+//        map.put(PartnersOrderQueryType.CANCEL, partnersCancelOrderQueryService());
+//
+//        return map;
+//    }
 
     @Bean
     public PartnersReadyOrderQueryService partnersReadyOrderQueryService() {

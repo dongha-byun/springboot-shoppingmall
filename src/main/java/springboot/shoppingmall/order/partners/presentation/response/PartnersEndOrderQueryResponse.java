@@ -35,7 +35,7 @@ public class PartnersEndOrderQueryResponse extends PartnersOrderQueryResponse{
         this.deliveryPlace = deliveryPlace;
     }
 
-    public static PartnersEndOrderQueryResponse to(PartnersEndOrderQueryDto dto) {
+    public static PartnersEndOrderQueryResponse of(PartnersEndOrderQueryDto dto) {
         return new PartnersEndOrderQueryResponse(
                 dto.getOrderItemId(), dto.getOrderId(), dto.getOrderCode(), DateUtils.toStringOfLocalDateTIme(dto.getOrderDate()),
                 dto.getProductCode(), dto.getProductName(), dto.getQuantity(), dto.getInvoiceNumber(),

@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,11 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import springboot.shoppingmall.authorization.configuration.AuthenticationConfig;
+import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.order.partners.application.dto.PartnersCancelOrderQueryDto;
+import springboot.shoppingmall.order.partners.application.dto.PartnersDeliveryOrderQueryDto;
+import springboot.shoppingmall.order.partners.application.dto.PartnersEndOrderQueryDto;
+import springboot.shoppingmall.order.partners.application.dto.PartnersReadyOrderQueryDto;
 import springboot.shoppingmall.order.partners.presentation.response.PartnersCancelOrderQueryResponse;
 import springboot.shoppingmall.order.partners.presentation.response.PartnersDeliveryOrderQueryResponse;
 import springboot.shoppingmall.order.partners.presentation.response.PartnersEndOrderQueryResponse;
@@ -57,20 +63,27 @@ class PartnersOrderQueryControllerTest {
     @DisplayName("판매자가 자신의 상품 중에 배송 준비중인 주문 목록을 조회한다.")
     void list_order_of_ready() throws Exception {
         // given
+        LocalDateTime orderDate = LocalDateTime.of(2023, 7, 1, 0, 0, 0);
         when(partnersReadyOrderQueryService.findPartnersOrders(any(), any(), any())).thenReturn(
                 Arrays.asList(
-                        new PartnersReadyOrderQueryResponse(
-                                1L, 1L, "order-code-1", "2023-07-01", "product-code-1", "상품 1",
-                                2, "", 23000, "구매자 1", "010-1234-1234", "상품 준비 중",
-                                "수령인 1", "010-1111-2222", "주소 1", "상세주소 1", "요청사항 1"),
-                        new PartnersReadyOrderQueryResponse(
-                                2L, 2L, "order-code-2", "2023-07-02", "product-code-2", "상품 2",
-                                4, "", 34000, "구매자 2", "010-2345-2345", "상품 준비 중",
-                                "수령인 2", "010-2222-3333", "주소 2", "상세주소 2", "요청사항 2"),
-                        new PartnersReadyOrderQueryResponse(
-                                3L, 3L, "order-code-3", "2023-07-03", "product-code-3", "상품 3",
-                                8, "", 49900, "구매자 3", "010-3456-3456", "상품 준비 중",
-                                "수령인 3", "010-3333-4444", "주소 3", "상세주소 3", "요청사항 3")
+                        new PartnersReadyOrderQueryDto(
+                                1L, 1L, "order-code-1", orderDate.plusDays(1),
+                                "product-code-1", "상품 1", 2, "", 23000,
+                                "구매자 1", "010-1234-1234", OrderStatus.READY,
+                                "수령인 1", "010-1111-2222",
+                                "주소 1", "상세주소 1", "요청사항 1"),
+                        new PartnersReadyOrderQueryDto(
+                                2L, 2L, "order-code-2", orderDate.plusDays(2),
+                                "product-code-2", "상품 2", 4, "", 34000,
+                                "구매자 2", "010-2345-2345", OrderStatus.READY,
+                                "수령인 2", "010-2222-3333",
+                                "주소 2", "상세주소 2", "요청사항 2"),
+                        new PartnersReadyOrderQueryDto(
+                                3L, 3L, "order-code-3", orderDate.plusDays(3),
+                                "product-code-3", "상품 3", 8, "", 49900,
+                                "구매자 3", "010-3456-3456", OrderStatus.READY,
+                                "수령인 3", "010-3333-4444",
+                                "주소 3", "상세주소 3", "요청사항 3")
                 )
         );
 
@@ -92,16 +105,21 @@ class PartnersOrderQueryControllerTest {
     @DisplayName("판매자가 자신의 상품 중에 배송 중인 주문 목록을 조회한다.")
     void list_order_of_delivery() throws Exception {
         // given
+        LocalDateTime orderDate = LocalDateTime.of(2023, 7, 1, 0, 0, 0);
         when(partnersDeliveryOrderQueryService.findPartnersOrders(any(), any(), any())).thenReturn(
                 Arrays.asList(
-                        new PartnersDeliveryOrderQueryResponse(
-                                1L, 1L, "order-code-1", "2023-07-01", "product-code-1", "상품 1",
-                                2, "", 23000, "구매자 1", "010-1234-1234", "상품 준비 중",
-                                "수령인 1", "010-1111-2222", "주소 1", "상세주소 1", "요청사항 1"),
-                        new PartnersDeliveryOrderQueryResponse(
-                                3L, 3L, "order-code-3", "2023-07-03", "product-code-3", "상품 3",
-                                8, "", 49900, "구매자 3", "010-3456-3456", "상품 준비 중",
-                                "수령인 3", "010-3333-4444", "주소 3", "상세주소 3", "요청사항 3")
+                        new PartnersDeliveryOrderQueryDto(
+                                1L, 1L, "order-code-1", orderDate.plusDays(1),
+                                "product-code-1", "상품 1", 2, "", 23000,
+                                "구매자 1", "010-1234-1234", OrderStatus.DELIVERY,
+                                "수령인 1", "010-1111-2222",
+                                "주소 1", "상세주소 1", "요청사항 1"),
+                        new PartnersDeliveryOrderQueryDto(
+                                3L, 3L, "order-code-3", orderDate.plusDays(2),
+                                "product-code-3", "상품 3", 8, "", 49900,
+                                "구매자 3", "010-3456-3456", OrderStatus.DELIVERY,
+                                "수령인 3", "010-3333-4444",
+                                "주소 3", "상세주소 3", "요청사항 3")
                 )
         );
 
@@ -123,20 +141,31 @@ class PartnersOrderQueryControllerTest {
     @DisplayName("판매자가 자신의 상품 중에 배송이 완료된 주문 목록을 조회한다.")
     void list_order_of_end() throws Exception {
         // given
+        LocalDateTime orderDate = LocalDateTime.of(2023, 7, 1, 0, 0, 0);
+        LocalDateTime deliveryDate = LocalDateTime.of(2023, 7, 3, 0, 0, 0);
         when(partnersEndOrderQueryService.findPartnersOrders(any(), any(), any())).thenReturn(
                 Arrays.asList(
-                        new PartnersEndOrderQueryResponse(
-                                1L, 1L, "order-code-1", "2023-07-01", "product-code-1", "상품 1",
-                                2, "", 23000, "구매자 1", "010-1234-1234", "배송완료",
-                                "수령인 1", "010-1111-2222", "주소 1", "상세주소 1", "요청사항 1", "2023-08-11", "문 앞"),
-                        new PartnersEndOrderQueryResponse(
-                                2L, 2L, "order-code-2", "2023-07-02", "product-code-2", "상품 2",
-                                5, "", 33000, "구매자 2", "010-2345-2345", "배송완료",
-                                "수령인 2", "010-2222-3333", "주소 2", "상세주소 2", "요청사항 2", "2023-08-12", "택배보관함"),
-                        new PartnersEndOrderQueryResponse(
-                                3L, 3L, "order-code-3", "2023-07-03", "product-code-3", "상품 3",
-                                10, "", 19900, "구매자 3", "010-3456-3456", "배송완료",
-                                "수령인 3", "010-3333-4444", "주소 3", "상세주소 3", "요청사항 3", "2023-08-13", "문 앞")
+                        new PartnersEndOrderQueryDto(
+                                1L, 1L, "order-code-1", orderDate.plusDays(1),
+                                "product-code-1", "상품 1", 2, "", 23000,
+                                "구매자 1", "010-1234-1234", OrderStatus.DELIVERY_END,
+                                "수령인 1", "010-1111-2222",
+                                "주소 1", "상세주소 1", "요청사항 1",
+                                deliveryDate.plusDays(1), "문 앞"),
+                        new PartnersEndOrderQueryDto(
+                                2L, 2L, "order-code-2", orderDate.plusDays(2),
+                                "product-code-2", "상품 2", 5, "", 33000,
+                                "구매자 2", "010-2345-2345", OrderStatus.DELIVERY_END,
+                                "수령인 2", "010-2222-3333",
+                                "주소 2", "상세주소 2", "요청사항 2",
+                                deliveryDate.plusDays(2), "택배보관함"),
+                        new PartnersEndOrderQueryDto(
+                                3L, 3L, "order-code-3", orderDate.plusDays(3),
+                                "product-code-3", "상품 3", 10, "", 19900,
+                                "구매자 3", "010-3456-3456", OrderStatus.DELIVERY_END,
+                                "수령인 3", "010-3333-4444",
+                                "주소 3", "상세주소 3", "요청사항 3",
+                                deliveryDate.plusDays(3), "문 앞")
                 )
         );
 
@@ -158,24 +187,38 @@ class PartnersOrderQueryControllerTest {
     @DisplayName("판매자가 자신의 상품 중에 주문취소, 환불, 교환된 목록을 조회한다.")
     void list_order_of_cancel() throws Exception {
         // given
+        LocalDateTime orderDate = LocalDateTime.of(2023, 7, 1, 0, 0, 0);
+        LocalDateTime cancelDate = LocalDateTime.of(2023, 7, 15, 0, 0, 0);
         when(partnersCancelOrderQueryService.findPartnersOrders(any(), any(), any())).thenReturn(
                 Arrays.asList(
-                        new PartnersCancelOrderQueryResponse(
-                                1L, 1L, "order-code-1", "2023-07-01", "product-code-1", "상품 1",
-                                2, "", 23000, "구매자 1", "010-1234-1234", "주문 취소",
-                                "2023-07-22", "단순 변심", "", "", "", ""),
-                        new PartnersCancelOrderQueryResponse(
-                                2L, 2L, "order-code-2", "2023-08-01", "product-code-2", "상품 2",
-                                1, "invoice-number-2", 99000, "구매자 2", "010-2345-2345", "환불요청",
-                                "", "", "2023-08-04", "사이즈 안맞음", "", ""),
-                        new PartnersCancelOrderQueryResponse(
-                                4L, 4L, "order-code-4", "2023-09-03", "product-code-4", "상품 4",
-                                1, "invoice-number-4", 79900, "구매자 4", "010-4567-4567", "환불완료",
-                                "", "", "2023-09-04", "사이즈 안맞음", "", ""),
-                        new PartnersCancelOrderQueryResponse(
-                                3L, 3L, "order-code-3", "2023-09-01", "product-code-3", "상품 3",
-                                1, "", 69900, "구매자 3", "010-3456-3456", "검수중",
-                                "", "", "", "", "2023-09-03", "원하는 색상이 아님")
+                        new PartnersCancelOrderQueryDto(
+                                1L, 1L, "order-code-1", orderDate.plusDays(1),
+                                "product-code-1", "상품 1", 2, "", 23000, "구매자 1",
+                                "010-1234-1234", OrderStatus.CANCEL,
+                                cancelDate.plusDays(1), "단순 변심",
+                                null, null,
+                                null, null),
+                        new PartnersCancelOrderQueryDto(
+                                2L, 2L, "order-code-2", orderDate.plusDays(2),
+                                "product-code-2", "상품 2", 1, "invoice-number-2", 99000,
+                                "구매자 2", "010-2345-2345", OrderStatus.REFUND,
+                                null, null,
+                                cancelDate.plusDays(10), "사이즈 안맞음",
+                                null, null),
+                        new PartnersCancelOrderQueryDto(
+                                4L, 4L, "order-code-4", orderDate.plusDays(3),
+                                "product-code-4", "상품 4", 1, "invoice-number-4", 79900,
+                                "구매자 4", "010-4567-4567", OrderStatus.REFUND_END,
+                                null, null,
+                                cancelDate.plusDays(15), "사이즈 안맞음",
+                                null, null),
+                        new PartnersCancelOrderQueryDto(
+                                3L, 3L, "order-code-3", orderDate.plusDays(4),
+                                "product-code-3", "상품 3", 1, "", 69900,
+                                "구매자 3", "010-3456-3456", OrderStatus.EXCHANGE,
+                                null, null,
+                                null, null,
+                                cancelDate.plusDays(8), "원하는 색상이 아님")
                 )
         );
 

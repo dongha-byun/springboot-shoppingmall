@@ -28,7 +28,7 @@ public class PartnersDeliveryOrderQueryResponse extends PartnersOrderQueryRespon
         this.requestMessage = requestMessage;
     }
 
-    public static PartnersDeliveryOrderQueryResponse to(PartnersDeliveryOrderQueryDto dto) {
+    public static PartnersDeliveryOrderQueryResponse of(PartnersDeliveryOrderQueryDto dto) {
         return new PartnersDeliveryOrderQueryResponse(
                 dto.getOrderItemId(), dto.getOrderId(), dto.getOrderCode(), DateUtils.toStringOfLocalDateTIme(dto.getOrderDate()),
                 dto.getProductCode(), dto.getProductName(), dto.getQuantity(), dto.getInvoiceNumber(),
