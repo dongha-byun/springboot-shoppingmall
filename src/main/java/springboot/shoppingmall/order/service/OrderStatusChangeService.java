@@ -9,6 +9,7 @@ import springboot.shoppingmall.order.domain.OrderFinder;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
+import springboot.shoppingmall.order.service.dto.OrderItemDto;
 import springboot.shoppingmall.pay.domain.PayHistoryRepository;
 import springboot.shoppingmall.userservice.user.domain.User;
 import springboot.shoppingmall.userservice.user.domain.UserFinder;
@@ -23,7 +24,7 @@ public class OrderStatusChangeService {
     private final PayHistoryRepository payHistoryRepository;
 
     // 주문 취소
-    public OrderItemResponse cancel(Long orderId, Long orderItemId, LocalDateTime cancelDate, String cancelReason) {
+    public OrderItemDto cancel(Long orderId, Long orderItemId, LocalDateTime cancelDate, String cancelReason) {
         Order order = orderFinder.findOrderById(orderId);
         OrderItem orderItem = order.findOrderItem(orderItemId);
         orderItem.cancel(cancelDate, cancelReason);
@@ -35,22 +36,22 @@ public class OrderStatusChangeService {
 //                );
 //        orderPayService.cancel(payHistory.getTid(), payHistory.getAmount());
 
-        return OrderItemResponse.of(orderItem);
+        return OrderItemDto.of(orderItem);
     }
 
     // 출고 중
-    public OrderItemResponse outing(Long orderId, Long orderItemId) {
+    public OrderItemDto outing(Long orderId, Long orderItemId) {
         Order order = orderFinder.findOrderById(orderId);
         OrderItem orderItem = order.findOrderItem(orderItemId);
 
         OrderDeliveryInvoiceResponse deliveryInvoice = orderDeliveryInterfaceService.createInvoiceNumber(order);
         orderItem.outing(deliveryInvoice.getInvoiceNumber());
 
-        return OrderItemResponse.of(orderItem);
+        return OrderItemDto.of(orderItem);
     }
 
     // 구매확정
-    public OrderItemResponse finish(Long orderId, Long orderItemId) {
+    public OrderItemDto finish(Long orderId, Long orderItemId) {
         Order order = orderFinder.findOrderById(orderId);
         OrderItem orderItem = order.findOrderItem(orderItemId);
         orderItem.finish();
@@ -59,42 +60,42 @@ public class OrderStatusChangeService {
         User orderUser = userFinder.findUserById(order.getUserId());
         orderUser.increaseOrderAmount(orderItem.totalPrice());
 
-        return OrderItemResponse.of(orderItem);
+        return OrderItemDto.of(orderItem);
     }
 
     // 검수중
-    public OrderItemResponse checking(Long orderId, Long orderItemId) {
+    public OrderItemDto checking(Long orderId, Long orderItemId) {
         Order order = orderFinder.findOrderById(orderId);
         OrderItem orderItem = order.findOrderItem(orderItemId);
         orderItem.checking();
 
-        return OrderItemResponse.of(orderItem);
+        return OrderItemDto.of(orderItem);
     }
 
     // 환불
-    public OrderItemResponse refund(Long orderId, Long orderItemId, LocalDateTime refundDate, String refundReason) {
+    public OrderItemDto refund(Long orderId, Long orderItemId, LocalDateTime refundDate, String refundReason) {
         Order order = orderFinder.findOrderById(orderId);
         OrderItem orderItem = order.findOrderItem(orderItemId);
         orderItem.refund(refundDate, refundReason);
 
-        return OrderItemResponse.of(orderItem);
+        return OrderItemDto.of(orderItem);
     }
 
     // 환불 완료
-    public OrderItemResponse refundEnd(Long orderId, Long orderItemId) {
+    public OrderItemDto refundEnd(Long orderId, Long orderItemId) {
         Order order = orderFinder.findOrderById(orderId);
         OrderItem orderItem = order.findOrderItem(orderItemId);
         orderItem.refundEnd();
 
-        return OrderItemResponse.of(orderItem);
+        return OrderItemDto.of(orderItem);
     }
 
     // 교환
-    public OrderItemResponse exchange(Long orderId, Long orderItemId, LocalDateTime exchangeDate, String exchangeReason) {
+    public OrderItemDto exchange(Long orderId, Long orderItemId, LocalDateTime exchangeDate, String exchangeReason) {
         Order order = orderFinder.findOrderById(orderId);
         OrderItem orderItem = order.findOrderItem(orderItemId);
         orderItem.exchange(exchangeDate, exchangeReason);
 
-        return OrderItemResponse.of(orderItem);
+        return OrderItemDto.of(orderItem);
     }
 }

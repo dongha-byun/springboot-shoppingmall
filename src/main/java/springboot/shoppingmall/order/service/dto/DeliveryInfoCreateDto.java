@@ -1,15 +1,14 @@
-package springboot.shoppingmall.order.dto;
+package springboot.shoppingmall.order.service.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
-import springboot.shoppingmall.order.service.dto.DeliveryInfoCreateDto;
 
-@Getter
-@NoArgsConstructor
 @AllArgsConstructor
-public class DeliveryInfoRequest {
+@NoArgsConstructor
+@Getter
+public class DeliveryInfoCreateDto {
     private String receiverName;
     private String receiverPhoneNumber;
     private String zipCode;
@@ -19,13 +18,6 @@ public class DeliveryInfoRequest {
 
     public OrderDeliveryInfo toValue() {
         return new OrderDeliveryInfo(
-                receiverName, receiverPhoneNumber, zipCode,
-                address, detailAddress, requestMessage
-        );
-    }
-
-    public DeliveryInfoCreateDto toDto() {
-        return new DeliveryInfoCreateDto(
                 receiverName, receiverPhoneNumber, zipCode,
                 address, detailAddress, requestMessage
         );

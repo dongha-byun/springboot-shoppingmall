@@ -28,12 +28,15 @@ import springboot.shoppingmall.coupon.domain.Coupon;
 import springboot.shoppingmall.coupon.domain.CouponRepository;
 import springboot.shoppingmall.coupon.domain.UserCoupon;
 import springboot.shoppingmall.coupon.domain.UserCouponRepository;
-import springboot.shoppingmall.order.dto.DeliveryInfoRequest;
-import springboot.shoppingmall.order.dto.OrderItemRequest;
+import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
-import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.order.exception.OverQuantityException;
+import springboot.shoppingmall.order.service.dto.DeliveryInfoCreateDto;
+import springboot.shoppingmall.order.service.dto.OrderCreateDto;
+import springboot.shoppingmall.order.service.dto.OrderDto;
+import springboot.shoppingmall.order.service.dto.OrderItemCreateDto;
+import springboot.shoppingmall.order.service.dto.OrderItemDto;
 import springboot.shoppingmall.order.service.dto.ResponseUserInformation;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
@@ -66,7 +69,6 @@ class OrderServiceTest {
 
     @BeforeEach
     void beforeEach() {
-
         mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
 
         Category category = categoryRepository.save(new Category("상위 1"));
@@ -91,38 +93,38 @@ class OrderServiceTest {
 
     @Test
     @DisplayName("여러 상품을 한 번에 주문한다.")
-    void order_many_products_test() throws JsonProcessingException {
+    void order_many_products() throws JsonProcessingException {
         // given
         long userId = 10L;
         mockOrderUserInformationServerForGetDiscountRate(userId, 0);
 
         int orderQuantity1 = 2;
         int orderQuantity2 = 4;
-        List<OrderItemRequest> itemRequests = Arrays.asList(
-                new OrderItemRequest(product.getId(), orderQuantity1),
-                new OrderItemRequest(product2.getId(), orderQuantity2)
+        List<OrderItemCreateDto> orderItems = Arrays.asList(
+                new OrderItemCreateDto(product.getId(), orderQuantity1, null),
+                new OrderItemCreateDto(product2.getId(), orderQuantity2, null)
         );
 
-        DeliveryInfoRequest deliveryInfoRequest = new DeliveryInfoRequest(
+        DeliveryInfoCreateDto deliveryInfoCreateDto = new DeliveryInfoCreateDto(
                 "test-receiver", "010-1234-1234",
                 "test-zipcode", "test-address", "test-detail-address",
                 "test-request-message");
-        OrderRequest orderRequest = new OrderRequest(
-                "test-tid", PayType.KAKAO_PAY.name(), itemRequests,
-                3000, deliveryInfoRequest
+        OrderCreateDto orderCreateDto = new OrderCreateDto(
+                "test-tid", PayType.KAKAO_PAY, orderItems,
+                3000, deliveryInfoCreateDto
         );
 
         // when
-        OrderResponse order = orderService.createOrder(userId, orderRequest);
+        OrderDto order = orderService.createOrder(userId, orderCreateDto);
 
         // then
         assertThat(order.getId()).isNotNull();
         assertThat(order.getDeliveryInfo().getReceiverPhoneNumber()).isEqualTo("010-1234-1234");
         assertThat(order.getItems()).hasSize(2)
-                .extracting("productName","orderStatusName")
+                .extracting("productId", "orderStatus")
                 .containsExactly(
-                        tuple("상품 1", "상품 준비중"),
-                        tuple("상품 2", "상품 준비중")
+                        tuple(product.getId(), OrderStatus.READY),
+                        tuple(product2.getId(), OrderStatus.READY)
                 );
 
         // 각각의 상품의 재고가 각 주문 수량 만큼 감소한다.
@@ -141,29 +143,29 @@ class OrderServiceTest {
 
         int orderQuantity1 = 2;
         int orderQuantity2 = 4;
-        List<OrderItemRequest> itemRequests = Arrays.asList(
-                new OrderItemRequest(product.getId(), orderQuantity1),
-                new OrderItemRequest(product2.getId(), orderQuantity2)
+        List<OrderItemCreateDto> orderItems = Arrays.asList(
+                new OrderItemCreateDto(product.getId(), orderQuantity1, null),
+                new OrderItemCreateDto(product2.getId(), orderQuantity2, null)
         );
 
-        DeliveryInfoRequest deliveryInfoRequest = new DeliveryInfoRequest(
+        DeliveryInfoCreateDto deliveryInfoCreateDto = new DeliveryInfoCreateDto(
                 "test-receiver", "010-1234-1234",
                 "test-zipcode", "test-address", "test-detail-address",
                 "test-request-message"
         );
-        OrderRequest orderRequest = new OrderRequest(
-                "test-tid", PayType.KAKAO_PAY.name(), itemRequests,
-                3000, deliveryInfoRequest
+        OrderCreateDto orderCreateDto = new OrderCreateDto(
+                "test-tid", PayType.KAKAO_PAY, orderItems,
+                3000, deliveryInfoCreateDto
         );
 
         // when
-        OrderResponse order = orderService.createOrder(userId, orderRequest);
+        OrderDto order = orderService.createOrder(userId, orderCreateDto);
 
         // then
-        List<OrderItemResponse> items = order.getItems();
+        List<OrderItemDto> items = order.getItems();
 
         List<Integer> gradeDiscountAmounts = items.stream()
-                .map(OrderItemResponse::getGradeDiscountAmount)
+                .map(OrderItemDto::getGradeDiscountAmount)
                 .collect(Collectors.toList());
 
         List<Integer> discountAmounts = items.stream()
@@ -180,21 +182,21 @@ class OrderServiceTest {
         long userId = 10L;
         mockOrderUserInformationServerForGetDiscountRate(userId, 0);
         int orderQuantity = product.getCount() + 1;
-        OrderItemRequest orderItemRequest = new OrderItemRequest(product.getId(), orderQuantity);
-        DeliveryInfoRequest deliveryInfoRequest = new DeliveryInfoRequest(
+        OrderItemCreateDto orderItemCreateDto = new OrderItemCreateDto(product.getId(), orderQuantity, null);
+        DeliveryInfoCreateDto deliveryInfoCreateDto = new DeliveryInfoCreateDto(
                 "덩라", "010-1234-1234",
                 "01234", "서울시 테스트구 테스트동", "덩라빌딩 301호",
                 "조심히 오세요."
         );
-        OrderRequest orderRequest = new OrderRequest(
-                "test-tid", PayType.KAKAO_PAY.name(),
-                List.of(orderItemRequest), 0,
-                deliveryInfoRequest
+        OrderCreateDto orderCreateDto = new OrderCreateDto(
+                "test-tid", PayType.KAKAO_PAY,
+                List.of(orderItemCreateDto), 0,
+                deliveryInfoCreateDto
         );
 
         // when & then
         assertThatThrownBy(
-                () -> orderService.createOrder(userId, orderRequest)
+                () -> orderService.createOrder(userId, orderCreateDto)
         ).isInstanceOf(OverQuantityException.class);
     }
 
@@ -207,28 +209,28 @@ class OrderServiceTest {
         UserCoupon userCoupon1 = createCouponAndUserCoupon(userId, "할인쿠폰#1", 5);
         UserCoupon userCoupon2 = createCouponAndUserCoupon(userId, "할인쿠폰#2", 10);
 
-        OrderItemRequest orderItem1 = new OrderItemRequest(product.getId(), 2, userCoupon1.getId());
-        OrderItemRequest orderItem2 = new OrderItemRequest(product2.getId(), 3, userCoupon2.getId());
-        DeliveryInfoRequest deliveryInfoRequest = new DeliveryInfoRequest(
+        OrderItemCreateDto orderItem1 = new OrderItemCreateDto(product.getId(), 2, userCoupon1.getId());
+        OrderItemCreateDto orderItem2 = new OrderItemCreateDto(product2.getId(), 3, userCoupon2.getId());
+        DeliveryInfoCreateDto deliveryInfoCreateDto = new DeliveryInfoCreateDto(
                 "덩라", "010-1234-1234",
                 "01234", "서울시 테스트구 테스트동", "덩라빌딩 301호",
                 "조심히 오세요."
         );
-        OrderRequest orderRequest = new OrderRequest(
-                "test-tid", PayType.KAKAO_PAY.name(),
+        OrderCreateDto orderCreateDto = new OrderCreateDto(
+                "test-tid", PayType.KAKAO_PAY,
                 Arrays.asList(orderItem1, orderItem2),
-                0, deliveryInfoRequest
+                0, deliveryInfoCreateDto
         );
 
         // when
-        OrderResponse orderResponse = orderService.createOrder(userId, orderRequest);
+        OrderDto order = orderService.createOrder(userId, orderCreateDto);
 
         // then
-        assertThat(orderResponse.getOrderCode()).isNotNull();
-        assertThat(orderResponse.getTotalPrice()).isEqualTo(74000);
-        assertThat(orderResponse.getRealPayPrice()).isEqualTo(68060); // 44000 - 440 - 2200 + 30000 - 300 - 3000
+        assertThat(order.getOrderCode()).isNotNull();
+        assertThat(order.getTotalPrice()).isEqualTo(74000);
+        assertThat(order.getRealPayPrice()).isEqualTo(68060); // 44000 - 440 - 2200 + 30000 - 300 - 3000
 
-        assertThat(orderResponse.getItems()).hasSize(2)
+        assertThat(order.getItems()).hasSize(2)
                 .extracting("usedCouponId", "couponDiscountAmount")
                 .containsExactly(
                         tuple(userCoupon1.getId(), 2200),
@@ -245,25 +247,25 @@ class OrderServiceTest {
         UserCoupon userCoupon1 = createCouponAndUserCoupon(userId, "할인쿠폰#1", 5);
         UserCoupon userCoupon2 = createCouponAndUserCoupon(userId, "할인쿠폰#2", 10);
 
-        OrderItemRequest orderItem1 = new OrderItemRequest(product.getId(), 2, userCoupon1.getId());
-        OrderItemRequest orderItem2 = new OrderItemRequest(product2.getId(), 3, userCoupon2.getId());
-        DeliveryInfoRequest deliveryInfoRequest = new DeliveryInfoRequest(
+        OrderItemCreateDto orderItem1 = new OrderItemCreateDto(product.getId(), 2, userCoupon1.getId());
+        OrderItemCreateDto orderItem2 = new OrderItemCreateDto(product2.getId(), 3, userCoupon2.getId());
+        DeliveryInfoCreateDto deliveryInfoCreateDto = new DeliveryInfoCreateDto(
                 "덩라", "010-1234-1234",
                 "01234", "서울시 테스트구 테스트동", "덩라빌딩 301호",
                 "조심히 오세요."
         );
-        OrderRequest orderRequest = new OrderRequest(
-                "test-tid", PayType.KAKAO_PAY.name(),
+        OrderCreateDto orderCreateDto = new OrderCreateDto(
+                "test-tid", PayType.KAKAO_PAY,
                 Arrays.asList(orderItem1, orderItem2),
-                0, deliveryInfoRequest
+                0, deliveryInfoCreateDto
         );
 
         // when
-        OrderResponse orderResponse = orderService.createOrder(userId, orderRequest);
+        OrderDto order = orderService.createOrder(userId, orderCreateDto);
 
         // then
-        assertThat(orderResponse.getOrderCode()).isNotNull();
-        assertThat(orderResponse.getOrderDate()).isNotNull();
+        assertThat(order.getOrderCode()).isNotNull();
+        assertThat(order.getOrderDate()).isNotNull();
 
         UserCoupon usedUserCoupon = userCouponRepository.findById(userCoupon1.getId()).orElseThrow();
         assertThat(usedUserCoupon.getUsingDate()).isNotNull();

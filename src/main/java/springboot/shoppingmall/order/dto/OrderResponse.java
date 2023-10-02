@@ -2,16 +2,14 @@ package springboot.shoppingmall.order.dto;
 
 import static springboot.shoppingmall.utils.DateUtils.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.order.domain.Order;
-import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
-import springboot.shoppingmall.order.domain.OrderItem;
-import springboot.shoppingmall.utils.DateUtils;
+import springboot.shoppingmall.order.service.dto.OrderDeliveryInfoDto;
+import springboot.shoppingmall.order.service.dto.OrderDto;
+import springboot.shoppingmall.order.service.dto.OrderItemDto;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,11 +24,11 @@ public class OrderResponse {
     private DeliveryInfoResponse deliveryInfo;
     private OrderDeliveryInvoiceResponse deliveryInvoice;
 
-    public static OrderResponse of(Order order) {
-        OrderDeliveryInfo orderDeliveryInfo = order.getOrderDeliveryInfo();
-        return new OrderResponse(order.getId(), order.getOrderCode(),
-                toStringOfLocalDateTIme(order.getOrderDate()),
-                ofItemList(order), order.getTotalPrice(), order.getRealPayPrice(),
+    public static OrderResponse of(OrderDto dto) {
+        OrderDeliveryInfoDto orderDeliveryInfo = dto.getDeliveryInfo();
+        return new OrderResponse(dto.getId(), dto.getOrderCode(),
+                toStringOfLocalDateTIme(dto.getOrderDate()),
+                ofItemList(dto), dto.getTotalPrice(), dto.getRealPayPrice(),
                 new DeliveryInfoResponse(
                         orderDeliveryInfo.getReceiverName(), orderDeliveryInfo.getReceiverPhoneNumber(),
                         orderDeliveryInfo.getZipCode(), orderDeliveryInfo.getAddress(),
@@ -39,11 +37,11 @@ public class OrderResponse {
                 null);
     }
 
-    public static OrderResponse of(Order order, OrderDeliveryInvoiceResponse deliveryInvoice) {
-        OrderDeliveryInfo orderDeliveryInfo = order.getOrderDeliveryInfo();
-        return new OrderResponse(order.getId(), order.getOrderCode(),
-                toStringOfLocalDateTIme(order.getOrderDate()),
-                ofItemList(order), order.getTotalPrice(), order.getRealPayPrice(),
+    public static OrderResponse of(OrderDto dto, OrderDeliveryInvoiceResponse deliveryInvoice) {
+        OrderDeliveryInfoDto orderDeliveryInfo = dto.getDeliveryInfo();
+        return new OrderResponse(dto.getId(), dto.getOrderCode(),
+                toStringOfLocalDateTIme(dto.getOrderDate()),
+                ofItemList(dto), dto.getTotalPrice(), dto.getRealPayPrice(),
                 new DeliveryInfoResponse(
                         orderDeliveryInfo.getReceiverName(), orderDeliveryInfo.getReceiverPhoneNumber(),
                         orderDeliveryInfo.getZipCode(), orderDeliveryInfo.getAddress(),
@@ -52,8 +50,8 @@ public class OrderResponse {
                 deliveryInvoice);
     }
 
-    private static List<OrderItemResponse> ofItemList(Order order) {
-        List<OrderItem> items = order.getItems();
+    private static List<OrderItemResponse> ofItemList(OrderDto order) {
+        List<OrderItemDto> items = order.getItems();
         return items.stream()
                 .map(OrderItemResponse::of)
                 .collect(Collectors.toList());

@@ -9,11 +9,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
+import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.dto.CancelRequest;
 import springboot.shoppingmall.order.dto.OrderExchangeRequest;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderRefundRequest;
+import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.order.service.OrderStatusChangeService;
+import springboot.shoppingmall.order.service.dto.OrderItemDto;
 import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
 import springboot.shoppingmall.providers.authentication.LoginPartner;
 
@@ -27,8 +30,9 @@ public class OrderStatusChangeController {
                                                          @PathVariable("orderId") Long orderId,
                                                          @PathVariable("orderItemId") Long orderItemId,
                                                          @RequestBody CancelRequest cancelRequest) {
-        OrderItemResponse response =
-                orderStatusChangeService.cancel(orderId, orderItemId, LocalDateTime.now(), cancelRequest.getCancelReason());
+        OrderItemDto orderItemDto = orderStatusChangeService.cancel(orderId, orderItemId, LocalDateTime.now(),
+                cancelRequest.getCancelReason());
+        OrderItemResponse response = OrderItemResponse.of(orderItemDto);
         return ResponseEntity.ok().body(response);
     }
 
@@ -36,7 +40,8 @@ public class OrderStatusChangeController {
     public ResponseEntity<OrderItemResponse> outingOrder(@LoginPartner AuthorizedPartner partner,
                                                          @PathVariable("orderId") Long orderId,
                                                          @PathVariable("orderItemId") Long orderItemId) {
-        OrderItemResponse response = orderStatusChangeService.outing(orderId, orderItemId);
+        OrderItemDto orderItemDto = orderStatusChangeService.outing(orderId, orderItemId);
+        OrderItemResponse response = OrderItemResponse.of(orderItemDto);
         return ResponseEntity.ok().body(response);
     }
 
@@ -44,7 +49,8 @@ public class OrderStatusChangeController {
     public ResponseEntity<OrderItemResponse> finishOrder(@AuthenticationStrategy AuthorizedUser user,
                                                          @PathVariable("orderId") Long orderId,
                                                          @PathVariable("orderItemId") Long orderItemId) {
-        OrderItemResponse response = orderStatusChangeService.finish(orderId, orderItemId);
+        OrderItemDto orderItemDto = orderStatusChangeService.finish(orderId, orderItemId);
+        OrderItemResponse response = OrderItemResponse.of(orderItemDto);
         return ResponseEntity.ok().body(response);
     }
 
@@ -54,8 +60,9 @@ public class OrderStatusChangeController {
                                                          @PathVariable("orderItemId") Long orderItemId,
                                                          @RequestBody OrderRefundRequest refundRequest) {
 
-        OrderItemResponse response =
-                orderStatusChangeService.refund(orderId, orderItemId, LocalDateTime.now(), refundRequest.getRefundReason());
+        OrderItemDto orderItemDto = orderStatusChangeService.refund(orderId, orderItemId, LocalDateTime.now(),
+                refundRequest.getRefundReason());
+        OrderItemResponse response = OrderItemResponse.of(orderItemDto);
         return ResponseEntity.ok().body(response);
     }
 
@@ -65,8 +72,9 @@ public class OrderStatusChangeController {
                                                            @PathVariable("orderItemId") Long orderItemId,
                                                            @RequestBody OrderExchangeRequest exchangeRequest) {
 
-        OrderItemResponse response =
-                orderStatusChangeService.exchange(orderId, orderItemId, LocalDateTime.now(), exchangeRequest.getExchangeReason());
+        OrderItemDto orderItemDto = orderStatusChangeService.exchange(orderId, orderItemId, LocalDateTime.now(),
+                exchangeRequest.getExchangeReason());
+        OrderItemResponse response = OrderItemResponse.of(orderItemDto);
         return ResponseEntity.ok().body(response);
     }
 
@@ -74,7 +82,8 @@ public class OrderStatusChangeController {
     public ResponseEntity<OrderItemResponse> checkingOrder(@AuthenticationStrategy AuthorizedUser user,
                                                            @PathVariable("orderId") Long orderId,
                                                            @PathVariable("orderItemId") Long orderItemId) {
-        OrderItemResponse response = orderStatusChangeService.checking(orderId, orderItemId);
+        OrderItemDto orderItemDto = orderStatusChangeService.checking(orderId, orderItemId);
+        OrderItemResponse response = OrderItemResponse.of(orderItemDto);
         return ResponseEntity.ok().body(response);
     }
 
@@ -82,7 +91,8 @@ public class OrderStatusChangeController {
     public ResponseEntity<OrderItemResponse> refundEndOrder(@AuthenticationStrategy AuthorizedUser user,
                                                             @PathVariable("orderId") Long orderId,
                                                             @PathVariable("orderItemId") Long orderItemId) {
-        OrderItemResponse response = orderStatusChangeService.refundEnd(orderId, orderItemId);
+        OrderItemDto orderItemDto = orderStatusChangeService.refundEnd(orderId, orderItemId);
+        OrderItemResponse response = OrderItemResponse.of(orderItemDto);
         return ResponseEntity.ok().body(response);
     }
 }

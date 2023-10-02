@@ -10,6 +10,7 @@ import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.dto.DeliveryEndRequest;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderResponse;
+import springboot.shoppingmall.order.service.dto.OrderItemDto;
 
 @RequiredArgsConstructor
 @Transactional
@@ -19,21 +20,21 @@ public class OrderDeliveryInvoiceService {
     private final OrderFinder orderFinder;
 
     // 배송중 처리
-    public OrderItemResponse delivery(String invoiceNumber,
-                                      LocalDateTime deliveryStartDate) {
+    public OrderItemDto delivery(String invoiceNumber,
+                                 LocalDateTime deliveryStartDate) {
         OrderItem orderItem = orderFinder.findOrderByInvoiceNumber(invoiceNumber);
         orderItem.delivery(deliveryStartDate);
 
-        return OrderItemResponse.of(orderItem);
+        return OrderItemDto.of(orderItem);
     }
 
     // 배송완료 처리 - 택배사에서 호출하는 로직
-    public OrderItemResponse deliveryEnd(String invoiceNumber,
-                                         LocalDateTime deliveryCompleteDate,
-                                         String deliveryPlace) {
+    public OrderItemDto deliveryEnd(String invoiceNumber,
+                                    LocalDateTime deliveryCompleteDate,
+                                    String deliveryPlace) {
         OrderItem orderItem = orderFinder.findOrderByInvoiceNumber(invoiceNumber);
         orderItem.deliveryComplete(deliveryCompleteDate, deliveryPlace);
 
-        return OrderItemResponse.of(orderItem);
+        return OrderItemDto.of(orderItem);
     }
 }

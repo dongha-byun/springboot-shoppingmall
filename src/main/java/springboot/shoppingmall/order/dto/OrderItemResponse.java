@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.order.domain.OrderItem;
+import springboot.shoppingmall.order.service.dto.OrderItemDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.utils.DateUtils;
 
@@ -15,8 +16,6 @@ import springboot.shoppingmall.utils.DateUtils;
 public class OrderItemResponse {
     private Long id;
     private Long productId;
-    private String productName;
-    private int productPrice;
     private int quantity;
     private int totalPrice;
     private Long usedCouponId;
@@ -27,13 +26,12 @@ public class OrderItemResponse {
     private String cancelDate;
     private String cancelReason;
 
-    public static OrderItemResponse of(OrderItem orderItem) {
-        Product product = orderItem.getProduct();
-        return new OrderItemResponse(orderItem.getId(), product.getId(),
-                product.getName(), product.getPrice(), orderItem.getQuantity(), orderItem.getTotalPrice(),
-                orderItem.getUsedUserCouponId(), orderItem.getCouponDiscountAmount(), orderItem.getGradeDiscountAmount(),
-                orderItem.getInvoiceNumber(), orderItem.getOrderStatus().getStatusName(),
-                toStringOfLocalDateTIme(orderItem.getCancelDate()), orderItem.getCancelReason());
+    public static OrderItemResponse of(OrderItemDto dto) {
+        return new OrderItemResponse(dto.getId(),
+                dto.getProductId(), dto.getQuantity(), dto.getTotalPrice(),
+                dto.getUsedCouponId(), dto.getCouponDiscountAmount(), dto.getGradeDiscountAmount(),
+                dto.getInvoiceNumber(), dto.getOrderStatus().getStatusName(),
+                toStringOfLocalDateTIme(dto.getCancelDate()), dto.getCancelReason());
     }
 
 }

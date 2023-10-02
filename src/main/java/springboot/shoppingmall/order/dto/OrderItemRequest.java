@@ -3,6 +3,7 @@ package springboot.shoppingmall.order.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import springboot.shoppingmall.order.service.dto.OrderItemCreateDto;
 
 @Getter
 @NoArgsConstructor
@@ -12,8 +13,7 @@ public class OrderItemRequest {
     private int quantity;
     private Long usedCouponId;
 
-    public OrderItemRequest(Long productId, int quantity) {
-        this.productId = productId;
-        this.quantity = quantity;
+    public OrderItemCreateDto toDto() {
+        return new OrderItemCreateDto(productId, quantity, usedCouponId);
     }
 }

@@ -31,6 +31,7 @@ import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.DeliveryEndRequest;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderResponse;
+import springboot.shoppingmall.order.service.dto.OrderDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.presentation.response.ProductResponse;
@@ -80,7 +81,8 @@ public class OrderAcceptanceTest extends AcceptanceProductTest {
                 new Order("test-order-code", user.getId(), orderItems, orderDeliveryInfo)
         );
 
-        배송완료_주문 = OrderResponse.of(order);
+        OrderDto orderDto = OrderDto.of(order);
+        배송완료_주문 = OrderResponse.of(orderDto);
     }
 
     /**

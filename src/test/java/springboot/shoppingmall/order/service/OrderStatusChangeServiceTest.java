@@ -23,6 +23,7 @@ import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
+import springboot.shoppingmall.order.service.dto.OrderItemDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.delivery.domain.Delivery;
@@ -121,14 +122,14 @@ class OrderStatusChangeServiceTest {
         // when
         String cancelReason = "단순변심으로 구매 취소합니다.";
         LocalDateTime cancelDate = LocalDateTime.of(2023, 5, 9, 13, 10, 12);
-        OrderItemResponse cancelItem = orderStatusChangeService.cancel(orderId, orderItemId, cancelDate, cancelReason);
+        OrderItemDto cancelItem = orderStatusChangeService.cancel(orderId, orderItemId, cancelDate, cancelReason);
 
         em.flush();
         em.clear();
 
         // then
-        assertThat(cancelItem.getOrderStatusName()).isEqualTo(OrderStatus.CANCEL.getStatusName());
-        assertThat(cancelItem.getCancelDate()).isEqualTo(toStringOfLocalDateTIme(cancelDate));
+        assertThat(cancelItem.getOrderStatus()).isEqualTo(OrderStatus.CANCEL);
+        assertThat(cancelItem.getCancelDate()).isEqualTo(cancelDate);
         assertThat(cancelItem.getCancelReason()).isEqualTo(cancelReason);
 
         // 주문을 취소하면 상품 갯수를 원래대로 되돌린다.

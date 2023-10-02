@@ -19,6 +19,7 @@ import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
+import springboot.shoppingmall.order.service.dto.OrderItemDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.delivery.domain.Delivery;
@@ -93,12 +94,12 @@ class OrderDeliveryInvoiceServiceTest {
 
         // when
         LocalDateTime deliveryStartDate = LocalDateTime.of(2023, 5, 1, 0, 0, 0);
-        OrderItemResponse deliveryItem = invoiceService.delivery(invoiceNumber, deliveryStartDate);
+        OrderItemDto deliveryItem = invoiceService.delivery(invoiceNumber, deliveryStartDate);
 
         // then
         assertThat(deliveryItem.getInvoiceNumber()).isEqualTo(invoiceNumber);
         assertThat(deliveryItem.getId()).isEqualTo(orderItem.getId());
-        assertThat(deliveryItem.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY.getStatusName());
+        assertThat(deliveryItem.getOrderStatus()).isEqualTo(OrderStatus.DELIVERY);
     }
 
     @Test
@@ -121,11 +122,11 @@ class OrderDeliveryInvoiceServiceTest {
         String deliveryPlace = "문 앞";
 
         // when
-        OrderItemResponse deliveryCompleteItem =
+        OrderItemDto deliveryCompleteItem =
                 invoiceService.deliveryEnd(invoiceNumber, deliveryCompleteDate, deliveryPlace);
 
         // then
-        assertThat(deliveryCompleteItem.getOrderStatusName()).isEqualTo(OrderStatus.DELIVERY_END.getStatusName());
+        assertThat(deliveryCompleteItem.getOrderStatus()).isEqualTo(OrderStatus.DELIVERY_END);
         assertThat(deliveryCompleteItem.getId()).isEqualTo(orderItem.getId());
         assertThat(deliveryCompleteItem.getInvoiceNumber()).isEqualTo(invoiceNumber);
     }
