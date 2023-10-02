@@ -1,7 +1,6 @@
-package springboot.shoppingmall.product.query.controller;
+package springboot.shoppingmall.product.query.presentation;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -9,22 +8,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import springboot.shoppingmall.authorization.configuration.AuthenticationConfig;
 import springboot.shoppingmall.product.query.dto.PartnersProductQnaDto;
-import springboot.shoppingmall.product.query.service.PartnerProductQnaQueryService;
+import springboot.shoppingmall.product.query.application.PartnerProductQnaQueryService;
 import springboot.shoppingmall.providers.config.PartnersConfiguration;
 
 @WebMvcTest(

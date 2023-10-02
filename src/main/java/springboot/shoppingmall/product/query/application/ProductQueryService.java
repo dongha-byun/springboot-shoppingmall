@@ -1,4 +1,4 @@
-package springboot.shoppingmall.product.query.service;
+package springboot.shoppingmall.product.query.application;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;

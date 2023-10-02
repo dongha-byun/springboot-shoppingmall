@@ -1,4 +1,4 @@
-package springboot.shoppingmall.providers.web;
+package springboot.shoppingmall.providers.presentation;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

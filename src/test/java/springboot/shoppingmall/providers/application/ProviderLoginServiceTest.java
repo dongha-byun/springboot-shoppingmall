@@ -1,4 +1,4 @@
-package springboot.shoppingmall.providers.service;
+package springboot.shoppingmall.providers.application;
 
 import static org.assertj.core.api.Assertions.*;
 

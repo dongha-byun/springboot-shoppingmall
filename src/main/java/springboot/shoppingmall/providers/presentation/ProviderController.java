@@ -1,7 +1,7 @@
-package springboot.shoppingmall.providers.web;
+package springboot.shoppingmall.providers.presentation;
 
-import static springboot.shoppingmall.providers.web.ProviderRequest.*;
-import static springboot.shoppingmall.providers.web.ProviderResponse.*;
+import static springboot.shoppingmall.providers.presentation.request.ProviderRequest.*;
+import static springboot.shoppingmall.providers.presentation.response.ProviderResponse.*;
 
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.message.MessageProvider;
-import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
-import springboot.shoppingmall.providers.authentication.LoginPartner;
 import springboot.shoppingmall.providers.dto.ProviderDto;
-import springboot.shoppingmall.providers.service.ProviderService;
-import springboot.shoppingmall.providers.web.exception.NotEqualPasswordException;
+import springboot.shoppingmall.providers.application.ProviderService;
+import springboot.shoppingmall.providers.presentation.exception.NotEqualPasswordException;
+import springboot.shoppingmall.providers.presentation.request.ProviderRequest;
+import springboot.shoppingmall.providers.presentation.response.ProviderResponse;
 
 @RequiredArgsConstructor
 @RestController

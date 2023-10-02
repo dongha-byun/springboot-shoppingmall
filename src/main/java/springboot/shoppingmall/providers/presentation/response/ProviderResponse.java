@@ -1,4 +1,4 @@
-package springboot.shoppingmall.providers.web;
+package springboot.shoppingmall.providers.presentation.response;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

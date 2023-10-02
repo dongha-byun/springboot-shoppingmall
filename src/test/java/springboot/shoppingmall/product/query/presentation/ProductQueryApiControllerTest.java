@@ -1,4 +1,4 @@
-package springboot.shoppingmall.product.query.controller;
+package springboot.shoppingmall.product.query.presentation;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -22,7 +22,7 @@ import springboot.shoppingmall.authorization.configuration.AuthenticationConfig;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryFinder;
 import springboot.shoppingmall.product.query.dto.ProductQueryDto;
-import springboot.shoppingmall.product.query.service.ProductQueryService;
+import springboot.shoppingmall.product.query.application.ProductQueryService;
 import springboot.shoppingmall.providers.config.PartnersConfiguration;
 
 @WebMvcTest(

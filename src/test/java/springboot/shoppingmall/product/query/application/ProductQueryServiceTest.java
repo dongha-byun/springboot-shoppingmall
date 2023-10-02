@@ -1,4 +1,4 @@
-package springboot.shoppingmall.product.query.service;
+package springboot.shoppingmall.product.query.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;

@@ -1,4 +1,4 @@
-package springboot.shoppingmall.providers.web.exception;
+package springboot.shoppingmall.providers.presentation.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

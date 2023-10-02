@@ -1,4 +1,4 @@
-package springboot.shoppingmall.product.query.controller;
+package springboot.shoppingmall.product.query.presentation;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,7 +11,7 @@ import springboot.shoppingmall.product.query.PagingDataResponse;
 import springboot.shoppingmall.product.query.ProductQnaAnswerCompleteType;
 import springboot.shoppingmall.product.query.dto.PartnersProductQnaQueryResponse;
 import springboot.shoppingmall.product.query.dto.PartnersProductQnaDto;
-import springboot.shoppingmall.product.query.service.PartnerProductQnaQueryService;
+import springboot.shoppingmall.product.query.application.PartnerProductQnaQueryService;
 import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
 import springboot.shoppingmall.providers.authentication.LoginPartner;
 

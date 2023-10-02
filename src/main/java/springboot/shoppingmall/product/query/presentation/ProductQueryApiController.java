@@ -1,8 +1,7 @@
-package springboot.shoppingmall.product.query.controller;
+package springboot.shoppingmall.product.query.presentation;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +14,7 @@ import springboot.shoppingmall.product.query.PagingDataResponse;
 import springboot.shoppingmall.product.query.ProductQueryOrderType;
 import springboot.shoppingmall.product.query.dto.ProductQueryDto;
 import springboot.shoppingmall.product.query.dto.ProductQueryResponse;
-import springboot.shoppingmall.product.query.service.ProductQueryService;
+import springboot.shoppingmall.product.query.application.ProductQueryService;
 import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
 import springboot.shoppingmall.providers.authentication.LoginPartner;
 

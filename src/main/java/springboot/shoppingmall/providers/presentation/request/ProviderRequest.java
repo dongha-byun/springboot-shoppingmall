@@ -1,4 +1,4 @@
-package springboot.shoppingmall.providers.web;
+package springboot.shoppingmall.providers.presentation.request;
 
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
