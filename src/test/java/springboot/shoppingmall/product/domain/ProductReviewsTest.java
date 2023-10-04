@@ -40,8 +40,8 @@ class ProductReviewsTest {
     }
 
     @Test
-    @DisplayName("리뷰들의 평균 평점 조회")
-    void get_average_score_test() {
+    @DisplayName("리뷰들의 평점의 평균을 계산한다.")
+    void get_average_score() {
         // given
         ProductReviews reviews = new ProductReviews();
         reviews.addReview(new ProductReview("리뷰 입니다.", 3));

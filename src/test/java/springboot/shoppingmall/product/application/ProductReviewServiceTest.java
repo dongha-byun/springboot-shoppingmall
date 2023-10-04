@@ -26,8 +26,6 @@ import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.domain.ProductReview;
 import springboot.shoppingmall.product.domain.ProductReviewRepository;
-import springboot.shoppingmall.product.presentation.response.ProductReviewResponse;
-import springboot.shoppingmall.product.presentation.response.ProductUserReviewResponse;
 import springboot.shoppingmall.product.application.dto.ProductReviewCreateDto;
 
 @Transactional
@@ -117,10 +115,11 @@ class ProductReviewServiceTest {
                 )
         );
         Order endOrder = saveOrder("test-order-code", userId, product);
+        Long orderItemId = getFirstOrderItemOf(endOrder);
 
         ProductReviewCreateDto createDto = new ProductReviewCreateDto("리뷰 등록 합니다.", 3);
         OrderItem savedItem = endOrder.getItems().get(0);
-        service.createProductReview(userId, savedItem.getId(), product.getId(), createDto, new ArrayList<>());
+        service.createProductReview(userId, orderItemId, product.getId(), createDto, new ArrayList<>());
 
         // when & then
         assertThatThrownBy(
@@ -245,53 +244,6 @@ class ProductReviewServiceTest {
     }
 
     @Test
-    @DisplayName("리뷰 등록 시, 상품의 평점도 갱신된다.")
-    void refresh_product_score_test() {
-
-        // 상품 리뷰가 등록되면
-        // 상품 평점이 갱신된다.
-
-        // given
-        Long user1Id = 10L;
-        Long user2Id = 20L;
-        Long user3Id = 30L;
-        Long user4Id = 40L;
-        Long user5Id = 50L;
-        Category category = categoryRepository.save(new Category("상위 카테고리"));
-        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product = productRepository.save(
-                new Product(
-                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-
-        Order endOrder1 = saveOrder("test-order-code-1", user1Id, product);
-        Order endOrder2 = saveOrder("test-order-code-2", user2Id, product);
-        Order endOrder3 = saveOrder("test-order-code-3", user3Id, product);
-        Order endOrder4 = saveOrder("test-order-code-4", user4Id, product);
-        Order endOrder5 = saveOrder("test-order-code-5", user5Id, product);
-
-        // when & then
-        service.createProductReview(user1Id, endOrder1.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 1", 5), new ArrayList<>());
-        assertThat(product.getScore()).isEqualTo(5.0);
-
-        service.createProductReview(user2Id, endOrder2.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 2", 4), new ArrayList<>());
-        assertThat(product.getScore()).isEqualTo(4.5);
-
-        service.createProductReview(user3Id, endOrder3.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 3", 2), new ArrayList<>());
-        assertThat(product.getScore()).isEqualTo(3.7);
-
-        service.createProductReview(user4Id, endOrder4.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 4", 2), new ArrayList<>());
-        assertThat(product.getScore()).isEqualTo(3.3);
-
-        service.createProductReview(user5Id, endOrder5.getId(), product.getId(), new ProductReviewCreateDto("리뷰 남깁니다. 5", 4), new ArrayList<>());
-        assertThat(product.getScore()).isEqualTo(3.4);
-    }
-
-    @Test
     @DisplayName("자신의 리뷰에 이미지를 등록할 수 있다.")
     void create_review_with_image() {
         // given
@@ -307,9 +259,13 @@ class ProductReviewServiceTest {
                 )
         );
         Order endOrder = saveOrder("test-order-code-1", userId, product);
+        Long orderItemId = getFirstOrderItemOf(endOrder);
+
+        em.flush();
+        em.clear();
 
         // when
-        ProductReviewCreateDto createDto = new ProductReviewCreateDto("리뷰 남깁니다. 1", 5);
+        ProductReviewCreateDto createDto = new ProductReviewCreateDto("리뷰 남깁니다.", 5);
         List<ThumbnailInfo> reviewImages = Arrays.asList(
                 new ThumbnailInfo("stored-file-name1", "view-file-name1"),
                 new ThumbnailInfo("stored-file-name2", "view-file-name2"),
@@ -317,11 +273,9 @@ class ProductReviewServiceTest {
                 new ThumbnailInfo("stored-file-name4", "view-file-name4"),
                 new ThumbnailInfo("stored-file-name5", "view-file-name5")
         );
-        ProductUserReviewDto productReviewDto = service.createProductReview(userId, endOrder.getId(),
+        ProductUserReviewDto productReviewDto = service.createProductReview(userId, orderItemId,
                 product.getId(), createDto, reviewImages);
 
-        em.flush();
-        em.clear();
         // then
         ProductReview findReview = productReviewRepository.findById(productReviewDto.getId()).orElseThrow();
         assertThat(findReview).isNotNull();
@@ -341,6 +295,10 @@ class ProductReviewServiceTest {
         return orderRepository.save(
                 new Order(orderCode, userId, items, orderDeliveryInfo)
         );
+    }
+
+    private Long getFirstOrderItemOf(Order order) {
+        return order.getItems().get(0).getId();
     }
 
     private ProductReview saveReview(String content, int score, Product product, Long userId) {

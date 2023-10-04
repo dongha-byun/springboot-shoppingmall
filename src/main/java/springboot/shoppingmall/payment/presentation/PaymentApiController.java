@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
 import springboot.shoppingmall.payment.application.dto.PaymentCreateDto;
-import springboot.shoppingmall.payment.domain.Payment;
 import springboot.shoppingmall.payment.presentation.request.PaymentRequest;
 import springboot.shoppingmall.payment.presentation.response.PaymentResponse;
 import springboot.shoppingmall.payment.application.PaymentService;
