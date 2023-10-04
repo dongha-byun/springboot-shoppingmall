@@ -1,4 +1,4 @@
-package springboot.shoppingmall.order.service.dto;
+package springboot.shoppingmall.order.application.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;

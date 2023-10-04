@@ -1,7 +1,6 @@
-package springboot.shoppingmall.order.service;
+package springboot.shoppingmall.order.application;
 
 import springboot.shoppingmall.order.domain.Order;
-import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
 
 public interface OrderDeliveryInterfaceService {

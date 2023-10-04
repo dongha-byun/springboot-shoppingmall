@@ -1,4 +1,4 @@
-package springboot.shoppingmall.order.service;
+package springboot.shoppingmall.order.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,12 +12,9 @@ import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
-import springboot.shoppingmall.order.dto.DeliveryInfoRequest;
-import springboot.shoppingmall.order.dto.OrderRequest;
-import springboot.shoppingmall.order.dto.OrderResponse;
-import springboot.shoppingmall.order.service.dto.DeliveryInfoCreateDto;
-import springboot.shoppingmall.order.service.dto.OrderCreateDto;
-import springboot.shoppingmall.order.service.dto.OrderDto;
+import springboot.shoppingmall.order.application.dto.DeliveryInfoCreateDto;
+import springboot.shoppingmall.order.application.dto.OrderCreateDto;
+import springboot.shoppingmall.order.application.dto.OrderDto;
 import springboot.shoppingmall.pay.domain.PayHistory;
 import springboot.shoppingmall.pay.domain.PayHistoryRepository;
 import springboot.shoppingmall.product.domain.Product;
@@ -32,7 +29,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final PayHistoryRepository payHistoryRepository;
     private final OrderCodeCreator orderCodeCreator;
-    private final OrderUserInformationService orderUserInformationService;
+    private final OrderUserInterfaceService orderUserInformationService;
 
     @Transactional
     public OrderDto createOrder(Long userId, OrderCreateDto orderCreateDto) {

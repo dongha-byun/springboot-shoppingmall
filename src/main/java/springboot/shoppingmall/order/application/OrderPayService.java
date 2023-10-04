@@ -1,4 +1,4 @@
-package springboot.shoppingmall.order.service;
+package springboot.shoppingmall.order.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

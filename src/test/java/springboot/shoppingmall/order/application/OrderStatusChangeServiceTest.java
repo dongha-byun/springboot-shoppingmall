@@ -1,8 +1,12 @@
-package springboot.shoppingmall.order.service;
+package springboot.shoppingmall.order.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static springboot.shoppingmall.utils.DateUtils.toStringOfLocalDateTIme;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -13,20 +17,24 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import springboot.shoppingmall.TestOrderConfig;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
+import springboot.shoppingmall.order.application.dto.ResponseUserOrderAmount;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
-import springboot.shoppingmall.order.dto.OrderItemResponse;
-import springboot.shoppingmall.order.service.dto.OrderItemDto;
+import springboot.shoppingmall.order.application.dto.OrderItemDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.delivery.domain.Delivery;
 import springboot.shoppingmall.userservice.user.domain.User;
 import springboot.shoppingmall.userservice.user.domain.UserGradeInfo;
 import springboot.shoppingmall.userservice.user.domain.UserRepository;
@@ -42,13 +50,13 @@ class OrderStatusChangeServiceTest {
     OrderStatusChangeService orderStatusChangeService;
 
     User user;
-    Product product;
-    Product product2;
-    Delivery delivery;
+    Product product, product2;
     @Autowired
     UserRepository userRepository;
+
     @Autowired
     ProductRepository productRepository;
+
     @Autowired
     CategoryRepository categoryRepository;
 
@@ -59,8 +67,20 @@ class OrderStatusChangeServiceTest {
 
     OrderDeliveryInfo orderDeliveryInfo;
 
+    Long userId = 10L;
+
+    @Autowired
+    RestTemplate restTemplate;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    MockRestServiceServer mockRestServiceServer;
+
     @BeforeEach
     void beforeEach() {
+        mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
+
         user = User.builder()
                 .userName("테스터1")
                 .email("test1@test.com")
@@ -69,24 +89,18 @@ class OrderStatusChangeServiceTest {
                 .build();
         userRepository.save(user);
 
-        delivery = Delivery.builder()
-                .nickName("수령지 1").receiverName("수령인 1").receiverPhoneNumber("010-1234-1234")
-                .zipCode("10010").address("서울시 동작구 사당동").detailAddress("101호")
-                .requestMessage("도착 시 연락주세요.")
-                .userId(user.getId())
-                .build();
         orderDeliveryInfo = new OrderDeliveryInfo(
-                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(),
-                delivery.getZipCode(), delivery.getAddress(), delivery.getDetailAddress(),
-                delivery.getRequestMessage()
+                "수령인 1", "010-1234-1234",
+                "10010", "서울시 동작구 사당동", "101호",
+                "도착 시 연락주세요."
         );
-
 
         Category category = categoryRepository.save(new Category("상위 1"));
         Category subCategory = categoryRepository.save(new Category("하위 1").changeParent(category));
+        LocalDateTime registerDate = LocalDateTime.of(2023, 5, 15, 0, 0, 0);
         product = productRepository.save(
                 new Product(
-                        "상품 1", 22000, productCount, 1.0, 0, LocalDateTime.now(),
+                        "상품 1", 22000, productCount, 1.0, 0, registerDate,
                         category, subCategory, 10L,
                         "storedFileName1", "viewFileName1", "상품 설명 입니다.",
                         "test-product-code"
@@ -94,7 +108,7 @@ class OrderStatusChangeServiceTest {
         );
         product2 = productRepository.save(
                 new Product(
-                        "상품 2", 10000, productCount, 1.0, 0, LocalDateTime.now(),
+                        "상품 2", 10000, productCount, 1.0, 0, registerDate,
                         category, subCategory, 10L,
                         "storedFileName2", "viewFileName2", "상품 설명 입니다.2",
                         "test-product-code2"
@@ -104,7 +118,7 @@ class OrderStatusChangeServiceTest {
 
     @Test
     @DisplayName("주문 취소 - 준비 중인 주문 상품에 대해서는 별도로 주문취소 처리가 가능하다.")
-    void order_item_cancel_test() {
+    void order_item_cancel() {
         // given
         int orderQuantity = 3;
         List<OrderItem> items = Arrays.asList(
@@ -152,8 +166,10 @@ class OrderStatusChangeServiceTest {
 
     @Test
     @DisplayName("구매 확정 - 배송이 완료된 상품을 구매확정 처리 한다. 동시에 사용자의 주문횟수/주문금액을 증가시킨다.")
-    void order_finish_and_user_grade_info_update_test() {
+    void order_finish_and_user_grade_info_update() throws JsonProcessingException {
         // given
+        mockingIncreaseOrderAmounts(userId, 100000);
+
         int orderQuantity1 = 2;
         int orderQuantity2 = 4;
         List<OrderItem> items = Arrays.asList(
@@ -162,7 +178,7 @@ class OrderStatusChangeServiceTest {
         );
         LocalDateTime orderDate = LocalDateTime.of(2023, 6, 6, 12, 0, 0);
         Order order = new Order(
-                "finish-order-code", user.getId(), items, orderDate, orderDeliveryInfo
+                "finish-order-code", userId, items, orderDate, orderDeliveryInfo
         );
         Order savedOrder = orderRepository.save(order);
         OrderItem orderItem1 = savedOrder.getItems().get(0);
@@ -177,11 +193,19 @@ class OrderStatusChangeServiceTest {
         Product orderItem1Product = orderItem1.getProduct();
         assertThat(orderItem1Product.getId()).isEqualTo(product.getId());
         assertThat(product.getSalesVolume()).isEqualTo(orderQuantity1);
+    }
 
-        // 구매자의 주문횟수/금액 처리
-        User orderUser = userRepository.findById(user.getId()).orElseThrow();
-        UserGradeInfo userGradeInfo = orderUser.getUserGradeInfo();
-        assertThat(userGradeInfo.getOrderCount()).isEqualTo(1);
-        assertThat(userGradeInfo.getAmount()).isEqualTo(orderItem1.getQuantity() * product.getPrice());
+    private void mockingIncreaseOrderAmounts(Long userId, int price) throws JsonProcessingException {
+        String content = objectMapper.writeValueAsString(new ResponseUserOrderAmount(userId, 100, price));
+        mockRestServiceServer
+                .expect(
+                        requestTo("/users/"+userId+"/order-amounts")
+                )
+                .andExpect(method(HttpMethod.PATCH))
+                .andRespond(
+                        withStatus(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(content)
+                );
     }
 }

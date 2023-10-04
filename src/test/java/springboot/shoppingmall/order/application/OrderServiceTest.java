@@ -1,4 +1,4 @@
-package springboot.shoppingmall.order.service;
+package springboot.shoppingmall.order.application;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
@@ -29,15 +29,13 @@ import springboot.shoppingmall.coupon.domain.CouponRepository;
 import springboot.shoppingmall.coupon.domain.UserCoupon;
 import springboot.shoppingmall.coupon.domain.UserCouponRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
-import springboot.shoppingmall.order.dto.OrderItemResponse;
-import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.order.exception.OverQuantityException;
-import springboot.shoppingmall.order.service.dto.DeliveryInfoCreateDto;
-import springboot.shoppingmall.order.service.dto.OrderCreateDto;
-import springboot.shoppingmall.order.service.dto.OrderDto;
-import springboot.shoppingmall.order.service.dto.OrderItemCreateDto;
-import springboot.shoppingmall.order.service.dto.OrderItemDto;
-import springboot.shoppingmall.order.service.dto.ResponseUserInformation;
+import springboot.shoppingmall.order.application.dto.DeliveryInfoCreateDto;
+import springboot.shoppingmall.order.application.dto.OrderCreateDto;
+import springboot.shoppingmall.order.application.dto.OrderDto;
+import springboot.shoppingmall.order.application.dto.OrderItemCreateDto;
+import springboot.shoppingmall.order.application.dto.OrderItemDto;
+import springboot.shoppingmall.order.application.dto.ResponseUserInformation;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.payment.domain.PayType;

@@ -1,4 +1,4 @@
-package springboot.shoppingmall.order.controller;
+package springboot.shoppingmall.order.presentation;
 
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +10,9 @@ import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
 import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
-import springboot.shoppingmall.order.service.OrderService;
-import springboot.shoppingmall.order.service.dto.OrderCreateDto;
-import springboot.shoppingmall.order.service.dto.OrderDto;
+import springboot.shoppingmall.order.application.OrderService;
+import springboot.shoppingmall.order.application.dto.OrderCreateDto;
+import springboot.shoppingmall.order.application.dto.OrderDto;
 
 /**
  * 서비스 내에서 호출되는 API 명세

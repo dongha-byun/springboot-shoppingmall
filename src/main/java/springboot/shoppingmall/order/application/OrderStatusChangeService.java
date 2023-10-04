@@ -1,4 +1,4 @@
-package springboot.shoppingmall.order.service;
+package springboot.shoppingmall.order.application;
 
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -8,19 +8,16 @@ import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderFinder;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
-import springboot.shoppingmall.order.dto.OrderItemResponse;
-import springboot.shoppingmall.order.service.dto.OrderItemDto;
+import springboot.shoppingmall.order.application.dto.OrderItemDto;
 import springboot.shoppingmall.pay.domain.PayHistoryRepository;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserFinder;
 
 @Transactional
 @RequiredArgsConstructor
 @Service
 public class OrderStatusChangeService {
-    private final UserFinder userFinder;
     private final OrderFinder orderFinder;
     private final OrderDeliveryInterfaceService orderDeliveryInterfaceService;
+    private final OrderUserInterfaceService orderUserInterfaceService;
     private final PayHistoryRepository payHistoryRepository;
 
     // 주문 취소
@@ -57,8 +54,7 @@ public class OrderStatusChangeService {
         orderItem.finish();
 
         // 구매확정 시, 사용자의 주문정보를 업데이트한다.
-        User orderUser = userFinder.findUserById(order.getUserId());
-        orderUser.increaseOrderAmount(orderItem.totalPrice());
+        orderUserInterfaceService.increaseOrderAmounts(order.getUserId(), orderItem.totalPrice());
 
         return OrderItemDto.of(orderItem);
     }

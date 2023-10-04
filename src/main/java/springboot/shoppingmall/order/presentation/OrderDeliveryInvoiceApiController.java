@@ -1,4 +1,4 @@
-package springboot.shoppingmall.order.controller;
+package springboot.shoppingmall.order.presentation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.order.dto.DeliveryEndRequest;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
-import springboot.shoppingmall.order.service.OrderDeliveryInvoiceService;
-import springboot.shoppingmall.order.service.dto.OrderItemDto;
+import springboot.shoppingmall.order.application.OrderDeliveryInvoiceService;
+import springboot.shoppingmall.order.application.dto.OrderItemDto;
 
 /**
  * 해당 controller 는 택배사에서 배송중 / 배송완료 상태를 처리하기 위해 호출하는 API 명세

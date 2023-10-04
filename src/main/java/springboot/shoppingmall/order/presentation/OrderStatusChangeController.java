@@ -1,4 +1,4 @@
-package springboot.shoppingmall.order.controller;
+package springboot.shoppingmall.order.presentation;
 
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -9,14 +9,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.AuthenticationStrategy;
 import springboot.shoppingmall.authorization.AuthorizedUser;
-import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.dto.CancelRequest;
 import springboot.shoppingmall.order.dto.OrderExchangeRequest;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderRefundRequest;
-import springboot.shoppingmall.order.dto.OrderResponse;
-import springboot.shoppingmall.order.service.OrderStatusChangeService;
-import springboot.shoppingmall.order.service.dto.OrderItemDto;
+import springboot.shoppingmall.order.application.OrderStatusChangeService;
+import springboot.shoppingmall.order.application.dto.OrderItemDto;
 import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
 import springboot.shoppingmall.providers.authentication.LoginPartner;
 

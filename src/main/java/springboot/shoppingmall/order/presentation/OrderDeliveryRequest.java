@@ -1,4 +1,4 @@
-package springboot.shoppingmall.order.controller;
+package springboot.shoppingmall.order.presentation;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;

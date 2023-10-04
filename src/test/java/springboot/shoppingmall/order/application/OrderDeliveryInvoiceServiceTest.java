@@ -1,4 +1,4 @@
-package springboot.shoppingmall.order.service;
+package springboot.shoppingmall.order.application;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -18,8 +18,7 @@ import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
-import springboot.shoppingmall.order.dto.OrderItemResponse;
-import springboot.shoppingmall.order.service.dto.OrderItemDto;
+import springboot.shoppingmall.order.application.dto.OrderItemDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.delivery.domain.Delivery;

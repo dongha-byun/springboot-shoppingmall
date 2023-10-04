@@ -1,6 +1,5 @@
-package springboot.shoppingmall.order.controller;
+package springboot.shoppingmall.order.presentation;
 
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController

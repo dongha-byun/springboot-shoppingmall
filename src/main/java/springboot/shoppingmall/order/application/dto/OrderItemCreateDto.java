@@ -1,9 +1,8 @@
-package springboot.shoppingmall.order.service.dto;
+package springboot.shoppingmall.order.application.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.order.domain.OrderItem;
 
 @AllArgsConstructor
 @NoArgsConstructor
