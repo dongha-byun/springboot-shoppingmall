@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.admin.service.AdminProviderService;
 import springboot.shoppingmall.providers.dto.ProviderDto;
-import springboot.shoppingmall.providers.web.ProviderResponse;
+import springboot.shoppingmall.providers.presentation.response.ProviderResponse;
 
 @RequiredArgsConstructor
 @RestController

@@ -62,12 +62,13 @@ public class ProductReviewService {
                 .build();
         ProductReview savedReview = reviewRepository.save(productReview);
 
-        // 평점 총합 / 리뷰 갯수 -> 평점 갱신
-        product.refreshScore();
-
         // 리뷰 작성 시, 해당 주문은 구매확정 처리가 된다.
         OrderItem orderItem = orderFinder.findOrderItemById(orderItemId);
         orderItem.finish();
+
+        // 평점 총합 / 리뷰 갯수 -> 평점 갱신
+        // 비동기 처리하자... 여기서 할 일이 아닌가베
+        //product.refreshScore();
 
         return ProductUserReviewDto.of(savedReview);
     }

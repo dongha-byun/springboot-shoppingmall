@@ -4,7 +4,7 @@ import java.util.UUID;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
-import springboot.shoppingmall.order.service.OrderDeliveryInterfaceService;
+import springboot.shoppingmall.order.application.OrderDeliveryInterfaceService;
 
 @TestConfiguration
 public class TestOrderConfig {

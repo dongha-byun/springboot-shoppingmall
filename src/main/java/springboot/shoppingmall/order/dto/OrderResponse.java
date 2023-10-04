@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.order.service.dto.OrderDeliveryInfoDto;
-import springboot.shoppingmall.order.service.dto.OrderDto;
-import springboot.shoppingmall.order.service.dto.OrderItemDto;
+import springboot.shoppingmall.order.application.dto.OrderDeliveryInfoDto;
+import springboot.shoppingmall.order.application.dto.OrderDto;
+import springboot.shoppingmall.order.application.dto.OrderItemDto;
 
 @AllArgsConstructor
 @NoArgsConstructor

@@ -3,7 +3,7 @@ package springboot.shoppingmall.order.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.order.service.dto.OrderItemCreateDto;
+import springboot.shoppingmall.order.application.dto.OrderItemCreateDto;
 
 @Getter
 @NoArgsConstructor

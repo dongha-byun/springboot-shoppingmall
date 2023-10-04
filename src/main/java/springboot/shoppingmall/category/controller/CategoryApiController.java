@@ -14,7 +14,6 @@ import springboot.shoppingmall.category.dto.CategoryRequest;
 import springboot.shoppingmall.category.dto.CategoryResponse;
 import springboot.shoppingmall.category.service.CategoryService;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class CategoryApiController {

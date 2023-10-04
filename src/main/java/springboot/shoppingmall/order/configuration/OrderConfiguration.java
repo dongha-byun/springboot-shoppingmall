@@ -6,8 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryJPARepository;
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryRepository;
-import springboot.shoppingmall.order.service.OrderDeliveryInterfaceService;
-import springboot.shoppingmall.order.service.OrderDeliveryInterfaceServiceImpl;
 
 @RequiredArgsConstructor
 @Configuration

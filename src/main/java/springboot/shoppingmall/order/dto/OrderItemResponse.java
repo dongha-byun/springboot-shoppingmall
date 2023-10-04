@@ -5,10 +5,7 @@ import static springboot.shoppingmall.utils.DateUtils.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.order.domain.OrderItem;
-import springboot.shoppingmall.order.service.dto.OrderItemDto;
-import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.utils.DateUtils;
+import springboot.shoppingmall.order.application.dto.OrderItemDto;
 
 @AllArgsConstructor
 @NoArgsConstructor

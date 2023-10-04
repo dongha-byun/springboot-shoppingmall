@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
-import springboot.shoppingmall.order.service.dto.DeliveryInfoCreateDto;
+import springboot.shoppingmall.order.application.dto.DeliveryInfoCreateDto;
 
 @Getter
 @NoArgsConstructor
