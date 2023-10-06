@@ -46,7 +46,7 @@ public class AuthService {
         if(isPresent){
             refreshTokenRepository.deleteByUser(loginUser);
         }
-        refreshTokenRepository.save(new RefreshToken(loginUser, refreshToken));
+        refreshTokenRepository.save(new RefreshToken(loginUser.getId(), refreshToken));
     }
 
     @Transactional

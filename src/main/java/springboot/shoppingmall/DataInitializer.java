@@ -16,9 +16,6 @@ import springboot.shoppingmall.coupon.domain.UsingDuration;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.providers.domain.Provider;
 import springboot.shoppingmall.delivery.domain.Delivery;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserGrade;
-import springboot.shoppingmall.userservice.user.domain.UserGradeInfo;
 
 //@Component
 @RequiredArgsConstructor
@@ -41,26 +38,26 @@ public class DataInitializer {
         @Transactional
         public void init(){
             List<Provider> providers = insertPartners();
-            List<User> users = insertUser();
+            List<Long> userIds = insertUser();
             List<Category> categories = insertCategory();
 
-            insertDelivery(users);
+            insertDelivery(userIds);
             insertProducts(categories, providers);
-            insertCoupon(providers, users);
+            insertCoupon(providers, userIds);
         }
 
-        private void insertDelivery(List<User> users) {
-            users.forEach(
-                    user -> {
+        private void insertDelivery(List<Long> userIds) {
+            userIds.forEach(
+                    userId -> {
                         Delivery delivery = Delivery.builder()
                                 .nickName("집")
-                                .receiverName(user.getUserName())
-                                .receiverPhoneNumber(user.getTelNo().getTelNo())
+                                .receiverName("테스터" + userId)
+                                .receiverPhoneNumber("010-2222-333"+userId)
                                 .zipCode("07122")
                                 .address("서울시 영등포구 당산동")
                                 .detailAddress("102호")
                                 .requestMessage("무인 택배함에 넣어주세요.")
-                                .userId(user.getId())
+                                .userId(userId)
                                 .build();
                         em.persist(delivery);
                     }
@@ -104,27 +101,11 @@ public class DataInitializer {
             }
         }
 
-        private List<User> insertUser() {
-            User user1 = new User("사용자1", "user1", "a", "010-1234-1234",
-                    LocalDateTime.of(2023, 3, 15, 23, 44, 11)
-            );
-            User user2 = new User("사용자2", "user2", "a", "010-2345-2345",
-                    LocalDateTime.of(2023, 4, 1, 11, 22, 11)
-            );
-            User user3 = new User("사용자3", "user3", "a", "010-3456-3456",
-                    LocalDateTime.of(2023, 4, 15, 23, 44, 11),
-                    0, false,
-                    new UserGradeInfo(
-                            UserGrade.VIP, UserGrade.VIP.getMinOrderCondition(), UserGrade.VIP.getMinAmountCondition())
-            );
-            em.persist(user1);
-            em.persist(user2);
-            em.persist(user3);
-
-            return Arrays.asList(user1, user2, user3);
+        private List<Long> insertUser() {
+            return Arrays.asList(1L, 2L, 3L);
         }
 
-        private void insertCoupon(List<Provider> providers, List<User> users) {
+        private void insertCoupon(List<Provider> providers, List<Long> userIds) {
             Coupon coupon1OfPartners1 = new Coupon(
                     "할인쿠폰 #1",
                     new UsingDuration(
@@ -153,12 +134,12 @@ public class DataInitializer {
                             LocalDateTime.of(2024, 12, 31, 23, 59, 59)
                     ), 7, providers.get(1).getId()
             );
-            users.forEach(
-                    user -> {
-                        coupon1OfPartners1.addUserCoupon(user.getId());
-                        coupon2OfPartners1.addUserCoupon(user.getId());
-                        coupon1OfPartners2.addUserCoupon(user.getId());
-                        coupon2OfPartners2.addUserCoupon(user.getId());
+            userIds.forEach(
+                    userId -> {
+                        coupon1OfPartners1.addUserCoupon(userId);
+                        coupon2OfPartners1.addUserCoupon(userId);
+                        coupon1OfPartners2.addUserCoupon(userId);
+                        coupon2OfPartners2.addUserCoupon(userId);
                     }
             );
 

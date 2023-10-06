@@ -21,15 +21,13 @@ public class RefreshToken extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    private Long userId;
 
     private String refreshToken;
 
     @Builder
-    public RefreshToken(User user, String refreshToken) {
-        this.user = user;
+    public RefreshToken(Long userId, String refreshToken) {
+        this.userId = userId;
         this.refreshToken = refreshToken;
     }
 }

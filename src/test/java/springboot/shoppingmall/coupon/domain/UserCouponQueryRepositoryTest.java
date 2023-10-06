@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.coupon.application.UsableCouponDto;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest
@@ -21,9 +19,6 @@ class UserCouponQueryRepositoryTest {
     UserCouponQueryRepository queryRepository;
 
     @Autowired
-    UserRepository userRepository;
-
-    @Autowired
     CouponRepository couponRepository;
 
 
@@ -31,9 +26,7 @@ class UserCouponQueryRepositoryTest {
     @Test
     void find_coupons_partners() {
         // given
-        User couponReceiver1 = userRepository.save(
-                new User("쿠폰발급자1", "coupon_receiver1", "a", "010-2222-3333")
-        );
+        Long userId = 10L;
         Coupon coupon1 = couponRepository.save(
                 new Coupon("신규 카테고리 오픈 기념 쿠폰 #1",
                         new UsingDuration(
@@ -55,12 +48,12 @@ class UserCouponQueryRepositoryTest {
                                 LocalDateTime.of(2023, 9, 11, 0, 0, 0)
                         ), 8, 1L)
         );
-        coupon1.addUserCoupon(couponReceiver1.getId());
-        coupon2.addUserCoupon(couponReceiver1.getId());
-        coupon3.addUserCoupon(couponReceiver1.getId());
+        coupon1.addUserCoupon(userId);
+        coupon2.addUserCoupon(userId);
+        coupon3.addUserCoupon(userId);
 
         // when
-        List<UsableCouponDto> usableCouponList = queryRepository.findUsableCouponList(couponReceiver1.getId(), 1L);
+        List<UsableCouponDto> usableCouponList = queryRepository.findUsableCouponList(userId, 1L);
 
         // then
         assertThat(usableCouponList).hasSize(3)
@@ -76,16 +69,7 @@ class UserCouponQueryRepositoryTest {
     @Test
     void find_usable_coupon_list_without_used() {
         // given
-        User couponReceiver1 = userRepository.save(
-                new User("쿠폰발급자1", "coupon_receiver1", "a", "010-2222-3333")
-        );
-        Coupon coupon = couponRepository.save(
-                new Coupon("신규 카테고리 오픈 기념 쿠폰",
-                        new UsingDuration(
-                                LocalDateTime.of(2023, 3, 1, 0, 0, 0),
-                                LocalDateTime.of(2023, 8, 31, 0, 0, 0)
-                        ), 10, 1L)
-        );
+        Long userId = 10L;
         Coupon coupon1 = couponRepository.save(
                 new Coupon("신규 카테고리 오픈 기념 쿠폰 #1",
                         new UsingDuration(
@@ -107,9 +91,9 @@ class UserCouponQueryRepositoryTest {
                                 LocalDateTime.of(2023, 9, 11, 0, 0, 0)
                         ), 8, 1L)
         );
-        coupon1.addUserCoupon(couponReceiver1.getId());
-        coupon2.addUserCoupon(couponReceiver1.getId());
-        coupon3.addUserCoupon(couponReceiver1.getId());
+        coupon1.addUserCoupon(userId);
+        coupon2.addUserCoupon(userId);
+        coupon3.addUserCoupon(userId);
 
         UserCoupon userCoupon1 = coupon1.getUserCoupons().get(0);
         UserCoupon userCoupon2 = coupon2.getUserCoupons().get(0);
@@ -117,7 +101,7 @@ class UserCouponQueryRepositoryTest {
         userCoupon2.use();
 
         // when
-        List<UsableCouponDto> usableCouponList = queryRepository.findUsableCouponList(couponReceiver1.getId(), 1L);
+        List<UsableCouponDto> usableCouponList = queryRepository.findUsableCouponList(userId, 1L);
 
         // then
         assertThat(usableCouponList).hasSize(2)
