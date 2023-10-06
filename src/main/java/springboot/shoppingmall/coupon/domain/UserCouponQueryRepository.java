@@ -20,21 +20,6 @@ public class UserCouponQueryRepository {
         this.queryFactory = new JPAQueryFactory(entityManager);
     }
 
-    public List<UserCouponQueryDto> findAllUserReceivedCoupon(Coupon coupon) {
-        return queryFactory.select(
-                        Projections.constructor(UserCouponQueryDto.class,
-                                user.id, user.userName,
-                                user.userGradeInfo.grade, userCoupon.usingDate
-                        )
-                ).from(userCoupon)
-                .join(user).on(user.id.eq(userCoupon.userId))
-                .where(
-                        userCoupon.coupon.eq(coupon)
-                ).orderBy(
-                        user.userName.asc()
-                ).stream().collect(Collectors.toList());
-    }
-
     public List<UsableCouponDto> findUsableCouponList(Long userId, Long partnersId) {
         return queryFactory.select(
                 Projections.constructor(
@@ -58,6 +43,19 @@ public class UserCouponQueryRepository {
                                 )
                 ).orderBy(
                         coupon.discountRate.desc()
+                ).stream().collect(Collectors.toList());
+    }
+
+    public List<UserCouponDto> getUserIdsHasCoupon(Long couponId) {
+        return queryFactory.select(
+                        Projections.constructor(UserCouponDto.class,
+                                userCoupon.userId,
+                                userCoupon.usingDate
+                                )
+                )
+                .from(userCoupon)
+                .where(
+                        userCoupon.coupon.id.eq(couponId)
                 ).stream().collect(Collectors.toList());
     }
 }

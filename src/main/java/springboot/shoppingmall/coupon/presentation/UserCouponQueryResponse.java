@@ -21,7 +21,7 @@ public class UserCouponQueryResponse {
         return UserCouponQueryResponse.builder()
                 .userId(dto.getUserId())
                 .userName(dto.getUserName())
-                .userGrade(dto.getUserGrade().getGradeName())
+                .userGrade(dto.getUserGrade())
                 .usingDate(DateUtils.toStringOfLocalDateTIme(dto.getUsingDate()))
                 .build();
     }

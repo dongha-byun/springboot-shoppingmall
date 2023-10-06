@@ -44,9 +44,9 @@ class UserCouponQueryControllerTest {
         // given
         when(queryService.findUsersReceivedCoupon(anyLong())).thenReturn(
                 Arrays.asList(
-                        new UserCouponQueryDto(10L, "10번째 회원", UserGrade.NORMAL, null),
-                        new UserCouponQueryDto(20L, "20번째 회원", UserGrade.REGULAR, null),
-                        new UserCouponQueryDto(30L, "30번째 회원", UserGrade.NORMAL, null)
+                        new UserCouponQueryDto(10L, "10번째 회원", "일반회원", null),
+                        new UserCouponQueryDto(20L, "20번째 회원", "단골회원", null),
+                        new UserCouponQueryDto(30L, "30번째 회원", "VVIP", null)
                 )
         );
 

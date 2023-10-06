@@ -1,21 +1,32 @@
 package springboot.shoppingmall.coupon.application;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+import springboot.shoppingmall.coupon.application.dto.ResponseUserInformation;
 import springboot.shoppingmall.coupon.domain.Coupon;
 import springboot.shoppingmall.coupon.domain.CouponRepository;
 import springboot.shoppingmall.coupon.domain.UserCouponQueryDto;
 import springboot.shoppingmall.coupon.domain.UsingDuration;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserGrade;
-import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest
@@ -25,24 +36,25 @@ class UserCouponQueryServiceTest {
     UserCouponQueryService queryService;
 
     @Autowired
-    UserRepository userRepository;
+    CouponRepository couponRepository;
 
     @Autowired
-    CouponRepository couponRepository;
+    RestTemplate restTemplate;
+
+    MockRestServiceServer mockRestServiceServer;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    @BeforeEach
+    void setup() {
+        mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
+    }
 
     @DisplayName("쿠폰 발급 대상자 목록을 조회한다.")
     @Test
-    void find_users_received_coupon() {
+    void find_users_received_coupon() throws JsonProcessingException {
         // given
-        User couponReceiver1 = userRepository.save(
-                new User("쿠폰발급자1", "coupon_receiver1", "a", "010-2222-3333")
-        );
-        User couponReceiver2 = userRepository.save(
-                new User("쿠폰발급자2", "coupon_receiver2", "a", "010-3333-3333")
-        );
-        User couponReceiver3 = userRepository.save(
-                new User("쿠폰발급자3", "coupon_receiver3", "a", "010-4444-3333")
-        );
         Coupon coupon = couponRepository.save(
                 new Coupon("신규 카테고리 오픈 기념 쿠폰",
                         new UsingDuration(
@@ -50,20 +62,21 @@ class UserCouponQueryServiceTest {
                                 LocalDateTime.of(2023, 12, 31, 0, 0, 0)
                         ), 10, 1L)
         );
-        coupon.addUserCoupon(couponReceiver1.getId());
-        coupon.addUserCoupon(couponReceiver2.getId());
-        coupon.addUserCoupon(couponReceiver3.getId());
+        coupon.addUserCoupon(100L);
+        coupon.addUserCoupon(200L);
+        coupon.addUserCoupon(300L);
+        mockingGetUsersHasCoupon();
 
         // when
         List<UserCouponQueryDto> usersReceivedCoupon = queryService.findUsersReceivedCoupon(coupon.getId());
 
         // then
         assertThat(usersReceivedCoupon).hasSize(3)
-                .extracting("userName", "userGrade", "usingDate")
+                .extracting("userId", "userName", "userGrade", "usingDate")
                 .containsExactly(
-                        tuple("쿠폰발급자1", UserGrade.NORMAL, null),
-                        tuple("쿠폰발급자2", UserGrade.NORMAL, null),
-                        tuple("쿠폰발급자3", UserGrade.NORMAL, null)
+                        tuple(100L, "사용자 100", "일반회원", null),
+                        tuple(200L, "사용자 200", "단골회원", null),
+                        tuple(300L, "사용자 300", "VVIP", null)
                 );
     }
 
@@ -106,6 +119,25 @@ class UserCouponQueryServiceTest {
                         tuple("신규 카테고리 오픈 기념 쿠폰 #2", 10),
                         tuple("신규 카테고리 오픈 기념 쿠폰 #3", 8),
                         tuple("신규 카테고리 오픈 기념 쿠폰 #1", 7)
+                );
+    }
+
+    private void mockingGetUsersHasCoupon() throws JsonProcessingException {
+        List<ResponseUserInformation> responseUserInformationList = Arrays.asList(
+                new ResponseUserInformation(100L, "사용자 100", "일반회원"),
+                new ResponseUserInformation(200L, "사용자 200", "단골회원"),
+                new ResponseUserInformation(300L, "사용자 300", "VVIP")
+        );
+        String body = objectMapper.writeValueAsString(responseUserInformationList);
+        mockRestServiceServer
+                .expect(
+                        requestTo("/users/has-coupon")
+                )
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(
+                        withStatus(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(body)
                 );
     }
 }
