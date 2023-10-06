@@ -35,9 +35,6 @@ import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.application.dto.OrderItemDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserGradeInfo;
-import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Import(TestOrderConfig.class)
 @Transactional
@@ -49,10 +46,7 @@ class OrderStatusChangeServiceTest {
     @Autowired
     OrderStatusChangeService orderStatusChangeService;
 
-    User user;
     Product product, product2;
-    @Autowired
-    UserRepository userRepository;
 
     @Autowired
     ProductRepository productRepository;
@@ -80,14 +74,6 @@ class OrderStatusChangeServiceTest {
     @BeforeEach
     void beforeEach() {
         mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
-
-        user = User.builder()
-                .userName("테스터1")
-                .email("test1@test.com")
-                .password("test1!")
-                .telNo("010-0000-0000")
-                .build();
-        userRepository.save(user);
 
         orderDeliveryInfo = new OrderDeliveryInfo(
                 "수령인 1", "010-1234-1234",
@@ -127,7 +113,7 @@ class OrderStatusChangeServiceTest {
         );
         LocalDateTime orderDate = LocalDateTime.of(2023, 6, 6, 12, 0, 0);
         Order order = new Order(
-                "ready-order-code", user.getId(), items, orderDate, orderDeliveryInfo
+                "ready-order-code", userId, items, orderDate, orderDeliveryInfo
         );
         Order savedOrder = orderRepository.save(order);
         Long orderId = savedOrder.getId();

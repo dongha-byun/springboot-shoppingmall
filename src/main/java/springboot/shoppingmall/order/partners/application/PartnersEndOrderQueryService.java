@@ -12,7 +12,7 @@ public class PartnersEndOrderQueryService {
     private final PartnersOrderQueryRepository queryRepository;
 
     public List<PartnersEndOrderQueryDto> findPartnersOrders(Long partnerId, LocalDateTime startDate,
-                                                               LocalDateTime endDate) {
+                                                             LocalDateTime endDate) {
         return queryRepository.findPartnersEndOrders(partnerId, startDate, endDate);
     }
 }

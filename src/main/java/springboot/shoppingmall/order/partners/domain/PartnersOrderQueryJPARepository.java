@@ -2,7 +2,6 @@ package springboot.shoppingmall.order.partners.domain;
 
 import static springboot.shoppingmall.order.domain.QOrder.order;
 import static springboot.shoppingmall.order.domain.QOrderItem.*;
-import static springboot.shoppingmall.userservice.user.domain.QUser.user;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -33,7 +32,7 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 orderItem.id, order.id, order.orderCode, order.orderDate,
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
-                                order.totalPrice, user.userName, user.telNo.telNo,
+                                order.totalPrice, order.userId,
                                 orderItem.orderStatus,
                                 order.orderDeliveryInfo.receiver.name,
                                 order.orderDeliveryInfo.receiver.phoneNumber,
@@ -42,7 +41,6 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 order.orderDeliveryInfo.requestMessage))
                 .from(orderItem)
                 .join(order).on(orderItem.order.eq(order))
-                .join(user).on(user.id.eq(order.userId))
                 .where(
                         equalPartners(partnerId)
                                 .and(inOrderStatus(PartnersOrderQueryType.READY.getStatusList()))
@@ -59,7 +57,7 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 orderItem.id, order.id, order.orderCode, order.orderDate,
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
-                                order.totalPrice, user.userName, user.telNo.telNo,
+                                order.totalPrice, order.userId,
                                 orderItem.orderStatus,
                                 order.orderDeliveryInfo.receiver.name,
                                 order.orderDeliveryInfo.receiver.phoneNumber,
@@ -68,7 +66,6 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 order.orderDeliveryInfo.requestMessage))
                 .from(orderItem)
                 .join(order).on(orderItem.order.eq(order))
-                .join(user).on(user.id.eq(orderItem.order.userId))
                 .where(
                         equalPartners(partnerId)
                                 .and(inOrderStatus(PartnersOrderQueryType.DELIVERY.getStatusList()))
@@ -85,7 +82,7 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 orderItem.id, order.id, order.orderCode, order.orderDate,
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
-                                order.totalPrice, user.userName, user.telNo.telNo,
+                                order.totalPrice, order.userId,
                                 orderItem.orderStatus,
                                 order.orderDeliveryInfo.receiver.name,
                                 order.orderDeliveryInfo.receiver.phoneNumber,
@@ -95,7 +92,6 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 orderItem.deliveryCompleteDate, orderItem.deliveryPlace))
                 .from(orderItem)
                 .join(order).on(orderItem.order.eq(order))
-                .join(user).on(user.id.eq(order.userId))
                 .where(
                         equalPartners(partnerId)
                                 .and(inOrderStatus(PartnersOrderQueryType.END.getStatusList()))
@@ -111,14 +107,13 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 orderItem.id, order.id, order.orderCode, order.orderDate,
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
-                                order.totalPrice, user.userName, user.telNo.telNo,
+                                order.totalPrice, order.userId,
                                 orderItem.orderStatus,
                                 orderItem.cancelDate, orderItem.cancelReason,
                                 orderItem.refundDate, orderItem.refundReason,
                                 orderItem.exchangeDate, orderItem.exchangeReason))
                 .from(orderItem)
                 .join(order).on(orderItem.order.eq(order))
-                .join(user).on(user.id.eq(order.userId))
                 .where(
                         equalPartners(partnerId)
                                 .and(inOrderStatus(PartnersOrderQueryType.CANCEL.getStatusList()))

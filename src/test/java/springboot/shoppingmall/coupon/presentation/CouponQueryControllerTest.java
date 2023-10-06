@@ -47,7 +47,7 @@ class CouponQueryControllerTest {
     @DisplayName("판매자가 등록한 쿠폰 목록을 조회한다.")
     void find_coupon_all_by_partners() throws Exception {
         // given
-        when(queryService.findCouponAll(anyLong())).thenReturn(
+        when(queryService.findCouponAll(any())).thenReturn(
                 Arrays.asList(
                         new CouponQueryDto(
                                 1L, "쿠폰1",
@@ -69,6 +69,6 @@ class CouponQueryControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", hasSize(2)));
+                .andExpect(jsonPath("$..id", hasSize(2)));
     }
 }

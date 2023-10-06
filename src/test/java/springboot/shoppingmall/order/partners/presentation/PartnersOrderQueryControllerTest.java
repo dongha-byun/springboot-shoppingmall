@@ -69,19 +69,19 @@ class PartnersOrderQueryControllerTest {
                         new PartnersReadyOrderQueryDto(
                                 1L, 1L, "order-code-1", orderDate.plusDays(1),
                                 "product-code-1", "상품 1", 2, "", 23000,
-                                "구매자 1", "010-1234-1234", OrderStatus.READY,
+                                1L, "구매자 1", "010-1234-1234", OrderStatus.READY,
                                 "수령인 1", "010-1111-2222",
                                 "주소 1", "상세주소 1", "요청사항 1"),
                         new PartnersReadyOrderQueryDto(
                                 2L, 2L, "order-code-2", orderDate.plusDays(2),
                                 "product-code-2", "상품 2", 4, "", 34000,
-                                "구매자 2", "010-2345-2345", OrderStatus.READY,
+                                2L, "구매자 2", "010-2345-2345", OrderStatus.READY,
                                 "수령인 2", "010-2222-3333",
                                 "주소 2", "상세주소 2", "요청사항 2"),
                         new PartnersReadyOrderQueryDto(
                                 3L, 3L, "order-code-3", orderDate.plusDays(3),
                                 "product-code-3", "상품 3", 8, "", 49900,
-                                "구매자 3", "010-3456-3456", OrderStatus.READY,
+                                3L, "구매자 3", "010-3456-3456", OrderStatus.READY,
                                 "수령인 3", "010-3333-4444",
                                 "주소 3", "상세주소 3", "요청사항 3")
                 )
@@ -111,13 +111,13 @@ class PartnersOrderQueryControllerTest {
                         new PartnersDeliveryOrderQueryDto(
                                 1L, 1L, "order-code-1", orderDate.plusDays(1),
                                 "product-code-1", "상품 1", 2, "", 23000,
-                                "구매자 1", "010-1234-1234", OrderStatus.DELIVERY,
+                                1L, "구매자 1", "010-1234-1234", OrderStatus.DELIVERY,
                                 "수령인 1", "010-1111-2222",
                                 "주소 1", "상세주소 1", "요청사항 1"),
                         new PartnersDeliveryOrderQueryDto(
                                 3L, 3L, "order-code-3", orderDate.plusDays(2),
                                 "product-code-3", "상품 3", 8, "", 49900,
-                                "구매자 3", "010-3456-3456", OrderStatus.DELIVERY,
+                                3L, "구매자 3", "010-3456-3456", OrderStatus.DELIVERY,
                                 "수령인 3", "010-3333-4444",
                                 "주소 3", "상세주소 3", "요청사항 3")
                 )
@@ -148,21 +148,21 @@ class PartnersOrderQueryControllerTest {
                         new PartnersEndOrderQueryDto(
                                 1L, 1L, "order-code-1", orderDate.plusDays(1),
                                 "product-code-1", "상품 1", 2, "", 23000,
-                                "구매자 1", "010-1234-1234", OrderStatus.DELIVERY_END,
+                                1L, "구매자 1", "010-1234-1234", OrderStatus.DELIVERY_END,
                                 "수령인 1", "010-1111-2222",
                                 "주소 1", "상세주소 1", "요청사항 1",
                                 deliveryDate.plusDays(1), "문 앞"),
                         new PartnersEndOrderQueryDto(
                                 2L, 2L, "order-code-2", orderDate.plusDays(2),
                                 "product-code-2", "상품 2", 5, "", 33000,
-                                "구매자 2", "010-2345-2345", OrderStatus.DELIVERY_END,
+                                2L, "구매자 2", "010-2345-2345", OrderStatus.DELIVERY_END,
                                 "수령인 2", "010-2222-3333",
                                 "주소 2", "상세주소 2", "요청사항 2",
                                 deliveryDate.plusDays(2), "택배보관함"),
                         new PartnersEndOrderQueryDto(
                                 3L, 3L, "order-code-3", orderDate.plusDays(3),
                                 "product-code-3", "상품 3", 10, "", 19900,
-                                "구매자 3", "010-3456-3456", OrderStatus.DELIVERY_END,
+                                3L, "구매자 3", "010-3456-3456", OrderStatus.DELIVERY_END,
                                 "수령인 3", "010-3333-4444",
                                 "주소 3", "상세주소 3", "요청사항 3",
                                 deliveryDate.plusDays(3), "문 앞")
@@ -193,29 +193,29 @@ class PartnersOrderQueryControllerTest {
                 Arrays.asList(
                         new PartnersCancelOrderQueryDto(
                                 1L, 1L, "order-code-1", orderDate.plusDays(1),
-                                "product-code-1", "상품 1", 2, "", 23000, "구매자 1",
-                                "010-1234-1234", OrderStatus.CANCEL,
+                                "product-code-1", "상품 1", 2, "", 23000,
+                                1L, "구매자 1", "010-1234-1234", OrderStatus.CANCEL,
                                 cancelDate.plusDays(1), "단순 변심",
                                 null, null,
                                 null, null),
                         new PartnersCancelOrderQueryDto(
                                 2L, 2L, "order-code-2", orderDate.plusDays(2),
                                 "product-code-2", "상품 2", 1, "invoice-number-2", 99000,
-                                "구매자 2", "010-2345-2345", OrderStatus.REFUND,
+                                2L, "구매자 2", "010-2345-2345", OrderStatus.REFUND,
                                 null, null,
                                 cancelDate.plusDays(10), "사이즈 안맞음",
                                 null, null),
                         new PartnersCancelOrderQueryDto(
                                 4L, 4L, "order-code-4", orderDate.plusDays(3),
                                 "product-code-4", "상품 4", 1, "invoice-number-4", 79900,
-                                "구매자 4", "010-4567-4567", OrderStatus.REFUND_END,
+                                4L, "구매자 4", "010-4567-4567", OrderStatus.REFUND_END,
                                 null, null,
                                 cancelDate.plusDays(15), "사이즈 안맞음",
                                 null, null),
                         new PartnersCancelOrderQueryDto(
                                 3L, 3L, "order-code-3", orderDate.plusDays(4),
                                 "product-code-3", "상품 3", 1, "", 69900,
-                                "구매자 3", "010-3456-3456", OrderStatus.EXCHANGE,
+                                3L, "구매자 3", "010-3456-3456", OrderStatus.EXCHANGE,
                                 null, null,
                                 null, null,
                                 cancelDate.plusDays(8), "원하는 색상이 아님")

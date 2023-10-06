@@ -19,6 +19,7 @@ public class PartnersCancelOrderQueryDto {
     private int quantity;
     private String invoiceNumber;
     private int totalPrice;
+    private Long userId;
     private String userName;
     private String userTelNo;
     private OrderStatus orderStatus;
@@ -28,4 +29,28 @@ public class PartnersCancelOrderQueryDto {
     private String refundReason;        // 환불사유
     private LocalDateTime exchangeDate; // 교환일자
     private String exchangeReason;      // 교환사유
+
+    public PartnersCancelOrderQueryDto(Long orderItemId, Long orderId, String orderCode, LocalDateTime orderDate,
+                                       String productCode, String productName, int quantity, String invoiceNumber,
+                                       int totalPrice, Long userId, OrderStatus orderStatus, LocalDateTime cancelDate,
+                                       String cancelReason, LocalDateTime refundDate, String refundReason,
+                                       LocalDateTime exchangeDate, String exchangeReason) {
+        this.orderItemId = orderItemId;
+        this.orderId = orderId;
+        this.orderCode = orderCode;
+        this.orderDate = orderDate;
+        this.productCode = productCode;
+        this.productName = productName;
+        this.quantity = quantity;
+        this.invoiceNumber = invoiceNumber;
+        this.totalPrice = totalPrice;
+        this.userId = userId;
+        this.orderStatus = orderStatus;
+        this.cancelDate = cancelDate;
+        this.cancelReason = cancelReason;
+        this.refundDate = refundDate;
+        this.refundReason = refundReason;
+        this.exchangeDate = exchangeDate;
+        this.exchangeReason = exchangeReason;
+    }
 }

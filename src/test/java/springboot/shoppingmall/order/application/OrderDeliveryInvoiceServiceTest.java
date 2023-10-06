@@ -21,9 +21,6 @@ import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.application.dto.OrderItemDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.delivery.domain.Delivery;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest
@@ -37,11 +34,7 @@ class OrderDeliveryInvoiceServiceTest {
 
     String invoiceNumber = "test-invoice-number";
 
-    User user;
     Product product;
-    Delivery delivery;
-    @Autowired
-    UserRepository userRepository;
     @Autowired
     ProductRepository productRepository;
     @Autowired
@@ -49,21 +42,13 @@ class OrderDeliveryInvoiceServiceTest {
 
     OrderDeliveryInfo orderDeliveryInfo;
 
+    Long userId = 10L;
+
     @BeforeEach
     void beforeEach() {
-        user = User.builder()
-                .userName("테스터1").email("test1@test.com").password("test1!").telNo("010-0000-0000")
-                .build();
-        userRepository.save(user);
-
-        delivery = Delivery.builder()
-                .nickName("수령지 1").receiverName("수령인 1").zipCode("10010")
-                .address("서울시 동작구 사당동").detailAddress("101호").requestMessage("도착 시 연락주세요.")
-                .userId(user.getId())
-                .build();
         orderDeliveryInfo = new OrderDeliveryInfo(
-                delivery.getReceiverName(), delivery.getReceiverPhoneNumber(), delivery.getZipCode(),
-                delivery.getAddress(), delivery.getDetailAddress(), delivery.getRequestMessage()
+                "수령지 1", "수령인 1", "10010",
+                "서울시 동작구 사당동", "101호", "도착 시 연락주세요."
         );
 
         Category category = categoryRepository.save(new Category("상위 1"));
@@ -80,14 +65,14 @@ class OrderDeliveryInvoiceServiceTest {
 
     @Test
     @DisplayName("배송중 상태로 변경")
-    void delivery_test() {
+    void delivery() {
         // given
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.READY);
         orderItem.outing(invoiceNumber);
         List<OrderItem> orderItems = List.of(orderItem);
         orderRepository.save(
                 new Order(
-                        UUID.randomUUID().toString(), user.getId(), orderItems, orderDeliveryInfo
+                        UUID.randomUUID().toString(), userId, orderItems, orderDeliveryInfo
                 )
         );
 
@@ -103,7 +88,7 @@ class OrderDeliveryInvoiceServiceTest {
 
     @Test
     @DisplayName("배송완료 상태로 변경 - 최종 배송장소와 배송시간도 추가로 저장한다.")
-    void delivery_end_test() {
+    void delivery_end() {
         // given
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.READY);
         orderItem.outing(invoiceNumber);
@@ -112,7 +97,7 @@ class OrderDeliveryInvoiceServiceTest {
         List<OrderItem> orderItems = List.of(orderItem);
         orderRepository.save(
                 new Order(
-                        UUID.randomUUID().toString(), user.getId(), orderItems, orderDeliveryInfo
+                        UUID.randomUUID().toString(), userId, orderItems, orderDeliveryInfo
                 )
         );
 

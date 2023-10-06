@@ -23,8 +23,6 @@ import springboot.shoppingmall.order.partners.application.dto.PartnersEndOrderQu
 import springboot.shoppingmall.order.partners.application.dto.PartnersReadyOrderQueryDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.userservice.user.domain.User;
-import springboot.shoppingmall.userservice.user.domain.UserRepository;
 
 @Transactional
 @SpringBootTest
@@ -32,9 +30,6 @@ class PartnersOrderQueryRepositoryTest {
 
     @Autowired
     OrderRepository orderRepository;
-
-    @Autowired
-    UserRepository userRepository;
 
     @Autowired
     ProductRepository productRepository;
@@ -45,8 +40,6 @@ class PartnersOrderQueryRepositoryTest {
     @Autowired
     PartnersOrderQueryRepository partnersOrderQueryRepository;
 
-    User user;
-
     Product product1, product2, product3;
 
     Order order1, order2, order3;
@@ -54,12 +47,10 @@ class PartnersOrderQueryRepositoryTest {
     OrderDeliveryInfo orderDeliveryInfo;
 
     LocalDateTime orderDate;
+    Long userId = 100L;
 
     @BeforeEach
     void setUp() {
-        user = userRepository.save(
-                new User("주문 테스터", "order_tester", "order_tester1!", "010-2222-3333")
-        );
         Category category = categoryRepository.save(new Category("식품 분류"));
         Category subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
         LocalDateTime registerDate = LocalDateTime.of(2021, 8, 15, 0, 0, 0);
@@ -101,7 +92,7 @@ class PartnersOrderQueryRepositoryTest {
 
     private Order getOrder(String orderCode, Product product, int quantity, LocalDateTime orderDate) {
         return new Order(
-                orderCode, user.getId(),
+                orderCode, userId,
                 List.of(new OrderItem(product, quantity, OrderStatus.READY)),
                 orderDate,
                 orderDeliveryInfo
@@ -129,11 +120,11 @@ class PartnersOrderQueryRepositoryTest {
 
         // then
         assertThat(readyOrders).hasSize(3)
-                .extracting("orderItemId", "userName", "orderStatus", "receiverName", "invoiceNumber")
+                .extracting("orderItemId", "userId", "orderStatus", "receiverName", "invoiceNumber")
                 .containsExactly(
-                        tuple(getFirstOrderItemIdOf(savedOrder1), "주문 테스터", OrderStatus.READY, "수령인1", null),
-                        tuple(getFirstOrderItemIdOf(savedOrder2), "주문 테스터", OrderStatus.OUTING, "수령인1", "test-invoice-number"),
-                        tuple(getFirstOrderItemIdOf(savedOrder3), "주문 테스터", OrderStatus.READY, "수령인1", null)
+                        tuple(getFirstOrderItemIdOf(savedOrder1), 100L, OrderStatus.READY, "수령인1", null),
+                        tuple(getFirstOrderItemIdOf(savedOrder2), 100L, OrderStatus.OUTING, "수령인1", "test-invoice-number"),
+                        tuple(getFirstOrderItemIdOf(savedOrder3), 100L, OrderStatus.READY, "수령인1", null)
                 );
     }
 
