@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import springboot.shoppingmall.userservice.user.domain.User;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
-    Optional<RefreshToken> findByUser(User saveUser);
+    Optional<RefreshToken> findByUserId(Long userId);
 
-    void deleteByUser(User user);
+    void deleteByUserId(Long userId);
 }

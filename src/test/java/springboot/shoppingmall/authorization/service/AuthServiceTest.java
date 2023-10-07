@@ -70,7 +70,7 @@ class AuthServiceTest {
         authService.logout(saveUser.getId());
 
         // then
-        Optional<RefreshToken> token = refreshTokenRepository.findByUser(saveUser);
+        Optional<RefreshToken> token = refreshTokenRepository.findByUserId(saveUser.getId());
         assertThat(token.isPresent()).isFalse();
     }
 

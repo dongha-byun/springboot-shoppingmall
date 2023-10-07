@@ -42,17 +42,16 @@ public class AuthService {
     }
 
     private void saveRefreshToken(User loginUser, String refreshToken) {
-        boolean isPresent = refreshTokenRepository.findByUser(loginUser).isPresent();
+        boolean isPresent = refreshTokenRepository.findByUserId(loginUser.getId()).isPresent();
         if(isPresent){
-            refreshTokenRepository.deleteByUser(loginUser);
+            refreshTokenRepository.deleteByUserId(loginUser.getId());
         }
         refreshTokenRepository.save(new RefreshToken(loginUser.getId(), refreshToken));
     }
 
     @Transactional
-    public void logout(Long id){
-        User user = userFinder.findUserById(id);
-        refreshTokenRepository.deleteByUser(user);
+    public void logout(Long userId){
+        refreshTokenRepository.deleteByUserId(userId);
     }
 
     public AuthorizedUser getAuthorizedUser(String token, String ip){
@@ -71,8 +70,7 @@ public class AuthService {
 
     public TokenResponse reCreateAccessToken(String token, String accessIp){
         Long userId = jwtTokenProvider.getUserId(token);
-        User user = userFinder.findUserById(userId);
-        String refreshToken = findRefreshTokenByUser(user).getRefreshToken();
+        String refreshToken = findRefreshTokenByUser(userId).getRefreshToken();
         if(!jwtTokenProvider.validateExpireToken(refreshToken)){
             throw new ExpireTokenException("인증 만료됨");
         }
@@ -81,8 +79,8 @@ public class AuthService {
         return new TokenResponse(accessToken, refreshToken);
     }
 
-    private RefreshToken findRefreshTokenByUser(User user) {
-        return refreshTokenRepository.findByUser(user)
+    private RefreshToken findRefreshTokenByUser(Long userId) {
+        return refreshTokenRepository.findByUserId(userId)
                 .orElseThrow(
                         () -> new NotExistsRefreshTokenException("not exists refresh token. please retry login.")
                 );
