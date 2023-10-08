@@ -1,10 +1,17 @@
 package springboot.shoppingmall.order.partners.application;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import springboot.shoppingmall.order.partners.presentation.response.PartnersOrderQueryResponse;
+import java.util.Map;
+import springboot.shoppingmall.order.application.OrderUserInterfaceService;
+import springboot.shoppingmall.order.application.dto.ResponseOrderUserInformation;
+import springboot.shoppingmall.order.partners.factory.ResponseOrderUserInformationMapFactory;
 
 public interface PartnersOrderQueryService {
 
-    List<PartnersOrderQueryResponse> findPartnersOrders(Long partnerId, LocalDateTime startDate, LocalDateTime endDate);
+    default Map<Long, ResponseOrderUserInformation> getUserInformation(
+            OrderUserInterfaceService orderUserInterfaceService, List<Long> userIds) {
+
+        List<ResponseOrderUserInformation> result = orderUserInterfaceService.getOrderUsers(userIds);
+        return ResponseOrderUserInformationMapFactory.create(result);
+    }
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import springboot.shoppingmall.coupon.application.dto.ResponseUserInformation;
+import springboot.shoppingmall.coupon.client.UserCouponService;
 import springboot.shoppingmall.coupon.domain.CouponRepository;
 import springboot.shoppingmall.coupon.domain.UserCouponDto;
 import springboot.shoppingmall.coupon.domain.UserCouponQueryDto;
@@ -22,7 +23,7 @@ import springboot.shoppingmall.coupon.domain.UserCouponQueryRepository;
 @Service
 public class UserCouponQueryService {
     private final UserCouponQueryRepository queryRepository;
-    private final RestTemplate restTemplate;
+    private final UserCouponService userCouponService;
 
     public List<UserCouponQueryDto> findUsersReceivedCoupon(Long couponId) {
         // 1
@@ -34,18 +35,7 @@ public class UserCouponQueryService {
                 .collect(Collectors.toList());
 
         // 3
-        RequestEntity<List<Long>> requestEntity = RequestEntity
-                .post("/users/has-coupon")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(userIds);
-        ResponseEntity<List<ResponseUserInformation>> response = restTemplate.exchange(
-                requestEntity,
-                new ParameterizedTypeReference<>() {}
-        );
-        List<ResponseUserInformation> result = response.getBody();
-        if(result == null) {
-            throw new IllegalArgumentException("사용자 정보 조회 실패");
-        }
+        List<ResponseUserInformation> result = userCouponService.getUsers(userIds);
 
         // 4. userInfoHasCoupon + result
         Map<Long, ResponseUserInformation> map = result.stream()

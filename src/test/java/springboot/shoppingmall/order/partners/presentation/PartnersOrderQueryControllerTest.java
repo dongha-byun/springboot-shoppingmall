@@ -106,18 +106,21 @@ class PartnersOrderQueryControllerTest {
     void list_order_of_delivery() throws Exception {
         // given
         LocalDateTime orderDate = LocalDateTime.of(2023, 7, 1, 0, 0, 0);
+        LocalDateTime deliveryStartDate = LocalDateTime.of(2023, 8, 1, 0, 0, 0);
         when(partnersDeliveryOrderQueryService.findPartnersOrders(any(), any(), any())).thenReturn(
                 Arrays.asList(
                         new PartnersDeliveryOrderQueryDto(
                                 1L, 1L, "order-code-1", orderDate.plusDays(1),
                                 "product-code-1", "상품 1", 2, "", 23000,
-                                1L, "구매자 1", "010-1234-1234", OrderStatus.DELIVERY,
+                                1L, "구매자 1", "010-1234-1234",
+                                OrderStatus.DELIVERY, deliveryStartDate,
                                 "수령인 1", "010-1111-2222",
                                 "주소 1", "상세주소 1", "요청사항 1"),
                         new PartnersDeliveryOrderQueryDto(
                                 3L, 3L, "order-code-3", orderDate.plusDays(2),
                                 "product-code-3", "상품 3", 8, "", 49900,
-                                3L, "구매자 3", "010-3456-3456", OrderStatus.DELIVERY,
+                                3L, "구매자 3", "010-3456-3456",
+                                OrderStatus.DELIVERY, deliveryStartDate,
                                 "수령인 3", "010-3333-4444",
                                 "주소 3", "상세주소 3", "요청사항 3")
                 )

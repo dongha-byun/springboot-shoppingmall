@@ -58,7 +58,7 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 orderItem.product.productCode, orderItem.product.name,
                                 orderItem.quantity, orderItem.invoiceNumber,
                                 order.totalPrice, order.userId,
-                                orderItem.orderStatus,
+                                orderItem.orderStatus, orderItem.deliveryStartDate,
                                 order.orderDeliveryInfo.receiver.name,
                                 order.orderDeliveryInfo.receiver.phoneNumber,
                                 order.orderDeliveryInfo.address.address,

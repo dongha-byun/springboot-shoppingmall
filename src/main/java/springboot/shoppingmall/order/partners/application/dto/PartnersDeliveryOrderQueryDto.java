@@ -4,11 +4,13 @@ import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import springboot.shoppingmall.order.domain.OrderStatus;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 public class PartnersDeliveryOrderQueryDto {
     private Long orderItemId;
     private Long orderId;
@@ -23,6 +25,7 @@ public class PartnersDeliveryOrderQueryDto {
     private String userName;
     private String userTelNo;
     private OrderStatus orderStatus;
+    private LocalDateTime deliveryStartDate;
     private String receiverName;        // 수령인
     private String receiverPhoneNumber; // 수령인 연락처
     private String address;             // 배송지 주소
@@ -31,9 +34,9 @@ public class PartnersDeliveryOrderQueryDto {
 
     public PartnersDeliveryOrderQueryDto(Long orderItemId, Long orderId, String orderCode, LocalDateTime orderDate,
                                          String productCode, String productName, int quantity, String invoiceNumber,
-                                         int totalPrice, Long userId, OrderStatus orderStatus, String receiverName,
-                                         String receiverPhoneNumber, String address, String detailAddress,
-                                         String requestMessage) {
+                                         int totalPrice, Long userId, OrderStatus orderStatus, LocalDateTime deliveryStartDate,
+                                         String receiverName, String receiverPhoneNumber,
+                                         String address, String detailAddress, String requestMessage) {
         this.orderItemId = orderItemId;
         this.orderId = orderId;
         this.orderCode = orderCode;
@@ -45,6 +48,7 @@ public class PartnersDeliveryOrderQueryDto {
         this.totalPrice = totalPrice;
         this.userId = userId;
         this.orderStatus = orderStatus;
+        this.deliveryStartDate = deliveryStartDate;
         this.receiverName = receiverName;
         this.receiverPhoneNumber = receiverPhoneNumber;
         this.address = address;
