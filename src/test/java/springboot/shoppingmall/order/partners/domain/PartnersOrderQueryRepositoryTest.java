@@ -185,7 +185,7 @@ class PartnersOrderQueryRepositoryTest {
 
         // then
         assertThat(endOrders).hasSize(2)
-                .extracting("orderItemId", "orderStatus", "deliveryDate", "deliveryPlace")
+                .extracting("orderItemId", "orderStatus", "deliveryCompleteDate", "deliveryPlace")
                 .containsExactly(
                         tuple(getFirstOrderItemIdOf(savedOrder2), OrderStatus.DELIVERY_END, LocalDateTime.of(2023, 8, 22, 12, 30, 0), "현관문 앞"),
                         tuple(getFirstOrderItemIdOf(savedOrder3), OrderStatus.DELIVERY_END, LocalDateTime.of(2023, 8, 23, 11, 11, 0), "경비실")

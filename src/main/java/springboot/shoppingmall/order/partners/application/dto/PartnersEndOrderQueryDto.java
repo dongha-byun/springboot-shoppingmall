@@ -30,7 +30,7 @@ public class PartnersEndOrderQueryDto {
     private String address;             // 배송지 주소
     private String detailAddress;       // 배송지 상세주소
     private String requestMessage;      // 배송요청사항
-    private LocalDateTime deliveryDate; // 배송완료 시간
+    private LocalDateTime deliveryCompleteDate; // 배송완료 시간
     private String deliveryPlace;       // 배송장소
 
     public PartnersEndOrderQueryDto(Long orderItemId, Long orderId, String orderCode, LocalDateTime orderDate,
@@ -38,7 +38,7 @@ public class PartnersEndOrderQueryDto {
                                     int totalPrice, Long userId, OrderStatus orderStatus, String receiverName,
                                     String receiverPhoneNumber, String address, String detailAddress,
                                     String requestMessage,
-                                    LocalDateTime deliveryDate, String deliveryPlace) {
+                                    LocalDateTime deliveryCompleteDate, String deliveryPlace) {
         this.orderItemId = orderItemId;
         this.orderId = orderId;
         this.orderCode = orderCode;
@@ -55,7 +55,7 @@ public class PartnersEndOrderQueryDto {
         this.address = address;
         this.detailAddress = detailAddress;
         this.requestMessage = requestMessage;
-        this.deliveryDate = deliveryDate;
+        this.deliveryCompleteDate = deliveryCompleteDate;
         this.deliveryPlace = deliveryPlace;
     }
 }

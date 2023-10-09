@@ -15,7 +15,7 @@ public class PartnersEndOrderQueryResponse extends PartnersOrderQueryResponse{
     private String address;
     private String detailAddress;
     private String requestMessage;
-    private String deliveryDate;
+    private String deliveryCompleteDate;
     private String deliveryPlace;
 
     public PartnersEndOrderQueryResponse(Long orderItemId, Long orderId, String orderCode, String orderDate, String productCode,
@@ -23,7 +23,7 @@ public class PartnersEndOrderQueryResponse extends PartnersOrderQueryResponse{
                                          String userName, String userTelNo, String orderStatusName,
                                          String receiverName, String receiverPhoneNumber,
                                          String address, String detailAddress, String requestMessage,
-                                         String deliveryDate, String deliveryPlace) {
+                                         String deliveryCompleteDate, String deliveryPlace) {
         super(orderItemId, orderId, orderCode, orderDate, productCode, productName, quantity, invoiceNumber, totalPrice,
                 userName, userTelNo, orderStatusName);
         this.receiverName = receiverName;
@@ -31,7 +31,7 @@ public class PartnersEndOrderQueryResponse extends PartnersOrderQueryResponse{
         this.address = address;
         this.detailAddress = detailAddress;
         this.requestMessage = requestMessage;
-        this.deliveryDate = deliveryDate;
+        this.deliveryCompleteDate = deliveryCompleteDate;
         this.deliveryPlace = deliveryPlace;
     }
 
@@ -42,7 +42,7 @@ public class PartnersEndOrderQueryResponse extends PartnersOrderQueryResponse{
                 dto.getTotalPrice(), dto.getUserName(), dto.getUserTelNo(), dto.getOrderStatus().getStatusName(),
                 dto.getReceiverName(), dto.getReceiverPhoneNumber(),
                 dto.getAddress(), dto.getDetailAddress(), dto.getRequestMessage(),
-                DateUtils.toStringOfLocalDateTIme(dto.getDeliveryDate()), dto.getDeliveryPlace()
+                DateUtils.toStringOfLocalDateTIme(dto.getDeliveryCompleteDate()), dto.getDeliveryPlace()
         );
     }
 }
