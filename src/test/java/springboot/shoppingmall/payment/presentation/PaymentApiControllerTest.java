@@ -17,7 +17,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import springboot.shoppingmall.authorization.configuration.AuthenticationConfig;
 import springboot.shoppingmall.payment.application.PaymentService;
 import springboot.shoppingmall.payment.application.dto.PaymentDto;
 import springboot.shoppingmall.payment.domain.CardCompany;
@@ -29,8 +28,7 @@ import springboot.shoppingmall.providers.config.PartnersConfiguration;
         controllers = PaymentApiController.class,
         excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
         classes = {
-                PartnersConfiguration.class,
-                AuthenticationConfig.class
+                PartnersConfiguration.class
         })
 )
 class PaymentApiControllerTest {

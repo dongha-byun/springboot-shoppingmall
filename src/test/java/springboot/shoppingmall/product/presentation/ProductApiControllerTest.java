@@ -18,7 +18,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import springboot.shoppingmall.authorization.configuration.AuthenticationConfig;
 import springboot.shoppingmall.category.dto.CategoryDto;
 import springboot.shoppingmall.product.application.ProductService;
 import springboot.shoppingmall.product.application.dto.ProductDto;
@@ -31,7 +30,6 @@ import springboot.shoppingmall.providers.config.PartnersConfiguration;
         controllers = ProductApiController.class,
         excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
         classes = {
-                AuthenticationConfig.class,
                 PartnersConfiguration.class
         })
 )

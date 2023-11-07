@@ -15,13 +15,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import springboot.shoppingmall.authorization.AuthorizedUser;
-import springboot.shoppingmall.authorization.service.AuthService;
-import springboot.shoppingmall.authorization.service.JwtTokenProvider;
 import springboot.shoppingmall.coupon.application.UsableCouponDto;
 import springboot.shoppingmall.coupon.application.UserCouponQueryService;
 import springboot.shoppingmall.coupon.domain.UserCouponQueryDto;
-import springboot.shoppingmall.userservice.user.domain.UserGrade;
 
 @WebMvcTest(controllers = UserCouponQueryController.class)
 class UserCouponQueryControllerTest {
@@ -31,12 +27,6 @@ class UserCouponQueryControllerTest {
 
     @MockBean
     UserCouponQueryService queryService;
-
-    @MockBean
-    AuthService authService;
-
-    @MockBean
-    JwtTokenProvider jwtTokenProvider;
 
     @DisplayName("쿠폰 발급대상자 목록을 조회한다.")
     @Test
@@ -49,8 +39,6 @@ class UserCouponQueryControllerTest {
                         new UserCouponQueryDto(30L, "30번째 회원", "VVIP", null)
                 )
         );
-
-        when(jwtTokenProvider.getUserId(any())).thenReturn(1L);
 
         // when & then
         mockMvc.perform(get("/partners/coupons/{id}/users", 1L)
@@ -82,10 +70,6 @@ class UserCouponQueryControllerTest {
                         )
 
                 )
-        );
-
-        when(authService.getAuthorizedUser(any(), any())).thenReturn(
-                new AuthorizedUser(1L, "mock-user")
         );
 
         // when & then

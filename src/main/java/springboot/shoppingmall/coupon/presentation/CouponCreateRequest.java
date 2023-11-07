@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.coupon.application.CouponCreateDto;
-import springboot.shoppingmall.userservice.user.domain.UserGrade;
 import springboot.shoppingmall.utils.DateUtils;
 
 @NoArgsConstructor

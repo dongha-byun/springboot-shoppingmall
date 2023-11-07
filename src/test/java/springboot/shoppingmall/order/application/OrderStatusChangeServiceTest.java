@@ -42,8 +42,6 @@ import springboot.shoppingmall.product.domain.ProductRepository;
 class OrderStatusChangeServiceTest {
 
     @Autowired
-    EntityManager em;
-    @Autowired
     OrderStatusChangeService orderStatusChangeService;
 
     Product product, product2;
@@ -123,9 +121,6 @@ class OrderStatusChangeServiceTest {
         String cancelReason = "단순변심으로 구매 취소합니다.";
         LocalDateTime cancelDate = LocalDateTime.of(2023, 5, 9, 13, 10, 12);
         OrderItemDto cancelItem = orderStatusChangeService.cancel(orderId, orderItemId, cancelDate, cancelReason);
-
-        em.flush();
-        em.clear();
 
         // then
         assertThat(cancelItem.getOrderStatus()).isEqualTo(OrderStatus.CANCEL);

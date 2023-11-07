@@ -17,7 +17,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import springboot.shoppingmall.authorization.configuration.AuthenticationConfig;
 import springboot.shoppingmall.product.application.ProductQnaAnswerService;
 import springboot.shoppingmall.product.application.dto.ProductQnaAnswerDto;
 import springboot.shoppingmall.product.presentation.request.ProductQnaAnswerRequest;
@@ -27,7 +26,6 @@ import springboot.shoppingmall.providers.config.PartnersConfiguration;
         controllers = ProductQnaAnswerApiController.class,
         excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
                 classes = {
-                        AuthenticationConfig.class,
                         PartnersConfiguration.class
                 })
 )

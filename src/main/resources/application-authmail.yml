@@ -1,5 +1,22 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+
 authorization:
   mail:
     signup:
-        title: "[쇼핑몰 프로젝트] 회원가입 인증번호 발송"
-        expire-minute: 5
+      title: "[쇼핑몰 프로젝트] 회원가입 인증번호 발송"
+      expire-minute: 5
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+
+authorization:
+  mail:
+    signup:
+      title: "테스트"
+      expire-minute: 0

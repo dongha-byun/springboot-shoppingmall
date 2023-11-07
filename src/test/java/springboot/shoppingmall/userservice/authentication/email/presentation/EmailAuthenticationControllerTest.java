@@ -20,8 +20,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import springboot.shoppingmall.TestEmailAuthenticationConfig;
-import springboot.shoppingmall.authorization.service.AuthService;
-import springboot.shoppingmall.authorization.service.JwtTokenProvider;
 import springboot.shoppingmall.userservice.authentication.email.application.EmailAuthenticationService;
 import springboot.shoppingmall.userservice.authentication.email.application.dto.EmailAuthenticationInfo;
 import springboot.shoppingmall.userservice.authentication.email.presentation.request.AuthenticationMailRequest;
@@ -36,12 +34,6 @@ class EmailAuthenticationControllerTest {
 
     @Autowired
     ObjectMapper objectMapper;
-
-    @MockBean
-    AuthService authService;
-
-    @MockBean
-    JwtTokenProvider jwtTokenProvider;
 
     @MockBean
     EmailAuthenticationService emailAuthenticationService;

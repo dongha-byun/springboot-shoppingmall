@@ -19,7 +19,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import springboot.shoppingmall.authorization.configuration.AuthenticationConfig;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.DeliveryInfoRequest;
 import springboot.shoppingmall.order.dto.OrderItemRequest;
@@ -35,8 +34,7 @@ import springboot.shoppingmall.providers.config.PartnersConfiguration;
         excludeFilters = @ComponentScan.Filter(
                 type = FilterType.ASSIGNABLE_TYPE,
                 classes = {
-                        PartnersConfiguration.class,
-                        AuthenticationConfig.class
+                        PartnersConfiguration.class
                 })
 )
 class OrderApiControllerTest {

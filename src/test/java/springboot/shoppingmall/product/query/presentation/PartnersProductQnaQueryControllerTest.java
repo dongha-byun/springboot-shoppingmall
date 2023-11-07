@@ -16,7 +16,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.test.web.servlet.MockMvc;
-import springboot.shoppingmall.authorization.configuration.AuthenticationConfig;
 import springboot.shoppingmall.product.query.dto.PartnersProductQnaDto;
 import springboot.shoppingmall.product.query.application.PartnerProductQnaQueryService;
 import springboot.shoppingmall.providers.config.PartnersConfiguration;
@@ -26,8 +25,7 @@ import springboot.shoppingmall.providers.config.PartnersConfiguration;
         excludeFilters = @ComponentScan.Filter(
                 type = FilterType.ASSIGNABLE_TYPE,
                 classes = {
-                        PartnersConfiguration.class,
-                        AuthenticationConfig.class
+                        PartnersConfiguration.class
                 }
         )
 )

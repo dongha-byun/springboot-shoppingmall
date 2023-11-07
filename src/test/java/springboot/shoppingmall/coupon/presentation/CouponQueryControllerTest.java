@@ -18,7 +18,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import springboot.shoppingmall.authorization.configuration.AuthenticationConfig;
 import springboot.shoppingmall.coupon.application.CouponQueryDto;
 import springboot.shoppingmall.coupon.application.CouponQueryService;
 import springboot.shoppingmall.providers.config.PartnersConfiguration;
@@ -29,8 +28,7 @@ import springboot.shoppingmall.providers.config.PartnersConfiguration;
                 @ComponentScan.Filter(
                         type = FilterType.ASSIGNABLE_TYPE,
                         classes = {
-                                PartnersConfiguration.class,
-                                AuthenticationConfig.class
+                                PartnersConfiguration.class
                         }
                 )
         }

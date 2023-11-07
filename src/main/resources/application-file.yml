@@ -1,4 +1,20 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+
 thumbnail:
   local:
     prefix: file://
     real-path: /Users/byundongha/byun/spring/file_dir/shopping_upload/image/
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+
+thumbnail:
+  local:
+    prefix: test://
+    real-path: testpath/
