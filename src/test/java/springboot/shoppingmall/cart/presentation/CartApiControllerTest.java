@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import springboot.shoppingmall.authorization.AuthorizedUser;
+import springboot.shoppingmall.authorization.GatewayAuthInfo;
 import springboot.shoppingmall.cart.application.CartQueryService;
 
 import springboot.shoppingmall.cart.application.CartService;
@@ -35,7 +35,7 @@ class CartApiControllerTest {
 
         // when
         ResponseEntity<List<CartQueryResponse>> response = cartApiController.findAllCarts(
-                new AuthorizedUser(1L, "test@test.com")
+                new GatewayAuthInfo(1L)
         );
 
         // then

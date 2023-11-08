@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import springboot.shoppingmall.authorization.AuthenticationStrategy;
-import springboot.shoppingmall.authorization.AuthorizedUser;
+import springboot.shoppingmall.authorization.GatewayAuthInfo;
+import springboot.shoppingmall.authorization.GatewayAuthentication;
 import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.order.dto.OrderResponse;
 import springboot.shoppingmall.order.application.OrderService;
@@ -24,10 +24,10 @@ public class OrderApiController {
     private final OrderService orderService;
 
     @PostMapping("/orders")
-    public ResponseEntity<OrderResponse> createOrder(@AuthenticationStrategy AuthorizedUser user,
+    public ResponseEntity<OrderResponse> createOrder(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
                                                      @RequestBody OrderRequest orderRequest){
         OrderCreateDto orderCreateDto = orderRequest.toDto();
-        OrderDto orderDto = orderService.createOrder(user.getId(), orderCreateDto);
+        OrderDto orderDto = orderService.createOrder(gatewayAuthInfo.getUserId(), orderCreateDto);
         OrderResponse response = OrderResponse.of(orderDto);
 
         return ResponseEntity.created(URI.create("/orders/" + response.getId())).body(response);

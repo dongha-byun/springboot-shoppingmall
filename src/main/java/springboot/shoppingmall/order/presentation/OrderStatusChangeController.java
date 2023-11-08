@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import springboot.shoppingmall.authorization.AuthenticationStrategy;
-import springboot.shoppingmall.authorization.AuthorizedUser;
+import springboot.shoppingmall.authorization.GatewayAuthInfo;
+import springboot.shoppingmall.authorization.GatewayAuthentication;
 import springboot.shoppingmall.order.dto.CancelRequest;
 import springboot.shoppingmall.order.dto.OrderExchangeRequest;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
@@ -24,7 +24,7 @@ public class OrderStatusChangeController {
     private final OrderStatusChangeService orderStatusChangeService;
 
     @PutMapping("/orders/{orderId}/{orderItemId}/cancel")
-    public ResponseEntity<OrderItemResponse> cancelOrder(@AuthenticationStrategy AuthorizedUser user,
+    public ResponseEntity<OrderItemResponse> cancelOrder(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
                                                          @PathVariable("orderId") Long orderId,
                                                          @PathVariable("orderItemId") Long orderItemId,
                                                          @RequestBody CancelRequest cancelRequest) {
@@ -44,7 +44,7 @@ public class OrderStatusChangeController {
     }
 
     @PutMapping("/orders/{orderId}/{orderItemId}/finish")
-    public ResponseEntity<OrderItemResponse> finishOrder(@AuthenticationStrategy AuthorizedUser user,
+    public ResponseEntity<OrderItemResponse> finishOrder(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
                                                          @PathVariable("orderId") Long orderId,
                                                          @PathVariable("orderItemId") Long orderItemId) {
         OrderItemDto orderItemDto = orderStatusChangeService.finish(orderId, orderItemId);
@@ -53,7 +53,7 @@ public class OrderStatusChangeController {
     }
 
     @PutMapping("/orders/{orderId}/{orderItemId}/refund")
-    public ResponseEntity<OrderItemResponse> refundOrder(@AuthenticationStrategy AuthorizedUser user,
+    public ResponseEntity<OrderItemResponse> refundOrder(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
                                                          @PathVariable("orderId") Long orderId,
                                                          @PathVariable("orderItemId") Long orderItemId,
                                                          @RequestBody OrderRefundRequest refundRequest) {
@@ -65,7 +65,7 @@ public class OrderStatusChangeController {
     }
 
     @PutMapping("/orders/{orderId}/{orderItemId}/exchange")
-    public ResponseEntity<OrderItemResponse> exchangeOrder(@AuthenticationStrategy AuthorizedUser user,
+    public ResponseEntity<OrderItemResponse> exchangeOrder(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
                                                            @PathVariable("orderId") Long orderId,
                                                            @PathVariable("orderItemId") Long orderItemId,
                                                            @RequestBody OrderExchangeRequest exchangeRequest) {
@@ -77,7 +77,7 @@ public class OrderStatusChangeController {
     }
 
     @PutMapping("/orders/{orderId}/{orderItemId}/checking")
-    public ResponseEntity<OrderItemResponse> checkingOrder(@AuthenticationStrategy AuthorizedUser user,
+    public ResponseEntity<OrderItemResponse> checkingOrder(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
                                                            @PathVariable("orderId") Long orderId,
                                                            @PathVariable("orderItemId") Long orderItemId) {
         OrderItemDto orderItemDto = orderStatusChangeService.checking(orderId, orderItemId);
@@ -86,7 +86,7 @@ public class OrderStatusChangeController {
     }
 
     @PutMapping("/orders/{orderId}/{orderItemId}/refund-end")
-    public ResponseEntity<OrderItemResponse> refundEndOrder(@AuthenticationStrategy AuthorizedUser user,
+    public ResponseEntity<OrderItemResponse> refundEndOrder(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
                                                             @PathVariable("orderId") Long orderId,
                                                             @PathVariable("orderItemId") Long orderItemId) {
         OrderItemDto orderItemDto = orderStatusChangeService.refundEnd(orderId, orderItemId);

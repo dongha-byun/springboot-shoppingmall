@@ -1,4 +1,4 @@
-package springboot.shoppingmall.coupon.presentation;
+    package springboot.shoppingmall.coupon.presentation;
 
 import java.util.List;
 import java.util.stream.Collectors;

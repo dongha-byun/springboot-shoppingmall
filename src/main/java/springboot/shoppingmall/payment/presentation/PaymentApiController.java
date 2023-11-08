@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import springboot.shoppingmall.authorization.AuthenticationStrategy;
-import springboot.shoppingmall.authorization.AuthorizedUser;
+import springboot.shoppingmall.authorization.GatewayAuthInfo;
+import springboot.shoppingmall.authorization.GatewayAuthentication;
 import springboot.shoppingmall.payment.application.dto.PaymentCreateDto;
 import springboot.shoppingmall.payment.presentation.request.PaymentRequest;
 import springboot.shoppingmall.payment.presentation.response.PaymentResponse;
@@ -26,24 +26,24 @@ public class PaymentApiController {
     private final PaymentService paymentService;
 
     @PostMapping("/payments")
-    public ResponseEntity<PaymentResponse> createPayment(@AuthenticationStrategy AuthorizedUser user,
+    public ResponseEntity<PaymentResponse> createPayment(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
                                                          @RequestBody PaymentRequest paymentRequest) {
         PaymentCreateDto createDto = paymentRequest.toDto();
-        PaymentDto paymentDto = paymentService.createPayment(user.getId(), createDto);
+        PaymentDto paymentDto = paymentService.createPayment(gatewayAuthInfo.getUserId(), createDto);
         PaymentResponse paymentResponse = PaymentResponse.of(paymentDto);
         return ResponseEntity.created(URI.create("/payments/"+paymentResponse.getId())).body(paymentResponse);
     }
 
     @DeleteMapping("/payments/{paymentId}")
-    public ResponseEntity<PaymentResponse> deletePayment(@AuthenticationStrategy AuthorizedUser user,
+    public ResponseEntity<PaymentResponse> deletePayment(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
                                                          @PathVariable("paymentId") Long paymentId) {
-        paymentService.deletePayment(user.getId(), paymentId);
+        paymentService.deletePayment(gatewayAuthInfo.getUserId(), paymentId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/payments")
-    public ResponseEntity<List<PaymentResponse>> findAllPayments(@AuthenticationStrategy AuthorizedUser user) {
-        List<PaymentDto> payments = paymentService.findAllPayments(user.getId());
+    public ResponseEntity<List<PaymentResponse>> findAllPayments(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo) {
+        List<PaymentDto> payments = paymentService.findAllPayments(gatewayAuthInfo.getUserId());
         List<PaymentResponse> responses = payments.stream()
                 .map(PaymentResponse::of)
                 .collect(Collectors.toList());

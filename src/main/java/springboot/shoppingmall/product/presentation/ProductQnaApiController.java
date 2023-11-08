@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import springboot.shoppingmall.authorization.AuthenticationStrategy;
-import springboot.shoppingmall.authorization.AuthorizedUser;
+import springboot.shoppingmall.authorization.GatewayAuthInfo;
+import springboot.shoppingmall.authorization.GatewayAuthentication;
 import springboot.shoppingmall.common.validation.bean.BeanValidation;
 import springboot.shoppingmall.common.validation.bean.BeanValidationException;
 import springboot.shoppingmall.product.application.dto.ProductQnaCreateDto;
@@ -32,7 +32,7 @@ public class ProductQnaApiController {
     private final ProductQnaService productQnaService;
 
     @PostMapping("/products/{id}/qna")
-    public ResponseEntity<ProductQnaResponse> createQna(@AuthenticationStrategy AuthorizedUser user,
+    public ResponseEntity<ProductQnaResponse> createQna(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
                                                         @PathVariable("id") Long productId,
                                                         @RequestBody @Valid ProductQnaRequest productQnaRequest,
                                                         BindingResult bindingResult){
@@ -41,7 +41,7 @@ public class ProductQnaApiController {
         }
 
         ProductQnaCreateDto createDto = productQnaRequest.toDto();
-        ProductQnaDto dto = productQnaService.createQna(user.getId(), productId, createDto);
+        ProductQnaDto dto = productQnaService.createQna(gatewayAuthInfo.getUserId(), productId, createDto);
         ProductQnaResponse productQnaResponse = ProductQnaResponse.of(dto);
 
         return ResponseEntity.created(URI.create("/qna/"+productQnaResponse.getId())).body(productQnaResponse);

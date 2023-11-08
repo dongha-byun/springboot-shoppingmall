@@ -4,15 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import springboot.shoppingmall.authorization.AuthenticationStrategy;
-import springboot.shoppingmall.authorization.AuthorizedUser;
-import springboot.shoppingmall.coupon.application.CouponQueryDto;
+import springboot.shoppingmall.authorization.GatewayAuthInfo;
+import springboot.shoppingmall.authorization.GatewayAuthentication;
 import springboot.shoppingmall.coupon.application.UsableCouponDto;
 import springboot.shoppingmall.coupon.application.UserCouponQueryService;
 import springboot.shoppingmall.coupon.domain.UserCouponQueryDto;
@@ -36,9 +33,9 @@ public class UserCouponQueryController {
     }
 
     @GetMapping("/order/coupons")
-    public ResponseEntity<List<UsableCouponResponse>> findUsableCouponList(@AuthenticationStrategy AuthorizedUser user,
-                                                                          @RequestParam("partnersId") Long partnersId) {
-        List<UsableCouponDto> usableCouponList = queryService.findUsableCouponList(user.getId(), partnersId);
+    public ResponseEntity<List<UsableCouponResponse>> findUsableCouponList(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
+                                                                           @RequestParam("partnersId") Long partnersId) {
+        List<UsableCouponDto> usableCouponList = queryService.findUsableCouponList(gatewayAuthInfo.getUserId(), partnersId);
         List<UsableCouponResponse> responses = usableCouponList.stream()
                 .map(UsableCouponResponse::of)
                 .collect(Collectors.toList());

@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import springboot.shoppingmall.authorization.AuthenticationStrategy;
-import springboot.shoppingmall.authorization.AuthorizedUser;
+import springboot.shoppingmall.authorization.GatewayAuthInfo;
+import springboot.shoppingmall.authorization.GatewayAuthentication;
 import springboot.shoppingmall.product.application.dto.ProductReviewDto;
 import springboot.shoppingmall.product.application.dto.ProductUserReviewDto;
 import springboot.shoppingmall.product.presentation.request.ProductReviewRequest;
@@ -55,7 +55,7 @@ public class ProductReviewApiController {
     }
 
     @PostMapping("/orders/{orderId}/{orderItemId}/products/{productId}/reviews")
-    public ResponseEntity<ProductUserReviewResponse> createReview(@AuthenticationStrategy AuthorizedUser user,
+    public ResponseEntity<ProductUserReviewResponse> createReview(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
                                                                   @PathVariable("orderId") Long orderId,
                                                                   @PathVariable("orderItemId") Long orderItemId,
                                                                   @PathVariable("productId") Long productId,
@@ -73,7 +73,7 @@ public class ProductReviewApiController {
         List<ThumbnailInfo> reviewImages = thumbnailFileService.save(images);
         ProductReviewCreateDto createDto = reviewRequest.toDto();
         ProductUserReviewDto dto = productReviewService.createProductReview(
-                user.getId(), orderItemId, productId, createDto, reviewImages
+                gatewayAuthInfo.getUserId(), orderItemId, productId, createDto, reviewImages
         );
         ProductUserReviewResponse reviewResponse = ProductUserReviewResponse.of(dto);
         return ResponseEntity.created(URI.create("/products/" + productId + "/reviews/" + reviewResponse.getId())).body(reviewResponse);
@@ -91,15 +91,15 @@ public class ProductReviewApiController {
     // @RequestParam("id") String id
     // ~~~~ ?Id=byun 이라는 요청이 오면 id 변수에 byun 을 넣어준다.
     @DeleteMapping("/users/reviews/{reviewId}")
-    public ResponseEntity<ProductReviewResponse> deleteReview(@AuthenticationStrategy AuthorizedUser user,
+    public ResponseEntity<ProductReviewResponse> deleteReview(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
                                                               @PathVariable("reviewId") Long reviewId) {
-        productReviewService.deleteProductReview(user.getId(), reviewId);
+        productReviewService.deleteProductReview(gatewayAuthInfo.getUserId(), reviewId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/users/reviews")
-    public ResponseEntity<List<ProductUserReviewResponse>> findAllByUser(@AuthenticationStrategy AuthorizedUser user) {
-        List<ProductUserReviewDto> dtos = productReviewService.findAllUserReview(user.getId());
+    public ResponseEntity<List<ProductUserReviewResponse>> findAllByUser(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo) {
+        List<ProductUserReviewDto> dtos = productReviewService.findAllUserReview(gatewayAuthInfo.getUserId());
         List<ProductUserReviewResponse> reviews = dtos.stream()
                 .map(ProductUserReviewResponse::of)
                 .collect(Collectors.toList());

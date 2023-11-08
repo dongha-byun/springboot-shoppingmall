@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import springboot.shoppingmall.authorization.AuthenticationStrategy;
-import springboot.shoppingmall.authorization.AuthorizedUser;
+import springboot.shoppingmall.authorization.GatewayAuthInfo;
+import springboot.shoppingmall.authorization.GatewayAuthentication;
 import springboot.shoppingmall.orderhistory.application.dto.OrderHistoryDto;
 import springboot.shoppingmall.orderhistory.presentation.response.OrderHistoryResponse;
 import springboot.shoppingmall.orderhistory.application.OrderHistoryService;
@@ -23,7 +23,7 @@ public class OrderHistoryApiController {
 
     @GetMapping("/user/orders")
     public ResponseEntity<List<OrderHistoryResponse>> getOrderHistories(
-            @AuthenticationStrategy AuthorizedUser user,
+            @GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
             @RequestParam(name = "startDate") String startDate,
             @RequestParam(name = "endDate") String endDate)
     {
@@ -31,7 +31,7 @@ public class OrderHistoryApiController {
         LocalDateTime endDateTime = DateUtils.getLocalDateTime(endDate, 23, 59, 59);
 
         List<OrderHistoryDto> orderHistory =
-                orderHistoryService.findOrderHistory(user.getId(), startDateTime, endDateTime);
+                orderHistoryService.findOrderHistory(gatewayAuthInfo.getUserId(), startDateTime, endDateTime);
 
         List<OrderHistoryResponse> responses = orderHistory.stream()
                 .map(OrderHistoryResponse::to)

@@ -51,7 +51,7 @@ class UserCouponQueryControllerTest {
     @Test
     void find_coupons_partners() throws Exception {
         // given
-        when(queryService.findUsableCouponList(anyLong(), anyLong())).thenReturn(
+        when(queryService.findUsableCouponList(any(), any())).thenReturn(
                 Arrays.asList(
                         new UsableCouponDto(1L, "신규 쿠폰 #1",
                                 LocalDateTime.of(2023, 5, 1, 0, 0),
@@ -74,7 +74,7 @@ class UserCouponQueryControllerTest {
 
         // when & then
         mockMvc.perform(get("/order/coupons?partnersId={partnersId}", 10L)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)));

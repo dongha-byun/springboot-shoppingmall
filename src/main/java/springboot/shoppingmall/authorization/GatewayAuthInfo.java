@@ -4,10 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
-public class AuthorizedUser {
-    private Long id;
-    private String email;
+public class GatewayAuthInfo {
+    private Long userId;
 }
