@@ -21,7 +21,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import springboot.shoppingmall.coupon.application.CouponService;
-import springboot.shoppingmall.providers.config.PartnersConfiguration;
+import springboot.shoppingmall.partners.config.PartnersConfiguration;
 
 @WebMvcTest(
         controllers = CouponController.class,

@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import springboot.shoppingmall.delivery.application.DeliveryService;
 import springboot.shoppingmall.delivery.presentation.request.DeliveryRequest;
 import springboot.shoppingmall.delivery.presentation.response.DeliveryResponse;
-import springboot.shoppingmall.providers.config.PartnersConfiguration;
+import springboot.shoppingmall.partners.config.PartnersConfiguration;
 
 @WebMvcTest(
         controllers = DeliveryController.class,

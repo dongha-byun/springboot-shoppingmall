@@ -12,8 +12,8 @@ import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.application.dto.ProductCreateDto;
 import springboot.shoppingmall.product.application.dto.ProductDto;
-import springboot.shoppingmall.providers.domain.Provider;
-import springboot.shoppingmall.providers.domain.ProviderRepository;
+import springboot.shoppingmall.partners.domain.Partner;
+import springboot.shoppingmall.partners.domain.PartnerRepository;
 
 @Transactional
 @SpringBootTest
@@ -26,18 +26,18 @@ public class ProductServiceTest {
     CategoryRepository categoryRepository;
 
     @Autowired
-    ProviderRepository providerRepository;
+    PartnerRepository partnerRepository;
 
     Category category;
     Category subCategory;
-    Provider provider;
+    Partner partner;
 
     @BeforeEach
     void beforeEach(){
         category = categoryRepository.save(new Category("의류"));
         subCategory = categoryRepository.save(new Category("바지").changeParent(category));
-        provider = providerRepository.save(
-                new Provider(
+        partner = partnerRepository.save(
+                new Partner(
                         "테스트판매처", "테스트대표님", "테스트시 테스트구 테스트동",
                         "031-222-4411", "304-22-31422",
                         "test_provider", "test_provider1!", true)
@@ -55,7 +55,7 @@ public class ProductServiceTest {
         );
 
         // when
-        ProductDto productDto = productService.saveProduct(provider.getId(), productCreateDto);
+        ProductDto productDto = productService.saveProduct(partner.getId(), productCreateDto);
 
         // then
         assertThat(productDto.getId()).isNotNull();

@@ -3,7 +3,7 @@ package springboot.shoppingmall.orderhistory.domain;
 import static springboot.shoppingmall.order.domain.QOrder.*;
 import static springboot.shoppingmall.order.domain.QOrderItem.*;
 import static springboot.shoppingmall.pay.domain.QPayHistory.*;
-import static springboot.shoppingmall.providers.domain.QProvider.*;
+import static springboot.shoppingmall.partners.domain.QProvider.*;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;

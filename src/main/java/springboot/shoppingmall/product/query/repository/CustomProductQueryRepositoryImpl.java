@@ -2,7 +2,7 @@ package springboot.shoppingmall.product.query.repository;
 
 import static springboot.shoppingmall.product.domain.QProduct.*;
 import static springboot.shoppingmall.product.query.ProductQueryOrderType.*;
-import static springboot.shoppingmall.providers.domain.QProvider.*;
+import static springboot.shoppingmall.partners.domain.QProvider.*;
 
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.OrderSpecifier;
@@ -13,7 +13,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import javax.persistence.EntityManager;
 import springboot.shoppingmall.category.domain.Category;
-import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.query.ProductQueryOrderType;
 import springboot.shoppingmall.product.query.dto.ProductQueryDto;
 

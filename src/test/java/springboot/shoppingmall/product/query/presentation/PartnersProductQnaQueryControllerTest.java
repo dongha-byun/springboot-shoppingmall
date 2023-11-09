@@ -18,7 +18,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.test.web.servlet.MockMvc;
 import springboot.shoppingmall.product.query.dto.PartnersProductQnaDto;
 import springboot.shoppingmall.product.query.application.PartnerProductQnaQueryService;
-import springboot.shoppingmall.providers.config.PartnersConfiguration;
+import springboot.shoppingmall.partners.config.PartnersConfiguration;
 
 @WebMvcTest(
         controllers = PartnersProductQnaQueryController.class,

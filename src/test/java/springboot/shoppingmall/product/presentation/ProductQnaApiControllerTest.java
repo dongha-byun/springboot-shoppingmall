@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import springboot.shoppingmall.product.application.ProductQnaService;
 import springboot.shoppingmall.product.application.dto.ProductQnaDto;
 import springboot.shoppingmall.product.presentation.request.ProductQnaRequest;
-import springboot.shoppingmall.providers.config.PartnersConfiguration;
+import springboot.shoppingmall.partners.config.PartnersConfiguration;
 
 @WebMvcTest(
         controllers = ProductQnaApiController.class,

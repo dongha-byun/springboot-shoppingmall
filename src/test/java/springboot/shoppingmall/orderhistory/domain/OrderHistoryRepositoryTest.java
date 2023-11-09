@@ -19,13 +19,13 @@ import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.partners.domain.Partner;
 import springboot.shoppingmall.pay.domain.PayHistory;
 import springboot.shoppingmall.pay.domain.PayHistoryRepository;
 import springboot.shoppingmall.payment.domain.PayType;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.providers.domain.Provider;
-import springboot.shoppingmall.providers.domain.ProviderRepository;
+import springboot.shoppingmall.partners.domain.PartnerRepository;
 import springboot.shoppingmall.orderhistory.application.dto.OrderHistoryDto;
 
 @Transactional
@@ -35,7 +35,7 @@ class OrderHistoryRepositoryTest {
     @Autowired
     OrderHistoryRepository orderHistoryRepository;
     @Autowired
-    ProviderRepository providerRepository;
+    PartnerRepository partnerRepository;
     @Autowired
     ProductRepository productRepository;
     @Autowired
@@ -47,7 +47,7 @@ class OrderHistoryRepositoryTest {
     PayHistoryRepository payHistoryRepository;
 
     Product product;
-    Provider partner;
+    Partner partner;
 
     Order order1, order2, order3;
 
@@ -63,8 +63,8 @@ class OrderHistoryRepositoryTest {
         Category parent = categoryRepository.save(new Category("카테고리1"));
         Category child = categoryRepository.save(new Category("하위 카테고리1"));
 
-        partner = providerRepository.save(
-                new Provider("테스트판매처", "테스터", "테스트시 테스트구 테스트동",
+        partner = partnerRepository.save(
+                new Partner("테스트판매처", "테스터", "테스트시 테스트구 테스트동",
                         "031-222-3121", "102-33-122333",
                         "provider_test", "provider_test1!", true)
         );

@@ -22,7 +22,7 @@ import springboot.shoppingmall.payment.application.dto.PaymentDto;
 import springboot.shoppingmall.payment.domain.CardCompany;
 import springboot.shoppingmall.payment.domain.PayType;
 import springboot.shoppingmall.payment.presentation.request.PaymentRequest;
-import springboot.shoppingmall.providers.config.PartnersConfiguration;
+import springboot.shoppingmall.partners.config.PartnersConfiguration;
 
 @WebMvcTest(
         controllers = PaymentApiController.class,

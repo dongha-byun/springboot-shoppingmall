@@ -22,15 +22,11 @@ import springboot.shoppingmall.order.partners.application.dto.PartnersCancelOrde
 import springboot.shoppingmall.order.partners.application.dto.PartnersDeliveryOrderQueryDto;
 import springboot.shoppingmall.order.partners.application.dto.PartnersEndOrderQueryDto;
 import springboot.shoppingmall.order.partners.application.dto.PartnersReadyOrderQueryDto;
-import springboot.shoppingmall.order.partners.presentation.response.PartnersCancelOrderQueryResponse;
-import springboot.shoppingmall.order.partners.presentation.response.PartnersDeliveryOrderQueryResponse;
-import springboot.shoppingmall.order.partners.presentation.response.PartnersEndOrderQueryResponse;
-import springboot.shoppingmall.order.partners.presentation.response.PartnersReadyOrderQueryResponse;
 import springboot.shoppingmall.order.partners.application.PartnersCancelOrderQueryService;
 import springboot.shoppingmall.order.partners.application.PartnersDeliveryOrderQueryService;
 import springboot.shoppingmall.order.partners.application.PartnersEndOrderQueryService;
 import springboot.shoppingmall.order.partners.application.PartnersReadyOrderQueryService;
-import springboot.shoppingmall.providers.config.PartnersConfiguration;
+import springboot.shoppingmall.partners.config.PartnersConfiguration;
 
 @WebMvcTest(
         controllers = PartnersOrderQueryController.class,

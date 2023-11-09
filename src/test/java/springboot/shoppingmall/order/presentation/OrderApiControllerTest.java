@@ -27,7 +27,7 @@ import springboot.shoppingmall.order.application.OrderService;
 import springboot.shoppingmall.order.application.dto.OrderDeliveryInfoDto;
 import springboot.shoppingmall.order.application.dto.OrderDto;
 import springboot.shoppingmall.order.application.dto.OrderItemDto;
-import springboot.shoppingmall.providers.config.PartnersConfiguration;
+import springboot.shoppingmall.partners.config.PartnersConfiguration;
 
 @WebMvcTest(
         controllers = OrderApiController.class,

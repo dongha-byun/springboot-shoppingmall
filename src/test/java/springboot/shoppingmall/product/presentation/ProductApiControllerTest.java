@@ -23,7 +23,7 @@ import springboot.shoppingmall.product.application.ProductService;
 import springboot.shoppingmall.product.application.dto.ProductDto;
 import springboot.shoppingmall.product.configuration.TestFileConfiguration;
 import springboot.shoppingmall.product.presentation.request.ProductRequest;
-import springboot.shoppingmall.providers.config.PartnersConfiguration;
+import springboot.shoppingmall.partners.config.PartnersConfiguration;
 
 @Import({TestFileConfiguration.class})
 @WebMvcTest(

@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.orderhistory.application.OrderHistoryService;
 import springboot.shoppingmall.orderhistory.application.dto.OrderHistoryDto;
-import springboot.shoppingmall.providers.config.PartnersConfiguration;
+import springboot.shoppingmall.partners.config.PartnersConfiguration;
 
 @WebMvcTest(
         controllers = OrderHistoryApiController.class,

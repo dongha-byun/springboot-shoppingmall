@@ -23,8 +23,8 @@ import springboot.shoppingmall.order.partners.application.PartnersDeliveryOrderQ
 import springboot.shoppingmall.order.partners.application.PartnersEndOrderQueryService;
 import springboot.shoppingmall.order.partners.application.PartnersReadyOrderQueryService;
 import springboot.shoppingmall.order.partners.presentation.response.PartnersReadyOrderQueryResponse;
-import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
-import springboot.shoppingmall.providers.authentication.LoginPartner;
+import springboot.shoppingmall.partners.authentication.AuthorizedPartner;
+import springboot.shoppingmall.partners.authentication.LoginPartner;
 import springboot.shoppingmall.utils.DateUtils;
 
 @RequiredArgsConstructor

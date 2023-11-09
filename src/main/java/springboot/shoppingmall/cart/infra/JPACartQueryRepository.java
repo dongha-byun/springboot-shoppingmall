@@ -2,14 +2,13 @@ package springboot.shoppingmall.cart.infra;
 
 import static springboot.shoppingmall.cart.domain.QCart.*;
 import static springboot.shoppingmall.product.domain.QProduct.*;
-import static springboot.shoppingmall.providers.domain.QProvider.*;
+import static springboot.shoppingmall.partners.domain.QProvider.*;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import javax.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
-import springboot.shoppingmall.cart.application.dto.CartDto;
 import springboot.shoppingmall.cart.application.dto.CartQueryDto;
 import springboot.shoppingmall.cart.domain.CartQueryRepository;
 

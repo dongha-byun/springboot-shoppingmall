@@ -15,8 +15,8 @@ import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.order.dto.OrderRefundRequest;
 import springboot.shoppingmall.order.application.OrderStatusChangeService;
 import springboot.shoppingmall.order.application.dto.OrderItemDto;
-import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
-import springboot.shoppingmall.providers.authentication.LoginPartner;
+import springboot.shoppingmall.partners.authentication.AuthorizedPartner;
+import springboot.shoppingmall.partners.authentication.LoginPartner;
 
 @RequiredArgsConstructor
 @RestController

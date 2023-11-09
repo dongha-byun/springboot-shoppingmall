@@ -12,8 +12,8 @@ import springboot.shoppingmall.product.query.ProductQnaAnswerCompleteType;
 import springboot.shoppingmall.product.query.dto.PartnersProductQnaQueryResponse;
 import springboot.shoppingmall.product.query.dto.PartnersProductQnaDto;
 import springboot.shoppingmall.product.query.application.PartnerProductQnaQueryService;
-import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
-import springboot.shoppingmall.providers.authentication.LoginPartner;
+import springboot.shoppingmall.partners.authentication.AuthorizedPartner;
+import springboot.shoppingmall.partners.authentication.LoginPartner;
 
 @RequiredArgsConstructor
 @RestController

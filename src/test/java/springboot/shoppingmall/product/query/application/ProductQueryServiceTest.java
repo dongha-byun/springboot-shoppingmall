@@ -17,8 +17,8 @@ import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.query.dto.ProductQueryDto;
-import springboot.shoppingmall.providers.domain.Provider;
-import springboot.shoppingmall.providers.domain.ProviderRepository;
+import springboot.shoppingmall.partners.domain.Partner;
+import springboot.shoppingmall.partners.domain.PartnerRepository;
 
 @Transactional
 @SpringBootTest
@@ -34,15 +34,15 @@ class ProductQueryServiceTest {
     ProductRepository productRepository;
 
     @Autowired
-    ProviderRepository providerRepository;
+    PartnerRepository partnerRepository;
 
     Category category, subCategory;
-    Provider partners;
+    Partner partners;
 
     @BeforeEach
     void beforeEach(){
-        partners = providerRepository.save(
-                new Provider("테스트판매사", "테스트대표", "테스트시 테스트구 테스트동", "031-444-1234", "110-22-334411",
+        partners = partnerRepository.save(
+                new Partner("테스트판매사", "테스트대표", "테스트시 테스트구 테스트동", "031-444-1234", "110-22-334411",
                         "test_partner", "test_partner1!", true)
         );
         category = categoryRepository.save(new Category("의류"));

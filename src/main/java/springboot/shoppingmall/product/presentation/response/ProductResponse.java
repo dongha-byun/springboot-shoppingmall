@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.category.dto.CategoryResponse;
 import springboot.shoppingmall.product.application.dto.ProductDto;
-import springboot.shoppingmall.providers.domain.Provider;
+import springboot.shoppingmall.partners.domain.Partner;
 
 @Getter
 @NoArgsConstructor
@@ -49,7 +49,7 @@ public class ProductResponse {
         );
     }
 
-    public static ProductResponse of(Product product, Provider provider){
+    public static ProductResponse of(Product product, Partner partner){
         List<ProductQnaResponse> qnaResponses = product.getQna().stream()
                 .map(ProductQnaResponse::of)
                 .collect(Collectors.toList());
@@ -60,7 +60,7 @@ public class ProductResponse {
         return new ProductResponse(product.getId(), product.getProductCode(),
                 product.getName(), product.getPrice(), product.getCount(),
                 CategoryResponse.of(product.getCategory()), CategoryResponse.of(product.getSubCategory()),
-                provider.getId(), provider.getName(), product.getThumbnail(), product.getDetail(),
+                partner.getId(), partner.getName(), product.getThumbnail(), product.getDetail(),
                 qnaResponses, reviewResponses
         );
     }

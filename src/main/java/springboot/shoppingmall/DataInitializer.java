@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.coupon.domain.Coupon;
 import springboot.shoppingmall.coupon.domain.UsingDuration;
+import springboot.shoppingmall.partners.domain.Partner;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.providers.domain.Provider;
 import springboot.shoppingmall.delivery.domain.Delivery;
 
 //@Component
@@ -37,13 +37,13 @@ public class DataInitializer {
 
         @Transactional
         public void init(){
-            List<Provider> providers = insertPartners();
+            List<Partner> partners = insertPartners();
             List<Long> userIds = insertUser();
             List<Category> categories = insertCategory();
 
             insertDelivery(userIds);
-            insertProducts(categories, providers);
-            insertCoupon(providers, userIds);
+            insertProducts(categories, partners);
+            insertCoupon(partners, userIds);
         }
 
         private void insertDelivery(List<Long> userIds) {
@@ -64,38 +64,38 @@ public class DataInitializer {
             );
         }
 
-        private List<Provider> insertPartners() {
-            Provider provider1 = new Provider(
+        private List<Partner> insertPartners() {
+            Partner partner1 = new Partner(
                     "부실건설", "변부실", "서울시 영등포구", "02-1234-2222"
                     , "110-33-444222", "test1", "test1!"
             );
-            Provider provider2 = new Provider(
+            Partner partner2 = new Partner(
                     "파산은행", "김파산", "부산광역시 사상구", "051-333-2222"
                     , "251-89-698111", "test2", "test2@"
             );
 
-            provider1.approve();
-            provider2.approve();
+            partner1.approve();
+            partner2.approve();
 
-            em.persist(provider1);
-            em.persist(provider2);
+            em.persist(partner1);
+            em.persist(partner2);
 
-            return Arrays.asList(provider1, provider2);
+            return Arrays.asList(partner1, partner2);
         }
 
 
-        private void insertProducts(List<Category> categories, List<Provider> providers) {
+        private void insertProducts(List<Category> categories, List<Partner> partners) {
             for (Category category : categories) {
                 Long categoryId = category.getId();
                 List<Category> subCategories = category.getSubCategories();
                 for (Category subCategory : subCategories) {
                     Long subCategoryId = subCategory.getId();
                     for(int i=1; i<=100; i++){
-                        Provider provider = providers.get(i%2);
+                        Partner partner = partners.get(i%2);
                         em.persist(new Product("상품_"+categoryId+"_"+subCategoryId+"_"+i, 190 * i,
-                                501-i, category, subCategory, provider.getId(),
+                                501-i, category, subCategory, partner.getId(),
                                 null, null, i + "번째 상품 설명 입니다.",
-                                provider.generateProductCode()));
+                                partner.generateProductCode()));
                     }
                 }
             }
@@ -105,34 +105,34 @@ public class DataInitializer {
             return Arrays.asList(1L, 2L, 3L);
         }
 
-        private void insertCoupon(List<Provider> providers, List<Long> userIds) {
+        private void insertCoupon(List<Partner> partners, List<Long> userIds) {
             Coupon coupon1OfPartners1 = new Coupon(
                     "할인쿠폰 #1",
                     new UsingDuration(
                             LocalDateTime.of(2023, 3, 5, 0, 0, 0),
                             LocalDateTime.of(2023, 11, 1, 23, 59, 59)
-                    ), 5, providers.get(0).getId()
+                    ), 5, partners.get(0).getId()
             );
             Coupon coupon2OfPartners1 = new Coupon(
                     "할인쿠폰 #2",
                     new UsingDuration(
                             LocalDateTime.of(2023, 6, 5, 0, 0, 0),
                             LocalDateTime.of(2023, 9, 1, 23, 59, 59)
-                    ), 8, providers.get(0).getId()
+                    ), 8, partners.get(0).getId()
             );
             Coupon coupon1OfPartners2 = new Coupon(
                     "입점 기념 할인쿠폰 #1",
                     new UsingDuration(
                             LocalDateTime.of(2023, 1, 1, 0, 0, 0),
                             LocalDateTime.of(2023, 6, 30, 23, 59, 59)
-                    ), 10, providers.get(1).getId()
+                    ), 10, partners.get(1).getId()
             );
             Coupon coupon2OfPartners2 = new Coupon(
                     "입점 기념 할인쿠폰 #2",
                     new UsingDuration(
                             LocalDateTime.of(2023, 7, 1, 0, 0, 0),
                             LocalDateTime.of(2024, 12, 31, 23, 59, 59)
-                    ), 7, providers.get(1).getId()
+                    ), 7, partners.get(1).getId()
             );
             userIds.forEach(
                     userId -> {

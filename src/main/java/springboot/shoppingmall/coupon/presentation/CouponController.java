@@ -12,8 +12,8 @@ import springboot.shoppingmall.common.validation.bean.BeanValidation;
 import springboot.shoppingmall.coupon.application.CouponCreateDto;
 import springboot.shoppingmall.coupon.application.CouponService;
 import springboot.shoppingmall.common.validation.bean.BeanValidationException;
-import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
-import springboot.shoppingmall.providers.authentication.LoginPartner;
+import springboot.shoppingmall.partners.authentication.AuthorizedPartner;
+import springboot.shoppingmall.partners.authentication.LoginPartner;
 
 @RequiredArgsConstructor
 @BeanValidation

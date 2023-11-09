@@ -15,8 +15,8 @@ import springboot.shoppingmall.product.query.ProductQueryOrderType;
 import springboot.shoppingmall.product.query.dto.ProductQueryDto;
 import springboot.shoppingmall.product.query.dto.ProductQueryResponse;
 import springboot.shoppingmall.product.query.application.ProductQueryService;
-import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
-import springboot.shoppingmall.providers.authentication.LoginPartner;
+import springboot.shoppingmall.partners.authentication.AuthorizedPartner;
+import springboot.shoppingmall.partners.authentication.LoginPartner;
 
 @RequiredArgsConstructor
 @RestController

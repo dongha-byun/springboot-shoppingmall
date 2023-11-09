@@ -19,8 +19,8 @@ import springboot.shoppingmall.product.presentation.response.ProductResponse;
 import springboot.shoppingmall.product.application.dto.ProductCreateDto;
 import springboot.shoppingmall.product.application.ProductService;
 import springboot.shoppingmall.product.application.ThumbnailInfo;
-import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
-import springboot.shoppingmall.providers.authentication.LoginPartner;
+import springboot.shoppingmall.partners.authentication.AuthorizedPartner;
+import springboot.shoppingmall.partners.authentication.LoginPartner;
 
 @Slf4j
 @BeanValidation

@@ -15,8 +15,8 @@ import springboot.shoppingmall.product.application.dto.ProductQnaAnswerDto;
 import springboot.shoppingmall.product.presentation.request.ProductQnaAnswerRequest;
 import springboot.shoppingmall.product.presentation.response.ProductQnaAnswerResponse;
 import springboot.shoppingmall.product.application.ProductQnaAnswerService;
-import springboot.shoppingmall.providers.authentication.AuthorizedPartner;
-import springboot.shoppingmall.providers.authentication.LoginPartner;
+import springboot.shoppingmall.partners.authentication.AuthorizedPartner;
+import springboot.shoppingmall.partners.authentication.LoginPartner;
 
 @BeanValidation
 @RequiredArgsConstructor
