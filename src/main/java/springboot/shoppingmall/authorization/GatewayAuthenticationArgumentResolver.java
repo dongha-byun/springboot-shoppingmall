@@ -2,12 +2,14 @@ package springboot.shoppingmall.authorization;
 
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+@Component
 public class GatewayAuthenticationArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
