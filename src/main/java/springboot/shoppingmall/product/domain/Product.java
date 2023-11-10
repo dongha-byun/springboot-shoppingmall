@@ -79,16 +79,16 @@ public class Product extends BaseEntity {
     private final List<ProductDetail> details = new ArrayList<>();
 
     @Builder
-    public Product(String name, int price, int count, Category category, Category subCategory
+    public Product(String name, int price, int quantity, Category category, Category subCategory
             , Long partnerId, String storedFileName, String viewFileName, String detail, String productCode) {
-        this(null, name, price, count, 0.0, 0, LocalDateTime.now(), category, subCategory,
+        this(null, name, price, quantity, 0.0, 0, LocalDateTime.now(), category, subCategory,
                 partnerId, storedFileName, viewFileName, detail, productCode);
     }
 
-    public Product(String name, int price, int count, double score, int salesVolume,
+    public Product(String name, int price, int quantity, double score, int salesVolume,
                    LocalDateTime registerDate, Category category, Category subCategory, Long partnerId,
                    String storedFileName, String viewFileName, String detail, String productCode) {
-        this(null, name, price, count, score, salesVolume, registerDate, category, subCategory,
+        this(null, name, price, quantity, score, salesVolume, registerDate, category, subCategory,
                 partnerId, storedFileName, viewFileName, detail, productCode);
     }
 
@@ -148,12 +148,12 @@ public class Product extends BaseEntity {
     }
 
     // 상품의 재고 수를 감소시킨다.
-    public void removeCount(int quantity) {
+    public void removeQuantity(int quantity) {
         this.quantity -= quantity;
     }
 
 
-    public void increaseCount(int quantity) {
+    public void increaseQuantity(int quantity) {
         this.quantity += quantity;
     }
 

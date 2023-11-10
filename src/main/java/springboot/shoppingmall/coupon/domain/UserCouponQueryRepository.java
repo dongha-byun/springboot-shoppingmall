@@ -35,7 +35,7 @@ public class UserCouponQueryRepository {
                 .where(
                         userCoupon.userId.eq(userId)
                                 .and(
-                                        coupon.partnersId.eq(partnersId)
+                                        coupon.partnerId.eq(partnersId)
                                 )
                                 .and(
                                         userCoupon.usingDate.isNull()

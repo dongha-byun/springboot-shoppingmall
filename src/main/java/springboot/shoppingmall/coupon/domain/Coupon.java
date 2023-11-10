@@ -33,16 +33,16 @@ public class Coupon extends BaseEntity {
 
     private int discountRate;
 
-    private Long partnersId;
+    private Long partnerId;
 
     @OneToMany(mappedBy = "coupon", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private final List<UserCoupon> userCoupons = new ArrayList<>();
 
-    public Coupon(String name, UsingDuration usingDuration, int discountRate, Long partnersId) {
+    public Coupon(String name, UsingDuration usingDuration, int discountRate, Long partnerId) {
         this.name = name;
         this.usingDuration = usingDuration;
         this.discountRate = discountRate;
-        this.partnersId = partnersId;
+        this.partnerId = partnerId;
     }
 
     public static Coupon create(String name, LocalDateTime fromDate, LocalDateTime toDate, int discountRate, Long partnersId) {

@@ -100,11 +100,11 @@ public class OrderItem extends BaseEntity {
     }
 
     public void increaseQuantity() {
-        product.increaseCount(quantity);
+        product.increaseQuantity(quantity);
     }
 
     public void removeQuantity() {
-        product.removeCount(quantity);
+        product.removeQuantity(quantity);
     }
 
     public void cancel(LocalDateTime cancelDate, String cancelReason) {

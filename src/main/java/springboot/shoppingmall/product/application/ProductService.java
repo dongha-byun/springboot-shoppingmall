@@ -30,7 +30,7 @@ public class ProductService {
                 Product.builder()
                         .name(createDto.getName())
                         .price(createDto.getPrice())
-                        .count(createDto.getQuantity())
+                        .quantity(createDto.getQuantity())
                         .category(category)
                         .subCategory(subCategory)
                         .partnerId(partnerId)
