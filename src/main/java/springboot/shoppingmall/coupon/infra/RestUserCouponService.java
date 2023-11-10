@@ -13,7 +13,6 @@ import springboot.shoppingmall.coupon.application.dto.ResponseUserInformation;
 import springboot.shoppingmall.coupon.client.UserCouponService;
 
 @RequiredArgsConstructor
-@Component
 public class RestUserCouponService implements UserCouponService {
     private final RestTemplate restTemplate;
 
