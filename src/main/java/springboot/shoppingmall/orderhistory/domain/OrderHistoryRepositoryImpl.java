@@ -2,8 +2,8 @@ package springboot.shoppingmall.orderhistory.domain;
 
 import static springboot.shoppingmall.order.domain.QOrder.*;
 import static springboot.shoppingmall.order.domain.QOrderItem.*;
+import static springboot.shoppingmall.partners.domain.QPartner.*;
 import static springboot.shoppingmall.pay.domain.QPayHistory.*;
-import static springboot.shoppingmall.partners.domain.QProvider.*;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -25,11 +25,11 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository{
                         Projections.constructor(OrderHistoryDto.class,
                                 order.id, orderItem.id, order.orderDate, orderItem.orderStatus,
                                 orderItem.product.id, orderItem.product.name, payHistory.tid,
-                                order.totalPrice, provider.id, provider.name)
+                                order.totalPrice, partner.id, partner.name)
                 )
                 .from(orderItem)
                 .join(order).on(orderItem.order.eq(order))
-                .join(provider).on(provider.id.eq(orderItem.product.partnerId))
+                .join(partner).on(partner.id.eq(orderItem.product.partnerId))
                 .join(payHistory).on(payHistory.orderId.eq(order.id))
                 .where(
                         order.userId.eq(userId)

@@ -1,8 +1,8 @@
 package springboot.shoppingmall.cart.infra;
 
 import static springboot.shoppingmall.cart.domain.QCart.*;
+import static springboot.shoppingmall.partners.domain.QPartner.*;
 import static springboot.shoppingmall.product.domain.QProduct.*;
-import static springboot.shoppingmall.partners.domain.QProvider.*;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -26,12 +26,12 @@ public class JPACartQueryRepository implements CartQueryRepository {
                 .select(Projections.constructor(CartQueryDto.class,
                         cart.id, cart.quantity, product.id,
                         product.name, product.price,
-                        provider.id, provider.name,
+                        partner.id, partner.name,
                         product.thumbnail.storedFileName
                         ))
                 .from(cart)
                 .join(product).on(product.id.eq(cart.productId))
-                .join(provider).on(provider.id.eq(product.partnerId))
+                .join(partner).on(partner.id.eq(product.partnerId))
                 .where(cart.userId.eq(userId))
                 .fetch();
     }

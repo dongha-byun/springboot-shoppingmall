@@ -1,8 +1,8 @@
 package springboot.shoppingmall.product.query.repository;
 
-import static springboot.shoppingmall.product.domain.QProduct.*;
+import static springboot.shoppingmall.partners.domain.QPartner.*;
+import static springboot.shoppingmall.product.domain.QProduct.product;
 import static springboot.shoppingmall.product.query.ProductQueryOrderType.*;
-import static springboot.shoppingmall.partners.domain.QProvider.*;
 
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.OrderSpecifier;
@@ -13,6 +13,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import javax.persistence.EntityManager;
 import springboot.shoppingmall.category.domain.Category;
+import springboot.shoppingmall.partners.domain.QPartner;
 import springboot.shoppingmall.product.query.ProductQueryOrderType;
 import springboot.shoppingmall.product.query.dto.ProductQueryDto;
 
@@ -28,7 +29,7 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
                         projectionsConstructorOfProductQueryDto()
                 )
                 .from(product)
-                .join(provider).on(provider.id.eq(product.partnerId))
+                .join(partner).on(partner.id.eq(product.partnerId))
                 .where(
                         allCategoryEq(category, subCategory)
                 )
@@ -62,7 +63,7 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
         return jpaQueryFactory.select(
                         projectionsConstructorOfProductQueryDto()
                 ).from(product)
-                .join(provider).on(provider.id.eq(product.partnerId))
+                .join(partner).on(partner.id.eq(product.partnerId))
                 .where(
                         product.partnerId.eq(partnerId)
                                 .and(product.category.eq(category))
@@ -81,7 +82,7 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
                         projectionsConstructorOfProductQueryDto()
                 )
                 .from(product)
-                .join(provider).on(provider.id.eq(product.partnerId))
+                .join(partner).on(partner.id.eq(product.partnerId))
                 .where(
                         searchProductName(searchKeyword)
                 )
@@ -99,7 +100,7 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
                         projectionsConstructorOfProductQueryDto()
                 )
                 .from(product)
-                .join(provider).on(product.partnerId.eq(provider.id))
+                .join(partner).on(product.partnerId.eq(partner.id))
                 .where(product.id.eq(productId))
                 .fetchOne();
     }
@@ -112,7 +113,7 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
         return jpaQueryFactory.select(
                         projectionsConstructorOfProductQueryDto()
                 ).from(product)
-                .join(provider).on(provider.id.eq(product.partnerId))
+                .join(partner).on(partner.id.eq(product.partnerId))
                 .where(
                         allCategoryEq(category, subCategory)
                 );
@@ -126,7 +127,7 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
                 product.registerDate,
                 product.thumbnail.storedFileName,
                 product.thumbnail.viewFileName,
-                provider.id, provider.name
+                partner.id, partner.name
         );
     }
 
