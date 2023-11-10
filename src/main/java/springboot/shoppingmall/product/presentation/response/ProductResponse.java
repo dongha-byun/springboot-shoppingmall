@@ -18,7 +18,7 @@ public class ProductResponse {
     private String productCode;
     private String name;
     private int price;
-    private int count;
+    private int quantity;
     private CategoryResponse category;
     private CategoryResponse subCategory;
     private Long partnerId;
@@ -30,7 +30,7 @@ public class ProductResponse {
 
     public static ProductResponse of(Product product){
         return new ProductResponse(product.getId(), product.getProductCode(),
-                product.getName(), product.getPrice(), product.getCount(),
+                product.getName(), product.getPrice(), product.getQuantity(),
                 CategoryResponse.of(product.getCategory()), CategoryResponse.of(product.getSubCategory()),
                 product.getPartnerId(), null, product.getThumbnail(), product.getDetail(),
                 null, null
@@ -43,7 +43,7 @@ public class ProductResponse {
 
         return new ProductResponse(
                 dto.getId(), dto.getProductCode(), dto.getName(),
-                dto.getPrice(), dto.getCount(), category, subCategory,
+                dto.getPrice(), dto.getQuantity(), category, subCategory,
                 dto.getPartnersId(), null, dto.getStoredThumbnailName(), dto.getDetail(),
                 null, null
         );
@@ -58,7 +58,7 @@ public class ProductResponse {
                 .collect(Collectors.toList());
 
         return new ProductResponse(product.getId(), product.getProductCode(),
-                product.getName(), product.getPrice(), product.getCount(),
+                product.getName(), product.getPrice(), product.getQuantity(),
                 CategoryResponse.of(product.getCategory()), CategoryResponse.of(product.getSubCategory()),
                 partner.getId(), partner.getName(), product.getThumbnail(), product.getDetail(),
                 qnaResponses, reviewResponses

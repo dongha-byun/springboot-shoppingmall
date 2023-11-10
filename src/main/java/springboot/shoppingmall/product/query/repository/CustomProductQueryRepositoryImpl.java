@@ -13,7 +13,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import javax.persistence.EntityManager;
 import springboot.shoppingmall.category.domain.Category;
-import springboot.shoppingmall.partners.domain.QPartner;
 import springboot.shoppingmall.product.query.ProductQueryOrderType;
 import springboot.shoppingmall.product.query.dto.ProductQueryDto;
 
@@ -122,7 +121,7 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
     private ConstructorExpression<ProductQueryDto> projectionsConstructorOfProductQueryDto() {
         return Projections.constructor(ProductQueryDto.class,
                 product.id, product.name,
-                product.price, product.count,
+                product.price, product.quantity,
                 product.score, product.salesVolume,
                 product.registerDate,
                 product.thumbnail.storedFileName,

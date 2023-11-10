@@ -40,14 +40,14 @@ class OrderItemTest {
         // then
         assertThat(orderItem.getOrderStatus()).isEqualTo(OrderStatus.READY);
         assertThat(orderItem.getQuantity()).isEqualTo(orderQuantity);
-        assertThat(product.getCount()).isEqualTo(quantity - orderQuantity);
+        assertThat(product.getQuantity()).isEqualTo(quantity - orderQuantity);
     }
 
     @Test
     @DisplayName("1-2. 상품의 재고수량 보다 많은 양이 주문되는 경우, 주문에 실패한다.")
     void ready_fail_with_over_quantity() {
         // given
-        int orderQuantity = product.getCount() + 1;
+        int orderQuantity = product.getQuantity() + 1;
 
         // when & then
         assertThatThrownBy(
@@ -364,7 +364,7 @@ class OrderItemTest {
 
         // then
         assertThat(orderItem.getOrderStatus()).isEqualTo(OrderStatus.CANCEL);
-        assertThat(product.getCount()).isEqualTo(quantity);
+        assertThat(product.getQuantity()).isEqualTo(quantity);
     }
 
     @Test

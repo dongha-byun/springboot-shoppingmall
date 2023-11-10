@@ -14,14 +14,14 @@ public class ProductQueryResponse {
     private double score;
     private int salesVolume;
     private int price;
-    private int count;
+    private int quantity;
     private String thumbnail;
     private Long partnersId;
     private String partnersName;
 
     public static ProductQueryResponse of(Product product) {
         return new ProductQueryResponse(product.getId(), product.getName(), product.getScore(), product.getSalesVolume(),
-                product.getPrice(), product.getCount(), product.getThumbnail(),
+                product.getPrice(), product.getQuantity(), product.getThumbnail(),
                 null, null);
     }
 

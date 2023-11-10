@@ -129,7 +129,7 @@ class OrderStatusChangeServiceTest {
 
         // 주문을 취소하면 상품 갯수를 원래대로 되돌린다.
         Product findProduct = productRepository.findById(product.getId()).orElseThrow();
-        assertThat(findProduct.getCount()).isEqualTo(productCount);
+        assertThat(findProduct.getQuantity()).isEqualTo(productCount);
     }
 
     @Test

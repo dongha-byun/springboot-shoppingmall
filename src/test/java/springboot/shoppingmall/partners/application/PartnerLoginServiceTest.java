@@ -37,7 +37,7 @@ class PartnerLoginServiceTest {
 
         // then
         assertThat(partnerDto.getId()).isNotNull();
-        assertThat(partnerDto.getLoginId()).isEqualTo("provider1");
+        assertThat(partnerDto.getLoginId()).isEqualTo("partner1");
     }
 
     @Test

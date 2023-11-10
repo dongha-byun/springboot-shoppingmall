@@ -27,7 +27,7 @@ import springboot.shoppingmall.order.exception.OverQuantityException;
 
 @Getter
 @Entity
-@Table(name = "product")
+@Table(name = "products")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product extends BaseEntity {
 
@@ -44,7 +44,7 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private int price;
 
-    private int count;
+    private int quantity;
 
     private double score;
 
@@ -92,13 +92,13 @@ public class Product extends BaseEntity {
                 partnerId, storedFileName, viewFileName, detail, productCode);
     }
 
-    public Product(Long id, String name, int price, int count, double score, int salesVolume,
+    public Product(Long id, String name, int price, int quantity, double score, int salesVolume,
                    LocalDateTime registerDate, Category category, Category subCategory, Long partnerId,
                    String storedFileName, String viewFileName, String detail, String productCode) {
         this.id = id;
         this.name = name;
         this.price = price;
-        this.count = count;
+        this.quantity = quantity;
         this.score = score;
         this.salesVolume = salesVolume;
         this.registerDate = registerDate;
@@ -149,16 +149,16 @@ public class Product extends BaseEntity {
 
     // 상품의 재고 수를 감소시킨다.
     public void removeCount(int quantity) {
-        this.count -= quantity;
+        this.quantity -= quantity;
     }
 
 
     public void increaseCount(int quantity) {
-        this.count += quantity;
+        this.quantity += quantity;
     }
 
     public void validateQuantity(int quantity) {
-        if(this.count < quantity) {
+        if(this.quantity < quantity) {
             throw new OverQuantityException(this.name + " 상품의 재고수량이 초과하여 주문이 불가합니다.");
         }
     }

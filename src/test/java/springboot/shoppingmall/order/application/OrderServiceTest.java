@@ -126,8 +126,8 @@ class OrderServiceTest {
                 );
 
         // 각각의 상품의 재고가 각 주문 수량 만큼 감소한다.
-        assertThat(product.getCount()).isEqualTo(productCount - orderQuantity1);
-        assertThat(product2.getCount()).isEqualTo(productCount - orderQuantity2);
+        assertThat(product.getQuantity()).isEqualTo(productCount - orderQuantity1);
+        assertThat(product2.getQuantity()).isEqualTo(productCount - orderQuantity2);
     }
 
     @Test
@@ -179,7 +179,7 @@ class OrderServiceTest {
         // given
         long userId = 10L;
         mockOrderUserInformationServerForGetDiscountRate(userId, 0);
-        int orderQuantity = product.getCount() + 1;
+        int orderQuantity = product.getQuantity() + 1;
         OrderItemCreateDto orderItemCreateDto = new OrderItemCreateDto(product.getId(), orderQuantity, null);
         DeliveryInfoCreateDto deliveryInfoCreateDto = new DeliveryInfoCreateDto(
                 "덩라", "010-1234-1234",
