@@ -19,6 +19,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import springboot.shoppingmall.authorization.GatewayConstants;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.DeliveryInfoRequest;
 import springboot.shoppingmall.order.dto.OrderItemRequest;
@@ -48,6 +49,8 @@ class OrderApiControllerTest {
     @MockBean
     OrderService orderService;
 
+    String xGatewayHeader = "1";
+
     @Test
     @DisplayName("상품을 주문한다.")
     void create_order() throws Exception {
@@ -73,11 +76,11 @@ class OrderApiControllerTest {
                         10L, "order-code-10",
                         1L, 39000, 35100, LocalDateTime.of(2023, 9, 12, 1, 30, 0),
                         Arrays.asList(
-                                new OrderItemDto(1L ,1L, 2, 20000, 18000, null, 0, 2000, null, null, null, "",
+                                new OrderItemDto(1L, 1L, 2, 20000, 18000, null, 0, 2000, null, null, null, "",
                                         OrderStatus.READY, null, "", null, "", null, ""),
-                                new OrderItemDto(2L ,2L, 1, 9000, 8100, null, 0, 900, null, null, null, "",
+                                new OrderItemDto(2L, 2L, 1, 9000, 8100, null, 0, 900, null, null, null, "",
                                         OrderStatus.READY, null, "", null, "", null, ""),
-                                new OrderItemDto(3L ,3L, 10, 10000, 9000, null, 0, 1000, null, null, null, "",
+                                new OrderItemDto(3L, 3L, 10, 10000, 9000, null, 0, 1000, null, null, null, "",
                                         OrderStatus.READY, null, "", null, "", null, "")
 
                         ),
@@ -90,10 +93,10 @@ class OrderApiControllerTest {
         );
 
         // when & then
-        mockMvc.perform(
-                        post("/orders")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(content)
+        mockMvc.perform(post("/orders")
+                        .header(GatewayConstants.GATEWAY_HEADER, xGatewayHeader)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
                 )
                 .andDo(print())
                 .andExpect(status().isCreated())

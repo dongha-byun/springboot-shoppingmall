@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import springboot.shoppingmall.authorization.GatewayConstants;
 import springboot.shoppingmall.product.application.ProductReviewService;
 import springboot.shoppingmall.product.application.dto.ProductReviewDto;
 import springboot.shoppingmall.product.application.dto.ProductUserReviewDto;
@@ -50,6 +51,8 @@ class ProductReviewApiControllerTest {
     @MockBean
     ProductReviewService productReviewService;
 
+    String xGatewayHeader = "1";
+
     @Test
     @DisplayName("상품에 리뷰를 작성한다.")
     void create_review() throws Exception {
@@ -70,6 +73,7 @@ class ProductReviewApiControllerTest {
         mockMvc.perform(multipart("/orders/{orderId}/{orderItemId}/products/{productId}/reviews",
                         1L, 11L, 1L)
                         .file(data)
+                        .header(GatewayConstants.GATEWAY_HEADER, xGatewayHeader)
                 )
                 .andDo(print())
                 .andExpect(status().isCreated())
@@ -101,6 +105,7 @@ class ProductReviewApiControllerTest {
                         .file(file4)
                         .file(file5)
                         .file(file6)
+                        .header(GatewayConstants.GATEWAY_HEADER, xGatewayHeader)
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -149,7 +154,8 @@ class ProductReviewApiControllerTest {
         when(productReviewService.findAllUserReview(any())).thenReturn(reviews);
         
         // when & then
-        mockMvc.perform(get("/users/reviews"))
+        mockMvc.perform(get("/users/reviews")
+                        .header(GatewayConstants.GATEWAY_HEADER, xGatewayHeader))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(4)))

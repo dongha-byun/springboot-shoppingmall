@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import springboot.shoppingmall.authorization.GatewayConstants;
 import springboot.shoppingmall.coupon.application.UsableCouponDto;
 import springboot.shoppingmall.coupon.application.UserCouponQueryService;
 import springboot.shoppingmall.coupon.domain.UserCouponQueryDto;
@@ -74,6 +75,7 @@ class UserCouponQueryControllerTest {
 
         // when & then
         mockMvc.perform(get("/order/coupons?partnersId={partnersId}", 10L)
+                        .header(GatewayConstants.GATEWAY_HEADER, "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())

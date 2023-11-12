@@ -17,6 +17,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import springboot.shoppingmall.authorization.GatewayConstants;
 import springboot.shoppingmall.delivery.application.DeliveryService;
 import springboot.shoppingmall.delivery.presentation.request.DeliveryRequest;
 import springboot.shoppingmall.delivery.presentation.response.DeliveryResponse;
@@ -40,6 +41,8 @@ class DeliveryControllerTest {
     @MockBean
     DeliveryService deliveryService;
 
+    String xGatewayHeader = "1";
+
     @Test
     @DisplayName("사용자가 자신이 등록한 배송지 목록을 조회한다.")
     void find_all_delivery() throws Exception {
@@ -58,7 +61,10 @@ class DeliveryControllerTest {
         );
 
         // when & then
-        mockMvc.perform(get("/delivery"))
+        mockMvc.perform(get("/delivery")
+                        .header(GatewayConstants.GATEWAY_HEADER, xGatewayHeader)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
@@ -83,6 +89,7 @@ class DeliveryControllerTest {
 
         // when & then
         mockMvc.perform(post("/delivery")
+                        .header(GatewayConstants.GATEWAY_HEADER, xGatewayHeader)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(content))
                 .andDo(print())
@@ -97,7 +104,9 @@ class DeliveryControllerTest {
         // given
 
         // when & then
-        mockMvc.perform(delete("/delivery/{id}", 1L))
+        mockMvc.perform(delete("/delivery/{id}", 1L)
+                        .header(GatewayConstants.GATEWAY_HEADER, xGatewayHeader)
+                )
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }

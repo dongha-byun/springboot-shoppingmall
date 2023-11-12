@@ -17,6 +17,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import springboot.shoppingmall.authorization.GatewayConstants;
 import springboot.shoppingmall.product.application.ProductQnaService;
 import springboot.shoppingmall.product.application.dto.ProductQnaDto;
 import springboot.shoppingmall.product.presentation.request.ProductQnaRequest;
@@ -40,6 +41,8 @@ class ProductQnaApiControllerTest {
     @MockBean
     ProductQnaService productQnaService;
 
+    String xGatewayHeader = "1";
+
     @Test
     @DisplayName("특정 상품에 문의를 등록한다.")
     void create_qna() throws Exception {
@@ -57,6 +60,7 @@ class ProductQnaApiControllerTest {
 
         // when & then
         mockMvc.perform(post("/products/{id}/qna", 10L)
+                        .header(GatewayConstants.GATEWAY_HEADER, xGatewayHeader)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
                 .andDo(print())
@@ -73,6 +77,7 @@ class ProductQnaApiControllerTest {
 
         // when & then
         mockMvc.perform(post("/products/{id}/qna", 10L)
+                        .header(GatewayConstants.GATEWAY_HEADER, xGatewayHeader)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
                 .andDo(print())

@@ -17,6 +17,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import springboot.shoppingmall.authorization.GatewayConstants;
 import springboot.shoppingmall.payment.application.PaymentService;
 import springboot.shoppingmall.payment.application.dto.PaymentDto;
 import springboot.shoppingmall.payment.domain.CardCompany;
@@ -42,6 +43,8 @@ class PaymentApiControllerTest {
     @MockBean
     PaymentService paymentService;
 
+    String xGatewayHeader = "1";
+
     @Test
     @DisplayName("사용자가 결제수단을 추가한다.")
     void create_payment() throws Exception {
@@ -59,6 +62,7 @@ class PaymentApiControllerTest {
 
         // when & then
         mockMvc.perform(post("/payments")
+                        .header(GatewayConstants.GATEWAY_HEADER, xGatewayHeader)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
                 .andDo(print())
@@ -85,6 +89,7 @@ class PaymentApiControllerTest {
 
         // when & then
         mockMvc.perform(get("/payments")
+                        .header(GatewayConstants.GATEWAY_HEADER, xGatewayHeader)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -98,6 +103,7 @@ class PaymentApiControllerTest {
 
         // when & then
         mockMvc.perform(delete("/payments/1")
+                        .header(GatewayConstants.GATEWAY_HEADER, xGatewayHeader)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNoContent());

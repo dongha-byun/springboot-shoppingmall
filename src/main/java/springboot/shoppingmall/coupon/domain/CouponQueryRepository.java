@@ -18,7 +18,7 @@ public class CouponQueryRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    public List<CouponQueryDto> findCouponAll(Long partnersId) {
+    public List<CouponQueryDto> findCouponAll(Long partnerId) {
         return queryFactory.select(
                         Projections.constructor(CouponQueryDto.class,
                                 coupon.id, coupon.name,
@@ -29,12 +29,12 @@ public class CouponQueryRepository {
                 )
                 .from(coupon)
                 .where(
-                        coupon.partnersId.eq(partnersId)
+                        coupon.partnerId.eq(partnerId)
                 )
                 .orderBy(
                         coupon.usingDuration.toDate.asc(),
                         coupon.usingDuration.fromDate.asc(),
                         coupon.id.desc()
-                ).stream().collect(Collectors.toList());
+                ).fetch();
     }
 }

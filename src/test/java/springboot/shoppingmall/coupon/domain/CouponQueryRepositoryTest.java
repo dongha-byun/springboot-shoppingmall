@@ -27,14 +27,14 @@ class CouponQueryRepositoryTest {
     @Test
     void find_coupon_all_by_partnersId_with_dto() {
         // given
-        Long partnersId = 1L;
-        Coupon coupon1 = couponRepository.save(createCoupon("쿠폰1", partnersId));
-        Coupon coupon2 = couponRepository.save(createCoupon("쿠폰2", partnersId));
-        Coupon coupon3 = couponRepository.save(createCoupon("쿠폰3", partnersId));
-        Coupon coupon4 = couponRepository.save(createCoupon("쿠폰4", partnersId));
+        Long partnerId = 1L;
+        Coupon coupon1 = couponRepository.save(createCoupon("쿠폰1", partnerId));
+        Coupon coupon2 = couponRepository.save(createCoupon("쿠폰2", partnerId));
+        Coupon coupon3 = couponRepository.save(createCoupon("쿠폰3", partnerId));
+        Coupon coupon4 = couponRepository.save(createCoupon("쿠폰4", partnerId));
 
         // when
-        List<CouponQueryDto> couponAll = queryRepository.findCouponAll(partnersId);
+        List<CouponQueryDto> couponAll = queryRepository.findCouponAll(partnerId);
 
         // then
         assertThat(couponAll).hasSize(4)

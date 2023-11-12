@@ -17,6 +17,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import springboot.shoppingmall.authorization.GatewayConstants;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.orderhistory.application.OrderHistoryService;
 import springboot.shoppingmall.orderhistory.application.dto.OrderHistoryDto;
@@ -53,8 +54,8 @@ class OrderHistoryApiControllerTest {
         );
 
         // when & then
-        mockMvc.perform(get("/user/orders?startDate={startDate}&endDate={endDate}",
-                        "2023-06-22", "2023-09-21")
+        mockMvc.perform(get("/user/orders?startDate={startDate}&endDate={endDate}", "2023-06-22", "2023-09-21")
+                        .header(GatewayConstants.GATEWAY_HEADER, "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
