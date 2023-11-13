@@ -7,16 +7,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import springboot.shoppingmall.coupon.application.dto.ResponseUserInformation;
-import springboot.shoppingmall.coupon.client.UserCouponService;
 
 @RequiredArgsConstructor
-public class RestUserCouponService implements UserCouponService {
+public class RestUserCouponService {
     private final RestTemplate restTemplate;
 
-    @Override
     public List<Long> getUserIdsAboveTheGrade(String targetGrade) {
         ResponseEntity<List<Long>> exchange = restTemplate.exchange(
                 "/users/aboveGrade?targetGrade=" + targetGrade,
@@ -27,7 +24,6 @@ public class RestUserCouponService implements UserCouponService {
         return exchange.getBody();
     }
 
-    @Override
     public List<ResponseUserInformation> getUsers(List<Long> userIds) {
         RequestEntity<List<Long>> requestEntity = RequestEntity
                 .post("/users/has-coupon")

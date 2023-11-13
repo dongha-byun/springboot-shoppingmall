@@ -79,8 +79,8 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
-	// wireMock for open client test
-	testImplementation 'org.wiremock:wiremock:3.3.1'
+	// wireMock for feign client test
+	testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
 }
 
 dependencyManagement {

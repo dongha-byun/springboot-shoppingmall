@@ -1,28 +1,20 @@
 package springboot.shoppingmall.coupon.application;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 import springboot.shoppingmall.coupon.application.dto.ResponseUserInformation;
+import springboot.shoppingmall.coupon.client.UserCouponService;
 import springboot.shoppingmall.coupon.domain.Coupon;
 import springboot.shoppingmall.coupon.domain.CouponRepository;
 import springboot.shoppingmall.coupon.domain.UserCouponQueryDto;
@@ -35,26 +27,17 @@ class UserCouponQueryServiceTest {
     @Autowired
     UserCouponQueryService queryService;
 
+    @MockBean
+    UserCouponService userCouponService;
+
     @Autowired
     CouponRepository couponRepository;
 
-    @Autowired
-    RestTemplate restTemplate;
-
-    MockRestServiceServer mockRestServiceServer;
-
-    @Autowired
-    ObjectMapper objectMapper;
-
-    @BeforeEach
-    void setup() {
-        mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
-    }
-
     @DisplayName("쿠폰 발급 대상자 목록을 조회한다.")
     @Test
-    void find_users_received_coupon() throws JsonProcessingException {
+    void find_users_received_coupon() {
         // given
+        List<Long> userIds = Arrays.asList(100L, 200L, 300L);
         Coupon coupon = couponRepository.save(
                 new Coupon("신규 카테고리 오픈 기념 쿠폰",
                         new UsingDuration(
@@ -62,10 +45,17 @@ class UserCouponQueryServiceTest {
                                 LocalDateTime.of(2023, 12, 31, 0, 0, 0)
                         ), 10, 1L)
         );
-        coupon.addUserCoupon(100L);
-        coupon.addUserCoupon(200L);
-        coupon.addUserCoupon(300L);
-        mockingGetUsersHasCoupon();
+        userIds.forEach(
+                coupon::addUserCoupon
+        );
+
+        when(userCouponService.getUsers(userIds)).thenReturn(
+                Arrays.asList(
+                        new ResponseUserInformation(100L, "사용자 100", "일반회원"),
+                        new ResponseUserInformation(200L, "사용자 200", "단골회원"),
+                        new ResponseUserInformation(300L, "사용자 300", "VVIP")
+                )
+        );
 
         // when
         List<UserCouponQueryDto> usersReceivedCoupon = queryService.findUsersReceivedCoupon(coupon.getId());
@@ -119,25 +109,6 @@ class UserCouponQueryServiceTest {
                         tuple("신규 카테고리 오픈 기념 쿠폰 #2", 10),
                         tuple("신규 카테고리 오픈 기념 쿠폰 #3", 8),
                         tuple("신규 카테고리 오픈 기념 쿠폰 #1", 7)
-                );
-    }
-
-    private void mockingGetUsersHasCoupon() throws JsonProcessingException {
-        List<ResponseUserInformation> responseUserInformationList = Arrays.asList(
-                new ResponseUserInformation(100L, "사용자 100", "일반회원"),
-                new ResponseUserInformation(200L, "사용자 200", "단골회원"),
-                new ResponseUserInformation(300L, "사용자 300", "VVIP")
-        );
-        String body = objectMapper.writeValueAsString(responseUserInformationList);
-        mockRestServiceServer
-                .expect(
-                        requestTo("/users/has-coupon")
-                )
-                .andExpect(method(HttpMethod.POST))
-                .andRespond(
-                        withStatus(HttpStatus.OK)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .body(body)
                 );
     }
 }
