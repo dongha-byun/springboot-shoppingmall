@@ -1,5 +1,6 @@
 package springboot.shoppingmall.pay.type.kakakopay.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,12 +14,21 @@ import springboot.shoppingmall.pay.type.kakakopay.web.KakaoPayReadyResponse;
 public class KakaoPayService implements PayService {
 
     private final RestTemplate restTemplate;
-    private static final String READY_URL = "https://kapi.kakao.com/v1/payment/ready";
-    private static final String APPROVE_URL = "https://kapi.kakao.com/v1/payment/approve";
-    private static final String CANCEL_URL = "https://kapi.kakao.com/v1/payment/cancel";
 
-    private static final String ADMIN_KEY_TYPE = "KakaoAK";
-    private static final String ADMIN_KEY = "22f748186772959eb46af0f3e0773131";
+    @Value("${pay.api.kakao.ready_url}")
+    private String READY_URL;
+
+    @Value("${pay.api.kakao.approve_url}")
+    private String APPROVE_URL;
+
+    @Value("${pay.api.kakao.cancel_url}")
+    private String CANCEL_URL;
+
+    @Value("${pay.api.kakao.type}")
+    private String ADMIN_KEY_TYPE;
+
+    @Value("${pay.api.kakao.key}")
+    private String ADMIN_KEY;
 
     public KakaoPayService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
