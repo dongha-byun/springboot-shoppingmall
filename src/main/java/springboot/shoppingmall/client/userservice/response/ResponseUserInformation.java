@@ -1,4 +1,4 @@
-package springboot.shoppingmall.coupon.application.dto;
+package springboot.shoppingmall.client.userservice.response;
 
 import java.io.Serializable;
 import lombok.AllArgsConstructor;

@@ -23,16 +23,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import springboot.shoppingmall.coupon.application.dto.ResponseUserInformation;
+import springboot.shoppingmall.client.userservice.UserServiceClient;
+import springboot.shoppingmall.client.userservice.response.ResponseUserInformation;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @EnableConfigurationProperties
 @ContextConfiguration(classes = {TestWireMockConfig.class})
-public class UserCouponServiceWireMockTest {
+public class UserServiceClientWireMockTest {
 
     @Autowired
-    UserCouponService service;
+    UserServiceClient service;
 
     @Autowired
     ObjectMapper objectMapper;

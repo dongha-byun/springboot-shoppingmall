@@ -1,22 +1,14 @@
 package springboot.shoppingmall.order.partners.application;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
-import springboot.shoppingmall.coupon.application.dto.ResponseUserInformation;
 import springboot.shoppingmall.order.application.OrderUserInterfaceService;
 import springboot.shoppingmall.order.application.dto.ResponseOrderUserInformation;
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryRepository;
 import springboot.shoppingmall.order.partners.application.dto.PartnersReadyOrderQueryDto;
-import springboot.shoppingmall.order.partners.factory.ResponseOrderUserInformationMapFactory;
 
 @RequiredArgsConstructor
 public class PartnersReadyOrderQueryService implements PartnersOrderQueryService{

@@ -4,16 +4,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-import springboot.shoppingmall.coupon.application.dto.ResponseUserInformation;
-import springboot.shoppingmall.coupon.client.UserCouponService;
-import springboot.shoppingmall.coupon.domain.CouponRepository;
+import springboot.shoppingmall.client.userservice.response.ResponseUserInformation;
+import springboot.shoppingmall.client.userservice.UserServiceClient;
 import springboot.shoppingmall.coupon.domain.UserCouponDto;
 import springboot.shoppingmall.coupon.domain.UserCouponQueryDto;
 import springboot.shoppingmall.coupon.domain.UserCouponQueryRepository;
@@ -23,7 +17,7 @@ import springboot.shoppingmall.coupon.domain.UserCouponQueryRepository;
 @Service
 public class UserCouponQueryService {
     private final UserCouponQueryRepository queryRepository;
-    private final UserCouponService userCouponService;
+    private final UserServiceClient userServiceClient;
 
     public List<UserCouponQueryDto> findUsersReceivedCoupon(Long couponId) {
         // 1
@@ -35,7 +29,7 @@ public class UserCouponQueryService {
                 .collect(Collectors.toList());
 
         // 3
-        List<ResponseUserInformation> result = userCouponService.getUsers(userIds);
+        List<ResponseUserInformation> result = userServiceClient.getUsers(userIds);
 
         // 4. userInfoHasCoupon + result
         Map<Long, ResponseUserInformation> map = result.stream()

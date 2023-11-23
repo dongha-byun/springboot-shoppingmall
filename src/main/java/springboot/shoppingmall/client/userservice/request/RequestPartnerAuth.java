@@ -1,4 +1,4 @@
-package springboot.shoppingmall.partners.presentation.response;
+package springboot.shoppingmall.client.userservice.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class PartnerTokenResponse {
-    private String accessToken;
+public class RequestPartnerAuth {
+    private Long userId;
 }

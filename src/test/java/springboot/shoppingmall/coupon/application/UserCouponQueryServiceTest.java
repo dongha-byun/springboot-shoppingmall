@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.coupon.application.dto.ResponseUserInformation;
-import springboot.shoppingmall.coupon.client.UserCouponService;
+import springboot.shoppingmall.client.userservice.response.ResponseUserInformation;
+import springboot.shoppingmall.client.userservice.UserServiceClient;
 import springboot.shoppingmall.coupon.domain.Coupon;
 import springboot.shoppingmall.coupon.domain.CouponRepository;
 import springboot.shoppingmall.coupon.domain.UserCouponQueryDto;
@@ -28,7 +28,7 @@ class UserCouponQueryServiceTest {
     UserCouponQueryService queryService;
 
     @MockBean
-    UserCouponService userCouponService;
+    UserServiceClient userServiceClient;
 
     @Autowired
     CouponRepository couponRepository;
@@ -49,7 +49,7 @@ class UserCouponQueryServiceTest {
                 coupon::addUserCoupon
         );
 
-        when(userCouponService.getUsers(userIds)).thenReturn(
+        when(userServiceClient.getUsers(userIds)).thenReturn(
                 Arrays.asList(
                         new ResponseUserInformation(100L, "사용자 100", "일반회원"),
                         new ResponseUserInformation(200L, "사용자 200", "단골회원"),

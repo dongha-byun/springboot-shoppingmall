@@ -1,15 +1,18 @@
 package springboot.shoppingmall.partners.application;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.client.userservice.UserServiceClient;
+import springboot.shoppingmall.client.userservice.response.ResponsePartnerAuthInfo;
 import springboot.shoppingmall.partners.domain.Partner;
 import springboot.shoppingmall.partners.domain.PartnerRepository;
-import springboot.shoppingmall.partners.dto.PartnerDto;
 
 @Transactional
 @SpringBootTest
@@ -20,6 +23,9 @@ class PartnerLoginServiceTest {
 
     @Autowired
     PartnerRepository partnerRepository;
+
+    @MockBean
+    UserServiceClient userServiceClient;
 
     @Test
     @DisplayName("판매 자격이 승인된 계정의 로그인 성공")
@@ -32,12 +38,15 @@ class PartnerLoginServiceTest {
         ));
         savePartner.approve();
 
+        when(userServiceClient.authPartner(any())).thenReturn(
+                new ResponsePartnerAuthInfo("access-token")
+        );
+
         // when
-        PartnerDto partnerDto = loginService.login(loginId, "1q2w3e4r!");
+        String accessToken = loginService.login(loginId, "1q2w3e4r!");
 
         // then
-        assertThat(partnerDto.getId()).isNotNull();
-        assertThat(partnerDto.getLoginId()).isEqualTo("partner1");
+        assertThat(accessToken).isNotNull();
     }
 
     @Test
