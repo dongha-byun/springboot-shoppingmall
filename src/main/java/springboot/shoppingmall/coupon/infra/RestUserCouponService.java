@@ -8,7 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-import springboot.shoppingmall.coupon.application.dto.ResponseUserInformation;
+import springboot.shoppingmall.client.userservice.response.ResponseUserInformation;
 
 @RequiredArgsConstructor
 public class RestUserCouponService {

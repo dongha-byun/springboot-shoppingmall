@@ -1,4 +1,4 @@
-package springboot.shoppingmall.coupon.client;
+package springboot.shoppingmall.client;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.*;
 
