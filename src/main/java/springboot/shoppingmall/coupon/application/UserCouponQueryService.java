@@ -24,35 +24,50 @@ public class UserCouponQueryService {
         List<UserCouponDto> userInfoHasCoupon = queryRepository.getUserIdsHasCoupon(couponId);
 
         // 2
-        List<Long> userIds = userInfoHasCoupon.stream()
-                .map(UserCouponDto::getUserId)
-                .collect(Collectors.toList());
+        List<Long> userIds = fetchUserIds(userInfoHasCoupon);
 
         // 3
         List<ResponseUserInformation> result = userServiceClient.getUsers(userIds);
 
         // 4. userInfoHasCoupon + result
-        Map<Long, ResponseUserInformation> map = result.stream()
+        Map<Long, ResponseUserInformation> map = getResponseUserInformationMap(result);
+
+        return userInfoHasCoupon.stream()
+                .map(userCouponDto -> generateUserQueryDto(userCouponDto, map))
+                .collect(Collectors.toList());
+    }
+
+    private UserCouponQueryDto generateUserQueryDto(UserCouponDto userCouponDto,
+                                                     Map<Long, ResponseUserInformation> map) {
+        if (map.containsKey(userCouponDto.getUserId())) {
+            return convertUserCouponDtoToUserCouponQueryDto(userCouponDto, map);
+        }
+        return null;
+    }
+
+    private List<Long> fetchUserIds(List<UserCouponDto> userInfoHasCoupon) {
+        return userInfoHasCoupon.stream()
+                .map(UserCouponDto::getUserId)
+                .collect(Collectors.toList());
+    }
+
+    private Map<Long, ResponseUserInformation> getResponseUserInformationMap(List<ResponseUserInformation> result) {
+        return result.stream()
                 .collect(Collectors.toMap(
                         ResponseUserInformation::getUserId,
                         responseUserInformation -> responseUserInformation
                 ));
+    }
 
-        List<UserCouponQueryDto> list = userInfoHasCoupon.stream()
-                .map(userCouponDto -> {
-                    if (map.containsKey(userCouponDto.getUserId())) {
-                        ResponseUserInformation responseUserInformation = map.get(userCouponDto.getUserId());
-                        return new UserCouponQueryDto(
-                                userCouponDto.getUserId(),
-                                responseUserInformation.getUserName(),
-                                responseUserInformation.getGrade(),
-                                userCouponDto.getUsingDate()
-                        );
-                    }
-                    return null;
-                }).collect(Collectors.toList());
-
-        return list;
+    private UserCouponQueryDto convertUserCouponDtoToUserCouponQueryDto(UserCouponDto userCouponDto,
+                                                                        Map<Long, ResponseUserInformation> map) {
+        ResponseUserInformation responseUserInformation = map.get(userCouponDto.getUserId());
+        return new UserCouponQueryDto(
+                userCouponDto.getUserId(),
+                responseUserInformation.getUserName(),
+                responseUserInformation.getGrade(),
+                userCouponDto.getUsingDate()
+        );
     }
 
 
