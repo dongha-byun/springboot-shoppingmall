@@ -60,7 +60,7 @@ class ProductApiControllerTest {
         MockMultipartFile file = new MockMultipartFile(
                 "file",
                 "stored-file-name.png",
-                MediaType.TEXT_PLAIN_VALUE,
+                MediaType.APPLICATION_OCTET_STREAM_VALUE,
                 "test-image-file-content-with-string".getBytes()
         );
 
@@ -124,7 +124,7 @@ class ProductApiControllerTest {
         MockMultipartFile file = new MockMultipartFile(
                 "file",
                 "stored-file-name.png",
-                MediaType.TEXT_PLAIN_VALUE,
+                MediaType.APPLICATION_OCTET_STREAM_VALUE,
                 "test-image-file-content-with-string".getBytes()
         );
 
