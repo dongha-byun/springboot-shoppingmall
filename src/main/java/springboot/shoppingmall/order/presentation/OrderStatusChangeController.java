@@ -23,17 +23,6 @@ import springboot.shoppingmall.partners.authentication.LoginPartner;
 public class OrderStatusChangeController {
     private final OrderStatusChangeService orderStatusChangeService;
 
-    @PutMapping("/orders/{orderId}/{orderItemId}/cancel")
-    public ResponseEntity<OrderItemResponse> cancelOrder(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
-                                                         @PathVariable("orderId") Long orderId,
-                                                         @PathVariable("orderItemId") Long orderItemId,
-                                                         @RequestBody CancelRequest cancelRequest) {
-        OrderItemDto orderItemDto = orderStatusChangeService.cancel(orderId, orderItemId, LocalDateTime.now(),
-                cancelRequest.getCancelReason());
-        OrderItemResponse response = OrderItemResponse.of(orderItemDto);
-        return ResponseEntity.ok().body(response);
-    }
-
     @PutMapping("/orders/{orderId}/{orderItemId}/outing")
     public ResponseEntity<OrderItemResponse> outingOrder(@LoginPartner AuthorizedPartner partner,
                                                          @PathVariable("orderId") Long orderId,
@@ -48,30 +37,6 @@ public class OrderStatusChangeController {
                                                          @PathVariable("orderId") Long orderId,
                                                          @PathVariable("orderItemId") Long orderItemId) {
         OrderItemDto orderItemDto = orderStatusChangeService.finish(orderId, orderItemId);
-        OrderItemResponse response = OrderItemResponse.of(orderItemDto);
-        return ResponseEntity.ok().body(response);
-    }
-
-    @PutMapping("/orders/{orderId}/{orderItemId}/refund")
-    public ResponseEntity<OrderItemResponse> refundOrder(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
-                                                         @PathVariable("orderId") Long orderId,
-                                                         @PathVariable("orderItemId") Long orderItemId,
-                                                         @RequestBody OrderRefundRequest refundRequest) {
-
-        OrderItemDto orderItemDto = orderStatusChangeService.refund(orderId, orderItemId, LocalDateTime.now(),
-                refundRequest.getRefundReason());
-        OrderItemResponse response = OrderItemResponse.of(orderItemDto);
-        return ResponseEntity.ok().body(response);
-    }
-
-    @PutMapping("/orders/{orderId}/{orderItemId}/exchange")
-    public ResponseEntity<OrderItemResponse> exchangeOrder(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
-                                                           @PathVariable("orderId") Long orderId,
-                                                           @PathVariable("orderItemId") Long orderItemId,
-                                                           @RequestBody OrderExchangeRequest exchangeRequest) {
-
-        OrderItemDto orderItemDto = orderStatusChangeService.exchange(orderId, orderItemId, LocalDateTime.now(),
-                exchangeRequest.getExchangeReason());
         OrderItemResponse response = OrderItemResponse.of(orderItemDto);
         return ResponseEntity.ok().body(response);
     }

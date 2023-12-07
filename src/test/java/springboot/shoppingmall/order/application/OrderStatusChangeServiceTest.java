@@ -101,49 +101,6 @@ class OrderStatusChangeServiceTest {
     }
 
     @Test
-    @DisplayName("주문 취소 - 준비 중인 주문 상품에 대해서는 별도로 주문취소 처리가 가능하다.")
-    void order_item_cancel() {
-        // given
-        int orderQuantity = 3;
-        List<OrderItem> items = Arrays.asList(
-                new OrderItem(product, orderQuantity, OrderStatus.READY),
-                new OrderItem(product2, orderQuantity, OrderStatus.READY)
-        );
-        LocalDateTime orderDate = LocalDateTime.of(2023, 6, 6, 12, 0, 0);
-        Order order = new Order(
-                "ready-order-code", userId, items, orderDate, orderDeliveryInfo
-        );
-        Order savedOrder = orderRepository.save(order);
-        Long orderId = savedOrder.getId();
-        Long orderItemId = savedOrder.getItems().get(0).getId();
-
-        // when
-        String cancelReason = "단순변심으로 구매 취소합니다.";
-        LocalDateTime cancelDate = LocalDateTime.of(2023, 5, 9, 13, 10, 12);
-        OrderItemDto cancelItem = orderStatusChangeService.cancel(orderId, orderItemId, cancelDate, cancelReason);
-
-        // then
-        assertThat(cancelItem.getOrderStatus()).isEqualTo(OrderStatus.CANCEL);
-
-        // 주문을 취소하면 상품 갯수를 원래대로 되돌린다.
-        Product findProduct = productRepository.findById(product.getId()).orElseThrow();
-        assertThat(findProduct.getQuantity()).isEqualTo(productCount);
-    }
-
-    @Test
-    @DisplayName("교환 신청 - 배송이 완료된 주문 상품에 대해 교환신청을 할 수 있다.")
-    void exchange_test() {
-        // 배송이 완료된 주문상품이 존재한다.
-        // 해당 주문상품을 교환신청 한다.
-        // given
-        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.DELIVERY_END);
-
-        // when
-
-        // then
-    }
-
-    @Test
     @DisplayName("구매 확정 - 배송이 완료된 상품을 구매확정 처리 한다. 동시에 사용자의 주문횟수/주문금액을 증가시킨다.")
     void order_finish_and_user_grade_info_update() throws JsonProcessingException {
         // given
