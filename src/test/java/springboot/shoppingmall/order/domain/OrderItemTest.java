@@ -221,9 +221,7 @@ class OrderItemTest {
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.DELIVERY_END);
 
         // when
-        LocalDateTime exchangeDate = LocalDateTime.of(2023, 5, 8, 12, 0, 0);
-        String exchangeReason = "교환 신청 합니다.";
-        orderItem.exchange(exchangeDate, exchangeReason);
+        orderItem.exchange();
 
         // then
         assertThat(orderItem.getOrderStatus()).isEqualTo(OrderStatus.EXCHANGE);
@@ -236,24 +234,8 @@ class OrderItemTest {
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.FINISH);
 
         // when & then
-        LocalDateTime exchangeDate = LocalDateTime.of(2023, 5, 8, 12, 0, 0);
-        String exchangeReason = "교환 신청 합니다.";
         assertThatIllegalArgumentException().isThrownBy(
-                () -> orderItem.exchange(exchangeDate, exchangeReason)
-        );
-    }
-
-    @Test
-    @DisplayName("6-3. 교환사유 없이는 교환신청이 불가하다.")
-    void exchange_fail_with_not_content_reason() {
-        // given
-        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.DELIVERY_END);
-
-        // when & then
-        LocalDateTime exchangeDate = LocalDateTime.of(2023, 5, 8, 12, 0, 0);
-        String exchangeReason = "";
-        assertThatIllegalArgumentException().isThrownBy(
-                () -> orderItem.exchange(exchangeDate, exchangeReason)
+                orderItem::exchange
         );
     }
 
@@ -264,9 +246,7 @@ class OrderItemTest {
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.DELIVERY_END);
 
         // when
-        LocalDateTime refundDate = LocalDateTime.of(2023, 5, 8, 12, 0, 0);
-        String refundReason = "교환 신청 합니다.";
-        orderItem.refund(refundDate, refundReason);
+        orderItem.refund();
 
         // then
         assertThat(orderItem.getOrderStatus()).isEqualTo(OrderStatus.REFUND);
@@ -279,24 +259,8 @@ class OrderItemTest {
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.FINISH);
 
         // when & then
-        LocalDateTime refundDate = LocalDateTime.of(2023, 5, 8, 12, 0, 0);
-        String refundReason = "교환 신청 합니다.";
         assertThatIllegalArgumentException().isThrownBy(
-                () -> orderItem.refund(refundDate, refundReason)
-        );
-    }
-
-    @Test
-    @DisplayName("7-3. 교환사유 없이는 교환신청이 불가하다.")
-    void refund_fail_with_not_content_reason() {
-        // given
-        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.DELIVERY_END);
-
-        // when & then
-        LocalDateTime refundDate = LocalDateTime.of(2023, 5, 8, 12, 0, 0);
-        String refundReason = "";
-        assertThatIllegalArgumentException().isThrownBy(
-                () -> orderItem.refund(refundDate, refundReason)
+                orderItem::refund
         );
     }
 
@@ -352,15 +316,13 @@ class OrderItemTest {
     }
 
     @Test
-    @DisplayName("10-1. 주문 취소 시, 취소시간/사유를 기록한다.")
+    @DisplayName("10-1. 준비 중인 주문상품에 대해 주문을 취소할 수 있다.")
     void cancel_test() {
         // given
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.READY);
 
         // when
-        LocalDateTime cancelDate = LocalDateTime.of(2023, 5, 8, 12, 0, 0);
-        String cancelReason = "취소 사유 입니다.";
-        orderItem.cancel(cancelDate, cancelReason);
+        orderItem.cancel();
 
         // then
         assertThat(orderItem.getOrderStatus()).isEqualTo(OrderStatus.CANCEL);
@@ -368,30 +330,14 @@ class OrderItemTest {
     }
 
     @Test
-    @DisplayName("10-2. 취소사유를 입력하지 않으면 주문취소가 불가하다.")
+    @DisplayName("10-2. 출고 중인 상품에 대해서는 주문을 취소할 수 없다.")
     void cancel_fail_with_not_ready() {
         // given
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.OUTING);
 
         // when & then
-        LocalDateTime cancelDate = LocalDateTime.of(2023, 5, 8, 12, 0, 0);
-        String cancelReason = "취소 사유 입니다.";
         assertThatIllegalArgumentException().isThrownBy(
-                () -> orderItem.cancel(cancelDate, cancelReason)
-        );
-    }
-
-    @Test
-    @DisplayName("10-3. 취소사유를 입력하지 않으면 주문취소가 불가하다.")
-    void cancel_fail_with_no_content_reason() {
-        // given
-        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.READY);
-
-        // when & then
-        LocalDateTime cancelDate = LocalDateTime.of(2023, 5, 8, 12, 0, 0);
-        String cancelReason = "";
-        assertThatIllegalArgumentException().isThrownBy(
-                () -> orderItem.cancel(cancelDate, cancelReason)
+                orderItem::cancel
         );
     }
 }

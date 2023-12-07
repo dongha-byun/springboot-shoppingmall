@@ -77,7 +77,7 @@ public class OrderStatusChangeController {
     }
 
     @PutMapping("/orders/{orderId}/{orderItemId}/checking")
-    public ResponseEntity<OrderItemResponse> checkingOrder(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
+    public ResponseEntity<OrderItemResponse> checkingOrder(@LoginPartner AuthorizedPartner partner,
                                                            @PathVariable("orderId") Long orderId,
                                                            @PathVariable("orderItemId") Long orderItemId) {
         OrderItemDto orderItemDto = orderStatusChangeService.checking(orderId, orderItemId);
@@ -86,7 +86,7 @@ public class OrderStatusChangeController {
     }
 
     @PutMapping("/orders/{orderId}/{orderItemId}/refund-end")
-    public ResponseEntity<OrderItemResponse> refundEndOrder(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
+    public ResponseEntity<OrderItemResponse> refundEndOrder(@LoginPartner AuthorizedPartner partner,
                                                             @PathVariable("orderId") Long orderId,
                                                             @PathVariable("orderItemId") Long orderItemId) {
         OrderItemDto orderItemDto = orderStatusChangeService.refundEnd(orderId, orderItemId);

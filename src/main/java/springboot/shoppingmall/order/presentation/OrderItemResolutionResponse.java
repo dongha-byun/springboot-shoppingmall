@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @Getter
 public class OrderItemResolutionResponse {
     private Long orderItemId;
-    private String completeMessage;
+    private String message;
 }

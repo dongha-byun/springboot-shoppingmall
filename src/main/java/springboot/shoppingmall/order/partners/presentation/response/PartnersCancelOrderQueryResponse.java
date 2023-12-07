@@ -11,28 +11,19 @@ import springboot.shoppingmall.order.partners.application.dto.PartnersCancelOrde
 @Getter
 @Setter
 public class PartnersCancelOrderQueryResponse extends PartnersOrderQueryResponse{
-    private String cancelDate;
-    private String cancelReason;
-    private String refundDate;
-    private String refundReason;
-    private String exchangeDate;
-    private String exchangeReason;
+    private String resolutionType;
+    private String resolutionDate;
+    private String resolutionReason;
 
     public PartnersCancelOrderQueryResponse(Long orderItemId, Long orderId, String orderCode, String orderDate, String productCode,
                                             String productName, int quantity, String invoiceNumber, int totalPrice,
                                             String userName, String userTelNo, String orderStatusName,
-                                            String cancelDate,
-                                            String cancelReason, String refundDate, String refundReason,
-                                            String exchangeDate, String exchangeReason) {
-        super(orderItemId, orderId, orderCode, orderDate, productCode, productName, quantity, invoiceNumber, totalPrice,
-                userName,
-                userTelNo, orderStatusName);
-        this.cancelDate = cancelDate;
-        this.cancelReason = cancelReason;
-        this.refundDate = refundDate;
-        this.refundReason = refundReason;
-        this.exchangeDate = exchangeDate;
-        this.exchangeReason = exchangeReason;
+                                            String resolutionType, String resolutionDate, String resolutionReason) {
+        super(orderItemId, orderId, orderCode, orderDate, productCode, productName, quantity,
+                invoiceNumber, totalPrice, userName, userTelNo, orderStatusName);
+        this.resolutionType = resolutionType;
+        this.resolutionDate = resolutionDate;
+        this.resolutionReason = resolutionReason;
     }
 
     public static PartnersCancelOrderQueryResponse of(PartnersCancelOrderQueryDto dto) {
@@ -40,9 +31,7 @@ public class PartnersCancelOrderQueryResponse extends PartnersOrderQueryResponse
                 dto.getOrderItemId(), dto.getOrderId(), dto.getOrderCode(), toStringOfLocalDateTIme(dto.getOrderDate()),
                 dto.getProductCode(), dto.getProductName(), dto.getQuantity(), dto.getInvoiceNumber(),
                 dto.getTotalPrice(), dto.getUserName(), dto.getUserTelNo(), dto.getOrderStatus().getStatusName(),
-                toStringOfLocalDateTIme(dto.getCancelDate()), dto.getCancelReason(),
-                toStringOfLocalDateTIme(dto.getRefundDate()), dto.getRefundReason(),
-                toStringOfLocalDateTIme(dto.getExchangeDate()), dto.getExchangeReason()
+                dto.getResolutionType().name(), toStringOfLocalDateTIme(dto.getResolutionDate()), dto.getResolutionReason()
         );
     }
 }

@@ -124,8 +124,6 @@ class OrderStatusChangeServiceTest {
 
         // then
         assertThat(cancelItem.getOrderStatus()).isEqualTo(OrderStatus.CANCEL);
-        assertThat(cancelItem.getCancelDate()).isEqualTo(cancelDate);
-        assertThat(cancelItem.getCancelReason()).isEqualTo(cancelReason);
 
         // 주문을 취소하면 상품 갯수를 원래대로 되돌린다.
         Product findProduct = productRepository.findById(product.getId()).orElseThrow();

@@ -17,6 +17,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import springboot.shoppingmall.order.domain.OrderItemResolutionType;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.partners.application.dto.PartnersCancelOrderQueryDto;
 import springboot.shoppingmall.order.partners.application.dto.PartnersDeliveryOrderQueryDto;
@@ -192,30 +193,22 @@ class PartnersOrderQueryControllerTest {
                                 1L, 1L, "order-code-1", orderDate.plusDays(1),
                                 "product-code-1", "상품 1", 2, "", 23000,
                                 1L, "구매자 1", "010-1234-1234", OrderStatus.CANCEL,
-                                cancelDate.plusDays(1), "단순 변심",
-                                null, null,
-                                null, null),
+                                OrderItemResolutionType.CANCEL, cancelDate.plusDays(1), "단순 변심"),
                         new PartnersCancelOrderQueryDto(
                                 2L, 2L, "order-code-2", orderDate.plusDays(2),
                                 "product-code-2", "상품 2", 1, "invoice-number-2", 99000,
                                 2L, "구매자 2", "010-2345-2345", OrderStatus.REFUND,
-                                null, null,
-                                cancelDate.plusDays(10), "사이즈 안맞음",
-                                null, null),
+                                OrderItemResolutionType.REFUND, cancelDate.plusDays(10), "사이즈 안맞음"),
                         new PartnersCancelOrderQueryDto(
                                 4L, 4L, "order-code-4", orderDate.plusDays(3),
                                 "product-code-4", "상품 4", 1, "invoice-number-4", 79900,
                                 4L, "구매자 4", "010-4567-4567", OrderStatus.REFUND_END,
-                                null, null,
-                                cancelDate.plusDays(15), "사이즈 안맞음",
-                                null, null),
+                                OrderItemResolutionType.REFUND, cancelDate.plusDays(15), "사이즈 안맞음"),
                         new PartnersCancelOrderQueryDto(
                                 3L, 3L, "order-code-3", orderDate.plusDays(4),
                                 "product-code-3", "상품 3", 1, "", 69900,
                                 3L, "구매자 3", "010-3456-3456", OrderStatus.EXCHANGE,
-                                null, null,
-                                null, null,
-                                cancelDate.plusDays(8), "원하는 색상이 아님")
+                                OrderItemResolutionType.EXCHANGE, cancelDate.plusDays(8), "원하는 색상이 아님")
                 )
         );
 

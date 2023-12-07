@@ -18,7 +18,10 @@ public class OrderItemResolutionService {
     private final OrderItemResolutionHistoryRepository repository;
     private final OrderFinder orderFinder;
 
-    public void process(Long userId, Long orderItemId, OrderItemResolutionType resolutionType, String content) {
+    public Long saveResolutionHistory(
+            Long userId, Long orderItemId, OrderItemResolutionType resolutionType,
+            LocalDateTime dateTime, String content
+    ) {
         OrderItem orderItem = orderFinder.findOrderItemById(orderItemId);
 
         switch (resolutionType) {
@@ -33,14 +36,12 @@ public class OrderItemResolutionService {
                 break;
         }
 
-        if(!StringUtils.hasText(content)) {
-            throw new IllegalArgumentException("사유가 입력되지 않았습니다.");
-        }
-
-        repository.save(
+        OrderItemResolutionHistory resolutionHistory = repository.save(
                 new OrderItemResolutionHistory(
-                        orderItem, resolutionType, LocalDateTime.now(), content
+                        orderItem, resolutionType, dateTime, content
                 )
         );
+
+        return resolutionHistory.getId();
     }
 }

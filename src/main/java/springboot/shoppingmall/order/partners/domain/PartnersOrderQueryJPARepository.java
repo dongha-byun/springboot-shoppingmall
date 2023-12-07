@@ -2,6 +2,7 @@ package springboot.shoppingmall.order.partners.domain;
 
 import static springboot.shoppingmall.order.domain.QOrder.order;
 import static springboot.shoppingmall.order.domain.QOrderItem.*;
+import static springboot.shoppingmall.order.domain.QOrderItemResolutionHistory.*;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -109,11 +110,12 @@ public class PartnersOrderQueryJPARepository implements PartnersOrderQueryReposi
                                 orderItem.quantity, orderItem.invoiceNumber,
                                 order.totalPrice, order.userId,
                                 orderItem.orderStatus,
-                                orderItem.cancelDate, orderItem.cancelReason,
-                                orderItem.refundDate, orderItem.refundReason,
-                                orderItem.exchangeDate, orderItem.exchangeReason))
+                                orderItemResolutionHistory.resolutionType,
+                                orderItemResolutionHistory.date,
+                                orderItemResolutionHistory.reason))
                 .from(orderItem)
                 .join(order).on(orderItem.order.eq(order))
+                .join(orderItemResolutionHistory).on(orderItemResolutionHistory.orderItem.eq(orderItem))
                 .where(
                         equalPartners(partnerId)
                                 .and(inOrderStatus(PartnersOrderQueryType.CANCEL.getStatusList()))

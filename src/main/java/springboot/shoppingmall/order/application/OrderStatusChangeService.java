@@ -24,7 +24,7 @@ public class OrderStatusChangeService {
     public OrderItemDto cancel(Long orderId, Long orderItemId, LocalDateTime cancelDate, String cancelReason) {
         Order order = orderFinder.findOrderById(orderId);
         OrderItem orderItem = order.findOrderItem(orderItemId);
-        orderItem.cancel(cancelDate, cancelReason);
+        orderItem.cancel();
 
         // 주문이 취소되면, 결제취소 요청을 보낸다.
 //        PayHistory payHistory = payHistoryRepository.findByOrderId(orderId)
@@ -72,7 +72,7 @@ public class OrderStatusChangeService {
     public OrderItemDto refund(Long orderId, Long orderItemId, LocalDateTime refundDate, String refundReason) {
         Order order = orderFinder.findOrderById(orderId);
         OrderItem orderItem = order.findOrderItem(orderItemId);
-        orderItem.refund(refundDate, refundReason);
+        orderItem.refund();
 
         return OrderItemDto.of(orderItem);
     }
@@ -90,7 +90,7 @@ public class OrderStatusChangeService {
     public OrderItemDto exchange(Long orderId, Long orderItemId, LocalDateTime exchangeDate, String exchangeReason) {
         Order order = orderFinder.findOrderById(orderId);
         OrderItem orderItem = order.findOrderItem(orderItemId);
-        orderItem.exchange(exchangeDate, exchangeReason);
+        orderItem.exchange();
 
         return OrderItemDto.of(orderItem);
     }

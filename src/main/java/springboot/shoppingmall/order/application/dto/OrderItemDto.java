@@ -24,12 +24,6 @@ public class OrderItemDto {
     private LocalDateTime deliveryCompleteDate;
     private String deliveryPlace;
     private OrderStatus orderStatus;
-    private LocalDateTime cancelDate;
-    private String cancelReason;
-    private LocalDateTime refundDate;
-    private String refundReason;
-    private LocalDateTime exchangeDate;
-    private String exchangeReason;
 
     public static OrderItemDto of(OrderItem item) {
         return new OrderItemDto(
@@ -37,8 +31,7 @@ public class OrderItemDto {
                 item.getTotalPrice(), item.getRealPayPrice(), item.getUsedUserCouponId(),
                 item.getCouponDiscountAmount(), item.getGradeDiscountAmount(),
                 item.getInvoiceNumber(), item.getDeliveryStartDate(), item.getDeliveryCompleteDate(),
-                item.getDeliveryPlace(), item.getOrderStatus(), item.getCancelDate(), item.getCancelReason(),
-                item.getRefundDate(), item.getRefundReason(), item.getExchangeDate(), item.getExchangeReason()
+                item.getDeliveryPlace(), item.getOrderStatus()
         );
     }
 }

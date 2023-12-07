@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,10 +26,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
+import springboot.shoppingmall.order.application.OrderItemResolutionService;
 import springboot.shoppingmall.order.application.dto.ResponseOrderUserInformation;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
+import springboot.shoppingmall.order.domain.OrderItemResolutionType;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.partners.application.dto.PartnersCancelOrderQueryDto;
@@ -40,7 +43,13 @@ import springboot.shoppingmall.product.domain.ProductRepository;
 class PartnersCancelOrderQueryServiceTest {
 
     @Autowired
+    EntityManager em;
+
+    @Autowired
     PartnersCancelOrderQueryService service;
+
+    @Autowired
+    OrderItemResolutionService orderItemResolutionService;
 
     @Autowired
     OrderRepository orderRepository;
@@ -51,9 +60,9 @@ class PartnersCancelOrderQueryServiceTest {
     @Autowired
     CategoryRepository categoryRepository;
 
+    Category category, subCategory;
     Product product1, product2, product3;
     Order order1, order2, order3;
-    OrderDeliveryInfo orderDeliveryInfo;
 
     LocalDateTime orderDate;
     Long partnersId = 10L;
@@ -70,52 +79,18 @@ class PartnersCancelOrderQueryServiceTest {
     void setup() {
         mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
 
-        Category category = categoryRepository.save(new Category("식품 분류"));
-        Category subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
+        category = categoryRepository.save(new Category("식품 분류"));
+        subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
         LocalDateTime registerDate = LocalDateTime.of(2021, 8, 15, 0, 0, 0);
-        product1 = productRepository.save(
-                new Product(
-                        "생선1", 1000, 10, 1.0, 10, registerDate,
-                        category, subCategory, partnersId,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-        product2 = productRepository.save(
-                new Product(
-                        "생선2", 1200, 11, 1.5, 20, registerDate,
-                        category, subCategory, partnersId,
-                        "storedFileName2", "viewFileName2", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-        product3 = productRepository.save(
-                new Product(
-                        "생선3", 1500, 12, 3.0, 15, registerDate,
-                        category, subCategory, partnersId,
-                        "storedFileName3", "viewFileName3", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
 
-        orderDeliveryInfo = new OrderDeliveryInfo(
-                "수령인1", "01234", "010-1234-1234",
-                "테스트구 테스트로", "테스트호 테스트동", "택배 보관함에 넣어주세요"
-        );
+        product1 = saveProduct("생선1", 1000, 1.0, 10, registerDate);
+        product2 = saveProduct("생선2", 1200, 1.5, 20, registerDate);
+        product3 = saveProduct("생선3", 1500, 3.0, 15, registerDate);
 
         orderDate = LocalDateTime.of(2023, 8, 13, 12, 0, 0);
-        order1 = getOrder("test-order-code1", 10L, product1, 3, orderDate.plusDays(1));
+        order1 = getOrder("test-order-code1", 10L, this.product1, 3, orderDate.plusDays(1));
         order2 = getOrder("test-order-code2", 20L, product2, 4, orderDate.plusDays(2));
         order3 = getOrder("test-order-code3", 20L, product3, 5, orderDate.plusDays(4));
-    }
-
-    private Order getOrder(String orderCode, Long userId, Product product, int quantity, LocalDateTime orderDate) {
-        return new Order(
-                orderCode, userId,
-                List.of(new OrderItem(product, quantity, OrderStatus.READY)),
-                orderDate,
-                orderDeliveryInfo
-        );
     }
 
     @Test
@@ -126,10 +101,6 @@ class PartnersCancelOrderQueryServiceTest {
 
         Order savedOrder1 = orderRepository.save(order1);
         OrderItem orderItem1 = getFirstOrderItemOf(savedOrder1);
-        orderItem1.cancel(
-                LocalDateTime.of(2023, 8, 14, 12, 0, 0),
-                "주문 취소합니다."
-        );
 
         Order savedOrder2 = orderRepository.save(order2);
         OrderItem orderItem2 = getFirstOrderItemOf(savedOrder2);
@@ -139,10 +110,6 @@ class PartnersCancelOrderQueryServiceTest {
         orderItem2.deliveryComplete(
                 LocalDateTime.of(2023, 8, 17, 12, 0 ,0),
                 "현관문 앞"
-        );
-        orderItem2.refund(
-                LocalDateTime.of(2023, 8, 19, 12, 0, 0),
-                "환불합니다."
         );
 
         Order savedOrder3 = orderRepository.save(order3);
@@ -154,8 +121,23 @@ class PartnersCancelOrderQueryServiceTest {
                 LocalDateTime.of(2023, 8, 16, 12, 0 ,0),
                 "현관문 앞"
         );
-        orderItem3.exchange(
-                LocalDateTime.of(2023, 8, 20, 12, 0, 0),
+
+        em.flush();
+        em.clear();
+
+        orderItemResolutionService.saveResolutionHistory(
+                10L, orderItem1.getId(), OrderItemResolutionType.CANCEL,
+                LocalDateTime.of(2023, 8, 25, 11, 0, 0),
+                "주문 취소합니다."
+        );
+        orderItemResolutionService.saveResolutionHistory(
+                20L, orderItem2.getId(), OrderItemResolutionType.REFUND,
+                LocalDateTime.of(2023, 8, 23, 12, 30, 0),
+                "환불합니다."
+        );
+        orderItemResolutionService.saveResolutionHistory(
+                20L, orderItem3.getId(), OrderItemResolutionType.EXCHANGE,
+                LocalDateTime.of(2023, 8, 24, 8, 0, 0),
                 "교환합니다."
         );
 
@@ -168,28 +150,26 @@ class PartnersCancelOrderQueryServiceTest {
         assertThat(orders).hasSize(3)
                 .extracting(
                         "orderItemId", "userId", "userName", "userTelNo", "orderStatus",
-                        "cancelDate", "cancelReason",
-                        "refundDate", "refundReason",
-                        "exchangeDate", "exchangeReason"
+                        "resolutionType", "resolutionDate", "resolutionReason"
                 )
                 .containsExactly(
                         tuple(
-                                getFirstOrderItemIdOf(savedOrder1), 10L, "사용자 10", "010-2222-3310", OrderStatus.CANCEL,
-                                LocalDateTime.of(2023, 8, 14, 12, 0, 0), "주문 취소합니다.",
-                                null, null,
-                                null, null
+                                getFirstOrderItemIdOf(savedOrder1), 10L, "사용자 10", "010-2222-3310",
+                                OrderStatus.CANCEL, OrderItemResolutionType.CANCEL,
+                                LocalDateTime.of(2023, 8, 25, 11, 0, 0),
+                                "주문 취소합니다."
                         ),
                         tuple(
-                                getFirstOrderItemIdOf(savedOrder2), 20L, "사용자 20", "010-2222-3320", OrderStatus.REFUND,
-                                null, null,
-                                LocalDateTime.of(2023, 8, 19, 12, 0, 0), "환불합니다.",
-                                null, null
+                                getFirstOrderItemIdOf(savedOrder2), 20L, "사용자 20", "010-2222-3320",
+                                OrderStatus.REFUND, OrderItemResolutionType.REFUND,
+                                LocalDateTime.of(2023, 8, 23, 12, 30, 0),
+                                "환불합니다."
                         ),
                         tuple(
-                                getFirstOrderItemIdOf(savedOrder3), 20L, "사용자 20", "010-2222-3320", OrderStatus.EXCHANGE,
-                                null, null,
-                                null, null,
-                                LocalDateTime.of(2023, 8, 20, 12, 0, 0), "교환합니다."
+                                getFirstOrderItemIdOf(savedOrder3), 20L, "사용자 20", "010-2222-3320",
+                                OrderStatus.EXCHANGE, OrderItemResolutionType.EXCHANGE,
+                                LocalDateTime.of(2023, 8, 24, 8, 0, 0),
+                                "교환합니다."
                         )
                 );
     }
@@ -218,5 +198,30 @@ class PartnersCancelOrderQueryServiceTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .body(responseContent)
                 );
+    }
+
+    private Order getOrder(String orderCode, Long userId, Product product, int quantity, LocalDateTime orderDate) {
+        return new Order(
+                orderCode, userId,
+                List.of(new OrderItem(product, quantity, OrderStatus.READY)),
+                orderDate,
+                new OrderDeliveryInfo(
+                        "수령인1", "01234", "010-1234-1234",
+                        "테스트구 테스트로", "테스트호 테스트동", "택배 보관함에 넣어주세요"
+                )
+        );
+    }
+
+    private Product saveProduct(String name, int price, double score, int salesVolume, LocalDateTime now) {
+        String storedFileName = "stored-file-name-" + name;
+        String viewFileName = "view-file-name-" + name;
+        return productRepository.save(
+                new Product(
+                        name, price, 10, score, salesVolume, now,
+                        category, subCategory, partnersId,
+                        storedFileName, viewFileName, "상품 설명 입니다.",
+                        "product-code"
+                )
+        );
     }
 }

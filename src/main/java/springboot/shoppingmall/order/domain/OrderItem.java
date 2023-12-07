@@ -52,15 +52,6 @@ public class OrderItem extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    private LocalDateTime cancelDate;
-    private String cancelReason;
-
-    private LocalDateTime refundDate;
-    private String refundReason;
-
-    private LocalDateTime exchangeDate;
-    private String exchangeReason;
-
     public static OrderItem createOrderItem(Product product, int quantity) {
         return createOrderItem(product, quantity, null);
     }
@@ -107,18 +98,12 @@ public class OrderItem extends BaseEntity {
         product.removeQuantity(quantity);
     }
 
-    public void cancel(LocalDateTime cancelDate, String cancelReason) {
-        if(!StringUtils.hasText(cancelReason)) {
-            throw new IllegalArgumentException("취소 사유를 입력해주세요.");
-        }
+    public void cancel() {
         if(OrderStatus.READY != this.orderStatus) {
             throw new IllegalArgumentException("준비 중인 주문 만 취소가 가능합니다.");
         }
         this.orderStatus = OrderStatus.CANCEL;
-        this.cancelDate = cancelDate;
-        this.cancelReason = cancelReason;
 
-        // 취소 처리 하면 상품의 재고를 올린다.
         increaseQuantity();
     }
 
@@ -164,31 +149,18 @@ public class OrderItem extends BaseEntity {
         product.increaseSalesVolume(this.quantity);
     }
 
-    public void refund(LocalDateTime refundDate, String refundReason) {
-        if(!StringUtils.hasText(refundReason)) {
-            throw new IllegalArgumentException("환불 사유는 필수입니다.");
-        }
-
+    public void refund() {
         if(this.orderStatus != OrderStatus.DELIVERY_END) {
             throw new IllegalArgumentException("배송이 완료된 주문만 환불 신청이 가능합니다.");
         }
-
         this.orderStatus = OrderStatus.REFUND;
-        this.refundDate = refundDate;
-        this.refundReason = refundReason;
     }
 
-    public void exchange(LocalDateTime exchangeDate, String exchangeReason) {
-        if(!StringUtils.hasText(exchangeReason)) {
-            throw new IllegalArgumentException("교환 사유는 필수입니다.");
-        }
-
+    public void exchange() {
         if(this.orderStatus != OrderStatus.DELIVERY_END) {
             throw new IllegalArgumentException("배송이 완료된 주문만 교환 신청이 가능합니다.");
         }
         this.orderStatus = OrderStatus.EXCHANGE;
-        this.exchangeDate = exchangeDate;
-        this.exchangeReason = exchangeReason;
     }
 
     public void checking() {

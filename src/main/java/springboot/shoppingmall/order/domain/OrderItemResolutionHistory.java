@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,6 +32,9 @@ public class OrderItemResolutionHistory {
     private String reason;
 
     public OrderItemResolutionHistory(OrderItem orderItem, OrderItemResolutionType resolutionType, LocalDateTime date, String reason) {
+        if(!StringUtils.hasText(reason)) {
+            throw new IllegalArgumentException("사유가 입력되지 않았습니다.");
+        }
         this.orderItem = orderItem;
         this.resolutionType = resolutionType;
         this.date = date;
