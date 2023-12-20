@@ -10,16 +10,14 @@ import org.springframework.util.MultiValueMap;
 @NoArgsConstructor
 @Data
 public class KakaoPayApproveRequest {
-    private String cid;
     private String tid;
     private String partner_order_id;
     private String partner_user_id;
     private String pg_token;
 
-    public MultiValueMap<String, String> toFormData() {
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+    public MultiValueMap<String, Object> toFormData() {
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 
-        map.add("cid", this.cid);
         map.add("tid", this.tid);
         map.add("partner_order_id", this.partner_order_id);
         map.add("partner_user_id", this.partner_user_id);

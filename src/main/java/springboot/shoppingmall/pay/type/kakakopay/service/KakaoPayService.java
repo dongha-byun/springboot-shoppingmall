@@ -35,8 +35,8 @@ public class KakaoPayService implements PayService {
     }
 
     @Override
-    public Object ready(MultiValueMap<String, String> formData) {
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, createHeaders());
+    public Object ready(MultiValueMap<String, Object> formData) {
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(formData, createHeaders());
 
         return restTemplate.postForObject(
                 READY_URL, request, KakaoPayReadyResponse.class
@@ -44,8 +44,8 @@ public class KakaoPayService implements PayService {
     }
 
     @Override
-    public Object approve(MultiValueMap<String, String> formData) {
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, createHeaders());
+    public Object approve(MultiValueMap<String, Object> formData) {
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(formData, createHeaders());
 
         return restTemplate.postForObject(
                 APPROVE_URL, request, KakaoPayApproveResponse.class

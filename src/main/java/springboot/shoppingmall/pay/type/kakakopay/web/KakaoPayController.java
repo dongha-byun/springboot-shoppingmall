@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.pay.type.kakakopay.service.KakaoPayService;
+import springboot.shoppingmall.pay.web.PayInterfaceFormDataConverter;
 import springboot.shoppingmall.pay.web.PayRequest;
 
 @RequiredArgsConstructor
@@ -14,11 +15,12 @@ import springboot.shoppingmall.pay.web.PayRequest;
 public class KakaoPayController {
 
     private final KakaoPayService kakaoPayService;
+    private final PayInterfaceFormDataConverter formDataConverter;
 
     @PostMapping("/pay/KAKAO_PAY/ready")
     public ResponseEntity<KakaoPayReadyResponse> readyPay(@RequestBody PayRequest<KakaoPayReadyRequest> param) {
         KakaoPayReadyRequest kakaoPayReadyRequest = param.getData();
-        MultiValueMap<String, String> formData = kakaoPayReadyRequest.toFormData();
+        MultiValueMap<String, Object> formData = formDataConverter.convertReadyFormData(kakaoPayReadyRequest);
 
         KakaoPayReadyResponse response = (KakaoPayReadyResponse) kakaoPayService.ready(formData);
 
@@ -27,7 +29,7 @@ public class KakaoPayController {
     @PostMapping("/pay/KAKAO_PAY/approve")
     public ResponseEntity<KakaoPayApproveResponse> approvePay(@RequestBody PayRequest<KakaoPayApproveRequest> param) {
         KakaoPayApproveRequest kakaoPayApproveRequest = param.getData();
-        MultiValueMap<String, String> formData = kakaoPayApproveRequest.toFormData();
+        MultiValueMap<String, Object> formData = formDataConverter.convertApproveFormData(kakaoPayApproveRequest);
 
         KakaoPayApproveResponse response = (KakaoPayApproveResponse) kakaoPayService.approve(formData);
 
@@ -37,7 +39,7 @@ public class KakaoPayController {
     @PostMapping("/pay/KAKAO_PAY/cancel")
     public ResponseEntity<KakaoPayCancelResponse> cancelPay(@RequestBody PayRequest<KakaoPayCancelRequest> param) {
         KakaoPayCancelRequest kakaoPayCancelRequest = param.getData();
-        MultiValueMap<String, Object> formData = kakaoPayCancelRequest.toFormData();
+        MultiValueMap<String, Object> formData = formDataConverter.convertCancelFormData(kakaoPayCancelRequest);
 
         KakaoPayCancelResponse response = (KakaoPayCancelResponse) kakaoPayService.cancel(formData);
 

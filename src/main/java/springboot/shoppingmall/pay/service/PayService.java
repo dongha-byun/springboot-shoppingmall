@@ -4,9 +4,9 @@ import org.springframework.util.MultiValueMap;
 
 public interface PayService {
 
-    Object ready(MultiValueMap<String, String> formData);
+    Object ready(MultiValueMap<String, Object> formData);
 
-    Object approve(MultiValueMap<String, String> formData);
+    Object approve(MultiValueMap<String, Object> formData);
 
     Object cancel(MultiValueMap<String, Object> formData);
 }

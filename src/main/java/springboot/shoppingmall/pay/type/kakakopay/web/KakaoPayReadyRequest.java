@@ -15,8 +15,7 @@ import org.springframework.util.MultiValueMapAdapter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class KakaoPayReadyRequest implements Serializable {
-    private String cid;
+public class KakaoPayReadyRequest {
     private String partner_order_id;
     private String partner_user_id;
     private String item_name;
@@ -28,17 +27,16 @@ public class KakaoPayReadyRequest implements Serializable {
     private String fail_url;
     private String cancel_url;
 
-    public MultiValueMap<String, String> toFormData() {
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+    public MultiValueMap<String, Object> toFormData() {
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 
-        map.add("cid", this.cid);
         map.add("partner_order_id", this.partner_order_id);
         map.add("partner_user_id", this.partner_user_id);
         map.add("item_name", this.item_name);
-        map.add("quantity", String.valueOf(this.quantity));
-        map.add("total_amount", String.valueOf(this.total_amount));
-        map.add("vat_amount", String.valueOf(this.vat_amount));
-        map.add("tax_free_amount", String.valueOf(this.tax_free_amount));
+        map.add("quantity", this.quantity);
+        map.add("total_amount", this.total_amount);
+        map.add("vat_amount", this.vat_amount);
+        map.add("tax_free_amount", this.tax_free_amount);
         map.add("approval_url", this.approval_url);
         map.add("fail_url", this.fail_url);
         map.add("cancel_url", this.cancel_url);
