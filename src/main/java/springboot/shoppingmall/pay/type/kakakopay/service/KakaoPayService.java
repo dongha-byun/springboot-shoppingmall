@@ -1,71 +1,35 @@
 package springboot.shoppingmall.pay.type.kakakopay.service;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
-import springboot.shoppingmall.pay.service.PayService;
-import springboot.shoppingmall.pay.type.kakakopay.web.KakaoPayApproveResponse;
-import springboot.shoppingmall.pay.type.kakakopay.web.KakaoPayCancelResponse;
-import springboot.shoppingmall.pay.type.kakakopay.web.KakaoPayReadyResponse;
+import springboot.shoppingmall.pay.type.kakakopay.domain.KakaoPayClient;
+import springboot.shoppingmall.pay.type.kakakopay.domain.KakaoPayInterfaceFormDataConverter;
+import springboot.shoppingmall.pay.type.kakakopay.dto.approve.KakaoPayApproveRequestDto;
+import springboot.shoppingmall.pay.type.kakakopay.dto.approve.KakaoPayApproveResponseDto;
+import springboot.shoppingmall.pay.type.kakakopay.dto.cancel.KakaoPayCancelRequestDto;
+import springboot.shoppingmall.pay.type.kakakopay.dto.cancel.KakaoPayCancelResponseDto;
+import springboot.shoppingmall.pay.type.kakakopay.dto.ready.KakaoPayReadyRequestDto;
+import springboot.shoppingmall.pay.type.kakakopay.dto.ready.KakaoPayReadyResponseDto;
 
-public class KakaoPayService implements PayService {
+@RequiredArgsConstructor
+@Service
+public class KakaoPayService {
+    private final KakaoPayClient kakaoPayClient;
+    private final KakaoPayInterfaceFormDataConverter formDataConverter;
 
-    private final RestTemplate restTemplate;
-
-    @Value("${pay.api.kakao.ready_url}")
-    private String READY_URL;
-
-    @Value("${pay.api.kakao.approve_url}")
-    private String APPROVE_URL;
-
-    @Value("${pay.api.kakao.cancel_url}")
-    private String CANCEL_URL;
-
-    @Value("${pay.api.kakao.type}")
-    private String ADMIN_KEY_TYPE;
-
-    @Value("${pay.api.kakao.key}")
-    private String ADMIN_KEY;
-
-    public KakaoPayService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public KakaoPayReadyResponseDto ready(KakaoPayReadyRequestDto readyRequestDto) {
+        MultiValueMap<String, Object> requestFormData = formDataConverter.convertReadyFormData(readyRequestDto);
+        return kakaoPayClient.ready(requestFormData);
     }
 
-    @Override
-    public Object ready(MultiValueMap<String, Object> formData) {
-        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(formData, createHeaders());
-
-        return restTemplate.postForObject(
-                READY_URL, request, KakaoPayReadyResponse.class
-        );
+    public KakaoPayApproveResponseDto approve(KakaoPayApproveRequestDto approveRequestDto) {
+        MultiValueMap<String, Object> requestFormData = formDataConverter.convertApproveFormData(approveRequestDto);
+        return kakaoPayClient.approve(requestFormData);
     }
 
-    @Override
-    public Object approve(MultiValueMap<String, Object> formData) {
-        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(formData, createHeaders());
-
-        return restTemplate.postForObject(
-                APPROVE_URL, request, KakaoPayApproveResponse.class
-        );
-    }
-
-    @Override
-    public Object cancel(MultiValueMap<String, Object> formData) {
-        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(formData, createHeaders());
-
-        return restTemplate.postForObject(
-                CANCEL_URL, request, KakaoPayCancelResponse.class
-        );
-    }
-
-    private HttpHeaders createHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.AUTHORIZATION, ADMIN_KEY_TYPE + " " + ADMIN_KEY);
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        return headers;
+    public KakaoPayCancelResponseDto cancel(KakaoPayCancelRequestDto cancelRequestDto) {
+        MultiValueMap<String, Object> requestFormData = formDataConverter.convertCancelFormData(cancelRequestDto);
+        return kakaoPayClient.cancel(requestFormData);
     }
 }

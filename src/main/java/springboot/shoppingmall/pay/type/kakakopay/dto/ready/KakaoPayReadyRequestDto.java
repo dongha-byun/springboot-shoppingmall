@@ -1,21 +1,15 @@
-package springboot.shoppingmall.pay.type.kakakopay.web;
+package springboot.shoppingmall.pay.type.kakakopay.dto.ready;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import net.bytebuddy.dynamic.scaffold.MethodGraph.Linked;
-import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.MultiValueMapAdapter;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class KakaoPayReadyRequest {
+@Getter
+public class KakaoPayReadyRequestDto {
     private String partner_order_id;
     private String partner_user_id;
     private String item_name;

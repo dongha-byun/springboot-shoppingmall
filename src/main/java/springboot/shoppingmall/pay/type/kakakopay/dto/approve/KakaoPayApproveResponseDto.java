@@ -1,14 +1,15 @@
-package springboot.shoppingmall.pay.type.kakakopay.web;
+package springboot.shoppingmall.pay.type.kakakopay.dto.approve;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import springboot.shoppingmall.pay.type.kakakopay.value.Amount;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class KakaoPayApproveResponse {
+@Getter
+public class KakaoPayApproveResponseDto {
     private String cid;
     private String aid;
     private String tid;
@@ -20,16 +21,4 @@ public class KakaoPayApproveResponse {
     private Amount amount;
     private LocalDateTime created_at;
     private LocalDateTime approved_at;
-
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Data
-    private static class Amount {
-        private Integer total;
-        private Integer tax_free;
-        private Integer vat;
-        private Integer point;
-        private Integer discount;
-        private Integer green_deposit;
-    }
 }

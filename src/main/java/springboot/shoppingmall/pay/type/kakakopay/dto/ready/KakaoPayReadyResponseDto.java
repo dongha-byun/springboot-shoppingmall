@@ -1,14 +1,14 @@
-package springboot.shoppingmall.pay.type.kakakopay.web;
+package springboot.shoppingmall.pay.type.kakakopay.dto.ready;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class KakaoPayReadyResponse {
+@Getter
+public class KakaoPayReadyResponseDto {
     private String tid;
     private String next_redirect_app_url;
     private String next_redirect_mobile_url;
