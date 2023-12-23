@@ -1,9 +1,12 @@
 package springboot.shoppingmall.coupon.application;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.client.userservice.response.ResponseUserInformation;
@@ -18,6 +21,7 @@ import springboot.shoppingmall.coupon.domain.UserCouponQueryRepository;
 public class UserCouponQueryService {
     private final UserCouponQueryRepository queryRepository;
     private final UserServiceClient userServiceClient;
+    private final CircuitBreakerFactory circuitBreakerFactory;
 
     public List<UserCouponQueryDto> findUsersReceivedCoupon(Long couponId) {
         // 1
@@ -27,7 +31,11 @@ public class UserCouponQueryService {
         List<Long> userIds = fetchUserIds(userInfoHasCoupon);
 
         // 3
-        List<ResponseUserInformation> result = userServiceClient.getUsers(userIds);
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("getUsersReceivedCoupon");
+        List<ResponseUserInformation> result = circuitBreaker.run(
+                () -> userServiceClient.getUsers(userIds),
+                throwable -> new ArrayList<>()
+        );
 
         // 4. userInfoHasCoupon + result
         Map<Long, ResponseUserInformation> map = getResponseUserInformationMap(result);
