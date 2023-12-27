@@ -64,19 +64,19 @@ class PartnersOrderQueryControllerTest {
                         new PartnersReadyOrderQueryDto(
                                 1L, 1L, "order-code-1", orderDate.plusDays(1),
                                 "product-code-1", "상품 1", 2, "", 23000,
-                                1L, "구매자 1", "010-1234-1234", OrderStatus.READY,
+                                1L, "구매자 1", "010-1234-1234", OrderStatus.PREPARED,
                                 "수령인 1", "010-1111-2222",
                                 "주소 1", "상세주소 1", "요청사항 1"),
                         new PartnersReadyOrderQueryDto(
                                 2L, 2L, "order-code-2", orderDate.plusDays(2),
                                 "product-code-2", "상품 2", 4, "", 34000,
-                                2L, "구매자 2", "010-2345-2345", OrderStatus.READY,
+                                2L, "구매자 2", "010-2345-2345", OrderStatus.PREPARED,
                                 "수령인 2", "010-2222-3333",
                                 "주소 2", "상세주소 2", "요청사항 2"),
                         new PartnersReadyOrderQueryDto(
                                 3L, 3L, "order-code-3", orderDate.plusDays(3),
                                 "product-code-3", "상품 3", 8, "", 49900,
-                                3L, "구매자 3", "010-3456-3456", OrderStatus.READY,
+                                3L, "구매자 3", "010-3456-3456", OrderStatus.PREPARED,
                                 "수령인 3", "010-3333-4444",
                                 "주소 3", "상세주소 3", "요청사항 3")
                 )

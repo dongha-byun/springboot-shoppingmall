@@ -57,7 +57,7 @@ class OrderFinderTest {
         );
 
         orderItems = List.of(
-                new OrderItem(product, 20, OrderStatus.READY)
+                new OrderItem(product, 20, OrderStatus.PREPARED)
         );
     }
 

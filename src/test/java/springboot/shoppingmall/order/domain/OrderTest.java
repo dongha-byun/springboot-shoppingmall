@@ -38,8 +38,8 @@ public class OrderTest {
                 .nickName("수령지 1").receiverName("수령인 1").zipCode("10010")
                 .address("서울시 동작구 사당동").detailAddress("101호").requestMessage("도착 시 연락주세요.").build();
         orderItems = Arrays.asList(
-                new OrderItem(product1, 2, OrderStatus.READY),
-                new OrderItem(product2, 2, OrderStatus.READY)
+                new OrderItem(product1, 2, OrderStatus.PREPARED),
+                new OrderItem(product2, 2, OrderStatus.PREPARED)
         );
     }
 

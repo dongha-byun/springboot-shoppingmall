@@ -85,7 +85,7 @@ class OrderItemResolutionServiceTest {
     @DisplayName("상품의 주문을 취소한다.")
     void save_cancel_history() {
         // given
-        OrderItem orderItem = new OrderItem(product, 3, OrderStatus.READY);
+        OrderItem orderItem = new OrderItem(product, 3, OrderStatus.PREPARED);
         Order order = Order.createOrder(
                 orderCode, userId, List.of(orderItem), orderDeliveryInfo
         );
@@ -111,7 +111,7 @@ class OrderItemResolutionServiceTest {
     @DisplayName("사유를 작성하지 않으면, 주문을 취소할 수 없다.")
     void save_cancel_history_fail_with_no_content() {
         // given
-        OrderItem orderItem = new OrderItem(product, 3, OrderStatus.READY);
+        OrderItem orderItem = new OrderItem(product, 3, OrderStatus.PREPARED);
         Order order = Order.createOrder(
                 orderCode, userId, List.of(orderItem), orderDeliveryInfo
         );

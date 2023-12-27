@@ -31,9 +31,9 @@ class OrderHistoryServiceTest {
         orderHistoryService = new OrderHistoryService(orderHistoryRepository);
 
         when(orderHistoryRepository.queryOrderHistory(any(), any(), any())).thenReturn(Arrays.asList(
-                new OrderHistoryDto(100L, 1L, LocalDateTime.now(), OrderStatus.READY, 1L,"제품1", tid, 23000, 11L, "판매처1"),
-                new OrderHistoryDto(101L, 2L, LocalDateTime.now(), OrderStatus.READY, 2L,"제품2", tid, 20000, 11L, "판매처1"),
-                new OrderHistoryDto(102L, 3L, LocalDateTime.now(), OrderStatus.READY, 3L,"제품3", tid, 13000, 11L, "판매처1")
+                new OrderHistoryDto(100L, 1L, LocalDateTime.now(), OrderStatus.PREPARED, 1L,"제품1", tid, 23000, 11L, "판매처1"),
+                new OrderHistoryDto(101L, 2L, LocalDateTime.now(), OrderStatus.PREPARED, 2L,"제품2", tid, 20000, 11L, "판매처1"),
+                new OrderHistoryDto(102L, 3L, LocalDateTime.now(), OrderStatus.PREPARED, 3L,"제품3", tid, 13000, 11L, "판매처1")
         ));
 
         List<OrderHistoryDto> orderHistory = orderHistoryService.findOrderHistory(1L, LocalDateTime.now().minusMonths(3), LocalDateTime.now());

@@ -7,7 +7,7 @@ import springboot.shoppingmall.order.domain.OrderStatus;
 
 @Getter
 public enum PartnersOrderQueryType {
-    READY("준비중", Arrays.asList(OrderStatus.READY, OrderStatus.OUTING)),
+    READY("준비중", Arrays.asList(OrderStatus.PREPARED, OrderStatus.OUTING)),
     DELIVERY("배송중", List.of(OrderStatus.DELIVERY)),
     END("배송완료", Arrays.asList(OrderStatus.DELIVERY_END, OrderStatus.FINISH)),
     CANCEL("취소/환불/교환", Arrays.asList(OrderStatus.CANCEL, OrderStatus.REFUND, OrderStatus.REFUND_END, OrderStatus.EXCHANGE, OrderStatus.CHECKING));

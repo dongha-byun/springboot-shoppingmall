@@ -6,7 +6,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum OrderStatus {
-    READY("상품 준비중"),
+    PAY_WAIT("결제 대기중"),
+    PREPARED("상품 준비중"),
     CANCEL("주문 취소"),
     OUTING("상품 출고"),
     DELIVERY("배송중"),

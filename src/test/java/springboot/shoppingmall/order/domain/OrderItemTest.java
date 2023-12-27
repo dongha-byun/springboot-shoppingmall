@@ -35,10 +35,10 @@ class OrderItemTest {
         int orderQuantity = 2;
 
         // when
-        OrderItem orderItem = new OrderItem(product, orderQuantity, OrderStatus.READY);
+        OrderItem orderItem = new OrderItem(product, orderQuantity, OrderStatus.PREPARED);
 
         // then
-        assertThat(orderItem.getOrderStatus()).isEqualTo(OrderStatus.READY);
+        assertThat(orderItem.getOrderStatus()).isEqualTo(OrderStatus.PREPARED);
         assertThat(orderItem.getQuantity()).isEqualTo(orderQuantity);
         assertThat(product.getQuantity()).isEqualTo(quantity - orderQuantity);
     }
@@ -72,7 +72,7 @@ class OrderItemTest {
     void outing_test() {
         // given
         String invoiceNumber = "test-invoice-number";
-        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.READY);
+        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.PREPARED);
 
         // when
         orderItem.outing(invoiceNumber);
@@ -100,7 +100,7 @@ class OrderItemTest {
     void outing_fail_with_no_invoice_number() {
         // given
         String invoiceNumber = "";
-        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.READY);
+        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.PREPARED);
 
         // when & then
         assertThatIllegalArgumentException().isThrownBy(
@@ -127,7 +127,7 @@ class OrderItemTest {
     @DisplayName("3-2. 출고된 상품이 아니면 배송중으로 처리할 수 없다.")
     void delivery_fail_with_not_outing() {
         // given
-        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.READY);
+        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.PREPARED);
 
         // when & then
         LocalDateTime deliveryStartDate = LocalDateTime.of(2023, 5, 19, 15, 31, 11);
@@ -319,7 +319,7 @@ class OrderItemTest {
     @DisplayName("10-1. 준비 중인 주문상품에 대해 주문을 취소할 수 있다.")
     void cancel_test() {
         // given
-        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.READY);
+        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.PREPARED);
 
         // when
         orderItem.cancel();

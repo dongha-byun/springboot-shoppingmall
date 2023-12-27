@@ -67,7 +67,7 @@ class OrderDeliveryInvoiceServiceTest {
     @DisplayName("배송중 상태로 변경")
     void delivery() {
         // given
-        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.READY);
+        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.PREPARED);
         orderItem.outing(invoiceNumber);
         List<OrderItem> orderItems = List.of(orderItem);
         orderRepository.save(
@@ -90,7 +90,7 @@ class OrderDeliveryInvoiceServiceTest {
     @DisplayName("배송완료 상태로 변경 - 최종 배송장소와 배송시간도 추가로 저장한다.")
     void delivery_end() {
         // given
-        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.READY);
+        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.PREPARED);
         orderItem.outing(invoiceNumber);
         orderItem.delivery(LocalDateTime.of(2023, 5, 15, 15, 0, 0));
 

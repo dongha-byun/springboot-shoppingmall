@@ -113,7 +113,7 @@ class PartnersEndOrderQueryServiceTest {
     private Order getOrder(String orderCode, Long userId, Product product, int quantity, LocalDateTime orderDate) {
         return new Order(
                 orderCode, userId,
-                List.of(new OrderItem(product, quantity, OrderStatus.READY)),
+                List.of(new OrderItem(product, quantity, OrderStatus.PREPARED)),
                 orderDate,
                 orderDeliveryInfo
         );

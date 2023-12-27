@@ -102,7 +102,7 @@ class PartnersOrderQueryRepositoryTest {
     private Order getOrder(String orderCode, Product product, int quantity, LocalDateTime orderDate) {
         return new Order(
                 orderCode, userId,
-                List.of(new OrderItem(product, quantity, OrderStatus.READY)),
+                List.of(new OrderItem(product, quantity, OrderStatus.PREPARED)),
                 orderDate,
                 orderDeliveryInfo
         );
@@ -131,9 +131,9 @@ class PartnersOrderQueryRepositoryTest {
         assertThat(readyOrders).hasSize(3)
                 .extracting("orderItemId", "userId", "orderStatus", "receiverName", "invoiceNumber")
                 .containsExactly(
-                        tuple(getFirstOrderItemIdOf(savedOrder1), 100L, OrderStatus.READY, "수령인1", null),
+                        tuple(getFirstOrderItemIdOf(savedOrder1), 100L, OrderStatus.PREPARED, "수령인1", null),
                         tuple(getFirstOrderItemIdOf(savedOrder2), 100L, OrderStatus.OUTING, "수령인1", "test-invoice-number"),
-                        tuple(getFirstOrderItemIdOf(savedOrder3), 100L, OrderStatus.READY, "수령인1", null)
+                        tuple(getFirstOrderItemIdOf(savedOrder3), 100L, OrderStatus.PREPARED, "수령인1", null)
                 );
     }
 

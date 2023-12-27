@@ -203,7 +203,7 @@ class PartnersCancelOrderQueryServiceTest {
     private Order getOrder(String orderCode, Long userId, Product product, int quantity, LocalDateTime orderDate) {
         return new Order(
                 orderCode, userId,
-                List.of(new OrderItem(product, quantity, OrderStatus.READY)),
+                List.of(new OrderItem(product, quantity, OrderStatus.PREPARED)),
                 orderDate,
                 new OrderDeliveryInfo(
                         "수령인1", "01234", "010-1234-1234",

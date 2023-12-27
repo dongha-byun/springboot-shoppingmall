@@ -76,21 +76,21 @@ class OrderHistoryRepositoryTest {
 
         order1 = new Order(
                 UUID.randomUUID().toString(), userId,
-                List.of(new OrderItem(product, 2, OrderStatus.READY)),
+                List.of(new OrderItem(product, 2, OrderStatus.PREPARED)),
                 LocalDateTime.of(2022, 11, 5, 12, 0, 0),
                 orderDeliveryInfo
         );
 
         order2 = new Order(
                 UUID.randomUUID().toString(), userId,
-                List.of(new OrderItem(product, 2, OrderStatus.READY)),
+                List.of(new OrderItem(product, 2, OrderStatus.PREPARED)),
                 LocalDateTime.of(2023, 2, 5, 12, 0, 0),
                 orderDeliveryInfo
         );
 
         order3 = new Order(
                 UUID.randomUUID().toString(), userId,
-                List.of(new OrderItem(product, 2, OrderStatus.READY)),
+                List.of(new OrderItem(product, 2, OrderStatus.PREPARED)),
                 LocalDateTime.of(2023, 5, 5, 12, 0, 0),
                 orderDeliveryInfo
         );
@@ -105,15 +105,15 @@ class OrderHistoryRepositoryTest {
         Order savedOrder3 = orderRepository.save(order3);
 
         payHistoryRepository.save(
-                new PayHistory(savedOrder1.getId(), PayType.KAKAO_PAY.name(), "test-tid-order1",
+                new PayHistory(savedOrder1.getId(), PayType.KAKAO_PAY, "test-tid-order1",
                         savedOrder1.getTotalPrice())
         );
         payHistoryRepository.save(
-                new PayHistory(savedOrder2.getId(), PayType.KAKAO_PAY.name(), "test-tid-order2",
+                new PayHistory(savedOrder2.getId(), PayType.KAKAO_PAY, "test-tid-order2",
                         savedOrder2.getTotalPrice())
         );
         payHistoryRepository.save(
-                new PayHistory(savedOrder3.getId(), PayType.KAKAO_PAY.name(), "test-tid-order3",
+                new PayHistory(savedOrder3.getId(), PayType.KAKAO_PAY, "test-tid-order3",
                         savedOrder3.getTotalPrice())
         );
 

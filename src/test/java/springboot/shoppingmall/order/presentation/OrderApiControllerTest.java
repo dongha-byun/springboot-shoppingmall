@@ -77,11 +77,11 @@ class OrderApiControllerTest {
                         1L, 39000, 35100, LocalDateTime.of(2023, 9, 12, 1, 30, 0),
                         Arrays.asList(
                                 new OrderItemDto(1L, 1L, 2, 20000, 18000, null, 0, 2000, null, null, null, "",
-                                        OrderStatus.READY),
+                                        OrderStatus.PREPARED),
                                 new OrderItemDto(2L, 2L, 1, 9000, 8100, null, 0, 900, null, null, null, "",
-                                        OrderStatus.READY),
+                                        OrderStatus.PREPARED),
                                 new OrderItemDto(3L, 3L, 10, 10000, 9000, null, 0, 1000, null, null, null, "",
-                                        OrderStatus.READY)
+                                        OrderStatus.PREPARED)
 
                         ),
                         new OrderDeliveryInfoDto(

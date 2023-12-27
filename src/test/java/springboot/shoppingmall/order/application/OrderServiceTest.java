@@ -121,8 +121,8 @@ class OrderServiceTest {
         assertThat(order.getItems()).hasSize(2)
                 .extracting("productId", "orderStatus")
                 .containsExactly(
-                        tuple(product.getId(), OrderStatus.READY),
-                        tuple(product2.getId(), OrderStatus.READY)
+                        tuple(product.getId(), OrderStatus.PREPARED),
+                        tuple(product2.getId(), OrderStatus.PREPARED)
                 );
 
         // 각각의 상품의 재고가 각 주문 수량 만큼 감소한다.
