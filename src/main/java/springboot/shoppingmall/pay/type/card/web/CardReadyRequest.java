@@ -17,8 +17,8 @@ public class CardReadyRequest {
     private String approval_url;
     private String fail_url;
 
-    public MultiValueMap<String, String> toFormData() {
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+    public MultiValueMap<String, Object> toFormData() {
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 
         map.add("cid", this.cid);
         map.add("item_name", this.item_name);

@@ -13,8 +13,8 @@ public class CardApproveRequest {
     private String cid;
     private String tid;
 
-    public MultiValueMap<String, String> toFormData() {
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+    public MultiValueMap<String, Object> toFormData() {
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 
         map.add("cid", this.cid);
         map.add("tid", this.tid);

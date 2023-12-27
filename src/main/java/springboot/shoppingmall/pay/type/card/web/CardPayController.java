@@ -17,14 +17,14 @@ public class CardPayController {
 
     @PostMapping("/pay/CARD/ready")
     public ResponseEntity<CardReadyResponse> cardPayReady(@RequestBody CardReadyRequest param) {
-        MultiValueMap<String, String> formData = param.toFormData();
+        MultiValueMap<String, Object> formData = param.toFormData();
         CardReadyResponse response = (CardReadyResponse) cardPayService.ready(formData);
         return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("/pay/CARD/approve")
     public ResponseEntity<CardApproveResponse> cardPayApprove(@RequestBody CardApproveRequest param) {
-        MultiValueMap<String, String> formData = param.toFormData();
+        MultiValueMap<String, Object> formData = param.toFormData();
         CardApproveResponse response = (CardApproveResponse) cardPayService.approve(formData);
         return ResponseEntity.ok().body(response);
     }
