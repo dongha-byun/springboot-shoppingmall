@@ -13,7 +13,7 @@ import springboot.shoppingmall.pay.type.kakakopay.web.ready.KakaoPayReadyRequest
 @Component
 public class KakaoPayInterfaceFormDataConverter {
 
-    @Value("pay.api.kakao.cid")
+    @Value("${pay.api.kakao.cid}")
     private String cid;
 
     public MultiValueMap<String, Object> convertReadyFormData (KakaoPayReadyRequestDto readyRequestDto) {
