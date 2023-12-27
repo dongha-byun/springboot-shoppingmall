@@ -98,14 +98,22 @@ class ProductApiControllerTest {
                 content.getBytes()
         );
 
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "",
+                MediaType.APPLICATION_OCTET_STREAM_VALUE,
+                "".getBytes()
+        );
+
         // when & then
         mockMvc.perform(
                         multipart("/products")
                                 .file(data)
+                                .file(file)
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", is("대표 이미지를 설정해야 합니다.")));
+                .andExpect(jsonPath("$.message", is("대표 이미지가 존재하지 않습니다.")));
     }
 
     @Test

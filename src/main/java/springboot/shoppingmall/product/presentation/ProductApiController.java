@@ -40,6 +40,10 @@ public class ProductApiController {
             throw new BeanValidationException(bindingResult);
         }
 
+        if (showImgFile.isEmpty()) {
+            throw new NoThumbnailException("대표 이미지가 존재하지 않습니다.");
+        }
+
         ThumbnailInfo thumbnailInfo = thumbnailFileService.save(showImgFile);
 
         ProductCreateDto productCreateDto = productRequest.toDto(thumbnailInfo);
