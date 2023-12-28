@@ -9,12 +9,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import javax.ws.rs.core.MediaType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import springboot.shoppingmall.authorization.GatewayConstants;
+import springboot.shoppingmall.coupon.domain.OrderCodeCreator;
 import springboot.shoppingmall.pay.type.kakakopay.dto.approve.KakaoPayApproveResponseDto;
 import springboot.shoppingmall.pay.type.kakakopay.dto.cancel.KakaoPayCancelResponseDto;
 import springboot.shoppingmall.pay.type.kakakopay.dto.ready.KakaoPayReadyResponseDto;
@@ -44,13 +47,22 @@ class KakaoPayControllerTest {
     @MockBean
     KakaoPayService kakaoPayService;
 
+    @MockBean
+    OrderCodeCreator orderCodeCreator;
+
+    @BeforeEach
+    void beforeEach() {
+        when(orderCodeCreator.createOrderCode()).thenReturn(
+                "test-order-code"
+        );
+    }
+
     @Test
     @DisplayName("카카오페이 결제준비 API 를 호출한다.")
     void kakao_pay_ready_api() throws Exception {
         // given
         KakaoPayReadyRequest kakaoPayReadyRequest = new KakaoPayReadyRequest(
-                "partner_order_id", "partner_user_id", "상품 1 외 2건",
-                2, 15900, 0, 0,
+                "상품 1 외 2건", 2, 15900, 0, 0,
                 "approve_url", "fail_url", "cancel_url"
         );
 
@@ -74,11 +86,13 @@ class KakaoPayControllerTest {
 
         // when & then
         mockMvc.perform(post("/pay/KAKAO_PAY/ready")
+                        .header(GatewayConstants.GATEWAY_HEADER, "100")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.tid", notNullValue()));
+                .andExpect(jsonPath("$.tid", notNullValue()))
+                .andExpect(jsonPath("$.orderCode", notNullValue()));
     }
 
     @Test
@@ -87,7 +101,7 @@ class KakaoPayControllerTest {
         // given
         KakaoPayApproveRequest kakaoPayApproveRequest = new KakaoPayApproveRequest(
                 "test-transaction-id",
-                "partner_order_id", "partner_user_id",
+                "partner_order_id",
                 "pg_token"
         );
 
@@ -119,6 +133,7 @@ class KakaoPayControllerTest {
 
         // when & then
         mockMvc.perform(post("/pay/KAKAO_PAY/approve")
+                        .header(GatewayConstants.GATEWAY_HEADER, "100")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andDo(print())

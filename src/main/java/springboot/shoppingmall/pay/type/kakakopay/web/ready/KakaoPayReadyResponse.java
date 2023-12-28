@@ -11,6 +11,7 @@ import springboot.shoppingmall.pay.type.kakakopay.dto.ready.KakaoPayReadyRespons
 @Getter
 public class KakaoPayReadyResponse {
     private String tid;
+    private String orderCode;
     private String next_redirect_app_url;
     private String next_redirect_mobile_url;
     private String next_redirect_pc_url;
@@ -18,9 +19,10 @@ public class KakaoPayReadyResponse {
     private String ios_app_scheme;
     private LocalDateTime created_at;
 
-    public static KakaoPayReadyResponse of(KakaoPayReadyResponseDto dto) {
+    public static KakaoPayReadyResponse of(KakaoPayReadyResponseDto dto, String orderCode) {
         return new KakaoPayReadyResponse(
                 dto.getTid(),
+                orderCode,
                 dto.getNext_redirect_app_url(),
                 dto.getNext_redirect_mobile_url(),
                 dto.getNext_redirect_pc_url(),

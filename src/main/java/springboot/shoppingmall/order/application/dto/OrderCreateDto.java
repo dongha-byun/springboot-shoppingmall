@@ -11,6 +11,7 @@ import springboot.shoppingmall.payment.domain.PayType;
 @Getter
 public class OrderCreateDto {
     private String tid;
+    private String orderCode;
     private PayType payType;
     private List<OrderItemCreateDto> items;
     private int deliveryFee;

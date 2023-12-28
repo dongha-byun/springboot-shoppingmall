@@ -15,6 +15,7 @@ import springboot.shoppingmall.payment.domain.PayType;
 @AllArgsConstructor
 public class OrderRequest {
     private String tid;
+    private String orderCode;
     private String payType;
     private List<OrderItemRequest> items;
     private int deliveryFee;
@@ -27,7 +28,7 @@ public class OrderRequest {
         DeliveryInfoCreateDto deliveryInfoCreateDto = deliveryInfo.toDto();
 
         return new OrderCreateDto(
-                tid, PayType.valueOf(payType), orderItems,
+                tid, orderCode, PayType.valueOf(payType), orderItems,
                 deliveryFee, deliveryInfoCreateDto
         );
     }

@@ -56,7 +56,7 @@ public class OrderItem extends BaseEntity {
         return createOrderItem(product, quantity, null);
     }
     public static OrderItem createOrderItem(Product product, int quantity, Long usedUserCouponId) {
-        return new OrderItem(product, quantity, usedUserCouponId, OrderStatus.READY);
+        return new OrderItem(product, quantity, usedUserCouponId, OrderStatus.PREPARED);
     }
 
     public OrderItem(Product product, int quantity, OrderStatus orderStatus) {
@@ -99,7 +99,7 @@ public class OrderItem extends BaseEntity {
     }
 
     public void cancel() {
-        if(OrderStatus.READY != this.orderStatus) {
+        if(OrderStatus.PREPARED != this.orderStatus) {
             throw new IllegalArgumentException("준비 중인 주문 만 취소가 가능합니다.");
         }
         this.orderStatus = OrderStatus.CANCEL;
@@ -111,7 +111,7 @@ public class OrderItem extends BaseEntity {
         if(!StringUtils.hasText(invoiceNumber)) {
             throw new IllegalArgumentException("송장번호가 존재하지 않아, 출고중 처리가 불가합니다.");
         }
-        if(OrderStatus.READY != this.orderStatus) {
+        if(OrderStatus.PREPARED != this.orderStatus) {
             throw new IllegalArgumentException("준비 중인 상품만 출고중 처리가 가능합니다.");
         }
 

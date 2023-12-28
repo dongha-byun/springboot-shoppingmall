@@ -6,6 +6,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import springboot.shoppingmall.authorization.GatewayAuthInfo;
+import springboot.shoppingmall.authorization.GatewayAuthentication;
+import springboot.shoppingmall.coupon.domain.OrderCodeCreator;
 import springboot.shoppingmall.pay.type.kakakopay.dto.approve.KakaoPayApproveRequestDto;
 import springboot.shoppingmall.pay.type.kakakopay.dto.approve.KakaoPayApproveResponseDto;
 import springboot.shoppingmall.pay.type.kakakopay.dto.cancel.KakaoPayCancelRequestDto;
@@ -27,21 +30,31 @@ import springboot.shoppingmall.pay.web.PayRequest;
 public class KakaoPayController {
 
     private final KakaoPayService kakaoPayService;
+    private final OrderCodeCreator orderCodeCreator;
 
     @PostMapping("/pay/KAKAO_PAY/ready")
-    public ResponseEntity<KakaoPayReadyResponse> readyPay(@RequestBody PayRequest<KakaoPayReadyRequest> param) {
+    public ResponseEntity<KakaoPayReadyResponse> readyPay(@GatewayAuthentication GatewayAuthInfo authInfo,
+                                                          @RequestBody PayRequest<KakaoPayReadyRequest> param) {
         KakaoPayReadyRequest readyRequest = param.getData();
-        KakaoPayReadyRequestDto readyRequestDto = readyRequest.toDto();
+        String orderCode = orderCodeCreator.createOrderCode();
+        KakaoPayReadyRequestDto readyRequestDto = readyRequest.toDto(
+                orderCode, String.valueOf(authInfo.getUserId())
+        );
 
         KakaoPayReadyResponseDto readyResponseDto = kakaoPayService.ready(readyRequestDto);
-        KakaoPayReadyResponse responseBody = KakaoPayReadyResponse.of(readyResponseDto);
+        KakaoPayReadyResponse responseBody = KakaoPayReadyResponse.of(
+                readyResponseDto, orderCode
+        );
 
         return ResponseEntity.ok().body(responseBody);
     }
     @PostMapping("/pay/KAKAO_PAY/approve")
-    public ResponseEntity<KakaoPayApproveResponse> approvePay(@RequestBody PayRequest<KakaoPayApproveRequest> param) {
+    public ResponseEntity<KakaoPayApproveResponse> approvePay(@GatewayAuthentication GatewayAuthInfo authInfo,
+                                                              @RequestBody PayRequest<KakaoPayApproveRequest> param) {
         KakaoPayApproveRequest approveRequest = param.getData();
-        KakaoPayApproveRequestDto approveRequestDto = approveRequest.toDto();
+        KakaoPayApproveRequestDto approveRequestDto = approveRequest.toDto(
+                String.valueOf(authInfo.getUserId())
+        );
 
         KakaoPayApproveResponseDto approveResponseDto = kakaoPayService.approve(approveRequestDto);
         KakaoPayApproveResponse responseBody = KakaoPayApproveResponse.of(approveResponseDto);

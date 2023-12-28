@@ -14,14 +14,13 @@ import springboot.shoppingmall.pay.type.kakakopay.dto.approve.KakaoPayApproveReq
 public class KakaoPayApproveRequest {
     private String tid;
     private String partner_order_id;
-    private String partner_user_id;
     private String pg_token;
 
-    public KakaoPayApproveRequestDto toDto() {
+    public KakaoPayApproveRequestDto toDto(String userId) {
         return new KakaoPayApproveRequestDto(
                 this.tid,
                 this.partner_order_id,
-                this.partner_user_id,
+                userId,
                 this.pg_token
         );
     }

@@ -66,7 +66,7 @@ class OrderApiControllerTest {
                 "요청내용 입니다."
         );
         OrderRequest orderRequest = new OrderRequest(
-                "test-transaction-id", "KAKAO_PAY", items,
+                "test-transaction-id", "test-order-code", "KAKAO_PAY", items,
                 0, deliveryInfoRequest
         );
         String content = objectMapper.writeValueAsString(orderRequest);

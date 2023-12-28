@@ -108,7 +108,7 @@ class OrderServiceTest {
                 "test-zipcode", "test-address", "test-detail-address",
                 "test-request-message");
         OrderCreateDto orderCreateDto = new OrderCreateDto(
-                "test-tid", PayType.KAKAO_PAY, orderItems,
+                "test-tid", "test-order-code", PayType.KAKAO_PAY, orderItems,
                 3000, deliveryInfoCreateDto
         );
 
@@ -152,7 +152,7 @@ class OrderServiceTest {
                 "test-request-message"
         );
         OrderCreateDto orderCreateDto = new OrderCreateDto(
-                "test-tid", PayType.KAKAO_PAY, orderItems,
+                "test-tid", "test-order-code", PayType.KAKAO_PAY, orderItems,
                 3000, deliveryInfoCreateDto
         );
 
@@ -187,7 +187,7 @@ class OrderServiceTest {
                 "조심히 오세요."
         );
         OrderCreateDto orderCreateDto = new OrderCreateDto(
-                "test-tid", PayType.KAKAO_PAY,
+                "test-tid", "test-order-code", PayType.KAKAO_PAY,
                 List.of(orderItemCreateDto), 0,
                 deliveryInfoCreateDto
         );
@@ -215,7 +215,7 @@ class OrderServiceTest {
                 "조심히 오세요."
         );
         OrderCreateDto orderCreateDto = new OrderCreateDto(
-                "test-tid", PayType.KAKAO_PAY,
+                "test-tid", "test-order-code", PayType.KAKAO_PAY,
                 Arrays.asList(orderItem1, orderItem2),
                 0, deliveryInfoCreateDto
         );
@@ -253,7 +253,7 @@ class OrderServiceTest {
                 "조심히 오세요."
         );
         OrderCreateDto orderCreateDto = new OrderCreateDto(
-                "test-tid", PayType.KAKAO_PAY,
+                "test-tid", "test-order-code", PayType.KAKAO_PAY,
                 Arrays.asList(orderItem1, orderItem2),
                 0, deliveryInfoCreateDto
         );

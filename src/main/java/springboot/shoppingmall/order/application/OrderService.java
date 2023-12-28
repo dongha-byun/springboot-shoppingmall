@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.coupon.domain.OrderCodeCreator;
 import springboot.shoppingmall.coupon.domain.UserCoupon;
 import springboot.shoppingmall.coupon.domain.UserCouponRepository;
 import springboot.shoppingmall.order.domain.Order;
@@ -21,23 +20,21 @@ import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductFinder;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 @Service
 public class OrderService {
     private final ProductFinder productFinder;
     private final UserCouponRepository userCouponRepository;
     private final OrderRepository orderRepository;
     private final PayHistoryRepository payHistoryRepository;
-    private final OrderCodeCreator orderCodeCreator;
     private final OrderUserInterfaceService orderUserInformationService;
 
-    @Transactional
     public OrderDto createOrder(Long userId, OrderCreateDto orderCreateDto) {
+        String orderCode = orderCreateDto.getOrderCode();
         DeliveryInfoCreateDto deliveryInfoCreateDto = orderCreateDto.getDeliveryInfo();
         List<OrderItem> items = getOrderItems(orderCreateDto);
 
         // 주문 정보를 생성한다.
-        String orderCode = orderCodeCreator.createOrderCode();
         OrderDeliveryInfo orderDeliveryInfo = deliveryInfoCreateDto.toValue();
         Order newOrder = Order.createOrder(orderCode, userId, items, orderDeliveryInfo);
 
@@ -60,7 +57,7 @@ public class OrderService {
         // 주문 정보 저장 시, 결제정보도 같이 저장한다.
         payHistoryRepository.save(
                 PayHistory.create(
-                        newOrder.getId(), orderCreateDto.getPayType().name(),
+                        newOrder.getId(), orderCreateDto.getPayType(),
                         orderCreateDto.getTid(), newOrder.getRealPayPrice()
                 )
         );
