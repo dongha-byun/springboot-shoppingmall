@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.client.userservice.UserServiceClient;
+import springboot.shoppingmall.client.userservice.response.ResponseDiscountRate;
 import springboot.shoppingmall.coupon.domain.UserCoupon;
 import springboot.shoppingmall.coupon.domain.UserCouponRepository;
 import springboot.shoppingmall.order.domain.Order;
@@ -27,7 +29,7 @@ public class OrderService {
     private final UserCouponRepository userCouponRepository;
     private final OrderRepository orderRepository;
     private final PayHistoryRepository payHistoryRepository;
-    private final OrderUserInterfaceService orderUserInformationService;
+    private final UserServiceClient userServiceClient;
 
     public OrderDto createOrder(Long userId, OrderCreateDto orderCreateDto) {
         String orderCode = orderCreateDto.getOrderCode();
@@ -41,7 +43,7 @@ public class OrderService {
         // 회원등급 할인 금액 적용
         // 주문자 할인율 조회, 구매자 정보 조회 OrderUserInfo
         // 사용자 ID 주고, 할인율 받아오면, 할인 계산할때 사용
-        int discountRate = orderUserInformationService.getOrderUserDiscountRate(userId);
+        int discountRate = userServiceClient.getDiscountRate(userId);
         newOrder.gradeDiscount(discountRate);
 
         // 쿠폰에 따른 할인 금액 적용
