@@ -5,31 +5,30 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import springboot.shoppingmall.client.userservice.UserServiceClient;
 import springboot.shoppingmall.client.userservice.response.ResponseUserInformation;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@EnableConfigurationProperties
-@ContextConfiguration(classes = {TestWireMockConfig.class})
+@SpringBootTest({"server.port:0", "eureka.client.enabled:false"})
 public class UserServiceClientWireMockTest {
 
     @Autowired
@@ -38,8 +37,22 @@ public class UserServiceClientWireMockTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    @Autowired
-    WireMockServer mockUserMicroService;
+    @TestConfiguration
+    public static class TestConfig {
+        @Bean
+        public ServiceInstanceListSupplier serviceInstanceListSupplier() {
+            return new TestServiceInstanceListSupplier(
+                    "user-service", 8981
+            );
+        }
+    }
+
+    @RegisterExtension
+    static WireMockExtension USER_SERVICE = WireMockExtension.newInstance()
+            .options(wireMockConfig().port(8981))
+            .build();
+
+
 
     @Test
     @DisplayName("쿠폰을 발급받은 사용자 목록을 조회한다.")
@@ -55,7 +68,7 @@ public class UserServiceClientWireMockTest {
         );
         String responseBody = objectMapper.writeValueAsString(users);
 
-        mockUserMicroService
+        USER_SERVICE
                 .stubFor(post(urlEqualTo("/users/has-coupon"))
                         .withRequestBody(equalToJson(requestBody))
                         .willReturn(aResponse()
@@ -83,7 +96,7 @@ public class UserServiceClientWireMockTest {
         // given
         List<Long> userIds = Arrays.asList(1L, 2L, 3L);
         String responseBody = objectMapper.writeValueAsString(userIds);
-        mockUserMicroService
+        USER_SERVICE
                 .stubFor(get(urlEqualTo("/users/above-grade?targetGrade=REGULAR"))
                         .willReturn(aResponse()
                                 .withStatus(HttpStatus.OK.value())
