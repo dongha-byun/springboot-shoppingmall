@@ -26,6 +26,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import springboot.shoppingmall.client.userservice.UserServiceClient;
+import springboot.shoppingmall.client.userservice.request.RequestPartnerAuth;
+import springboot.shoppingmall.client.userservice.response.ResponsePartnerAuthInfo;
 import springboot.shoppingmall.client.userservice.response.ResponseUserInformation;
 
 @SpringBootTest({"server.port:0", "eureka.client.enabled:false"})
@@ -110,5 +112,51 @@ public class UserServiceClientWireMockTest {
         assertThat(result)
                 .hasSize(3)
                 .containsExactly(1L, 2L, 3L);
+    }
+
+    @Test
+    @DisplayName("판매자의 인증정보를 생성하고, access token 을 발급받는다.")
+    void auth() throws JsonProcessingException {
+        // given
+        RequestPartnerAuth requestPartnerAuth = new RequestPartnerAuth(100L);
+        String requestBody = objectMapper.writeValueAsString(requestPartnerAuth);
+
+        ResponsePartnerAuthInfo responseAuthInfo = new ResponsePartnerAuthInfo("access-token");
+        String responseBody = objectMapper.writeValueAsString(responseAuthInfo);
+
+        USER_SERVICE
+                .stubFor(post(urlEqualTo("/auth"))
+                        .withRequestBody(equalToJson(requestBody))
+                        .willReturn(aResponse()
+                                .withStatus(HttpStatus.OK.value())
+                                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                .withBody(responseBody)));
+
+        // when
+        ResponsePartnerAuthInfo result = service.authPartner(requestPartnerAuth);
+
+        // then
+        assertThat(result.getAccessToken()).isEqualTo("access-token");
+    }
+
+    @Test
+    @DisplayName("특정 회원의 회원등급에 따른 할인율을 조회한다.")
+    void user_discount_rate() throws JsonProcessingException {
+        // given
+        Long userId = 1000L;
+        String responseBody = objectMapper.writeValueAsString(5);
+
+        USER_SERVICE
+                .stubFor(get(urlEqualTo("/users/" + userId + "/discount-rate"))
+                        .willReturn(aResponse()
+                                .withStatus(HttpStatus.OK.value())
+                                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                .withBody(responseBody)));
+
+        // when
+        int discountRate = service.getDiscountRate(userId);
+
+        // then
+        assertThat(discountRate).isEqualTo(5);
     }
 }
