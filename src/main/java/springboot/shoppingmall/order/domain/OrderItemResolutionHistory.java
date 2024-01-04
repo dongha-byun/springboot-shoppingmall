@@ -2,6 +2,8 @@ package springboot.shoppingmall.order.domain;
 
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,6 +29,7 @@ public class OrderItemResolutionHistory {
     @JoinColumn(name = "order_item_id")
     private OrderItem orderItem;
 
+    @Enumerated(EnumType.STRING)
     private OrderItemResolutionType resolutionType;
     private LocalDateTime date;
     private String reason;
