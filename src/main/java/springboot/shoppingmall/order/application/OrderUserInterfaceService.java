@@ -5,8 +5,6 @@ import springboot.shoppingmall.order.application.dto.ResponseOrderUserInformatio
 
 public interface OrderUserInterfaceService {
 
-    int getOrderUserDiscountRate(Long userId);
-
     void increaseOrderAmounts(Long userId, int price);
 
     List<ResponseOrderUserInformation> getOrderUsers(List<Long> userIds);
