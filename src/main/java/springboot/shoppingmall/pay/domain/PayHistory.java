@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.BaseEntity;
+import springboot.shoppingmall.payment.domain.PayType;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -21,7 +22,7 @@ public class PayHistory extends BaseEntity {
     @Column(name = "order_id", nullable = false)
     private Long orderId;
 
-    private String payType;
+    private PayType payType;
 
     @Column(nullable = false)
     private String tid;
@@ -29,14 +30,14 @@ public class PayHistory extends BaseEntity {
     @Column(nullable = false)
     private Integer amount;
 
-    public PayHistory(Long orderId, String payType, String tid, Integer amount) {
+    public PayHistory(Long orderId, PayType payType, String tid, Integer amount) {
         this.orderId = orderId;
         this.payType = payType;
         this.tid = tid;
         this.amount = amount;
     }
 
-    public static PayHistory create(Long orderId, String payType, String tid, Integer amount) {
+    public static PayHistory create(Long orderId, PayType payType, String tid, Integer amount) {
         return new PayHistory(orderId, payType, tid, amount);
     }
 }
