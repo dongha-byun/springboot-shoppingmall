@@ -81,7 +81,7 @@ dependencies {
 
 	// wireMock for feign client test
 	//testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
-	testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock:4.0.4'
+	testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
 
 	implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
 

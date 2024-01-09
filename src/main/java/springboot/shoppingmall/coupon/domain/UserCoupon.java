@@ -57,4 +57,8 @@ public class UserCoupon {
     public int ofDiscountRate() {
         return this.coupon.getDiscountRate();
     }
+
+    public void recovery() {
+        this.usingDate = null;
+    }
 }
