@@ -1,4 +1,4 @@
-package springboot.shoppingmall.coupon.presentation;
+package springboot.shoppingmall.coupon.presentation.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

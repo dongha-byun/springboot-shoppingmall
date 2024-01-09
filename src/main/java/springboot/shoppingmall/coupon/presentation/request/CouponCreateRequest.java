@@ -1,4 +1,4 @@
-package springboot.shoppingmall.coupon.presentation;
+package springboot.shoppingmall.coupon.presentation.request;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;

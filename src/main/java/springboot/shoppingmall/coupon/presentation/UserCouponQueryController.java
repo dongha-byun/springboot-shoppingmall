@@ -13,6 +13,8 @@ import springboot.shoppingmall.authorization.GatewayAuthentication;
 import springboot.shoppingmall.coupon.application.UsableCouponDto;
 import springboot.shoppingmall.coupon.application.UserCouponQueryService;
 import springboot.shoppingmall.coupon.domain.UserCouponQueryDto;
+import springboot.shoppingmall.coupon.presentation.response.UsableCouponResponse;
+import springboot.shoppingmall.coupon.presentation.response.UserCouponQueryResponse;
 import springboot.shoppingmall.partners.authentication.AuthorizedPartner;
 import springboot.shoppingmall.partners.authentication.LoginPartner;
 

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.coupon.application.CouponQueryDto;
 import springboot.shoppingmall.coupon.application.CouponQueryService;
+import springboot.shoppingmall.coupon.presentation.response.CouponQueryResponse;
 import springboot.shoppingmall.partners.authentication.AuthorizedPartner;
 import springboot.shoppingmall.partners.authentication.LoginPartner;
 
