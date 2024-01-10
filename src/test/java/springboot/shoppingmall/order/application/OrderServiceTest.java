@@ -1,12 +1,16 @@
 package springboot.shoppingmall.order.application;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -14,16 +18,25 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
+import springboot.shoppingmall.client.TestWireMockConfig;
+import springboot.shoppingmall.client.userservice.UserServiceClient;
 import springboot.shoppingmall.coupon.domain.Coupon;
 import springboot.shoppingmall.coupon.domain.CouponRepository;
 import springboot.shoppingmall.coupon.domain.UserCoupon;
@@ -45,7 +58,6 @@ import springboot.shoppingmall.payment.domain.PayType;
 class OrderServiceTest {
     @Autowired
     OrderService orderService;
-    Product product, product2;
     @Autowired
     ProductRepository productRepository;
     @Autowired
@@ -55,20 +67,15 @@ class OrderServiceTest {
     @Autowired
     UserCouponRepository userCouponRepository;
 
-    @Autowired
-    ObjectMapper objectMapper;
+    @MockBean
+    UserServiceClient userServiceClient;
 
-    @Autowired
-    RestTemplate restTemplate;
-    MockRestServiceServer mockRestServiceServer;
-
+    Product product, product2;
     int productCount = 10;
     Long partnerId = 10L;
 
     @BeforeEach
     void beforeEach() {
-        mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
-
         Category category = categoryRepository.save(new Category("상위 1"));
         Category subCategory = categoryRepository.save(new Category("하위 1").changeParent(category));
         product = productRepository.save(
@@ -91,10 +98,10 @@ class OrderServiceTest {
 
     @Test
     @DisplayName("여러 상품을 한 번에 주문한다.")
-    void order_many_products() throws JsonProcessingException {
+    void order_many_products() {
         // given
+        when(userServiceClient.getDiscountRate(any())).thenReturn(0);
         long userId = 10L;
-        mockOrderUserInformationServerForGetDiscountRate(userId, 0);
 
         int orderQuantity1 = 2;
         int orderQuantity2 = 4;
@@ -132,12 +139,12 @@ class OrderServiceTest {
 
     @Test
     @DisplayName("상품 주문 시, 회원등급에 따라 상품 당 가격 할인이 적용된다.")
-    void order_discount_by_user_grade() throws JsonProcessingException {
+    void order_discount_by_user_grade() {
         // 일반등급 회원이 상품을 주문 하면, 주문 상품 가격의 3% 할인가가 적용된다.
         // given
-        long userId = 10L;
         int discountRate = 3;
-        mockOrderUserInformationServerForGetDiscountRate(userId, discountRate);
+        when(userServiceClient.getDiscountRate(any())).thenReturn(discountRate);
+        long userId = 10L;
 
         int orderQuantity1 = 2;
         int orderQuantity2 = 4;
@@ -175,10 +182,11 @@ class OrderServiceTest {
 
     @Test
     @DisplayName("주문 실패 - 재고 수 보다 많은 양을 주문하면 주문에 실패한다.")
-    void order_fail_with_quantity_over() throws JsonProcessingException {
+    void order_fail_with_quantity_over() {
         // given
         long userId = 10L;
-        mockOrderUserInformationServerForGetDiscountRate(userId, 0);
+        when(userServiceClient.getDiscountRate(any())).thenReturn(0);
+
         int orderQuantity = product.getQuantity() + 1;
         OrderItemCreateDto orderItemCreateDto = new OrderItemCreateDto(product.getId(), orderQuantity, null);
         DeliveryInfoCreateDto deliveryInfoCreateDto = new DeliveryInfoCreateDto(
@@ -200,10 +208,11 @@ class OrderServiceTest {
 
     @Test
     @DisplayName("주문 시, 상품에 쿠폰을 사용하면 금액이 할인된다.")
-    void order_used_coupon() throws JsonProcessingException {
+    void order_used_coupon() {
         // given
         long userId = 10L;
-        mockOrderUserInformationServerForGetDiscountRate(userId, 1);
+        when(userServiceClient.getDiscountRate(any())).thenReturn(1);
+
         UserCoupon userCoupon1 = createCouponAndUserCoupon(userId, "할인쿠폰#1", 5);
         UserCoupon userCoupon2 = createCouponAndUserCoupon(userId, "할인쿠폰#2", 10);
 
@@ -238,10 +247,11 @@ class OrderServiceTest {
 
     @Test
     @DisplayName("주문 시, 상품에 쿠폰을 사용하면 쿠폰에 사용일자가 주문일자와 동일하게 처리된다.")
-    void set_using_date_used_coupon() throws JsonProcessingException {
+    void set_using_date_used_coupon() {
         // given
         Long userId = 10L;
-        mockOrderUserInformationServerForGetDiscountRate(userId, 0);
+        when(userServiceClient.getDiscountRate(any())).thenReturn(0);
+
         UserCoupon userCoupon1 = createCouponAndUserCoupon(userId, "할인쿠폰#1", 5);
         UserCoupon userCoupon2 = createCouponAndUserCoupon(userId, "할인쿠폰#2", 10);
 
@@ -267,21 +277,6 @@ class OrderServiceTest {
 
         UserCoupon usedUserCoupon = userCouponRepository.findById(userCoupon1.getId()).orElseThrow();
         assertThat(usedUserCoupon.getUsingDate()).isNotNull();
-    }
-
-    private void mockOrderUserInformationServerForGetDiscountRate(long userId, int discountRate) throws JsonProcessingException {
-        ResponseUserInformation response = new ResponseUserInformation(discountRate);
-        String responseContent = objectMapper.writeValueAsString(response);
-
-        mockRestServiceServer.expect(
-                        requestTo("/user/" + userId + "/grade-info")
-                )
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(
-                        withStatus(HttpStatus.OK)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .body(responseContent)
-                );
     }
 
     private UserCoupon createCouponAndUserCoupon(Long userId, String name, int discountRate) {
