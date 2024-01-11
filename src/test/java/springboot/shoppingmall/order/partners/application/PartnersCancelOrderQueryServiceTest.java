@@ -2,35 +2,28 @@ package springboot.shoppingmall.order.partners.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
-import springboot.shoppingmall.order.application.OrderItemResolutionService;
+import springboot.shoppingmall.order.application.OrderUserInterfaceService;
 import springboot.shoppingmall.order.application.dto.ResponseOrderUserInformation;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
+import springboot.shoppingmall.order.domain.OrderItemResolutionHistory;
+import springboot.shoppingmall.order.domain.OrderItemResolutionHistoryRepository;
 import springboot.shoppingmall.order.domain.OrderItemResolutionType;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
@@ -43,13 +36,13 @@ import springboot.shoppingmall.product.domain.ProductRepository;
 class PartnersCancelOrderQueryServiceTest {
 
     @Autowired
-    EntityManager em;
-
-    @Autowired
     PartnersCancelOrderQueryService service;
 
+    @MockBean
+    OrderUserInterfaceService orderUserInterfaceService;
+
     @Autowired
-    OrderItemResolutionService orderItemResolutionService;
+    OrderItemResolutionHistoryRepository orderItemResolutionHistoryRepository;
 
     @Autowired
     OrderRepository orderRepository;
@@ -67,18 +60,8 @@ class PartnersCancelOrderQueryServiceTest {
     LocalDateTime orderDate;
     Long partnersId = 10L;
 
-    @Autowired
-    RestTemplate restTemplate;
-
-    MockRestServiceServer mockRestServiceServer;
-
-    @Autowired
-    ObjectMapper objectMapper;
-
     @BeforeEach
     void setup() {
-        mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
-
         category = categoryRepository.save(new Category("식품 분류"));
         subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
         LocalDateTime registerDate = LocalDateTime.of(2021, 8, 15, 0, 0, 0);
@@ -88,19 +71,20 @@ class PartnersCancelOrderQueryServiceTest {
         product3 = saveProduct("생선3", 1500, 3.0, 15, registerDate);
 
         orderDate = LocalDateTime.of(2023, 8, 13, 12, 0, 0);
-        order1 = getOrder("test-order-code1", 10L, this.product1, 3, orderDate.plusDays(1));
+        order1 = getOrder("test-order-code1", 10L, product1, 3, orderDate.plusDays(1));
         order2 = getOrder("test-order-code2", 20L, product2, 4, orderDate.plusDays(2));
         order3 = getOrder("test-order-code3", 20L, product3, 5, orderDate.plusDays(4));
     }
 
     @Test
     @DisplayName("판매자가 상품 주문이 환불/교환/취소된 내역을 조회한다.")
-    void find_partners_ready_orders() throws JsonProcessingException {
+    void find_partners_ready_orders() {
         // given
         mockingGetUserInfo();
 
         Order savedOrder1 = orderRepository.save(order1);
         OrderItem orderItem1 = getFirstOrderItemOf(savedOrder1);
+        orderItem1.cancel();
 
         Order savedOrder2 = orderRepository.save(order2);
         OrderItem orderItem2 = getFirstOrderItemOf(savedOrder2);
@@ -111,6 +95,7 @@ class PartnersCancelOrderQueryServiceTest {
                 LocalDateTime.of(2023, 8, 17, 12, 0 ,0),
                 "현관문 앞"
         );
+        orderItem2.refund();
 
         Order savedOrder3 = orderRepository.save(order3);
         OrderItem orderItem3 = getFirstOrderItemOf(savedOrder3);
@@ -121,25 +106,32 @@ class PartnersCancelOrderQueryServiceTest {
                 LocalDateTime.of(2023, 8, 16, 12, 0 ,0),
                 "현관문 앞"
         );
+        orderItem3.exchange();
 
-        em.flush();
-        em.clear();
+        orderItemResolutionHistoryRepository.save(
+                new OrderItemResolutionHistory(
+                        orderItem1, OrderItemResolutionType.CANCEL,
+                        LocalDateTime.of(2023, 8, 25, 11, 0, 0),
+                        "주문 취소합니다."
+                )
+        );
 
-        orderItemResolutionService.saveResolutionHistory(
-                10L, orderItem1.getId(), OrderItemResolutionType.CANCEL,
-                LocalDateTime.of(2023, 8, 25, 11, 0, 0),
-                "주문 취소합니다."
+        orderItemResolutionHistoryRepository.save(
+                new OrderItemResolutionHistory(
+                        orderItem2, OrderItemResolutionType.REFUND,
+                        LocalDateTime.of(2023, 8, 23, 12, 30, 0),
+                        "환불합니다."
+                )
         );
-        orderItemResolutionService.saveResolutionHistory(
-                20L, orderItem2.getId(), OrderItemResolutionType.REFUND,
-                LocalDateTime.of(2023, 8, 23, 12, 30, 0),
-                "환불합니다."
+
+        orderItemResolutionHistoryRepository.save(
+                new OrderItemResolutionHistory(
+                        orderItem3, OrderItemResolutionType.EXCHANGE,
+                        LocalDateTime.of(2023, 8, 24, 8, 0, 0),
+                        "교환합니다."
+                )
         );
-        orderItemResolutionService.saveResolutionHistory(
-                20L, orderItem3.getId(), OrderItemResolutionType.EXCHANGE,
-                LocalDateTime.of(2023, 8, 24, 8, 0, 0),
-                "교환합니다."
-        );
+
 
         // when
         LocalDateTime startDate = LocalDateTime.of(2023, 6, 1, 0, 0, 0);
@@ -182,22 +174,13 @@ class PartnersCancelOrderQueryServiceTest {
         return getFirstOrderItemOf(order).getId();
     }
 
-    private void mockingGetUserInfo() throws JsonProcessingException {
-        List<ResponseOrderUserInformation> response = Arrays.asList(
-                new ResponseOrderUserInformation(10L, "사용자 10", "010-2222-3310"),
-                new ResponseOrderUserInformation(20L, "사용자 20", "010-2222-3320")
-        );
-        String responseContent = objectMapper.writeValueAsString(response);
-        mockRestServiceServer
-                .expect(
-                        requestTo("/orders/users/basic-info")
+    private void mockingGetUserInfo() {
+        when(orderUserInterfaceService.getOrderUsers(any())).thenReturn(
+                Arrays.asList(
+                        new ResponseOrderUserInformation(10L, "사용자 10", "010-2222-3310"),
+                        new ResponseOrderUserInformation(20L, "사용자 20", "010-2222-3320")
                 )
-                .andExpect(method(HttpMethod.POST))
-                .andRespond(
-                        withStatus(HttpStatus.OK)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .body(responseContent)
-                );
+        );
     }
 
     private Order getOrder(String orderCode, Long userId, Product product, int quantity, LocalDateTime orderDate) {
