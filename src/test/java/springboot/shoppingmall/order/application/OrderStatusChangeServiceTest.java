@@ -1,40 +1,30 @@
 package springboot.shoppingmall.order.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+import static org.mockito.Mockito.doNothing;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 import springboot.shoppingmall.TestOrderConfig;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
-import springboot.shoppingmall.order.application.dto.ResponseUserOrderAmount;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
-import springboot.shoppingmall.order.application.dto.OrderItemDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
+
 
 @Import(TestOrderConfig.class)
 @Transactional
@@ -43,6 +33,9 @@ class OrderStatusChangeServiceTest {
 
     @Autowired
     OrderStatusChangeService orderStatusChangeService;
+
+    @MockBean
+    OrderUserInterfaceService orderUserInterfaceService;
 
     Product product, product2;
 
@@ -61,17 +54,8 @@ class OrderStatusChangeServiceTest {
 
     Long userId = 10L;
 
-    @Autowired
-    RestTemplate restTemplate;
-
-    @Autowired
-    ObjectMapper objectMapper;
-
-    MockRestServiceServer mockRestServiceServer;
-
     @BeforeEach
     void beforeEach() {
-        mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
 
         orderDeliveryInfo = new OrderDeliveryInfo(
                 "수령인 1", "010-1234-1234",
@@ -102,7 +86,7 @@ class OrderStatusChangeServiceTest {
 
     @Test
     @DisplayName("구매 확정 - 배송이 완료된 상품을 구매확정 처리 한다. 동시에 사용자의 주문횟수/주문금액을 증가시킨다.")
-    void order_finish_and_user_grade_info_update() throws JsonProcessingException {
+    void order_finish_and_user_grade_info_update() {
         // given
         mockingIncreaseOrderAmounts(userId, 100000);
 
@@ -131,17 +115,7 @@ class OrderStatusChangeServiceTest {
         assertThat(product.getSalesVolume()).isEqualTo(orderQuantity1);
     }
 
-    private void mockingIncreaseOrderAmounts(Long userId, int price) throws JsonProcessingException {
-        String content = objectMapper.writeValueAsString(new ResponseUserOrderAmount(userId, 100, price));
-        mockRestServiceServer
-                .expect(
-                        requestTo("/users/"+userId+"/order-amounts")
-                )
-                .andExpect(method(HttpMethod.PATCH))
-                .andRespond(
-                        withStatus(HttpStatus.OK)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .body(content)
-                );
+    private void mockingIncreaseOrderAmounts(Long userId, int price) {
+        doNothing().when(orderUserInterfaceService).increaseOrderAmounts(userId, price);
     }
 }
