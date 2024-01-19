@@ -50,6 +50,27 @@ spring:
     init:
       mode: always
 
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9872
+      group-id: shopping-mall
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      bootstrap-servers: localhost:9872
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+# zipkin 관련 설정
+# spring: 하위에 작성 -> spring.zipkin.~~
+#  zipkin:
+#    base-url: http://127.0.0.1:9411
+#    enabled: true
+#  sleuth:
+#    sampler:
+#      probability: 1.0
+
 logging:
   level:
     org:
@@ -58,6 +79,12 @@ logging:
           descriptor:
             sql:
               BasicBinder: trace
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, busrefresh, info, metrics, prometheus
 
 #api 서버 포트
 server:
@@ -96,3 +123,7 @@ logging:
           descriptor:
             sql:
               BasicBinder: trace
+
+kafka:
+  bootstrap:
+    address: ${spring.embedded.kafka.brokers:localhost:9872}
