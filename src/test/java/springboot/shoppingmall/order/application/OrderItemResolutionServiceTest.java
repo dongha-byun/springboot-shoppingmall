@@ -1,6 +1,9 @@
 package springboot.shoppingmall.order.application;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.isA;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,9 +12,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
+import springboot.shoppingmall.client.couponservice.CouponServiceClient;
+import springboot.shoppingmall.client.payservice.PayServiceClient;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
@@ -22,6 +28,9 @@ import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.partners.domain.Partner;
 import springboot.shoppingmall.partners.domain.PartnerRepository;
+import springboot.shoppingmall.pay.domain.PayHistory;
+import springboot.shoppingmall.pay.domain.PayHistoryRepository;
+import springboot.shoppingmall.payment.domain.PayType;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 
@@ -32,8 +41,17 @@ class OrderItemResolutionServiceTest {
     @Autowired
     OrderItemResolutionService service;
 
+    @MockBean
+    PayServiceClient payServiceClient;
+
+    @MockBean
+    CouponServiceClient couponServiceClient;
+
     @Autowired
     OrderItemResolutionHistoryRepository orderItemResolutionHistoryRepository;
+
+    @Autowired
+    PayHistoryRepository payHistoryRepository;
 
     @Autowired
     OrderRepository orderRepository;
@@ -57,7 +75,6 @@ class OrderItemResolutionServiceTest {
 
     Long userId = 100L;
     String orderCode = "order-code-1";
-
 
 
     @BeforeEach
@@ -90,6 +107,15 @@ class OrderItemResolutionServiceTest {
                 orderCode, userId, List.of(orderItem), orderDeliveryInfo
         );
         orderRepository.save(order);
+
+        payHistoryRepository.save(
+                new PayHistory(
+                        order.getId(), PayType.KAKAO_PAY, "created-transaction-id", order.getRealPayPrice()
+                )
+        );
+
+        doNothing().when(payServiceClient).cancel(isA(String.class), isA(String.class), isA(Integer.class));
+        doNothing().when(couponServiceClient).recoveryCoupon(isA(Long.class));
 
         // when
         Long historyId = service.saveResolutionHistory(
