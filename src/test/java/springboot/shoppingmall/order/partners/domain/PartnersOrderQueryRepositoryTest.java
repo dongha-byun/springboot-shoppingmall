@@ -17,6 +17,8 @@ import springboot.shoppingmall.order.application.OrderItemResolutionService;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
+import springboot.shoppingmall.order.domain.OrderItemResolutionHistory;
+import springboot.shoppingmall.order.domain.OrderItemResolutionHistoryRepository;
 import springboot.shoppingmall.order.domain.OrderItemResolutionType;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
@@ -39,6 +41,9 @@ class PartnersOrderQueryRepositoryTest {
 
     @Autowired
     OrderItemResolutionService orderItemResolutionService;
+
+    @Autowired
+    OrderItemResolutionHistoryRepository orderItemResolutionHistoryRepository;
 
     @Autowired
     ProductRepository productRepository;
@@ -207,36 +212,45 @@ class PartnersOrderQueryRepositoryTest {
         // given
         Order savedOrder1 = orderRepository.save(order1);
         OrderItem orderItem1 = getFirstOrderItemOf(savedOrder1);
+        orderItem1.cancel();
 
         Order savedOrder2 = orderRepository.save(order2);
         OrderItem orderItem2 = getFirstOrderItemOf(savedOrder2);
         orderItem2.outing("test-invoice-number-2");
         orderItem2.delivery(LocalDateTime.of(2023, 8, 20, 12, 30, 0));
         orderItem2.deliveryComplete(LocalDateTime.of(2023, 8, 22, 12, 30, 0), "현관문 앞");
+        orderItem2.refund();
 
         Order savedOrder3 = orderRepository.save(order3);
         OrderItem orderItem3 = getFirstOrderItemOf(savedOrder3);
         orderItem3.outing("test-invoice-number-3");
         orderItem3.delivery(LocalDateTime.of(2023, 8, 21, 12, 30, 0));
         orderItem3.deliveryComplete(LocalDateTime.of(2023, 8, 23, 11, 11, 0), "경비실");
+        orderItem3.exchange();
 
         em.flush();
         em.clear();
 
-        orderItemResolutionService.saveResolutionHistory(
-                userId, orderItem1.getId(), OrderItemResolutionType.CANCEL,
-                LocalDateTime.of(2023, 8, 25, 11, 0, 0),
-                "배송이 너무 늦어서 그냥 취소합니다."
+        orderItemResolutionHistoryRepository.save(
+                new OrderItemResolutionHistory(
+                        orderItem1, OrderItemResolutionType.CANCEL,
+                        LocalDateTime.of(2023, 8, 25, 11, 0, 0),
+                        "배송이 너무 늦어서 그냥 취소합니다."
+                )
         );
-        orderItemResolutionService.saveResolutionHistory(
-                userId, orderItem2.getId(), OrderItemResolutionType.REFUND,
-                LocalDateTime.of(2023, 8, 23, 12, 30, 0),
-                "생각했던 색상이 아니에요."
+        orderItemResolutionHistoryRepository.save(
+                new OrderItemResolutionHistory(
+                        orderItem2, OrderItemResolutionType.REFUND,
+                        LocalDateTime.of(2023, 8, 23, 12, 30, 0),
+                        "생각했던 색상이 아니에요."
+                )
         );
-        orderItemResolutionService.saveResolutionHistory(
-                userId, orderItem3.getId(), OrderItemResolutionType.EXCHANGE,
-                LocalDateTime.of(2023, 8, 24, 8, 0, 0),
-                "사이즈가 좀 커요."
+        orderItemResolutionHistoryRepository.save(
+                new OrderItemResolutionHistory(
+                        orderItem3, OrderItemResolutionType.EXCHANGE,
+                        LocalDateTime.of(2023, 8, 24, 8, 0, 0),
+                        "사이즈가 좀 커요."
+                )
         );
 
         // when
