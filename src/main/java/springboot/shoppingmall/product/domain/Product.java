@@ -44,7 +44,7 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private int price;
 
-    private int quantity;
+    private int stock;
 
     private double score;
 
@@ -79,26 +79,26 @@ public class Product extends BaseEntity {
     private final List<ProductDetail> details = new ArrayList<>();
 
     @Builder
-    public Product(String name, int price, int quantity, Category category, Category subCategory
+    public Product(String name, int price, int stock, Category category, Category subCategory
             , Long partnerId, String storedFileName, String viewFileName, String detail, String productCode) {
-        this(null, name, price, quantity, 0.0, 0, LocalDateTime.now(), category, subCategory,
+        this(null, name, price, stock, 0.0, 0, LocalDateTime.now(), category, subCategory,
                 partnerId, storedFileName, viewFileName, detail, productCode);
     }
 
-    public Product(String name, int price, int quantity, double score, int salesVolume,
+    public Product(String name, int price, int stock, double score, int salesVolume,
                    LocalDateTime registerDate, Category category, Category subCategory, Long partnerId,
                    String storedFileName, String viewFileName, String detail, String productCode) {
-        this(null, name, price, quantity, score, salesVolume, registerDate, category, subCategory,
+        this(null, name, price, stock, score, salesVolume, registerDate, category, subCategory,
                 partnerId, storedFileName, viewFileName, detail, productCode);
     }
 
-    public Product(Long id, String name, int price, int quantity, double score, int salesVolume,
+    public Product(Long id, String name, int price, int stock, double score, int salesVolume,
                    LocalDateTime registerDate, Category category, Category subCategory, Long partnerId,
                    String storedFileName, String viewFileName, String detail, String productCode) {
         this.id = id;
         this.name = name;
         this.price = price;
-        this.quantity = quantity;
+        this.stock = stock;
         this.score = score;
         this.salesVolume = salesVolume;
         this.registerDate = registerDate;
@@ -148,17 +148,17 @@ public class Product extends BaseEntity {
     }
 
     // 상품의 재고 수를 감소시킨다.
-    public void removeQuantity(int quantity) {
-        this.quantity -= quantity;
+    public void removeQuantity(int stock) {
+        this.stock -= stock;
     }
 
 
-    public void increaseQuantity(int quantity) {
-        this.quantity += quantity;
+    public void increaseQuantity(int stock) {
+        this.stock += stock;
     }
 
     public void validateQuantity(int quantity) {
-        if(this.quantity < quantity) {
+        if(this.stock < quantity) {
             throw new OverQuantityException(this.name + " 상품의 재고수량이 초과하여 주문이 불가합니다.");
         }
     }

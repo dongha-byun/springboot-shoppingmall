@@ -14,7 +14,7 @@ public class ProductDto {
     private String productCode;
     private String name;
     private int price;
-    private int quantity;
+    private int stock;
     private String detail;
     private CategoryDto category;
     private CategoryDto subCategory;
@@ -22,13 +22,13 @@ public class ProductDto {
     private String storedThumbnailName;
     private String viewThumbnailName;
 
-    public ProductDto(String name, String productCode, int price, int quantity, String detail,
+    public ProductDto(String name, String productCode, int price, int stock, String detail,
                       CategoryDto category, CategoryDto subCategory, Long partnersId,
                       String storedThumbnailName, String viewThumbnailName) {
         this.productCode = productCode;
         this.name = name;
         this.price = price;
-        this.quantity = quantity;
+        this.stock = stock;
         this.detail = detail;
         this.category = category;
         this.subCategory = subCategory;
@@ -39,14 +39,14 @@ public class ProductDto {
 
     @Builder
     @QueryProjection
-    public ProductDto(Long id, String productCode, String name, int price, int quantity, String detail,
+    public ProductDto(Long id, String productCode, String name, int price, int stock, String detail,
                       CategoryDto category, CategoryDto subCategory, Long partnerId,
                       String storedThumbnailName, String viewThumbnailName) {
         this.id = id;
         this.productCode = productCode;
         this.name = name;
         this.price = price;
-        this.quantity = quantity;
+        this.stock = stock;
         this.detail = detail;
         this.category = category;
         this.subCategory = subCategory;
@@ -61,7 +61,7 @@ public class ProductDto {
                 .productCode(entity.getProductCode())
                 .name(entity.getName())
                 .price(entity.getPrice())
-                .quantity(entity.getQuantity())
+                .stock(entity.getStock())
                 .detail(entity.getDetail())
                 .category(CategoryDto.of(entity.getCategory()))
                 .subCategory(CategoryDto.of(entity.getSubCategory()))

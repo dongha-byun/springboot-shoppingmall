@@ -121,7 +121,7 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
     private ConstructorExpression<ProductQueryDto> projectionsConstructorOfProductQueryDto() {
         return Projections.constructor(ProductQueryDto.class,
                 product.id, product.name,
-                product.price, product.quantity,
+                product.price, product.stock,
                 product.score, product.salesVolume,
                 product.registerDate,
                 product.thumbnail.storedFileName,

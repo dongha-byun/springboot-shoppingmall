@@ -13,7 +13,7 @@ import springboot.shoppingmall.product.application.ThumbnailInfo;
 public class ProductCreateDto {
     private String name;
     private int price;
-    private int quantity;
+    private int stock;
     private String detail;
     private Long categoryId;
     private Long subCategoryId;
