@@ -12,7 +12,7 @@ public class ProductQueryDto {
     private Long id;
     private String name;
     private int price;
-    private int quantity;
+    private int stock;
     private double score;
     private int salesVolume;
     private LocalDateTime registerDate;
