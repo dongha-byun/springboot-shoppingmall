@@ -247,7 +247,7 @@ class ProductQueryRepositoryTest {
 
         // then
         assertThat(products).hasSize(7)
-                .extracting("name", "quantity", "price")
+                .extracting("name", "stock", "price")
                 .containsExactly(
                         tuple("생선7", 7, 1350),
                         tuple("생선6", 3, 3900),
