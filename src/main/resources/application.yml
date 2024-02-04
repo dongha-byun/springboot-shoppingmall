@@ -29,22 +29,24 @@ spring:
         format_sql: true
         use_sql_comments: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     open-in-view: false # osiv off
-    defer-datasource-initialization: true
+    defer-datasource-initialization: false
 
   sql:
     init:
-      mode: always
+      mode: never
 
   kafka:
     consumer:
+      # bootstrap-servers: 27.96.131.242:9872 # Naver Cloud Platform
       bootstrap-servers: localhost:9872
       group-id: shopping-mall
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     producer:
+      # bootstrap-servers: 27.96.131.242:9872 # Naver Cloud Platform
       bootstrap-servers: localhost:9872
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
