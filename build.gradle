@@ -60,6 +60,9 @@ dependencies {
 	// mysql
 	implementation 'mysql:mysql-connector-java'
 
+	// mariaDB
+	implementation 'org.mariadb.jdbc:mariadb-java-client'
+
 	// RestDoc
 	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
