@@ -13,7 +13,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://127.0.0.1:8761/eureka
+      defaultZone: http://15.165.2.133:8761/eureka # AWS Discovery Service
 
 ---
 spring:
@@ -25,4 +25,4 @@ eureka:
     register-with-eureka: false
     fetch-registry: false
 #user-service:
-#  url: http://localhost:8080
+#  url: http://localhost:8881
