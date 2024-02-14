@@ -1,11 +1,10 @@
 package springboot.shoppingmall.order.partners.application;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -14,14 +13,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
+import springboot.shoppingmall.order.application.OrderUserInterfaceService;
 import springboot.shoppingmall.order.application.dto.ResponseOrderUserInformation;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
@@ -39,6 +35,9 @@ class PartnersReadyOrderQueryServiceTest {
     @Autowired
     PartnersReadyOrderQueryService service;
 
+    @MockBean
+    OrderUserInterfaceService orderUserInterfaceService;
+
     @Autowired
     OrderRepository orderRepository;
 
@@ -48,78 +47,34 @@ class PartnersReadyOrderQueryServiceTest {
     @Autowired
     CategoryRepository categoryRepository;
 
+    Category category, subCategory;
     Product product1, product2, product3;
     Order order1, order2, order3;
-    OrderDeliveryInfo orderDeliveryInfo;
 
     LocalDateTime orderDate;
     Long partnersId = 10L;
 
-    @Autowired
-    RestTemplate restTemplate;
-
-    MockRestServiceServer mockRestServiceServer;
-
-    @Autowired
-    ObjectMapper objectMapper;
-
     @BeforeEach
     void setup() {
-        mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
+        category = categoryRepository.save(new Category("식품 분류"));
+        subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
 
-        Category category = categoryRepository.save(new Category("식품 분류"));
-        Category subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
         LocalDateTime registerDate = LocalDateTime.of(2021, 8, 15, 0, 0, 0);
-        product1 = productRepository.save(
-                new Product(
-                        "생선1", 1000, 10, 1.0, 10, registerDate,
-                        category, subCategory, partnersId,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-        product2 = productRepository.save(
-                new Product(
-                        "생선2", 1200, 11, 1.5, 20, registerDate,
-                        category, subCategory, partnersId,
-                        "storedFileName2", "viewFileName2", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-        product3 = productRepository.save(
-                new Product(
-                        "생선3", 1500, 12, 3.0, 15, registerDate,
-                        category, subCategory, partnersId,
-                        "storedFileName3", "viewFileName3", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-
-        orderDeliveryInfo = new OrderDeliveryInfo(
-                "수령인1", "01234", "010-1234-1234",
-                "테스트구 테스트로", "테스트호 테스트동", "택배 보관함에 넣어주세요"
-        );
+        product1 = saveProduct("생선1", 1000, 1.0, 10, registerDate);
+        product2 = saveProduct("생선2", 1200, 1.5, 20, registerDate);
+        product3 = saveProduct("생선3", 1500, 3.0, 15, registerDate);
 
         orderDate = LocalDateTime.of(2023, 8, 13, 12, 0, 0);
-        order1 = getOrder("test-order-code1", 10L, product1, 3, orderDate.plusDays(1));
-        order2 = getOrder("test-order-code2", 20L, product2, 4, orderDate.plusDays(2));
-        order3 = getOrder("test-order-code3", 20L, product3, 5, orderDate.plusDays(4));
-    }
-
-    private Order getOrder(String orderCode, Long userId, Product product, int quantity, LocalDateTime orderDate) {
-        return new Order(
-                orderCode, userId,
-                List.of(new OrderItem(product, quantity, OrderStatus.PREPARED)),
-                orderDate,
-                orderDeliveryInfo
-        );
+        order1 = makeOrder("test-order-code1", 10L, product1, 3, orderDate.plusDays(1));
+        order2 = makeOrder("test-order-code2", 20L, product2, 4, orderDate.plusDays(2));
+        order3 = makeOrder("test-order-code3", 20L, product3, 5, orderDate.plusDays(4));
     }
 
     @Test
     @DisplayName("판매자가 상품 준비중이거나 출고중인 주문 내역을 조회한다.")
-    void find_partners_ready_orders() throws JsonProcessingException {
+    void find_partners_ready_orders() {
         // given
-        mockingGetUserInfo();
+        mockingGetUsersOfUsers();
 
         Order savedOrder1 = orderRepository.save(order1);
 
@@ -153,21 +108,36 @@ class PartnersReadyOrderQueryServiceTest {
         return getFirstOrderItemOf(order).getId();
     }
 
-    private void mockingGetUserInfo() throws JsonProcessingException {
+    private void mockingGetUsersOfUsers() {
         List<ResponseOrderUserInformation> response = Arrays.asList(
                 new ResponseOrderUserInformation(10L, "사용자 10", "010-2222-3310"),
                 new ResponseOrderUserInformation(20L, "사용자 20", "010-2222-3320")
         );
-        String responseContent = objectMapper.writeValueAsString(response);
-        mockRestServiceServer
-                .expect(
-                        requestTo("/orders/users/basic-info")
+        when(orderUserInterfaceService.getUsersOfOrders(any())).thenReturn(response);
+    }
+
+    private Product saveProduct(String name, int price, double score, int salesVolume, LocalDateTime now) {
+        String storedFileName = "stored-file-name-" + name;
+        String viewFileName = "view-file-name-" + name;
+        return productRepository.save(
+                new Product(
+                        name, price, 10, score, salesVolume, now,
+                        category, subCategory, partnersId,
+                        storedFileName, viewFileName, "상품 설명 입니다.",
+                        "product-code"
                 )
-                .andExpect(method(HttpMethod.POST))
-                .andRespond(
-                        withStatus(HttpStatus.OK)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .body(responseContent)
-                );
+        );
+    }
+
+    private Order makeOrder(String orderCode, Long userId, Product product, int quantity, LocalDateTime orderDate) {
+        return new Order(
+                orderCode, userId,
+                List.of(new OrderItem(product, quantity, OrderStatus.PREPARED)),
+                orderDate,
+                new OrderDeliveryInfo(
+                        "수령인1", "01234", "010-1234-1234",
+                        "테스트구 테스트로", "테스트호 테스트동", "택배 보관함에 넣어주세요"
+                )
+        );
     }
 }

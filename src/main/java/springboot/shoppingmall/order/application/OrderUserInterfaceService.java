@@ -7,5 +7,5 @@ public interface OrderUserInterfaceService {
 
     void increaseOrderAmounts(Long userId, int price);
 
-    List<ResponseOrderUserInformation> getOrderUsers(List<Long> userIds);
+    List<ResponseOrderUserInformation> getUsersOfOrders(List<Long> userIds);
 }

@@ -11,7 +11,7 @@ public interface PartnersOrderQueryService {
     default Map<Long, ResponseOrderUserInformation> getUserInformation(
             OrderUserInterfaceService orderUserInterfaceService, List<Long> userIds) {
 
-        List<ResponseOrderUserInformation> result = orderUserInterfaceService.getOrderUsers(userIds);
+        List<ResponseOrderUserInformation> result = orderUserInterfaceService.getUsersOfOrders(userIds);
         return ResponseOrderUserInformationMapFactory.create(result);
     }
 }

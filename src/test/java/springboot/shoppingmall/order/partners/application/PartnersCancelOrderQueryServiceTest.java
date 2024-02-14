@@ -71,9 +71,9 @@ class PartnersCancelOrderQueryServiceTest {
         product3 = saveProduct("생선3", 1500, 3.0, 15, registerDate);
 
         orderDate = LocalDateTime.of(2023, 8, 13, 12, 0, 0);
-        order1 = getOrder("test-order-code1", 10L, product1, 3, orderDate.plusDays(1));
-        order2 = getOrder("test-order-code2", 20L, product2, 4, orderDate.plusDays(2));
-        order3 = getOrder("test-order-code3", 20L, product3, 5, orderDate.plusDays(4));
+        order1 = makeOrder("test-order-code1", 10L, product1, 3, orderDate.plusDays(1));
+        order2 = makeOrder("test-order-code2", 20L, product2, 4, orderDate.plusDays(2));
+        order3 = makeOrder("test-order-code3", 20L, product3, 5, orderDate.plusDays(4));
     }
 
     @Test
@@ -108,30 +108,20 @@ class PartnersCancelOrderQueryServiceTest {
         );
         orderItem3.exchange();
 
-        orderItemResolutionHistoryRepository.save(
-                new OrderItemResolutionHistory(
-                        orderItem1, OrderItemResolutionType.CANCEL,
-                        LocalDateTime.of(2023, 8, 25, 11, 0, 0),
-                        "주문 취소합니다."
-                )
+        saveResolutionHistory(orderItem1, OrderItemResolutionType.CANCEL,
+                LocalDateTime.of(2023, 8, 25, 11, 0, 0),
+                "주문 취소합니다."
         );
 
-        orderItemResolutionHistoryRepository.save(
-                new OrderItemResolutionHistory(
-                        orderItem2, OrderItemResolutionType.REFUND,
-                        LocalDateTime.of(2023, 8, 23, 12, 30, 0),
-                        "환불합니다."
-                )
+        saveResolutionHistory(orderItem2, OrderItemResolutionType.REFUND,
+                LocalDateTime.of(2023, 8, 23, 12, 30, 0),
+                "환불합니다."
         );
 
-        orderItemResolutionHistoryRepository.save(
-                new OrderItemResolutionHistory(
-                        orderItem3, OrderItemResolutionType.EXCHANGE,
-                        LocalDateTime.of(2023, 8, 24, 8, 0, 0),
-                        "교환합니다."
-                )
+        saveResolutionHistory(orderItem3, OrderItemResolutionType.EXCHANGE,
+                LocalDateTime.of(2023, 8, 24, 8, 0, 0),
+                "교환합니다."
         );
-
 
         // when
         LocalDateTime startDate = LocalDateTime.of(2023, 6, 1, 0, 0, 0);
@@ -166,6 +156,13 @@ class PartnersCancelOrderQueryServiceTest {
                 );
     }
 
+    private void saveResolutionHistory(OrderItem orderItem, OrderItemResolutionType resolutionType,
+                                       LocalDateTime time, String reason) {
+        orderItemResolutionHistoryRepository.save(
+                new OrderItemResolutionHistory(orderItem, resolutionType, time, reason)
+        );
+    }
+
     private OrderItem getFirstOrderItemOf(Order order) {
         return order.getItems().get(0);
     }
@@ -175,7 +172,7 @@ class PartnersCancelOrderQueryServiceTest {
     }
 
     private void mockingGetUserInfo() {
-        when(orderUserInterfaceService.getOrderUsers(any())).thenReturn(
+        when(orderUserInterfaceService.getUsersOfOrders(any())).thenReturn(
                 Arrays.asList(
                         new ResponseOrderUserInformation(10L, "사용자 10", "010-2222-3310"),
                         new ResponseOrderUserInformation(20L, "사용자 20", "010-2222-3320")
@@ -183,7 +180,7 @@ class PartnersCancelOrderQueryServiceTest {
         );
     }
 
-    private Order getOrder(String orderCode, Long userId, Product product, int quantity, LocalDateTime orderDate) {
+    private Order makeOrder(String orderCode, Long userId, Product product, int quantity, LocalDateTime orderDate) {
         return new Order(
                 orderCode, userId,
                 List.of(new OrderItem(product, quantity, OrderStatus.PREPARED)),

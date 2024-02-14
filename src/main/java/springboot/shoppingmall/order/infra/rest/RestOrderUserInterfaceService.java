@@ -29,7 +29,7 @@ public class RestOrderUserInterfaceService implements OrderUserInterfaceService 
     }
 
     @Override
-    public List<ResponseOrderUserInformation> getOrderUsers(List<Long> userIds) {
+    public List<ResponseOrderUserInformation> getUsersOfOrders(List<Long> userIds) {
         RequestEntity<List<Long>> requestEntity = RequestEntity
                 .post("/orders/users")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -20,7 +20,7 @@ public class FeignClientOrderUserInterfaceService implements OrderUserInterfaceS
     }
 
     @Override
-    public List<ResponseOrderUserInformation> getOrderUsers(List<Long> userIds) {
+    public List<ResponseOrderUserInformation> getUsersOfOrders(List<Long> userIds) {
         return userServiceClient.getUsersOfOrders(userIds);
     }
 }
