@@ -28,8 +28,8 @@ public class PartnersCancelOrderQueryService implements PartnersOrderQueryServic
         return orders;
     }
 
-    private List<Long> extractUserIds(List<PartnersCancelOrderQueryDto> partnersReadyOrders) {
-        return partnersReadyOrders.stream()
+    private List<Long> extractUserIds(List<PartnersCancelOrderQueryDto> partnersCancelOrders) {
+        return partnersCancelOrders.stream()
                 .map(PartnersCancelOrderQueryDto::getUserId)
                 .collect(Collectors.toList());
     }

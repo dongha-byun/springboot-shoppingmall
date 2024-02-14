@@ -7,9 +7,8 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import springboot.shoppingmall.order.application.OrderUserInterfaceService;
 import springboot.shoppingmall.order.application.dto.ResponseOrderUserInformation;
-import springboot.shoppingmall.order.partners.application.dto.PartnersReadyOrderQueryDto;
-import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryRepository;
 import springboot.shoppingmall.order.partners.application.dto.PartnersDeliveryOrderQueryDto;
+import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryRepository;
 
 @RequiredArgsConstructor
 public class PartnersDeliveryOrderQueryService implements PartnersOrderQueryService{
@@ -28,8 +27,8 @@ public class PartnersDeliveryOrderQueryService implements PartnersOrderQueryServ
         return orders;
     }
 
-    private List<Long> extractUserIds(List<PartnersDeliveryOrderQueryDto> partnersReadyOrders) {
-        return partnersReadyOrders.stream()
+    private List<Long> extractUserIds(List<PartnersDeliveryOrderQueryDto> partnersDeliveryOrders) {
+        return partnersDeliveryOrders.stream()
                 .map(PartnersDeliveryOrderQueryDto::getUserId)
                 .collect(Collectors.toList());
     }

@@ -27,8 +27,8 @@ public class PartnersEndOrderQueryService implements PartnersOrderQueryService{
         return orders;
     }
 
-    private List<Long> extractUserIds(List<PartnersEndOrderQueryDto> partnersReadyOrders) {
-        return partnersReadyOrders.stream()
+    private List<Long> extractUserIds(List<PartnersEndOrderQueryDto> partnersEndOrders) {
+        return partnersEndOrders.stream()
                 .map(PartnersEndOrderQueryDto::getUserId)
                 .collect(Collectors.toList());
     }

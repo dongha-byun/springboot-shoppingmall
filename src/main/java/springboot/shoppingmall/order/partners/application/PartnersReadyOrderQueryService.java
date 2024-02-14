@@ -24,7 +24,6 @@ public class PartnersReadyOrderQueryService implements PartnersOrderQueryService
         Map<Long, ResponseOrderUserInformation> map = getUserInformation(orderUserInterfaceService, userIds);
 
         updateOrdersInUserInformation(orders, map);
-
         return orders;
     }
 
