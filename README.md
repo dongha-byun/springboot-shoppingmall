@@ -15,10 +15,10 @@
 * JUnit 5
 
 ### 2. ERD
-![스크린샷 2024-02-14 오후 9 26 09](https://github.com/dongha-byun/springboot-shoppingmall/assets/95368245/5d70c868-e300-4e38-93f5-70f4b85c046d)
+>![스크린샷 2024-02-14 오후 9 26 09](https://github.com/dongha-byun/springboot-shoppingmall/assets/95368245/5d70c868-e300-4e38-93f5-70f4b85c046d)
 
 ### 3. 소프트웨어 아키텍처
-![스크린샷 2024-02-14 오후 8 37 26](https://github.com/dongha-byun/springboot-shoppingmall/assets/95368245/0b6e0d5e-04f6-4cff-83bc-6e4acfb7cfe8)
+>![스크린샷 2024-02-15 오후 6 18 47](https://github.com/dongha-byun/springboot-shoppingmall/assets/95368245/ae785155-b84f-471a-82ff-712c58e94072)
 
 ### 4. 주요 구현기능
 #### 1) 메인 쇼핑몰 서비스
