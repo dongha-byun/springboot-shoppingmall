@@ -1,23 +1,25 @@
 package springboot.shoppingmall.partners.application;
 
-import static springboot.shoppingmall.partners.dto.PartnerDto.*;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.partners.application.request.PartnerRegisterRequestDto;
 import springboot.shoppingmall.partners.domain.Partner;
 import springboot.shoppingmall.partners.domain.PartnerRepository;
-import springboot.shoppingmall.partners.dto.PartnerDto;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 @Service
 public class PartnerService {
-    private final PartnerRepository partnerRepository;
+    private final PartnerRepository repository;
 
-    @Transactional
-    public PartnerDto createPartner(PartnerDto dto) {
-        Partner partner = partnerRepository.save(to(dto));
-        return of(partner);
+    public Long register(PartnerRegisterRequestDto registerRequestDto) {
+        if(!registerRequestDto.getPassword().equals(registerRequestDto.getConfirmPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        Partner partner = registerRequestDto.toEntity();
+        repository.save(partner);
+        return partner.getId();
     }
 }

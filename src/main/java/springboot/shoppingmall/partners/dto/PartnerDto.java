@@ -13,41 +13,29 @@ public class PartnerDto {
     private Long id;
     private String name;
     private String ceoName;
-    private String corporateRegistrationNumber;
+    private String crn;
     private String telNo;
     private String address;
-    private String loginId;
+    private String email;
     private String password;
     private boolean isApproved;
     private LocalDateTime createdAt;
 
-    public PartnerDto(String name, String ceoName, String corporateRegistrationNumber, String telNo, String address,
-                      String loginId, String password) {
+    public PartnerDto(String name, String ceoName, String crn, String telNo, String address,
+                      String email, String password) {
         this.name = name;
         this.ceoName = ceoName;
-        this.corporateRegistrationNumber = corporateRegistrationNumber;
+        this.crn = crn;
         this.telNo = telNo;
         this.address = address;
-        this.loginId = loginId;
+        this.email = email;
         this.password = password;
     }
 
     public static PartnerDto of(Partner partner) {
         return new PartnerDto(partner.getId(), partner.getName(), partner.getCeoName(),
-                partner.getCorporateRegistrationNumber(), partner.getTelNo(), partner.getAddress(),
-                partner.getLoginId(), partner.getPassword(), partner.isApproved(), partner.getCreatedAt());
+                partner.getCrn(), partner.getTelNo(), partner.getAddress(),
+                partner.getEmail(), partner.getPassword(), partner.isApproved(), partner.getCreatedAt());
     }
 
-    public static Partner to(PartnerDto dto) {
-        return Partner.builder()
-                .id(dto.getId())
-                .name(dto.getName())
-                .ceoName(dto.getCeoName())
-                .corporateRegistrationNumber(dto.getCorporateRegistrationNumber())
-                .telNo(dto.getTelNo())
-                .address(dto.getAddress())
-                .loginId(dto.getLoginId())
-                .password(dto.getPassword())
-                .build();
-    }
 }

@@ -2,5 +2,5 @@ package springboot.shoppingmall.partners.domain;
 
 public interface PartnerLoginRepository {
 
-    Partner findByLoginId(String loginId);
+    Partner findByEmailForLogin(String email);
 }

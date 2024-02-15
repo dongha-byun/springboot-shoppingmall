@@ -29,7 +29,7 @@ public class PartnerLoginRepositoryTest {
         ));
 
         // when
-        Partner findPartner = partnerLoginRepository.findByLoginId(loginId);
+        Partner findPartner = partnerLoginRepository.findByEmailForLogin(loginId);
 
         // then
         assertThat(savePartner.getId()).isEqualTo(findPartner.getId());
@@ -48,7 +48,7 @@ public class PartnerLoginRepositoryTest {
 
         // when & then
         assertThatThrownBy(
-                () -> partnerLoginRepository.findByLoginId(notExistsLoginId)
+                () -> partnerLoginRepository.findByEmailForLogin(notExistsLoginId)
         ).isInstanceOf(RuntimeException.class);
     }
 }

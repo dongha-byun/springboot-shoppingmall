@@ -22,7 +22,7 @@ public class PartnerLoginService {
     private final CircuitBreakerFactory circuitBreakerFactory;
 
     public String login(String loginId, String password) {
-        Partner partner = loginRepository.findByLoginId(loginId);
+        Partner partner = loginRepository.findByEmailForLogin(loginId);
         validatePartnerLogin(partner, password);
 
         log.info("before call user feign client");

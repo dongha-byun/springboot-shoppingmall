@@ -13,9 +13,9 @@ public class PartnerLoginRepositoryImpl implements PartnerLoginRepository {
     }
 
     @Override
-    public Partner findByLoginId(String loginId) {
-        return em.createQuery("select p from Partner p where p.loginId = :loginId", Partner.class)
-                .setParameter("loginId", loginId)
+    public Partner findByEmailForLogin(String email) {
+        return em.createQuery("select p from Partner p where p.email = :email", Partner.class)
+                .setParameter("email", email)
                 .getSingleResult();
     }
 }

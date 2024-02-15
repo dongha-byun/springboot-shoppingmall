@@ -24,32 +24,36 @@ public class Partner extends BaseEntity {
     private String ceoName;
     private String address;
     private String telNo;
-    private String corporateRegistrationNumber;
-    private String loginId;
+    private String crn;
+    private String email;
     private String password;
     private boolean isApproved;
     private int productSequence;
 
-    public Partner(String name, String ceoName, String address, String telNo, String corporateRegistrationNumber, String loginId,
-                   String password) {
-        this(name, ceoName, address, telNo, corporateRegistrationNumber, loginId, password, false);
+    public static Partner create(String name, String ceoName, String address, String telNo,
+                                 String crn, String email, String password) {
+        return new Partner(name, ceoName, address, telNo, crn, email, password);
     }
-    public Partner(String name, String ceoName, String address, String telNo, String corporateRegistrationNumber, String loginId,
-                   String password, boolean isApproved) {
-        this(null, name, ceoName, address, telNo, corporateRegistrationNumber, loginId, password, isApproved);
+
+    public Partner(String name, String ceoName, String address, String telNo,
+                   String crn, String email, String password) {
+        this(name, ceoName, address, telNo, crn, email, password, false);
+    }
+    public Partner(String name, String ceoName, String address, String telNo,
+                   String crn, String email, String password, boolean isApproved) {
+        this(null, name, ceoName, address, telNo, crn, email, password, isApproved);
     }
 
     @Builder
-    public Partner(Long id, String name, String ceoName, String address, String telNo, String corporateRegistrationNumber,
-                   String loginId,
-                   String password, boolean isApproved) {
+    public Partner(Long id, String name, String ceoName, String address, String telNo, String crn,
+                   String email, String password, boolean isApproved) {
         this.id = id;
         this.name = name;
         this.ceoName = ceoName;
         this.address = address;
         this.telNo = telNo;
-        this.corporateRegistrationNumber = corporateRegistrationNumber;
-        this.loginId = loginId;
+        this.crn = crn;
+        this.email = email;
         this.password = password;
         this.isApproved = isApproved;
         this.productSequence = 0;
@@ -68,7 +72,7 @@ public class Partner extends BaseEntity {
     }
 
     public String generateProductCode() {
-        return this.corporateRegistrationNumber.replace("-", "")
+        return this.crn.replace("-", "")
                 + String.format("%06d", getLastSequence());
     }
 }

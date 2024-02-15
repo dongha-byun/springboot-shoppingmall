@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.partners.application.request.PartnerRegisterRequestDto;
 import springboot.shoppingmall.partners.dto.PartnerDto;
 
 @Transactional
@@ -17,27 +18,33 @@ class PartnerServiceTest {
     PartnerService partnerService;
 
     @Test
-    @DisplayName("판매 자격 신청 등록 테스트")
-    void create_test() {
+    @DisplayName("판매 자격을 신청한다.")
+    void register() {
         // given
-        PartnerDto partnerDto = new PartnerDto(
-                "(주)파산은행", "김사채", "110-44-66666", "070-4444-4989",
-                "서울시 사채구 빚더미동", "cash_bank", "1q2w3e4r!"
+        PartnerRegisterRequestDto requestDto = new PartnerRegisterRequestDto(
+                "부실건설", "김부실", "대충시 부실구 순살동", "02-4433-1222", "110-44-66666",
+                "busil@architecture.com", "busil1!", "busil1!"
         );
 
         // when
-        PartnerDto provider = partnerService.createPartner(partnerDto);
+        Long id = partnerService.register(requestDto);
 
         // then
-        assertThat(provider.getId()).isNotNull();
-        assertThat(provider.isApproved()).isFalse();
-        assertThat(provider.getCreatedAt()).isNotNull();
-        assertThat(provider.getName()).isEqualTo("(주)파산은행");
-        assertThat(provider.getCeoName()).isEqualTo("김사채");
-        assertThat(provider.getCorporateRegistrationNumber()).isEqualTo("110-44-66666");
-        assertThat(provider.getTelNo()).isEqualTo("070-4444-4989");
-        assertThat(provider.getAddress()).isEqualTo("서울시 사채구 빚더미동");
-        assertThat(provider.getLoginId()).isEqualTo("cash_bank");
-        assertThat(provider.getPassword()).isEqualTo("1q2w3e4r!");
+        assertThat(id).isNotNull();
+    }
+
+    @Test
+    @DisplayName("판매 자격 신청 시, 비밀번호를 일치시켜야 한다.")
+    void register_fail_with_not_equal_password() {
+        // given
+        PartnerRegisterRequestDto requestDto = new PartnerRegisterRequestDto(
+                "부실건설", "김부실", "대충시 부실구 순살동", "02-4433-1222", "110-44-66666",
+                "busil@architecture.com", "busil1!", "busil2@"
+        );
+
+        // when & then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> partnerService.register(requestDto)
+        );
     }
 }

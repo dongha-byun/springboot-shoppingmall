@@ -1,32 +1,38 @@
 package springboot.shoppingmall.partners.presentation.response;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springboot.shoppingmall.partners.dto.PartnerDto;
+import springboot.shoppingmall.utils.DateUtils;
 
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
-@Data
+@AllArgsConstructor
+@Getter
 public class PartnerResponse {
     private Long id;
     private String name;
     private String ceoName;
-    private String corporateRegistrationNumber;
+    private String crn;
     private String telNo;
-    private String loginId;
-    private String createdAt;
+    private String address;
+    private String email;
     private boolean isApproved;
+    private String createdAt;
 
     public static PartnerResponse of(PartnerDto dto) {
-        return new PartnerResponse(dto.getId(), dto.getName(), dto.getCeoName(), dto.getCorporateRegistrationNumber(),
-                dto.getTelNo(), dto.getLoginId(), dateFormatting(dto.getCreatedAt(), "yyyy-MM-dd HH:mm:ss"), dto.isApproved());
-    }
-
-    private static String dateFormatting(LocalDateTime time, String format) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(format);
-        return time.format(dateTimeFormatter);
+        return PartnerResponse.builder()
+                .id(dto.getId())
+                .name(dto.getName())
+                .ceoName(dto.getCeoName())
+                .crn(dto.getCrn())
+                .telNo(dto.getTelNo())
+                .address(dto.getAddress())
+                .email(dto.getEmail())
+                .isApproved(dto.isApproved())
+                .createdAt(DateUtils.toStringOfLocalDateTIme(dto.getCreatedAt()))
+                .build();
     }
 }

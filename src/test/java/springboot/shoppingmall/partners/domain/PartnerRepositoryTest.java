@@ -23,8 +23,8 @@ class PartnerRepositoryTest {
                 .name("(주) 부실건설")
                 .address("서울시 영등포구 당산동")
                 .telNo("1577-6789")
-                .corporateRegistrationNumber("110-23-44444")
-                .loginId("poorArchitect")
+                .crn("110-23-44444")
+                .email("poorArchitect@test.com")
                 .password("1q2w3e4r!")
                 .build();
 
@@ -36,8 +36,8 @@ class PartnerRepositoryTest {
         assertThat(savePartner.getName()).isEqualTo("(주) 부실건설");
         assertThat(savePartner.getAddress()).isEqualTo("서울시 영등포구 당산동");
         assertThat(savePartner.getTelNo()).isEqualTo("1577-6789");
-        assertThat(savePartner.getCorporateRegistrationNumber()).isEqualTo("110-23-44444");
-        assertThat(savePartner.getLoginId()).isEqualTo("poorArchitect");
+        assertThat(savePartner.getCrn()).isEqualTo("110-23-44444");
+        assertThat(savePartner.getEmail()).isEqualTo("poorArchitect@test.com");
         assertThat(savePartner.getPassword()).isEqualTo("1q2w3e4r!");
         assertThat(savePartner.isApproved()).isFalse();
     }

@@ -17,8 +17,8 @@ class PartnerTest {
                 .name("(주) 부실건설")
                 .address("서울시 영등포구 당산동")
                 .telNo("1577-6789")
-                .corporateRegistrationNumber("110-23-44444")
-                .loginId("poorArchitect")
+                .crn("110-23-44444")
+                .email("poorArchitect@test.com")
                 .password("1q2w3e4r!")
                 .build();
 
@@ -34,8 +34,8 @@ class PartnerTest {
                 .name("(주) 부실건설")
                 .address("서울시 영등포구 당산동")
                 .telNo("1577-6789")
-                .corporateRegistrationNumber("110-23-44444")
-                .loginId("poorArchitect")
+                .crn("110-23-44444")
+                .email("poorArchitect@test.com")
                 .password("1q2w3e4r!")
                 .build();
 
@@ -54,8 +54,8 @@ class PartnerTest {
                 .name("(주) 부실건설")
                 .address("서울시 영등포구 당산동")
                 .telNo("1577-6789")
-                .corporateRegistrationNumber("110-23-44444")
-                .loginId("poorArchitect")
+                .crn("110-23-44444")
+                .email("poorArchitect@test.com")
                 .password("1q2w3e4r!")
                 .build();
         assertThat(partner.getProductSequence()).isEqualTo(0);
@@ -76,8 +76,8 @@ class PartnerTest {
                 .name("(주) 부실건설")
                 .address("서울시 영등포구 당산동")
                 .telNo("1577-6789")
-                .corporateRegistrationNumber("110-23-44444")
-                .loginId("poorArchitect")
+                .crn("110-23-44444")
+                .email("poorArchitect@test.com")
                 .password("1q2w3e4r!")
                 .build();
 
