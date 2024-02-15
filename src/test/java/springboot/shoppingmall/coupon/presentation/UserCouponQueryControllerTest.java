@@ -43,7 +43,8 @@ class UserCouponQueryControllerTest {
 
         // when & then
         mockMvc.perform(get("/partners/coupons/{id}/users", 1L)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(GatewayConstants.GATEWAY_HEADER, 1L))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
