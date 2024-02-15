@@ -1,22 +1,45 @@
 ## SpringBoot 와 JPA 를 활용한 온라인 쇼핑몰 플랫폼
 
+### 0. 소개
+* 커머스 도메인 설계 및 구현을 위한 온라인 쇼핑몰 플랫폼 프로젝트
+* SpringBoot 와 JPA 학습을 중심으로 한 백엔드 서비스 개발
+* JUnit 을 통한 단위/통합 테스트 코드 작성
+* Spring Cloud 를 활용한 MSA 구현
+
 ### 1. 개발 환경
-* Java 11
-* SpringBoot 2.7.4(Spring 5.3)
-* JPA(Hibernate 5.6.11)
+* Java 11 / 17
+* SpringBoot 2.7.4 / SpringBoot 3.1.5
+* Spring Cloud 4.0(Netflix Eureka / OpenFeign)
+* Spring Data JPA / QueryDSL
+* MariaDB
+* JUnit 5
 
-### 2. 시스템 구성도
+### 2. ERD
+![스크린샷 2024-02-14 오후 9 26 09](https://github.com/dongha-byun/springboot-shoppingmall/assets/95368245/5d70c868-e300-4e38-93f5-70f4b85c046d)
 
+### 3. 소프트웨어 아키텍처
+![스크린샷 2024-02-14 오후 8 37 26](https://github.com/dongha-byun/springboot-shoppingmall/assets/95368245/0b6e0d5e-04f6-4cff-83bc-6e4acfb7cfe8)
 
-### 3. 도메인 별 기능 목록 (wiki 참고)
-* 3-1. [상품](https://github.com/dongha-byun/springboot-shoppingmall/wiki/1.-%EC%83%81%ED%92%88-%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5)
-* 3-2. [상품 리뷰](https://github.com/dongha-byun/springboot-shoppingmall/wiki/2.-%EC%83%81%ED%92%88-%EB%A6%AC%EB%B7%B0-%EA%B4%80%EB%A0%A8-%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5)
-* 3-3. [상품 문의](https://github.com/dongha-byun/springboot-shoppingmall/wiki/3.-%EC%83%81%ED%92%88-%EB%AC%B8%EC%9D%98-%EA%B4%80%EB%A0%A8-%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5)
-* 3-4. [회원 / 인증](https://github.com/dongha-byun/springboot-shoppingmall/wiki/4.-%ED%9A%8C%EC%9B%90-%EC%9D%B8%EC%A6%9D-%EA%B4%80%EB%A0%A8-%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5)
-* 3-5. [주문](https://github.com/dongha-byun/springboot-shoppingmall/wiki/5.-%EC%A3%BC%EB%AC%B8-%EA%B4%80%EB%A0%A8-%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5)
-* 3-6. [개인화 설정](https://github.com/dongha-byun/springboot-shoppingmall/wiki/6.-%EA%B0%9C%EC%9D%B8%ED%99%94-%EC%84%A4%EC%A0%95)
+### 4. 주요 구현기능
+#### 1) 메인 쇼핑몰 서비스
+* 카카오 페이 결제 기능
+* 다수의 상품을 한 번에 주문하는 기능
+* 주문 상태에 따른 주문취소, 환불, 교환 기능
+* 주문 상품 결제 시, 할인쿠폰 사용 기능
+* 주문 건수, 주문 금액에 따른 회원등급 적용 및 회원등급에 따른 결제금액 할인 기능
+* 쇼핑몰 입점신청 기능(판매자 전용)
+* 웹 에디터를 통한 판매 상품 정보 등록 기능(판매자 전용)
+* 상품 리뷰/문의 글에 대한 신고 기능(판매자 전용)
+* 입점 승인 및 판매자격 중단(관리자 전용)
+* 상품 리뷰/문의 신고에 대한 사후 처리(관리자 전용)
 
+#### 2) 회원 / 인증 서비스
+* 로그인 시, JWT 토큰 방식 인증 처리
+* Access Token 발급 및 Refresh Token 을 통한 Access Token 재발급 기능
+* 회원가입 시, 이메일 발송을 통한 인증번호 검증 기능
 
-### 3. API 목록
+#### 3) API Gateway
+* 요청 URI 에 따른 라우팅 처리 및 필터 적용
+* 요청 내 Access Token 을 검증하여 인증 처리
 
 
