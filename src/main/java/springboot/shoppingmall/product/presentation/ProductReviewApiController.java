@@ -38,22 +38,6 @@ public class ProductReviewApiController {
     private final ProductReviewService productReviewService;
     private final ThumbnailFileService thumbnailFileService;
 
-    @ExceptionHandler(ContentNotBlankException.class)
-    public ResponseEntity<Map<String, String>> handleNotBlankException(ContentNotBlankException e) {
-        Map<String, String> params = new HashMap<>();
-        params.put("message", e.getMessage());
-
-        return ResponseEntity.badRequest().body(params);
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, String>> illegalArgumentException(IllegalArgumentException e) {
-        Map<String, String> params = new HashMap<>();
-        params.put("message", e.getMessage());
-
-        return ResponseEntity.badRequest().body(params);
-    }
-
     @PostMapping("/orders/{orderId}/{orderItemId}/products/{productId}/reviews")
     public ResponseEntity<ProductUserReviewResponse> createReview(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
                                                                   @PathVariable("orderId") Long orderId,
@@ -88,8 +72,6 @@ public class ProductReviewApiController {
         return ResponseEntity.ok(reviews);
     }
 
-    // @RequestParam("id") String id
-    // ~~~~ ?Id=byun 이라는 요청이 오면 id 변수에 byun 을 넣어준다.
     @DeleteMapping("/users/reviews/{reviewId}")
     public ResponseEntity<ProductReviewResponse> deleteReview(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
                                                               @PathVariable("reviewId") Long reviewId) {
