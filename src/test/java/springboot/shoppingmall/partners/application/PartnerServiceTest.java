@@ -47,4 +47,21 @@ class PartnerServiceTest {
                 () -> partnerService.register(requestDto)
         );
     }
+
+    @Test
+    @DisplayName("이미 가입된 사업자 번호가 있으면, 판매 자격신청이 불가능하다.")
+    void register_fail_with_duplicate_crn() {
+        // given
+        PartnerRegisterRequestDto requestDto = new PartnerRegisterRequestDto(
+                "부실건설", "김부실", "대충시 부실구 순살동", "02-4433-1222", "110-44-66666",
+                "busil@architecture.com", "busil1!", "busil1!"
+        );
+        Long registerId = partnerService.register(requestDto);
+        assertThat(registerId).isNotNull();
+
+        // when & then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> partnerService.register(requestDto)
+        );
+    }
 }
