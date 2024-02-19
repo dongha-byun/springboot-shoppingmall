@@ -123,6 +123,7 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
                 product.id, product.name,
                 product.price, product.stock,
                 product.score, product.salesVolume,
+                product.detail,
                 product.registerDate,
                 product.thumbnail.storedFileName,
                 product.thumbnail.viewFileName,

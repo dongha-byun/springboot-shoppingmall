@@ -15,6 +15,7 @@ public class ProductQueryDto {
     private int stock;
     private double score;
     private int salesVolume;
+    private String detail;
     private LocalDateTime registerDate;
     private String storedThumbnailName;
     private String viewThumbnailName;

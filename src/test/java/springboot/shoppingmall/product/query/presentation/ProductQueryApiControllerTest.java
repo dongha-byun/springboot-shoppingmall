@@ -187,8 +187,9 @@ class ProductQueryApiControllerTest {
 
         String storedFileName = "stored-file-name-" + name;
         String viewFileName = "view-file-name-" + name;
+        String detail = name + "입니다!";
         return new ProductQueryDto(
-                id, name, price, quantity, score, salesVolume,
+                id, name, price, quantity, score, salesVolume, detail,
                 registerDate, storedFileName, viewFileName,
                 partnersId, partnersName
         );
