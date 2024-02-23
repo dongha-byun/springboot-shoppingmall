@@ -1,16 +1,11 @@
 package springboot.shoppingmall.order.application;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -18,40 +13,27 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
-import springboot.shoppingmall.client.TestWireMockConfig;
 import springboot.shoppingmall.client.userservice.UserServiceClient;
 import springboot.shoppingmall.coupon.domain.Coupon;
 import springboot.shoppingmall.coupon.domain.CouponRepository;
 import springboot.shoppingmall.coupon.domain.UserCoupon;
 import springboot.shoppingmall.coupon.domain.UserCouponRepository;
-import springboot.shoppingmall.order.domain.OrderStatus;
-import springboot.shoppingmall.order.exception.OverQuantityException;
 import springboot.shoppingmall.order.application.dto.DeliveryInfoCreateDto;
 import springboot.shoppingmall.order.application.dto.OrderCreateDto;
 import springboot.shoppingmall.order.application.dto.OrderDto;
 import springboot.shoppingmall.order.application.dto.OrderItemCreateDto;
 import springboot.shoppingmall.order.application.dto.OrderItemDto;
-import springboot.shoppingmall.order.application.dto.ResponseUserInformation;
+import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.order.exception.OverQuantityException;
+import springboot.shoppingmall.payment.domain.PayType;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.payment.domain.PayType;
 
 @Transactional
 @SpringBootTest
@@ -133,8 +115,8 @@ class OrderServiceTest {
                 );
 
         // 각각의 상품의 재고가 각 주문 수량 만큼 감소한다.
-        assertThat(product.getQuantity()).isEqualTo(productCount - orderQuantity1);
-        assertThat(product2.getQuantity()).isEqualTo(productCount - orderQuantity2);
+        assertThat(product.getStock()).isEqualTo(productCount - orderQuantity1);
+        assertThat(product2.getStock()).isEqualTo(productCount - orderQuantity2);
     }
 
     @Test
@@ -187,7 +169,7 @@ class OrderServiceTest {
         long userId = 10L;
         when(userServiceClient.getDiscountRate(any())).thenReturn(0);
 
-        int orderQuantity = product.getQuantity() + 1;
+        int orderQuantity = product.getStock() + 1;
         OrderItemCreateDto orderItemCreateDto = new OrderItemCreateDto(product.getId(), orderQuantity, null);
         DeliveryInfoCreateDto deliveryInfoCreateDto = new DeliveryInfoCreateDto(
                 "덩라", "010-1234-1234",
