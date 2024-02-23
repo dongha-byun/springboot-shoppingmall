@@ -50,6 +50,7 @@ class FileControllerTest {
                         .file(data)
                         .file(file))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.url", notNullValue()));
+                .andExpect(jsonPath("$.realFileName", notNullValue()))
+                .andExpect(jsonPath("$.storeFileName", notNullValue()));
     }
 }
