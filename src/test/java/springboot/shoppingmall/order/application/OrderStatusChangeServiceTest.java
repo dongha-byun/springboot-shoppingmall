@@ -1,7 +1,9 @@
 package springboot.shoppingmall.order.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -17,14 +19,15 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.TestOrderConfig;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
+import springboot.shoppingmall.order.application.dto.OrderItemDto;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
-
 
 @Import(TestOrderConfig.class)
 @Transactional
@@ -36,6 +39,9 @@ class OrderStatusChangeServiceTest {
 
     @MockBean
     OrderUserInterfaceService orderUserInterfaceService;
+
+    @MockBean
+    OrderDeliveryInterfaceServiceImpl orderDeliveryInterfaceService;
 
     Product product, product2;
 
@@ -56,7 +62,6 @@ class OrderStatusChangeServiceTest {
 
     @BeforeEach
     void beforeEach() {
-
         orderDeliveryInfo = new OrderDeliveryInfo(
                 "수령인 1", "010-1234-1234",
                 "10010", "서울시 동작구 사당동", "101호",
@@ -82,6 +87,42 @@ class OrderStatusChangeServiceTest {
                         "test-product-code2"
                 )
         );
+    }
+
+    @Test
+    @DisplayName("출고 중 - 주문이 들어온 상품을 출고한다.")
+    void outing() {
+        // given
+        int orderQuantity1 = 2;
+        int orderQuantity2 = 4;
+        List<OrderItem> items = Arrays.asList(
+                new OrderItem(product, orderQuantity1, OrderStatus.PREPARED),
+                new OrderItem(product2, orderQuantity2, OrderStatus.PREPARED)
+        );
+        LocalDateTime orderDate = LocalDateTime.of(2023, 6, 6, 12, 0, 0);
+        Order order = new Order(
+                "finish-order-code", userId, items, orderDate, orderDeliveryInfo
+        );
+        Order savedOrder = orderRepository.save(order);
+        OrderItem orderItem1 = savedOrder.getItems().get(0);
+
+        when(orderDeliveryInterfaceService.createInvoiceNumber(any())).thenReturn(
+                new OrderDeliveryInvoiceResponse(
+                        "2023120911345100901",
+                        orderDeliveryInfo.getReceiverName(), orderDeliveryInfo.getZipCode(),
+                        orderDeliveryInfo.getAddress(), orderDeliveryInfo.getDetailAddress(),
+                        "상품 배송처 이름 - 판매자 사업장 이름", "12033",
+                        "상품 배송 주소 - 판매자 사업장 주소", "상품 배송 상세주소 - 판매자 사업장 상세주소"
+                )
+        );
+
+        // when
+        OrderItemDto outingItemDto = orderStatusChangeService.outing(savedOrder.getId(), orderItem1.getId());
+
+        // then
+        assertThat(outingItemDto.getId()).isEqualTo(orderItem1.getId());
+        assertThat(outingItemDto.getOrderStatus()).isEqualTo(OrderStatus.OUTING);
+        assertThat(outingItemDto.getInvoiceNumber()).isNotNull();
     }
 
     @Test
