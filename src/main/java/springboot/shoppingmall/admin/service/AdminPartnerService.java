@@ -1,7 +1,5 @@
 package springboot.shoppingmall.admin.service;
 
-import static springboot.shoppingmall.partners.dto.PartnerDto.*;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +10,12 @@ import springboot.shoppingmall.partners.domain.PartnerFinder;
 import springboot.shoppingmall.partners.dto.PartnerDto;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class AdminPartnerService {
     private final PartnerFinder partnerFinder;
 
+    @Transactional(readOnly = true)
     public List<PartnerDto> findAllPartners() {
         return partnerFinder.findAll()
                 .stream()
@@ -23,17 +23,15 @@ public class AdminPartnerService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     public PartnerDto approvePartner(Long partnerId) {
         Partner partner = partnerFinder.findById(partnerId);
         partner.approve();
-        return of(partner);
+        return PartnerDto.of(partner);
     }
 
-    @Transactional
     public PartnerDto stopPartner(Long partnerId) {
         Partner partner = partnerFinder.findById(partnerId);
         partner.stop();
-        return of(partner);
+        return PartnerDto.of(partner);
     }
 }
