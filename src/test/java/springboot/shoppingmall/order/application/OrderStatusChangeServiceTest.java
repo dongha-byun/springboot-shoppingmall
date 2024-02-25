@@ -29,7 +29,6 @@ import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 
-@Import(TestOrderConfig.class)
 @Transactional
 @SpringBootTest
 class OrderStatusChangeServiceTest {
@@ -117,7 +116,7 @@ class OrderStatusChangeServiceTest {
         );
 
         // when
-        OrderItemDto outingItemDto = orderStatusChangeService.outing(savedOrder.getId(), orderItem1.getId());
+        OrderItemDto outingItemDto = orderStatusChangeService.outing(orderItem1.getId());
 
         // then
         assertThat(outingItemDto.getId()).isEqualTo(orderItem1.getId());
@@ -127,7 +126,7 @@ class OrderStatusChangeServiceTest {
 
     @Test
     @DisplayName("구매 확정 - 배송이 완료된 상품을 구매확정 처리 한다. 동시에 사용자의 주문횟수/주문금액을 증가시킨다.")
-    void order_finish_and_user_grade_info_update() {
+    void finish_and_user_grade_info_update() {
         // given
         mockingIncreaseOrderAmounts(userId, 100000);
 
@@ -145,7 +144,7 @@ class OrderStatusChangeServiceTest {
         OrderItem orderItem1 = savedOrder.getItems().get(0);
 
         // when
-        orderStatusChangeService.finish(savedOrder.getId(), orderItem1.getId());
+        orderStatusChangeService.finish(orderItem1.getId());
 
         // then
         assertThat(orderItem1.getOrderStatus()).isEqualTo(OrderStatus.FINISH);
@@ -154,6 +153,56 @@ class OrderStatusChangeServiceTest {
         Product orderItem1Product = orderItem1.getProduct();
         assertThat(orderItem1Product.getId()).isEqualTo(product.getId());
         assertThat(product.getSalesVolume()).isEqualTo(orderQuantity1);
+    }
+
+    @Test
+    @DisplayName("상품 검수중 - 반품된 상품의 상태를 점검한다.")
+    void checking() {
+        // given
+        int orderQuantity1 = 2;
+        int orderQuantity2 = 4;
+        List<OrderItem> items = Arrays.asList(
+                new OrderItem(product, orderQuantity1, OrderStatus.REFUND),
+                new OrderItem(product2, orderQuantity2, OrderStatus.REFUND)
+        );
+        LocalDateTime orderDate = LocalDateTime.of(2023, 6, 6, 12, 0, 0);
+        Order order = new Order(
+                "refund-order-code", userId, items, orderDate, orderDeliveryInfo
+        );
+        Order savedOrder = orderRepository.save(order);
+        OrderItem orderItem1 = savedOrder.getItems().get(0);
+
+        // when
+        OrderItemDto checkingItemDto = orderStatusChangeService.checking(orderItem1.getId());
+
+        // then
+        assertThat(checkingItemDto.getId()).isEqualTo(orderItem1.getId());
+        assertThat(checkingItemDto.getOrderStatus()).isEqualTo(OrderStatus.CHECKING);
+    }
+
+    @Test
+    @DisplayName("환불 완료 - 환불이 요청된 상품의 검수가 종료되면, 환불 완료 처리를 한다.")
+    void refund_end() {
+        // given
+        int orderQuantity1 = 2;
+        int orderQuantity2 = 4;
+        List<OrderItem> items = Arrays.asList(
+                new OrderItem(product, orderQuantity1, OrderStatus.CHECKING),
+                new OrderItem(product2, orderQuantity2, OrderStatus.CHECKING)
+        );
+        LocalDateTime orderDate = LocalDateTime.of(2023, 6, 6, 12, 0, 0);
+        Order order = new Order(
+                "refund-order-code", userId, items, orderDate, orderDeliveryInfo
+        );
+        Order savedOrder = orderRepository.save(order);
+        OrderItem orderItem1 = savedOrder.getItems().get(0);
+
+        // when
+        OrderItemDto checkingItemDto = orderStatusChangeService.refundEnd(orderItem1.getId());
+
+        // then
+        assertThat(checkingItemDto.getId()).isEqualTo(orderItem1.getId());
+        assertThat(checkingItemDto.getOrderStatus()).isEqualTo(OrderStatus.REFUND_END);
     }
 
     private void mockingIncreaseOrderAmounts(Long userId, int price) {

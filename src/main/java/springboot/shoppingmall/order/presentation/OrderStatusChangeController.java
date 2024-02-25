@@ -1,20 +1,15 @@
 package springboot.shoppingmall.order.presentation;
 
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.GatewayAuthInfo;
 import springboot.shoppingmall.authorization.GatewayAuthentication;
-import springboot.shoppingmall.order.dto.CancelRequest;
-import springboot.shoppingmall.order.dto.OrderExchangeRequest;
-import springboot.shoppingmall.order.dto.OrderItemResponse;
-import springboot.shoppingmall.order.dto.OrderRefundRequest;
 import springboot.shoppingmall.order.application.OrderStatusChangeService;
 import springboot.shoppingmall.order.application.dto.OrderItemDto;
+import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.partners.authentication.AuthorizedPartner;
 import springboot.shoppingmall.partners.authentication.LoginPartner;
 
@@ -23,38 +18,34 @@ import springboot.shoppingmall.partners.authentication.LoginPartner;
 public class OrderStatusChangeController {
     private final OrderStatusChangeService orderStatusChangeService;
 
-    @PutMapping("/orders/{orderId}/{orderItemId}/outing")
+    @PutMapping("/orders/{orderItemId}/outing")
     public ResponseEntity<OrderItemResponse> outingOrder(@LoginPartner AuthorizedPartner partner,
-                                                         @PathVariable("orderId") Long orderId,
                                                          @PathVariable("orderItemId") Long orderItemId) {
-        OrderItemDto orderItemDto = orderStatusChangeService.outing(orderId, orderItemId);
+        OrderItemDto orderItemDto = orderStatusChangeService.outing(orderItemId);
         OrderItemResponse response = OrderItemResponse.of(orderItemDto);
         return ResponseEntity.ok().body(response);
     }
 
-    @PutMapping("/orders/{orderId}/{orderItemId}/finish")
+    @PutMapping("/orders/{orderItemId}/finish")
     public ResponseEntity<OrderItemResponse> finishOrder(@GatewayAuthentication GatewayAuthInfo gatewayAuthInfo,
-                                                         @PathVariable("orderId") Long orderId,
                                                          @PathVariable("orderItemId") Long orderItemId) {
-        OrderItemDto orderItemDto = orderStatusChangeService.finish(orderId, orderItemId);
+        OrderItemDto orderItemDto = orderStatusChangeService.finish(orderItemId);
         OrderItemResponse response = OrderItemResponse.of(orderItemDto);
         return ResponseEntity.ok().body(response);
     }
 
-    @PutMapping("/orders/{orderId}/{orderItemId}/checking")
+    @PutMapping("/orders/{orderItemId}/checking")
     public ResponseEntity<OrderItemResponse> checkingOrder(@LoginPartner AuthorizedPartner partner,
-                                                           @PathVariable("orderId") Long orderId,
                                                            @PathVariable("orderItemId") Long orderItemId) {
-        OrderItemDto orderItemDto = orderStatusChangeService.checking(orderId, orderItemId);
+        OrderItemDto orderItemDto = orderStatusChangeService.checking(orderItemId);
         OrderItemResponse response = OrderItemResponse.of(orderItemDto);
         return ResponseEntity.ok().body(response);
     }
 
-    @PutMapping("/orders/{orderId}/{orderItemId}/refund-end")
+    @PutMapping("/orders/{orderItemId}/refund-end")
     public ResponseEntity<OrderItemResponse> refundEndOrder(@LoginPartner AuthorizedPartner partner,
-                                                            @PathVariable("orderId") Long orderId,
                                                             @PathVariable("orderItemId") Long orderItemId) {
-        OrderItemDto orderItemDto = orderStatusChangeService.refundEnd(orderId, orderItemId);
+        OrderItemDto orderItemDto = orderStatusChangeService.refundEnd(orderItemId);
         OrderItemResponse response = OrderItemResponse.of(orderItemDto);
         return ResponseEntity.ok().body(response);
     }

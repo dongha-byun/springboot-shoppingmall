@@ -17,42 +17,39 @@ public class OrderStatusChangeService {
     private final OrderDeliveryInterfaceService orderDeliveryInterfaceService;
     private final OrderUserInterfaceService orderUserInterfaceService;
 
-    // 출고 중
-    public OrderItemDto outing(Long orderId, Long orderItemId) {
-        Order order = orderFinder.findOrderById(orderId);
-        OrderItem orderItem = order.findOrderItem(orderItemId);
+    // 출고 중 - 파트너
+    public OrderItemDto outing(Long orderItemId) {
+        OrderItem orderItem = orderFinder.findOrderItemById(orderItemId);
 
-        OrderDeliveryInvoiceResponse deliveryInvoice = orderDeliveryInterfaceService.createInvoiceNumber(order);
+        OrderDeliveryInvoiceResponse deliveryInvoice = orderDeliveryInterfaceService.createInvoiceNumber(orderItem.getOrder());
         orderItem.outing(deliveryInvoice.getInvoiceNumber());
 
         return OrderItemDto.of(orderItem);
     }
 
-    // 구매확정
-    public OrderItemDto finish(Long orderId, Long orderItemId) {
-        Order order = orderFinder.findOrderById(orderId);
-        OrderItem orderItem = order.findOrderItem(orderItemId);
+    // 구매확정 - 사용자
+    public OrderItemDto finish(Long orderItemId) {
+        OrderItem orderItem = orderFinder.findOrderItemById(orderItemId);
         orderItem.finish();
 
         // 구매확정 시, 사용자의 주문정보를 업데이트한다.
+        Order order = orderItem.getOrder();
         orderUserInterfaceService.increaseOrderAmounts(order.getUserId(), orderItem.totalPrice());
 
         return OrderItemDto.of(orderItem);
     }
 
-    // 검수중
-    public OrderItemDto checking(Long orderId, Long orderItemId) {
-        Order order = orderFinder.findOrderById(orderId);
-        OrderItem orderItem = order.findOrderItem(orderItemId);
+    // 검수중 - 파트너
+    public OrderItemDto checking(Long orderItemId) {
+        OrderItem orderItem = orderFinder.findOrderItemById(orderItemId);
         orderItem.checking();
 
         return OrderItemDto.of(orderItem);
     }
 
-    // 환불 완료
-    public OrderItemDto refundEnd(Long orderId, Long orderItemId) {
-        Order order = orderFinder.findOrderById(orderId);
-        OrderItem orderItem = order.findOrderItem(orderItemId);
+    // 환불 완료 - 파트너
+    public OrderItemDto refundEnd(Long orderItemId) {
+        OrderItem orderItem = orderFinder.findOrderItemById(orderItemId);
         orderItem.refundEnd();
 
         return OrderItemDto.of(orderItem);
