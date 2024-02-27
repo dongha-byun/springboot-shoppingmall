@@ -23,12 +23,11 @@ import springboot.shoppingmall.file.presentation.response.FileSaveResponse;
 @RestController
 public class FileController {
 
-    private static final String TEMP_FILE_DIR = "/Users/byundongha/byun/spring/file_dir/shopping_upload/temp/";
+    private static final String CONTENT_IMAGE_TEMP_DIR = "/Users/byundongha/byun/spring/file_dir/shopping_upload/content/img/temp/";
+    private static final String CONTENT_IMAGE_PROD_DIR = "/Users/byundongha/byun/spring/file_dir/shopping_upload/content/img/prod/";
 
     @PostMapping("/files/temp")
     public ResponseEntity<FileSaveResponse> tempFileSave(@RequestPart(name = "file") MultipartFile file) {
-        log.info("fileName = {}", file.getOriginalFilename());
-
         // 물리파일 저장 로직 태우기 - 임시저장은 임시경로에 물리파일만 저장한다.
         if(file.isEmpty()) {
             throw new IllegalArgumentException("파일 없음.");
@@ -40,25 +39,23 @@ public class FileController {
                 throw new IllegalArgumentException("파일명 없음.");
             }
 
-            String replaceFileName = realFileName.replaceAll(" ", "_");
             String storeFileName = UUID.randomUUID().toString();
-            String tempPath = TEMP_FILE_DIR + storeFileName;
-            File tempDir = new File(tempPath);
-            boolean isSuccessMkdir = tempDir.mkdir();
-            if(!isSuccessMkdir) {
-                throw new IllegalStateException("폴더 생성 실패. 재시도 요망");
-            }
-
-            file.transferTo(new File(tempPath + "/" + replaceFileName));
-            return ResponseEntity.ok(new FileSaveResponse(replaceFileName, storeFileName));
+            String tempPath = CONTENT_IMAGE_TEMP_DIR + storeFileName;
+            file.transferTo(new File(tempPath));
+            return ResponseEntity.ok(new FileSaveResponse(storeFileName));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    @GetMapping("/files/temp/{storedFileName}/{realFileName}")
-    public Resource getFile(@PathVariable("storedFileName") String storeFileName,
-                            @PathVariable("realFileName") String realFileName) throws MalformedURLException {
-        return new UrlResource("file://" + TEMP_FILE_DIR + storeFileName + "/" + realFileName);
+    @GetMapping("/content/img/temp/{storedFileName}")
+    public Resource getTempContentImage(@PathVariable("storedFileName") String storeFileName) throws MalformedURLException {
+        return new UrlResource("file://" + CONTENT_IMAGE_TEMP_DIR + storeFileName);
     }
+
+    @GetMapping("/content/img/prod/{storedFileName}")
+    public Resource getContentImage(@PathVariable("storedFileName") String storeFileName) throws MalformedURLException {
+        return new UrlResource("file://" + CONTENT_IMAGE_PROD_DIR + storeFileName);
+    }
+
 }
