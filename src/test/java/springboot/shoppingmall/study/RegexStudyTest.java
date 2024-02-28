@@ -30,17 +30,17 @@ public class RegexStudyTest {
     @DisplayName("img 태그 정규식")
     void regex_img_tag() {
         // given
-        String webUrl = "http://localhost:8000";
-        String regex = "<img[^>]*src=[\"']?([^>\"']+)[\"']?[^>]*>";
+        String tempContentImageURL = "http://localhost:8000/content/img/temp/";
+        String regex = "<img[^>]*src=[\"']?"+tempContentImageURL+"([^>\"']+)[\"']?[^>]*>";
         log.info("regex = {}", regex);
         Pattern pattern = Pattern.compile(regex);
 
         // when
         String detail = "<p>"
-                + "<img src=\"http://localhost:8000/files/temp/aa8eda55-501d-48e4-ba76-1591f5422932\">"
+                + "<img src=\"http://localhost:8000/content/img/temp/aa8eda55-501d-48e4-ba76-1591f5422932\">"
                 + "</p>"
                 + "<p>"
-                + "<img src=\"http://localhost:8000/files/temp/d73d13d6-02d6-4174-9b48-615aa5ec7aa2\">"
+                + "<img src=\"http://localhost:8000/content/img/temp/d73d13d6-02d6-4174-9b48-615aa5ec7aa2\">"
                 + "</p>";
         Matcher matcher = pattern.matcher(detail);
 
@@ -49,14 +49,13 @@ public class RegexStudyTest {
             imgTags.add(matcher.group(1));
         }
 
-        String newDetail = detail.replaceAll("/files/temp/", "/files/");
+        String newDetail = detail.replaceAll("/content/img/temp", "/content/img/prod");
         log.info("newDetail => {}", newDetail);
 
         // then
         assertThat(imgTags).hasSize(2);
         assertThat(imgTags).containsExactly(
-                "/files/temp/aa8eda55-501d-48e4-ba76-1591f5422932",
-                "/files/temp/d73d13d6-02d6-4174-9b48-615aa5ec7aa2"
+                "aa8eda55-501d-48e4-ba76-1591f5422932", "d73d13d6-02d6-4174-9b48-615aa5ec7aa2"
         );
     }
 }

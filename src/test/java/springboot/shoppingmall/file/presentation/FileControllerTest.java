@@ -1,7 +1,9 @@
 package springboot.shoppingmall.file.presentation;
 
 import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.startsWith;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -10,7 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -61,6 +62,8 @@ class FileControllerTest {
                         .file(data)
                         .file(file))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.storeFileName", notNullValue()));
+                .andExpect(jsonPath("$.tempContentImageURI", notNullValue()))
+                .andExpect(jsonPath("$.tempContentImageURI", startsWith("/content/img/temp/")))
+        ;
     }
 }

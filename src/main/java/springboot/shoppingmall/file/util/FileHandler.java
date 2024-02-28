@@ -1,7 +1,11 @@
 package springboot.shoppingmall.file.util;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -43,6 +47,22 @@ public class FileHandler {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void copyContentImageTempToProd(List<String> storeFileNames) {
+        storeFileNames.forEach(
+                s -> {
+                    try {
+                        File source = new File(CONTENT_IMAGE_TEMP_DIR + s);
+                        File destination = new File(CONTENT_IMAGE_PROD_DIR + s);
+                        if (source.isFile()) {
+                            Files.copy(source.toPath(), destination.toPath(), REPLACE_EXISTING);
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+        );
     }
 
 }

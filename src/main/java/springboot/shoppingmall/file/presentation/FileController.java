@@ -24,7 +24,8 @@ public class FileController {
     @PostMapping("/files/temp")
     public ResponseEntity<FileSaveResponse> tempFileSave(@RequestPart(name = "file") MultipartFile file) {
         String storeFileName = fileHandler.saveTempContentImageFile(file);
-        return ResponseEntity.ok(new FileSaveResponse(storeFileName));
+        String tempContentImageURI = "/content/img/temp/" + storeFileName;
+        return ResponseEntity.ok(new FileSaveResponse(tempContentImageURI));
     }
 
     @GetMapping("/content/img/temp/{storedFileName}")

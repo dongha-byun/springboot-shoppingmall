@@ -6,5 +6,5 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class FileSaveResponse {
-    private String storeFileName;
+    private String tempContentImageURI;
 }
