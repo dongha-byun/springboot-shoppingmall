@@ -3,11 +3,13 @@ package springboot.shoppingmall.order.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.order.application.processor.CancelProcessor;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderFinder;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
 import springboot.shoppingmall.order.application.dto.OrderItemDto;
+import springboot.shoppingmall.order.handler.OrderCanceledEventHandler;
 
 @Transactional
 @RequiredArgsConstructor
@@ -16,6 +18,7 @@ public class OrderStatusChangeService {
     private final OrderFinder orderFinder;
     private final OrderDeliveryInterfaceService orderDeliveryInterfaceService;
     private final OrderUserInterfaceService orderUserInterfaceService;
+    private final OrderCanceledEventHandler orderCanceledEventHandler;
 
     // 출고 중 - 파트너
     public OrderItemDto outing(Long orderItemId) {
@@ -51,6 +54,9 @@ public class OrderStatusChangeService {
     public OrderItemDto refundEnd(Long orderItemId) {
         OrderItem orderItem = orderFinder.findOrderItemById(orderItemId);
         orderItem.refundEnd();
+
+        // 결제 취소 로직 호출
+        orderCanceledEventHandler.handle(orderItem);
 
         return OrderItemDto.of(orderItem);
     }

@@ -14,9 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.TestOrderConfig;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.application.dto.OrderItemDto;
@@ -26,6 +24,7 @@ import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
+import springboot.shoppingmall.order.handler.OrderCanceledEventHandler;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductRepository;
 
@@ -41,6 +40,9 @@ class OrderStatusChangeServiceTest {
 
     @MockBean
     OrderDeliveryInterfaceServiceImpl orderDeliveryInterfaceService;
+
+    @MockBean
+    OrderCanceledEventHandler orderCanceledEventHandler;
 
     Product product, product2;
 
@@ -196,6 +198,8 @@ class OrderStatusChangeServiceTest {
         );
         Order savedOrder = orderRepository.save(order);
         OrderItem orderItem1 = savedOrder.getItems().get(0);
+
+        doNothing().when(orderCanceledEventHandler).handle(any());
 
         // when
         OrderItemDto checkingItemDto = orderStatusChangeService.refundEnd(orderItem1.getId());
