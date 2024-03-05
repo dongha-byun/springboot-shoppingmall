@@ -15,6 +15,7 @@ public enum OrderStatus {
     REFUND("환불 요청"),
     REFUND_END("환불 완료"),
     EXCHANGE("교환 요청"),
+    EXCHANGE_END("교환 완료"),
     CHECKING("상품 검수중"),
     FINISH("구매 확정");
 

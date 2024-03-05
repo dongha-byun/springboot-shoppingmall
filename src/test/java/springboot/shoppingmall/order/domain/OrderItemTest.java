@@ -30,7 +30,7 @@ class OrderItemTest {
 
     @Test
     @DisplayName("1-1. 주문 시, 상품의 재고 수량을 주문 수량 만큼 감소시킨다.")
-    void ready_test() {
+    void prepared() {
         // given
         int orderQuantity = 2;
 
@@ -69,7 +69,7 @@ class OrderItemTest {
 
     @Test
     @DisplayName("2-1. 상품 출고 - 준비 중인 주문 상품을 출고한다. 이 때 송장번호를 저장한다.")
-    void outing_test() {
+    void outing() {
         // given
         String invoiceNumber = "test-invoice-number";
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.PREPARED);
@@ -110,7 +110,7 @@ class OrderItemTest {
 
     @Test
     @DisplayName("3-1. 상품 배송중 - 출고된 상품이 배송을 시작하면 배송중 으로 처리한다.")
-    void delivery_test() {
+    void delivery() {
         // given
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.OUTING);
 
@@ -138,7 +138,7 @@ class OrderItemTest {
 
     @Test
     @DisplayName("4-1. 상품 배송완료 - 상품의 배송이 완료됨을 처리한다.")
-    void delivery_end_test() {
+    void delivery_end() {
         // given
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.OUTING);
         LocalDateTime deliveryStartDate =
@@ -177,7 +177,7 @@ class OrderItemTest {
 
     @Test
     @DisplayName("5-1. 구매확정 - 배송완료한 상품의 구매를 확정한다.")
-    void finish_test() {
+    void finish() {
         // given
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.DELIVERY_END);
 
@@ -216,7 +216,7 @@ class OrderItemTest {
 
     @Test
     @DisplayName("6-1. 배송완료된 상품을 교환신청한다.")
-    void exchange_test() {
+    void exchange() {
         // given
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.DELIVERY_END);
 
@@ -241,7 +241,7 @@ class OrderItemTest {
 
     @Test
     @DisplayName("7-1. 배송완료된 상품을 환불신청한다.")
-    void refund_test() {
+    void refund() {
         // given
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.DELIVERY_END);
 
@@ -266,7 +266,7 @@ class OrderItemTest {
 
     @Test
     @DisplayName("8-1. 검수중 - 교환 요청된 상품을 검수한다.")
-    void checking_test_with_exchange() {
+    void checking_with_exchange() {
         // given
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.EXCHANGE);
 
@@ -279,7 +279,7 @@ class OrderItemTest {
 
     @Test
     @DisplayName("8-2. 검수중 - 환불 요청된 상품을 검수한다.")
-    void checking_test_with_refund() {
+    void checking_with_refund() {
         // given
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.REFUND);
 
@@ -292,7 +292,7 @@ class OrderItemTest {
 
     @Test
     @DisplayName("8-3. 교환/환불 대상이 아닌 상품은 검수중 상태로 처리할 수 없다.")
-    void checking_fail_test_with_not_refund_and_exchange() {
+    void checking_fail_with_not_refund_and_exchange() {
         // given
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.DELIVERY_END);
 
@@ -304,7 +304,7 @@ class OrderItemTest {
 
     @Test
     @DisplayName("9-1. 환불완료 - 상품 결제 금액 만큼 환불을 완료한다.")
-    void refund_end_test() {
+    void refund_end() {
         // given
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.CHECKING);
 
@@ -316,8 +316,21 @@ class OrderItemTest {
     }
 
     @Test
+    @DisplayName("9-2. 교환완료 - 해당 주문상품을 교환처리한다.")
+    void exchange_end() {
+        // given
+        OrderItem orderItem = new OrderItem(product, 2, OrderStatus.CHECKING);
+
+        // when
+        orderItem.exchangeEnd();
+
+        // then
+        assertThat(orderItem.getOrderStatus()).isEqualTo(OrderStatus.EXCHANGE_END);
+    }
+
+    @Test
     @DisplayName("10-1. 준비 중인 주문상품에 대해 주문을 취소할 수 있다.")
-    void cancel_test() {
+    void cancel() {
         // given
         OrderItem orderItem = new OrderItem(product, 2, OrderStatus.PREPARED);
 

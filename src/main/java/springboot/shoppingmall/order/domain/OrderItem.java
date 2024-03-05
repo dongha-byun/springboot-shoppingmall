@@ -181,6 +181,13 @@ public class OrderItem extends BaseEntity {
         increaseQuantity();
     }
 
+    public void exchangeEnd() {
+        if(OrderStatus.CHECKING != this.orderStatus) {
+            throw new IllegalArgumentException("교환상품이 아직 검수가 완료되지 않아 교환 완료 처리가 불가합니다.");
+        }
+        this.orderStatus = OrderStatus.EXCHANGE_END;
+    }
+
     public boolean isDeliveryComplete() {
         return OrderStatus.DELIVERY_END == this.orderStatus;
     }
