@@ -1,6 +1,7 @@
 package springboot.shoppingmall.order.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -17,6 +18,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
+import springboot.shoppingmall.order.application.dto.ExchangeEndResultDto;
+import springboot.shoppingmall.order.application.dto.OrderDto;
 import springboot.shoppingmall.order.application.dto.OrderItemDto;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
@@ -107,15 +110,7 @@ class OrderStatusChangeServiceTest {
         Order savedOrder = orderRepository.save(order);
         OrderItem orderItem1 = savedOrder.getItems().get(0);
 
-        when(orderDeliveryInterfaceService.createInvoiceNumber(any())).thenReturn(
-                new OrderDeliveryInvoiceResponse(
-                        "2023120911345100901",
-                        orderDeliveryInfo.getReceiverName(), orderDeliveryInfo.getZipCode(),
-                        orderDeliveryInfo.getAddress(), orderDeliveryInfo.getDetailAddress(),
-                        "상품 배송처 이름 - 판매자 사업장 이름", "12033",
-                        "상품 배송 주소 - 판매자 사업장 주소", "상품 배송 상세주소 - 판매자 사업장 상세주소"
-                )
-        );
+        mockingCreateInvoiceNumber();
 
         // when
         OrderItemDto outingItemDto = orderStatusChangeService.outing(orderItem1.getId());
@@ -209,7 +204,82 @@ class OrderStatusChangeServiceTest {
         assertThat(checkingItemDto.getOrderStatus()).isEqualTo(OrderStatus.REFUND_END);
     }
 
+    @Test
+    @DisplayName("교환 요청이 온 상품을 교환완료 처리하고, 새 상품을 출고한다.")
+    void exchange_end() {
+        // given
+        mockingCreateInvoiceNumber();
+
+        int orderQuantity1 = 2;
+        int orderQuantity2 = 4;
+        List<OrderItem> items = Arrays.asList(
+                new OrderItem(product, orderQuantity1, OrderStatus.CHECKING),
+                new OrderItem(product2, orderQuantity2, OrderStatus.CHECKING)
+        );
+        LocalDateTime orderDate = LocalDateTime.of(2023, 6, 6, 12, 0, 0);
+        Order order = new Order(
+                "refund-order-code", userId, items, orderDate, orderDeliveryInfo
+        );
+        Order savedOrder = orderRepository.save(order);
+        OrderItem orderItem1 = savedOrder.getItems().get(0);
+
+        // when
+        ExchangeEndResultDto exchangeEndResultDto = orderStatusChangeService.exchangeEnd(orderItem1.getId());
+
+        // then
+        OrderItemDto exchangeOrderItem = exchangeEndResultDto.getExchangeOrderItem();
+        assertThat(exchangeOrderItem).isNotNull();
+        assertThat(exchangeOrderItem.getOrderStatus()).isEqualTo(OrderStatus.EXCHANGE_END);
+
+        OrderDto newOrder = exchangeEndResultDto.getNewOrder();
+        List<OrderItemDto> newOrderItems = newOrder.getItems();
+        assertThat(newOrderItems).hasSize(1);
+        OrderItemDto newOrderItem = newOrderItems.get(0);
+        assertThat(newOrderItem.getOrderStatus()).isEqualTo(OrderStatus.OUTING);
+
+        // 주문상품의 상품과 주문 수량은 동일하게 재배송해야 한다.
+        assertThat(newOrderItem.getQuantity()).isEqualTo(exchangeOrderItem.getQuantity());
+        assertThat(newOrderItem.getProductId()).isEqualTo(exchangeOrderItem.getProductId());
+
+        // 주문 번호는 다르게 채번되어야 한다.
+        assertThat(newOrder.getOrderCode()).isNotEqualTo(order.getOrderCode());
+        assertThat(newOrder.getId()).isNotEqualTo(order.getId());
+    }
+
+    @Test
+    @DisplayName("교환 물품의 재고수량이 부족하면, 교환이 불가하다.")
+    void exchange_fail_with_not_enough_stock() {
+        // given
+        List<OrderItem> items = List.of(
+                new OrderItem(product, product.getStock(), OrderStatus.CHECKING)
+        );
+        LocalDateTime orderDate = LocalDateTime.of(2023, 6, 6, 12, 0, 0);
+        Order order = new Order(
+                "refund-order-code", userId, items, orderDate, orderDeliveryInfo
+        );
+        Order savedOrder = orderRepository.save(order);
+        OrderItem orderItem1 = savedOrder.getItems().get(0);
+
+        // when
+        assertThatThrownBy(
+                () -> orderStatusChangeService.exchangeEnd(orderItem1.getId())
+        ).isInstanceOf(IllegalArgumentException.class);
+
+    }
+
     private void mockingIncreaseOrderAmounts(Long userId, int price) {
         doNothing().when(orderUserInterfaceService).increaseOrderAmounts(userId, price);
+    }
+
+    private void mockingCreateInvoiceNumber() {
+        when(orderDeliveryInterfaceService.createInvoiceNumber(any())).thenReturn(
+                new OrderDeliveryInvoiceResponse(
+                        "2023120911345100901",
+                        orderDeliveryInfo.getReceiverName(), orderDeliveryInfo.getZipCode(),
+                        orderDeliveryInfo.getAddress(), orderDeliveryInfo.getDetailAddress(),
+                        "상품 배송처 이름 - 판매자 사업장 이름", "12033",
+                        "상품 배송 주소 - 판매자 사업장 주소", "상품 배송 상세주소 - 판매자 사업장 상세주소"
+                )
+        );
     }
 }
