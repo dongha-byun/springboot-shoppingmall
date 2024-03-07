@@ -3,10 +3,13 @@ package springboot.shoppingmall.order.presentation;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +18,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import springboot.shoppingmall.authorization.GatewayConstants;
 import springboot.shoppingmall.order.application.OrderStatusChangeService;
+import springboot.shoppingmall.order.application.dto.ExchangeEndResultDto;
+import springboot.shoppingmall.order.application.dto.OrderDeliveryInfoDto;
+import springboot.shoppingmall.order.application.dto.OrderDto;
 import springboot.shoppingmall.order.application.dto.OrderItemDto;
+import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderStatus;
 
 @WebMvcTest(controllers = OrderStatusChangeController.class)
@@ -102,5 +109,41 @@ class OrderStatusChangeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(100)))
                 .andExpect(jsonPath("$.orderStatusName", is("환불 완료")));
+    }
+
+    @Test
+    @DisplayName("교환 요청된 상품에 대해 재배송을 진행한다.")
+    void exchange_end() throws Exception {
+        // given
+        when(orderStatusChangeService.exchangeEnd(any())).thenReturn(
+                new ExchangeEndResultDto(
+                        new OrderItemDto(
+                                orderItemId, 999L, 10, 11900, 10710, null, 0, 1190, "",
+                                null, null, "", OrderStatus.EXCHANGE_END
+                        ),
+                        new OrderDto(
+                                100L, "new-generated-code", 10000L, 11900, 10710,
+                                LocalDateTime.now(),
+                                List.of(
+                                        new OrderItemDto(
+                                                orderItemId, 999L, 10, 11900, 10710, null, 0, 1190, "",
+                                                null, null, "", OrderStatus.EXCHANGE_END
+                                        )
+                                ),
+                                new OrderDeliveryInfoDto(
+                                        "수령인1", "010-2233-4455", "수령인 주소 1", "수령인 상세 주소",
+                                        "수령인 주소 우편번호", "문앞에 놔주세요."
+                                )
+                        )
+                )
+        );
+
+        // when & then
+        mockMvc.perform(post("/orders/{orderItemId}/exchange-end", orderItemId)
+                .header(GatewayConstants.GATEWAY_HEADER, "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.exchangeOrderItem.orderStatusName", is("교환 완료")))
+                .andExpect(jsonPath("$.exchangeOrderItem.orderStatusName", is("교환 완료")))
+        ;
     }
 }

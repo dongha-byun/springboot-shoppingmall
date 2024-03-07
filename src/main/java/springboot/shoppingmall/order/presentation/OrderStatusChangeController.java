@@ -3,12 +3,15 @@ package springboot.shoppingmall.order.presentation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springboot.shoppingmall.authorization.GatewayAuthInfo;
 import springboot.shoppingmall.authorization.GatewayAuthentication;
 import springboot.shoppingmall.order.application.OrderStatusChangeService;
+import springboot.shoppingmall.order.application.dto.ExchangeEndResultDto;
 import springboot.shoppingmall.order.application.dto.OrderItemDto;
+import springboot.shoppingmall.order.dto.ExchangeEndResultResponse;
 import springboot.shoppingmall.order.dto.OrderItemResponse;
 import springboot.shoppingmall.partners.authentication.AuthorizedPartner;
 import springboot.shoppingmall.partners.authentication.LoginPartner;
@@ -48,5 +51,13 @@ public class OrderStatusChangeController {
         OrderItemDto orderItemDto = orderStatusChangeService.refundEnd(orderItemId);
         OrderItemResponse response = OrderItemResponse.of(orderItemDto);
         return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/orders/{orderItemId}/exchange-end")
+    public ResponseEntity<ExchangeEndResultResponse> exchangeEnd(@LoginPartner AuthorizedPartner partner,
+                                                                 @PathVariable("orderItemId") Long orderItemId) {
+        ExchangeEndResultDto exchangeEndResultDto = orderStatusChangeService.exchangeEnd(orderItemId);
+        ExchangeEndResultResponse response = ExchangeEndResultResponse.of(exchangeEndResultDto);
+        return ResponseEntity.ok(response);
     }
 }
