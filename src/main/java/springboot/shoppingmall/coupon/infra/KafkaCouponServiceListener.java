@@ -14,7 +14,7 @@ public class KafkaCouponServiceListener {
     private final ObjectMapper objectMapper;
     private final UserCouponService userCouponService;
 
-    @KafkaListener(topics = "order-canceled")
+    @KafkaListener(topics = "order-canceled", groupId = "shopping-mall")
     public void recoveryCoupon(String message) {
         try {
             OrderCanceledEvent orderCanceledEvent = objectMapper.readValue(message, OrderCanceledEvent.class);
