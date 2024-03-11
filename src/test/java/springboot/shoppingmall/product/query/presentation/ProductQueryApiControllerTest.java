@@ -18,6 +18,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryFinder;
 import springboot.shoppingmall.product.query.dto.ProductQueryDto;
@@ -50,7 +51,7 @@ class ProductQueryApiControllerTest {
         when(productQueryService.findProductOf(any())).thenReturn(
                 getProductQueryDto(
                         10L, "상품 1", 1200, 10, 1.5,
-                        100, 100L, "파트너즈 100",
+                        100,
                         LocalDateTime.of(2023, 9, 1, 12, 12, 12)
                 )
         );
@@ -71,13 +72,11 @@ class ProductQueryApiControllerTest {
     void find_product_by_category() throws Exception {
         // given
         LocalDateTime registerDate = LocalDateTime.of(2023, 8, 1, 0, 0, 0);
-        Long partnersId = 100L;
-        String partnersName = "파트너즈";
         List<ProductQueryDto> products = Arrays.asList(
-                getProductQueryDto(10L, "상품 1", 1200, 10, 1.5, 100, partnersId, partnersName, registerDate.minusDays(1)),
-                getProductQueryDto(20L, "상품 2", 2200, 50, 3.5, 200, partnersId, partnersName, registerDate.plusDays(1)),
-                getProductQueryDto(30L, "상품 3", 3200, 12, 2.5, 190, partnersId, partnersName, registerDate.plusDays(4)),
-                getProductQueryDto(40L, "상품 4", 4900, 20, 2.0, 330, partnersId, partnersName, registerDate.plusDays(7))
+                getProductQueryDto(10L, "상품 1", 1200, 10, 1.5, 100, registerDate.minusDays(1)),
+                getProductQueryDto(20L, "상품 2", 2200, 50, 3.5, 200, registerDate.plusDays(1)),
+                getProductQueryDto(30L, "상품 3", 3200, 12, 2.5, 190, registerDate.plusDays(4)),
+                getProductQueryDto(40L, "상품 4", 4900, 20, 2.0, 330, registerDate.plusDays(7))
         );
         when(categoryFinder.findById(1L)).thenReturn(new Category("상위 카테고리"));
         when(categoryFinder.findById(11L)).thenReturn(new Category("하위 카테고리"));
@@ -113,12 +112,10 @@ class ProductQueryApiControllerTest {
     void search_products() throws Exception {
         // given
         LocalDateTime registerDate = LocalDateTime.of(2023, 8, 5, 0, 0, 0);
-        Long partnersId = 100L;
-        String partnersName = "파트너즈";
         List<ProductQueryDto> products = Arrays.asList(
-                getProductQueryDto(10L, "상품 1", 1200, 10, 1.5, 100, partnersId, partnersName, registerDate.minusDays(1)),
-                getProductQueryDto(20L, "상품 2", 2200, 50, 3.5, 200, partnersId, partnersName, registerDate.plusDays(1)),
-                getProductQueryDto(30L, "상품 3", 3200, 12, 2.5, 190, partnersId, partnersName, registerDate.plusDays(4))
+                getProductQueryDto(10L, "상품 1", 1200, 10, 1.5, 100, registerDate.minusDays(1)),
+                getProductQueryDto(20L, "상품 2", 2200, 50, 3.5, 200, registerDate.plusDays(1)),
+                getProductQueryDto(30L, "상품 3", 3200, 12, 2.5, 190, registerDate.plusDays(4))
         );
         when(productQueryService.searchProducts(any(), any(), anyInt(), anyInt())).thenReturn(
                 products
@@ -144,18 +141,12 @@ class ProductQueryApiControllerTest {
     void find_partners_products() throws Exception {
         // given
         LocalDateTime registerDate = LocalDateTime.of(2023, 8, 1, 0, 0, 0);
-        Long partnersId = 100L;
-        String partnersName = "파트너즈";
         List<ProductQueryDto> products = Arrays.asList(
-                getProductQueryDto(10L, "상품 1", 1200, 10, 1.5, 100, partnersId, partnersName,
-                        registerDate.minusDays(1)),
-                getProductQueryDto(20L, "상품 2", 2200, 20, 2.5, 150, partnersId, partnersName,
-                        registerDate.minusDays(2)),
-                getProductQueryDto(30L, "상품 3", 3200, 30, 3.5, 200, partnersId, partnersName,
-                        registerDate.minusDays(3)),
-                getProductQueryDto(40L, "상품 4", 4200, 40, 4.5, 170, partnersId, partnersName,
-                        registerDate.minusDays(4)),
-                getProductQueryDto(50L, "상품 5", 5200, 50, 5.0, 120, partnersId, partnersName, registerDate.minusDays(5))
+                getProductQueryDto(10L, "상품 1", 1200, 10, 1.5, 100, registerDate.minusDays(1)),
+                getProductQueryDto(20L, "상품 2", 2200, 20, 2.5, 150, registerDate.minusDays(2)),
+                getProductQueryDto(30L, "상품 3", 3200, 30, 3.5, 200, registerDate.minusDays(3)),
+                getProductQueryDto(40L, "상품 4", 4200, 40, 4.5, 170, registerDate.minusDays(4)),
+                getProductQueryDto(50L, "상품 5", 5200, 50, 5.0, 120, registerDate.minusDays(5))
         );
 
         when(categoryFinder.findById(1L)).thenReturn(new Category("상위 카테고리"));
@@ -180,11 +171,32 @@ class ProductQueryApiControllerTest {
                 .andExpect(jsonPath("$.totalCount", is(5)));
     }
 
+    @Test
+    @DisplayName("정렬 기준은 기본적으로 평점이 높은순으로 조회된다.")
+    void order_type_default_score() throws Exception {
+        ResultActions actions = mockMvc.perform(
+                get("/partners/products"
+                                + "?categoryId={categoryId}"
+                                + "&subCategoryId={subCategoryId}"
+                                + "&limit={limit}"
+                                + "&offset={offset}",
+                        1, 11, 10, 0)
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalCount", is(5)));
+    }
+
     private ProductQueryDto getProductQueryDto(
             Long id, String name, int price, int quantity, double score, int salesVolume,
-            Long partnersId, String partnersName, LocalDateTime registerDate
+            LocalDateTime registerDate
     ) {
 
+        Long partnersId = 100L;
+        String partnersName = "파트너즈";
         String storedFileName = "stored-file-name-" + name;
         String viewFileName = "view-file-name-" + name;
         String detail = name + "입니다!";
