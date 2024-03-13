@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.order.application.OrderUserInterfaceService;
 import springboot.shoppingmall.order.application.dto.ResponseOrderUserInformation;
 import springboot.shoppingmall.order.partners.application.dto.PartnersDeliveryOrderQueryDto;
+import springboot.shoppingmall.order.partners.application.dto.PartnersOrderQueryDto;
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryRepository;
 import springboot.shoppingmall.order.partners.application.dto.PartnersCancelOrderQueryDto;
 
@@ -19,19 +22,14 @@ public class PartnersCancelOrderQueryService implements PartnersOrderQueryServic
 
     public List<PartnersCancelOrderQueryDto> findPartnersOrders(Long partnerId, LocalDateTime startDate,
                                                                 LocalDateTime endDate) {
-        List<PartnersCancelOrderQueryDto> orders = queryRepository.findPartnersCancelOrders(
-                partnerId, startDate, endDate);
+        List<PartnersCancelOrderQueryDto> orders =
+                queryRepository.findPartnersCancelOrders(partnerId, startDate, endDate);
         List<Long> userIds = extractUserIds(orders);
         Map<Long, ResponseOrderUserInformation> map = getUserInformation(orderUserInterfaceService, userIds);
 
         updateOrdersInUserInformation(orders, map);
-        return orders;
-    }
 
-    private List<Long> extractUserIds(List<PartnersCancelOrderQueryDto> partnersCancelOrders) {
-        return partnersCancelOrders.stream()
-                .map(PartnersCancelOrderQueryDto::getUserId)
-                .collect(Collectors.toList());
+        return orders;
     }
 
     private void updateOrdersInUserInformation(List<PartnersCancelOrderQueryDto> orders,

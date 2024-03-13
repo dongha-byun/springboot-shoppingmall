@@ -7,24 +7,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import springboot.shoppingmall.order.domain.OrderStatus;
 
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class PartnersEndOrderQueryDto {
-    private Long orderItemId;
-    private Long orderId;
-    private String orderCode;
-    private LocalDateTime orderDate;
-    private String productCode;
-    private String productName;
-    private int quantity;
-    private String invoiceNumber;
-    private int totalPrice;
-    private Long userId;
-    private String userName;
-    private String userTelNo;
-    private OrderStatus orderStatus;
+public class PartnersEndOrderQueryDto extends PartnersOrderQueryDto{
     private String receiverName;        // 수령인
     private String receiverPhoneNumber; // 수령인 연락처
     private String address;             // 배송지 주소
@@ -35,21 +21,13 @@ public class PartnersEndOrderQueryDto {
 
     public PartnersEndOrderQueryDto(Long orderItemId, Long orderId, String orderCode, LocalDateTime orderDate,
                                     String productCode, String productName, int quantity, String invoiceNumber,
-                                    int totalPrice, Long userId, OrderStatus orderStatus, String receiverName,
-                                    String receiverPhoneNumber, String address, String detailAddress,
-                                    String requestMessage,
-                                    LocalDateTime deliveryCompleteDate, String deliveryPlace) {
-        this.orderItemId = orderItemId;
-        this.orderId = orderId;
-        this.orderCode = orderCode;
-        this.orderDate = orderDate;
-        this.productCode = productCode;
-        this.productName = productName;
-        this.quantity = quantity;
-        this.invoiceNumber = invoiceNumber;
-        this.totalPrice = totalPrice;
-        this.userId = userId;
-        this.orderStatus = orderStatus;
+                                    int totalPrice, Long userId, String userName, String userTelNo,
+                                    OrderStatus orderStatus,
+                                    String receiverName, String receiverPhoneNumber, String address,
+                                    String detailAddress,
+                                    String requestMessage, LocalDateTime deliveryCompleteDate, String deliveryPlace) {
+        super(orderItemId, orderId, orderCode, orderDate, productCode, productName, quantity, invoiceNumber, totalPrice,
+                userId, userName, userTelNo, orderStatus);
         this.receiverName = receiverName;
         this.receiverPhoneNumber = receiverPhoneNumber;
         this.address = address;
@@ -57,5 +35,17 @@ public class PartnersEndOrderQueryDto {
         this.requestMessage = requestMessage;
         this.deliveryCompleteDate = deliveryCompleteDate;
         this.deliveryPlace = deliveryPlace;
+    }
+
+    public PartnersEndOrderQueryDto(Long orderItemId, Long orderId, String orderCode, LocalDateTime orderDate,
+                                    String productCode, String productName, int quantity, String invoiceNumber,
+                                    int totalPrice, Long userId, OrderStatus orderStatus, String receiverName,
+                                    String receiverPhoneNumber, String address, String detailAddress,
+                                    String requestMessage,
+                                    LocalDateTime deliveryCompleteDate, String deliveryPlace) {
+        this(orderItemId, orderId, orderCode, orderDate, productCode, productName,
+                quantity, invoiceNumber, totalPrice, userId, null, null, orderStatus,
+                receiverName, receiverPhoneNumber, address, detailAddress, requestMessage,
+                deliveryCompleteDate, deliveryPlace);
     }
 }

@@ -18,19 +18,13 @@ public class PartnersEndOrderQueryService implements PartnersOrderQueryService{
 
     public List<PartnersEndOrderQueryDto> findPartnersOrders(Long partnerId, LocalDateTime startDate,
                                                              LocalDateTime endDate) {
-        List<PartnersEndOrderQueryDto> orders = queryRepository.findPartnersEndOrders(
-                partnerId, startDate, endDate);
+        List<PartnersEndOrderQueryDto> orders =
+                queryRepository.findPartnersEndOrders(partnerId, startDate, endDate);
         List<Long> userIds = extractUserIds(orders);
         Map<Long, ResponseOrderUserInformation> map = getUserInformation(orderUserInterfaceService, userIds);
 
         updateOrdersInUserInformation(orders, map);
         return orders;
-    }
-
-    private List<Long> extractUserIds(List<PartnersEndOrderQueryDto> partnersEndOrders) {
-        return partnersEndOrders.stream()
-                .map(PartnersEndOrderQueryDto::getUserId)
-                .collect(Collectors.toList());
     }
 
     private void updateOrdersInUserInformation(List<PartnersEndOrderQueryDto> orders,

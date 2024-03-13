@@ -27,12 +27,6 @@ public class PartnersReadyOrderQueryService implements PartnersOrderQueryService
         return orders;
     }
 
-    private List<Long> extractUserIds(List<PartnersReadyOrderQueryDto> partnersReadyOrders) {
-        return partnersReadyOrders.stream()
-                .map(PartnersReadyOrderQueryDto::getUserId)
-                .collect(Collectors.toList());
-    }
-
     private void updateOrdersInUserInformation(List<PartnersReadyOrderQueryDto> orders,
                                                Map<Long, ResponseOrderUserInformation> map) {
         orders.forEach(orderQueryDto -> {

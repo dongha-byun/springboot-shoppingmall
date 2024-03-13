@@ -18,19 +18,13 @@ public class PartnersDeliveryOrderQueryService implements PartnersOrderQueryServ
 
     public List<PartnersDeliveryOrderQueryDto> findPartnersOrders(Long partnerId, LocalDateTime startDate,
                                                                   LocalDateTime endDate) {
-        List<PartnersDeliveryOrderQueryDto> orders = queryRepository.findPartnersDeliveryOrders(
-                partnerId, startDate, endDate);
+        List<PartnersDeliveryOrderQueryDto> orders =
+                queryRepository.findPartnersDeliveryOrders(partnerId, startDate, endDate);
         List<Long> userIds = extractUserIds(orders);
         Map<Long, ResponseOrderUserInformation> map = getUserInformation(orderUserInterfaceService, userIds);
 
         updateOrdersInUserInformation(orders, map);
         return orders;
-    }
-
-    private List<Long> extractUserIds(List<PartnersDeliveryOrderQueryDto> partnersDeliveryOrders) {
-        return partnersDeliveryOrders.stream()
-                .map(PartnersDeliveryOrderQueryDto::getUserId)
-                .collect(Collectors.toList());
     }
 
     private void updateOrdersInUserInformation(List<PartnersDeliveryOrderQueryDto> orders,
