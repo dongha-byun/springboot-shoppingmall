@@ -1,5 +1,6 @@
 package springboot.shoppingmall.order.partners.application;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,5 +22,19 @@ public interface PartnersOrderQueryService {
         return orders.stream()
                 .map(PartnersOrderQueryDto::getUserId)
                 .collect(Collectors.toList());
+    }
+
+    default <T extends PartnersOrderQueryDto> List<T> mergeOrderUserInfo(List<T> orders,
+                                                                         Map<Long, ResponseOrderUserInformation> map) {
+        orders.forEach(orderQueryDto -> {
+            Long userId = orderQueryDto.getUserId();
+            ResponseOrderUserInformation userInformation = map.get(userId);
+            if (userInformation != null) {
+                orderQueryDto.setUserName(userInformation.getUserName());
+                orderQueryDto.setUserTelNo(userInformation.getUserTelNo());
+            }
+        });
+
+        return new ArrayList<>(orders);
     }
 }
