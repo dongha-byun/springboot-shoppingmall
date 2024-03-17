@@ -1,10 +1,13 @@
 package springboot.shoppingmall.order.partners.presentation;
 
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -19,14 +22,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import springboot.shoppingmall.order.domain.OrderItemResolutionType;
 import springboot.shoppingmall.order.domain.OrderStatus;
-import springboot.shoppingmall.order.partners.application.dto.PartnersCancelOrderQueryDto;
-import springboot.shoppingmall.order.partners.application.dto.PartnersDeliveryOrderQueryDto;
-import springboot.shoppingmall.order.partners.application.dto.PartnersEndOrderQueryDto;
-import springboot.shoppingmall.order.partners.application.dto.PartnersReadyOrderQueryDto;
 import springboot.shoppingmall.order.partners.application.PartnersCancelOrderQueryService;
 import springboot.shoppingmall.order.partners.application.PartnersDeliveryOrderQueryService;
 import springboot.shoppingmall.order.partners.application.PartnersEndOrderQueryService;
 import springboot.shoppingmall.order.partners.application.PartnersReadyOrderQueryService;
+import springboot.shoppingmall.order.partners.application.dto.PartnersCancelOrderQueryDto;
+import springboot.shoppingmall.order.partners.application.dto.PartnersDeliveryOrderQueryDto;
+import springboot.shoppingmall.order.partners.application.dto.PartnersEndOrderQueryDto;
+import springboot.shoppingmall.order.partners.application.dto.PartnersReadyOrderQueryDto;
 import springboot.shoppingmall.partners.config.PartnersConfiguration;
 
 @WebMvcTest(
@@ -93,7 +96,14 @@ class PartnersOrderQueryControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)));
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$..orderItemId", hasItems(1, 2, 3)))
+                .andExpect(jsonPath("$..receiverName", hasItems("수령인 1", "수령인 2", "수령인 3")))
+                .andExpect(jsonPath("$..receiverPhoneNumber", hasItems("010-1111-2222", "010-2222-3333", "010-3333-4444")))
+                .andExpect(jsonPath("$..address", hasItems("주소 1", "주소 2", "주소 3")))
+                .andExpect(jsonPath("$..detailAddress", hasItems("상세주소 1", "상세주소 2", "상세주소 3")))
+                .andExpect(jsonPath("$..requestMessage", hasItems("요청사항 1", "요청사항 2", "요청사항 3")))
+        ;
     }
 
     @Test
@@ -132,7 +142,14 @@ class PartnersOrderQueryControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$..orderItemId", hasItems(1, 3)))
+                .andExpect(jsonPath("$..receiverName", hasItems("수령인 1", "수령인 3")))
+                .andExpect(jsonPath("$..receiverPhoneNumber", hasItems("010-1111-2222", "010-3333-4444")))
+                .andExpect(jsonPath("$..address", hasItems("주소 1", "주소 3")))
+                .andExpect(jsonPath("$..detailAddress", hasItems("상세주소 1", "상세주소 3")))
+                .andExpect(jsonPath("$..requestMessage", hasItems("요청사항 1", "요청사항 3")))
+        ;
     }
 
     @Test
@@ -178,7 +195,18 @@ class PartnersOrderQueryControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)));
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$..orderItemId", hasItems(1, 2, 3)))
+                .andExpect(jsonPath("$..receiverName", hasItems("수령인 1", "수령인 2", "수령인 3")))
+                .andExpect(jsonPath("$..receiverPhoneNumber", hasItems("010-1111-2222", "010-2222-3333", "010-3333-4444")))
+                .andExpect(jsonPath("$..address", hasItems("주소 1", "주소 2", "주소 3")))
+                .andExpect(jsonPath("$..detailAddress", hasItems("상세주소 1", "상세주소 2", "상세주소 3")))
+                .andExpect(jsonPath("$..requestMessage", hasItems("요청사항 1", "요청사항 2", "요청사항 3")))
+                .andExpect(jsonPath("$..deliveryCompleteDate", hasItems(
+                        "2023-07-04 00:00:00", "2023-07-05 00:00:00", "2023-07-06 00:00:00"
+                )))
+                .andExpect(jsonPath("$..deliveryPlace", hasItems("문 앞", "택배보관함", "문 앞")))
+        ;
     }
 
     @Test
@@ -223,6 +251,11 @@ class PartnersOrderQueryControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(4)));
+                .andExpect(jsonPath("$", hasSize(4)))
+                .andExpect(jsonPath("$..orderItemId", hasItems(1, 2, 4, 3)))
+                .andExpect(jsonPath("$..resolutionType", hasItems(
+                        "CANCEL", "REFUND", "REFUND", "EXCHANGE"
+                )))
+        ;
     }
 }
