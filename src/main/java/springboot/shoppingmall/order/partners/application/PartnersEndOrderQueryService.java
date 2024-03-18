@@ -10,7 +10,7 @@ import springboot.shoppingmall.order.partners.application.dto.PartnersEndOrderQu
 import springboot.shoppingmall.order.partners.domain.PartnersOrderQueryRepository;
 
 @RequiredArgsConstructor
-public class PartnersEndOrderQueryService implements PartnersOrderQueryService{
+public class PartnersEndOrderQueryService implements PartnersOrderQueryService<PartnersEndOrderQueryDto>{
 
     private final PartnersOrderQueryRepository queryRepository;
     private final OrderUserInterfaceService orderUserInterfaceService;
@@ -19,9 +19,8 @@ public class PartnersEndOrderQueryService implements PartnersOrderQueryService{
                                                              LocalDateTime endDate) {
         List<PartnersEndOrderQueryDto> orders =
                 queryRepository.findPartnersEndOrders(partnerId, startDate, endDate);
-        List<Long> userIds = extractUserIds(orders);
-        Map<Long, ResponseOrderUserInformation> map = getUserInformation(orderUserInterfaceService, userIds);
 
-        return mergeOrderUserInfo(orders, map);
+        return fillUserInfoOfOrders(orderUserInterfaceService, orders);
     }
+
 }
