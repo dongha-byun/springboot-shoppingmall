@@ -87,10 +87,9 @@ class PartnersOrderQueryControllerTest {
 
         // when & then
         mockMvc.perform(
-                        get("/partners/orders?"
-                                        + "type={type}"
-                                        + "&startDate={startDate}"
-                                        + "&endDate={endDate}",
+                        get("/partners/orders/{type}?"
+                                        + "&searchStartDate={startDate}"
+                                        + "&searchEndDate={endDate}",
                                 "READY", "2023-06-11", "2023-09-11")
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -133,10 +132,9 @@ class PartnersOrderQueryControllerTest {
 
         // when & then
         mockMvc.perform(
-                        get("/partners/orders?"
-                                        + "type={type}"
-                                        + "&startDate={startDate}"
-                                        + "&endDate={endDate}",
+                        get("/partners/orders/{type}?"
+                                        + "&searchStartDate={startDate}"
+                                        + "&searchEndDate={endDate}",
                                 "DELIVERY", "2023-06-11", "2023-09-11")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -186,10 +184,9 @@ class PartnersOrderQueryControllerTest {
 
         // when & then
         mockMvc.perform(
-                        get("/partners/orders?"
-                                        + "type={type}"
-                                        + "&startDate={startDate}"
-                                        + "&endDate={endDate}",
+                        get("/partners/orders/{type}?"
+                                        + "&searchStartDate={startDate}"
+                                        + "&searchEndDate={endDate}",
                                 "END", "2023-06-11", "2023-09-11")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -242,10 +239,9 @@ class PartnersOrderQueryControllerTest {
 
         // when & then
         mockMvc.perform(
-                        get("/partners/orders?"
-                                        + "type={type}"
-                                        + "&startDate={startDate}"
-                                        + "&endDate={endDate}",
+                        get("/partners/orders/{type}?"
+                                        + "&searchStartDate={startDate}"
+                                        + "&searchEndDate={endDate}",
                                 "CANCEL", "2023-06-11", "2023-09-11")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
