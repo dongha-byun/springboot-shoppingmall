@@ -5,17 +5,15 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.client.userservice.UserServiceClient;
-import springboot.shoppingmall.client.userservice.response.ResponseDiscountRate;
 import springboot.shoppingmall.coupon.domain.UserCoupon;
 import springboot.shoppingmall.coupon.domain.UserCouponRepository;
+import springboot.shoppingmall.order.application.dto.DeliveryInfoCreateDto;
+import springboot.shoppingmall.order.application.dto.OrderCreateDto;
+import springboot.shoppingmall.order.application.dto.OrderDto;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
-import springboot.shoppingmall.order.application.dto.DeliveryInfoCreateDto;
-import springboot.shoppingmall.order.application.dto.OrderCreateDto;
-import springboot.shoppingmall.order.application.dto.OrderDto;
 import springboot.shoppingmall.pay.domain.PayHistory;
 import springboot.shoppingmall.pay.domain.PayHistoryRepository;
 import springboot.shoppingmall.product.domain.Product;
@@ -29,7 +27,7 @@ public class OrderService {
     private final UserCouponRepository userCouponRepository;
     private final OrderRepository orderRepository;
     private final PayHistoryRepository payHistoryRepository;
-    private final UserServiceClient userServiceClient;
+    private final OrderUserInterfaceService orderUserInterfaceService;
 
     public OrderDto createOrder(Long userId, OrderCreateDto orderCreateDto) {
         String orderCode = orderCreateDto.getOrderCode();
@@ -43,7 +41,7 @@ public class OrderService {
         // 회원등급 할인 금액 적용
         // 주문자 할인율 조회, 구매자 정보 조회 OrderUserInfo
         // 사용자 ID 주고, 할인율 받아오면, 할인 계산할때 사용
-        int discountRate = userServiceClient.getDiscountRate(userId);
+        int discountRate = orderUserInterfaceService.getDiscountRate(userId);
         newOrder.gradeDiscount(discountRate);
 
         // 쿠폰에 따른 할인 금액 적용

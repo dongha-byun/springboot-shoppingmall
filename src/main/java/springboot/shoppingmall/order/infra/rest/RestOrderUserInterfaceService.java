@@ -46,4 +46,9 @@ public class RestOrderUserInterfaceService implements OrderUserInterfaceService 
 
         return result;
     }
+
+    @Override
+    public int getDiscountRate(Long userId) {
+        return 0;
+    }
 }
