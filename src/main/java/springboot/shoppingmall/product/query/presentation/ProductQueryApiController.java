@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,19 +29,18 @@ public class ProductQueryApiController {
     private final CategoryFinder categoryFinder;
 
     @GetMapping("/products")
-    public ResponseEntity<PagingDataResponse<List<ProductQueryResponse>>> queryProductsBySort(ProductQueryRequestParam param){
+    public ResponseEntity<PagingDataResponse<List<ProductQueryResponse>>> queryProductsBySort(ProductQueryRequestParam param) {
         Category category = categoryFinder.findById(param.getCategoryId());
         Category subCategory = categoryFinder.findById(param.getSubCategoryId());
         List<ProductQueryDto> dtos = productQueryService.findProductByOrder(
                 param.getCategoryId(), param.getSubCategoryId(),
                 param.getOrderType(), param.getLimit(), param.getOffset()
         );
-        List<ProductQueryResponse> products = dtos.stream()
-                .map(ProductQueryResponse::of)
-                .collect(Collectors.toList());
+        List<ProductQueryResponse> products = convertDtoToResponse(dtos);
         int totalCount = productQueryService.getTotalCount(param.getCategoryId(), param.getSubCategoryId());
 
-        return ResponseEntity.ok(new PagingDataResponse<>(totalCount, category.getName(), subCategory.getName(), products));
+        return ResponseEntity.ok(
+                new PagingDataResponse<>(totalCount, category.getName(), subCategory.getName(), products));
     }
 
     @GetMapping("/products-more")
@@ -52,9 +50,7 @@ public class ProductQueryApiController {
                 param.getCategoryId(), param.getSubCategoryId(),
                 param.getOrderType(), param.getLimit(), param.getOffset()
         );
-        List<ProductQueryResponse> products = dtos.stream()
-                .map(ProductQueryResponse::of)
-                .collect(Collectors.toList());
+        List<ProductQueryResponse> products = convertDtoToResponse(dtos);
 
         return ResponseEntity.ok(new PagingDataResponse<>(products));
     }
@@ -69,9 +65,7 @@ public class ProductQueryApiController {
         List<ProductQueryDto> products = productQueryService.searchProducts(
                 searchKeyword, ProductQueryOrderType.valueOf(orderType), limit, offset
         );
-        List<ProductQueryResponse> responses = products.stream()
-                .map(ProductQueryResponse::of)
-                .collect(Collectors.toList());
+        List<ProductQueryResponse> responses = convertDtoToResponse(products);
         return ResponseEntity.ok(new PagingDataResponse<>(responses));
     }
 
@@ -85,9 +79,7 @@ public class ProductQueryApiController {
         List<ProductQueryDto> products = productQueryService.searchProducts(
                 searchKeyword, ProductQueryOrderType.valueOf(orderType), limit, offset
         );
-        List<ProductQueryResponse> responses = products.stream()
-                .map(ProductQueryResponse::of)
-                .collect(Collectors.toList());
+        List<ProductQueryResponse> responses = convertDtoToResponse(products);
         return ResponseEntity.ok(new PagingDataResponse<>(responses));
     }
 
@@ -105,9 +97,7 @@ public class ProductQueryApiController {
                 partner.getId(), categoryId, subCategoryId, limit, offset
         );
 
-        List<ProductQueryResponse> responses = products.stream()
-                .map(ProductQueryResponse::of)
-                .collect(Collectors.toList());
+        List<ProductQueryResponse> responses = convertDtoToResponse(products);
         int count = productQueryService.countPartnersProducts(partner.getId(), categoryId, subCategoryId);
 
         return ResponseEntity.ok().body(
@@ -121,6 +111,12 @@ public class ProductQueryApiController {
         ProductQueryResponse response = ProductQueryResponse.of(dto);
 
         return ResponseEntity.ok(response);
+    }
+
+    private List<ProductQueryResponse> convertDtoToResponse(List<ProductQueryDto> dtos) {
+        return dtos.stream()
+                .map(ProductQueryResponse::of)
+                .collect(Collectors.toList());
     }
 
 }

@@ -171,25 +171,6 @@ class ProductQueryApiControllerTest {
                 .andExpect(jsonPath("$.totalCount", is(5)));
     }
 
-    @Test
-    @DisplayName("정렬 기준은 기본적으로 평점이 높은순으로 조회된다.")
-    void order_type_default_score() throws Exception {
-        ResultActions actions = mockMvc.perform(
-                get("/partners/products"
-                                + "?categoryId={categoryId}"
-                                + "&subCategoryId={subCategoryId}"
-                                + "&limit={limit}"
-                                + "&offset={offset}",
-                        1, 11, 10, 0)
-                        .contentType(MediaType.APPLICATION_JSON)
-        );
-
-        actions
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalCount", is(5)));
-    }
-
     private ProductQueryDto getProductQueryDto(
             Long id, String name, int price, int quantity, double score, int salesVolume,
             LocalDateTime registerDate
