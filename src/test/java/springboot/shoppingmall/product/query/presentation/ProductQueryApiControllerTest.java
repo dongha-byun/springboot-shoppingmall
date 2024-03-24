@@ -1,10 +1,16 @@
 package springboot.shoppingmall.product.query.presentation;
 
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -14,25 +20,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
+import springboot.shoppingmall.authorization.GatewayConstants;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryFinder;
-import springboot.shoppingmall.product.query.dto.ProductQueryDto;
 import springboot.shoppingmall.product.query.application.ProductQueryService;
-import springboot.shoppingmall.partners.config.PartnersConfiguration;
+import springboot.shoppingmall.product.query.dto.ProductQueryDto;
 
-@WebMvcTest(
-        controllers = ProductQueryApiController.class,
-        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
-                classes = {
-                        PartnersConfiguration.class
-                }
-        )
-)
+@WebMvcTest(controllers = ProductQueryApiController.class)
 class ProductQueryApiControllerTest {
 
     @Autowired
@@ -164,6 +160,7 @@ class ProductQueryApiControllerTest {
                                 + "&limit={limit}"
                                 + "&offset={offset}",
                                 1, 11, 10, 0)
+                                .header(GatewayConstants.GATEWAY_HEADER, 100)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())

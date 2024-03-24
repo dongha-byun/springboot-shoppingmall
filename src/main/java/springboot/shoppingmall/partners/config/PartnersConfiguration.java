@@ -12,12 +12,11 @@ import springboot.shoppingmall.partners.authentication.LoginPartnerArgumentResol
 @Configuration
 public class PartnersConfiguration implements WebMvcConfigurer {
 
+    private final LoginPartnerArgumentResolver loginPartnerArgumentResolver;
+
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(loginPartnerArgumentResolver());
+        resolvers.add(loginPartnerArgumentResolver);
     }
 
-    public HandlerMethodArgumentResolver loginPartnerArgumentResolver() {
-        return new LoginPartnerArgumentResolver();
-    }
 }
