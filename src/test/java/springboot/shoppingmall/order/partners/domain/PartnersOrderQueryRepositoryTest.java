@@ -1,6 +1,7 @@
 package springboot.shoppingmall.order.partners.domain;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.IntegrationTest;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.application.OrderItemResolutionService;
@@ -27,11 +29,10 @@ import springboot.shoppingmall.order.partners.application.dto.PartnersDeliveryOr
 import springboot.shoppingmall.order.partners.application.dto.PartnersEndOrderQueryDto;
 import springboot.shoppingmall.order.partners.application.dto.PartnersReadyOrderQueryDto;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.domain.ProductRepository;
 
 @Transactional
 @SpringBootTest
-class PartnersOrderQueryRepositoryTest {
+class PartnersOrderQueryRepositoryTest extends IntegrationTest{
 
     @Autowired
     EntityManager em;
@@ -44,9 +45,6 @@ class PartnersOrderQueryRepositoryTest {
 
     @Autowired
     OrderItemResolutionHistoryRepository orderItemResolutionHistoryRepository;
-
-    @Autowired
-    ProductRepository productRepository;
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -68,29 +66,18 @@ class PartnersOrderQueryRepositoryTest {
         Category category = categoryRepository.save(new Category("식품 분류"));
         Category subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
         LocalDateTime registerDate = LocalDateTime.of(2021, 8, 15, 0, 0, 0);
-        product1 = productRepository.save(
-                new Product(
-                        "생선1", 1000, 10, 1.0, 10, registerDate,
-                        category, subCategory, 1L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
+
+        product1 = saveProduct(
+                "생선1", 1000, 10, 1.0, 10,
+                category.getId(), subCategory.getId(), 1L, registerDate
         );
-        product2 = productRepository.save(
-                new Product(
-                        "생선2", 1200, 11, 1.5, 20, registerDate,
-                        category, subCategory, 1L,
-                        "storedFileName2", "viewFileName2", "상품 설명 입니다.",
-                        "test-product-code"
-                )
+        product2 = saveProduct(
+                "생선2", 1200, 11, 1.5, 20,
+                category.getId(), subCategory.getId(), 1L, registerDate
         );
-        product3 = productRepository.save(
-                new Product(
-                        "생선3", 1500, 12, 3.0, 15, registerDate,
-                        category, subCategory, 1L,
-                        "storedFileName3", "viewFileName3", "상품 설명 입니다.",
-                        "test-product-code"
-                )
+        product3 = saveProduct(
+                "생선3", 1500, 12, 3.0, 15,
+                category.getId(), subCategory.getId(), 1L, registerDate
         );
 
         orderDeliveryInfo = new OrderDeliveryInfo(

@@ -1,7 +1,9 @@
 package springboot.shoppingmall.cart.application;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,19 +11,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.IntegrationTest;
 import springboot.shoppingmall.cart.application.dto.CartQueryDto;
 import springboot.shoppingmall.cart.domain.Cart;
 import springboot.shoppingmall.cart.domain.CartRepository;
-import springboot.shoppingmall.category.domain.Category;
-import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.partners.domain.Partner;
-import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.partners.domain.PartnerRepository;
+import springboot.shoppingmall.product.domain.Product;
 
 @Transactional
 @SpringBootTest
-class CartQueryServiceTest {
+class CartQueryServiceTest extends IntegrationTest {
 
     @Autowired
     CartQueryService cartQueryService;
@@ -30,13 +30,7 @@ class CartQueryServiceTest {
     CartRepository cartRepository;
 
     @Autowired
-    CategoryRepository categoryRepository;
-
-    @Autowired
     PartnerRepository partnerRepository;
-
-    @Autowired
-    ProductRepository productRepository;
 
     Product product, product2, product3;
 
@@ -44,27 +38,25 @@ class CartQueryServiceTest {
 
     @BeforeEach
     void setUp(){
-        Category category = categoryRepository.save(new Category("상위 1"));
-        Category subCategory = categoryRepository.save(new Category("하위 1").changeParent(category));
+        Long categoryId = 1L;
+        Long subCategoryId = 11L;
 
         Partner partner = partnerRepository.save(
                 new Partner("판매업체", "판매대표", "판매업체 주소", "031-222-3311", "222-33-112233", "test1", "test1!")
         );
 
-        product = productRepository.save(
-                new Product("상품 1", 22000, 10, category, subCategory,
-                        partner.getId(), "product_stored_file_name1", "product_view_file_name1",
-                        "상품 1 설명 입니다.", "test-product-code1")
+        LocalDateTime regDate = LocalDateTime.of(2023, 12, 11, 12, 33, 12);
+        product = saveProduct(
+                "상품 1", 22000, 10, 1.0, 123,
+                categoryId, subCategoryId, partner.getId(), regDate
         );
-        product2 = productRepository.save(
-                new Product("상품 2", 32000, 5, category, subCategory,
-                        partner.getId(), "product_stored_file_name2", "product_view_file_name2",
-                        "상품 2 설명 입니다.", "test-product-code2")
+        product2 = saveProduct(
+                "상품 2", 32000, 5, 4.0, 1232,
+                categoryId, subCategoryId, partner.getId(), regDate
         );
-        product3 = productRepository.save(
-                new Product("상품 3", 42000, 3, category, subCategory,
-                        partner.getId(), "product_stored_file_name3", "product_view_file_name3",
-                        "상품 3 설명 입니다.", "test-product-code3")
+        product3 = saveProduct(
+                "상품 3", 42000, 3, 2.9, 784,
+                categoryId, subCategoryId, partner.getId(), regDate
         );
     }
 

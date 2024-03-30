@@ -22,15 +22,18 @@ public class OrderTest {
     List<OrderItem> orderItems;
     @BeforeEach
     void beforeEach() {
+        Long categoryId = 1L;
+        Long subCategoryId = 11L;
+
         product1 = new Product(
                 1L, "상품1", 12000, 22, 0.0, 0,
-                LocalDateTime.now(), new Category("상위 카테고리"), new Category("하위 카테고리"),
+                LocalDateTime.now(), categoryId, subCategoryId,
                 100L, "stored_file_name1", "view_file_name1",
                 "상품 설명 입니다.", "test-product-code1"
         );
         product2 = new Product(
                 2L, "상품2", 10000, 20, 3.0, 10,
-                LocalDateTime.now(), new Category("상위 카테고리"), new Category("하위 카테고리"),
+                LocalDateTime.now(), categoryId, subCategoryId,
                 101L, "stored_file_name2", "view_file_name2",
                 "상품 설명 입니다. 2", "test-product-code2"
         );

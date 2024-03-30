@@ -1,14 +1,13 @@
 package springboot.shoppingmall.order.validator;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.IntegrationTest;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.domain.Order;
@@ -17,20 +16,14 @@ import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.domain.ProductRepository;
 
-@Transactional
-@SpringBootTest
-class OrderValidatorTest {
+class OrderValidatorTest extends IntegrationTest {
 
     @Autowired
     OrderValidator orderValidator;
 
     @Autowired
     CategoryRepository categoryRepository;
-
-    @Autowired
-    ProductRepository productRepository;
 
     @Autowired
     OrderRepository orderRepository;
@@ -43,14 +36,10 @@ class OrderValidatorTest {
         Long userId = 10L;
         Category category = categoryRepository.save(new Category("상위 카테고리"));
         Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product = productRepository.save(
-                new Product(
-                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
+
+        Product product = saveProduct("상품 1", 12000, 20, 1.0, 10,
+                category.getId(), subCategory.getId(), 10L, LocalDateTime.now());
+
         List<OrderItem> orderItems = List.of(new OrderItem(product, 2, OrderStatus.DELIVERY_END));
 
         OrderDeliveryInfo orderDeliveryInfo = new OrderDeliveryInfo(

@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.IntegrationTest;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.client.userservice.UserServiceClient;
@@ -33,15 +34,13 @@ import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.exception.OverQuantityException;
 import springboot.shoppingmall.payment.domain.PayType;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.domain.ProductRepository;
 
 @Transactional
 @SpringBootTest
-class OrderServiceTest {
+class OrderServiceTest extends IntegrationTest {
     @Autowired
     OrderService orderService;
-    @Autowired
-    ProductRepository productRepository;
+
     @Autowired
     CategoryRepository categoryRepository;
     @Autowired
@@ -60,21 +59,14 @@ class OrderServiceTest {
     void beforeEach() {
         Category category = categoryRepository.save(new Category("상위 1"));
         Category subCategory = categoryRepository.save(new Category("하위 1").changeParent(category));
-        product = productRepository.save(
-                new Product(
-                        "상품 1", 22000, productCount, 1.0, 0, LocalDateTime.now(),
-                        category, subCategory, partnerId,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
+
+        product = saveProduct(
+                "상품 1", 22000, productCount, 1.0, 0,
+                category.getId(), subCategory.getId(), partnerId, LocalDateTime.now()
         );
-        product2 = productRepository.save(
-                new Product(
-                        "상품 2", 10000, productCount, 1.0, 0, LocalDateTime.now(),
-                        category, subCategory, partnerId,
-                        "storedFileName2", "viewFileName2", "상품 설명 입니다.2",
-                        "test-product-code2"
-                )
+        product2 = saveProduct(
+                "상품 2", 10000, productCount, 1.0, 0,
+                category.getId(), subCategory.getId(), partnerId, LocalDateTime.now()
         );
     }
 

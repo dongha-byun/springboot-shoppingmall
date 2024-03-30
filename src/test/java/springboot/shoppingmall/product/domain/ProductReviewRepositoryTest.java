@@ -1,56 +1,48 @@
 package springboot.shoppingmall.product.domain;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.category.domain.Category;
-import springboot.shoppingmall.category.domain.CategoryRepository;
+import springboot.shoppingmall.IntegrationTest;
 
 @Transactional
 @SpringBootTest
-class ProductReviewRepositoryTest {
-
-    @Autowired
-    CategoryRepository categoryRepository;
-
-    @Autowired
-    ProductRepository productRepository;
+class ProductReviewRepositoryTest extends IntegrationTest {
 
     @Autowired
     ProductReviewRepository productReviewRepository;
+
+    Product product1, product2;
+
+    @BeforeEach
+    void setup() {
+        Long category = 1L;
+        Long subCategory = 11L;
+        product1 = saveProduct(
+                "상품 1", 12000, 20, 1.0, 10,
+                category, subCategory, 10L, LocalDateTime.now()
+        );
+        product2 = saveProduct(
+                "상품 2", 15000, 10, 1.0, 10,
+                category, subCategory, 10L, LocalDateTime.now()
+        );
+    }
 
     @Test
     @DisplayName("내가 등록한 리뷰 목록 조회")
     void findAllReviewByUser() {
         // given
         Long userId = 10L;
-        Category category = categoryRepository.save(new Category("상위 카테고리"));
-        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product1 = productRepository.save(
-                new Product(
-                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-        Product product2 = productRepository.save(
-                new Product(
-                        "상품 2", 15000, 10, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName2", "viewFileName2", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-
         ProductReview review1 = productReviewRepository.save(
                 createReview("리뷰 입니다.", 4, product1, userId)
         );
@@ -73,17 +65,6 @@ class ProductReviewRepositoryTest {
     void exists_user_and_product_true() {
         // given
         Long userId = 10L;
-        Category category = categoryRepository.save(new Category("상위 카테고리"));
-        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product1 = productRepository.save(
-                new Product(
-                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-
         productReviewRepository.save(
                 createReview("리뷰 입니다.", 4, product1, userId)
         );
@@ -100,25 +81,6 @@ class ProductReviewRepositoryTest {
     void exists_user_and_product_false() {
         // given
         Long userId = 10L;
-        Category category = categoryRepository.save(new Category("상위 카테고리"));
-        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product1 = productRepository.save(
-                new Product(
-                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-        Product product2 = productRepository.save(
-                new Product(
-                        "상품 2", 5000, 10, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName2", "viewFileName2", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-
         productReviewRepository.save(
                 createReview("리뷰 입니다.", 4, product1, userId)
         );
@@ -135,16 +97,6 @@ class ProductReviewRepositoryTest {
     void save_review_with_images() {
         // given
         Long userId = 10L;
-        Category category = categoryRepository.save(new Category("상위 카테고리"));
-        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product = productRepository.save(
-                new Product(
-                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
 
         // when
         List<ProductReviewImage> images = Arrays.asList(
@@ -153,7 +105,7 @@ class ProductReviewRepositoryTest {
                 new ProductReviewImage("stored-file-name-3", "view-file-name-3")
         );
         ProductReview savedReview = productReviewRepository.save(
-                createReviewWithImages("리뷰 입니다.", 3, product, userId, images)
+                createReviewWithImages("리뷰 입니다.", 3, product1, userId, images)
         );
 
         // then

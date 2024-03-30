@@ -68,8 +68,7 @@ class ProductApiControllerTest {
                 new ProductDto(
                         10L, "product-code-1", "상품 1",
                         12000, 2, "상품 설명입니다.",
-                        new CategoryDto(1L, "상위 카테고리"),
-                        new CategoryDto(11L, "하위 카테고리", 1L),
+                        1L, 11L,
                         100L, "stored-file-name", "view-file-name")
         );
 

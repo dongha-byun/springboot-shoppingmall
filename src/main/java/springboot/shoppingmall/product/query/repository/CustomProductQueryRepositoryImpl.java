@@ -23,14 +23,14 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
     }
 
     @Override
-    public List<ProductQueryDto> queryProducts(Category category, Category subCategory, ProductQueryOrderType orderType) {
+    public List<ProductQueryDto> queryProducts(Long categoryId, Long subCategoryId, ProductQueryOrderType orderType) {
         return jpaQueryFactory.select(
                         projectionsConstructorOfProductQueryDto()
                 )
                 .from(product)
                 .join(partner).on(partner.id.eq(product.partnerId))
                 .where(
-                        allCategoryEq(category, subCategory)
+                        allCategoryEq(categoryId, subCategoryId)
                 )
                 .orderBy(
                         orderBy(orderType)
@@ -39,17 +39,17 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
     }
 
     @Override
-    public List<ProductQueryDto> searchProducts(Category category, Category subCategory, String searchKeyword) {
-        return defaultQueryProductsByCategory(category, subCategory)
+    public List<ProductQueryDto> searchProducts(Long categoryId, Long subCategoryId, String searchKeyword) {
+        return defaultQueryProductsByCategory(categoryId, subCategoryId)
                 .where(
                         searchProductName(searchKeyword)
                 ).fetch();
     }
 
     @Override
-    public List<ProductQueryDto> queryProducts(Category category, Category subCategory, ProductQueryOrderType orderType,
+    public List<ProductQueryDto> queryProducts(Long categoryId, Long subCategoryId, ProductQueryOrderType orderType,
                                        int limit, int offset) {
-        return defaultQueryProductsByCategory(category, subCategory)
+        return defaultQueryProductsByCategory(categoryId, subCategoryId)
                 .orderBy(orderBy(orderType))
                 .limit(limit)
                 .offset(offset)
@@ -57,7 +57,7 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
     }
 
     @Override
-    public List<ProductQueryDto> queryPartnersProducts(Long partnerId, Category category, Category subCategory,
+    public List<ProductQueryDto> queryPartnersProducts(Long partnerId, Long categoryId, Long subCategoryId,
                                                int limit, int offset) {
         return jpaQueryFactory.select(
                         projectionsConstructorOfProductQueryDto()
@@ -65,8 +65,7 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
                 .join(partner).on(partner.id.eq(product.partnerId))
                 .where(
                         product.partnerId.eq(partnerId)
-                                .and(product.category.eq(category))
-                                .and(product.subCategory.eq(subCategory))
+                                .and(allCategoryEq(categoryId, subCategoryId))
                 )
                 .orderBy(orderBy(RECENT))
                 .limit(limit)
@@ -108,13 +107,13 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
         return product.name.contains(searchText);
     }
 
-    private JPAQuery<ProductQueryDto> defaultQueryProductsByCategory(Category category, Category subCategory) {
+    private JPAQuery<ProductQueryDto> defaultQueryProductsByCategory(Long categoryId, Long subCategoryId) {
         return jpaQueryFactory.select(
                         projectionsConstructorOfProductQueryDto()
                 ).from(product)
                 .join(partner).on(partner.id.eq(product.partnerId))
                 .where(
-                        allCategoryEq(category, subCategory)
+                        allCategoryEq(categoryId, subCategoryId)
                 );
     }
 
@@ -131,16 +130,16 @@ public class CustomProductQueryRepositoryImpl implements CustomProductQueryRepos
         );
     }
 
-    private BooleanExpression allCategoryEq(Category category, Category subCategory) {
-        return categoryEq(category).and(subCategoryEq(subCategory));
+    private BooleanExpression allCategoryEq(Long categoryId, Long subCategoryId) {
+        return categoryEq(categoryId).and(subCategoryEq(subCategoryId));
     }
 
-    private BooleanExpression categoryEq(Category category){
-        return category == null ? null : product.category.eq(category);
+    private BooleanExpression categoryEq(Long categoryId){
+        return categoryId == null ? null : product.categoryId.eq(categoryId);
     }
 
-    private BooleanExpression subCategoryEq(Category category){
-        return category == null ? null : product.subCategory.eq(category);
+    private BooleanExpression subCategoryEq(Long subCategoryId){
+        return subCategoryId == null ? null : product.subCategoryId.eq(subCategoryId);
     }
 
     private OrderSpecifier orderBy(ProductQueryOrderType orderType) {

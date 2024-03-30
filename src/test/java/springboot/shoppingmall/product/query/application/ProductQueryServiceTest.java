@@ -2,7 +2,10 @@ package springboot.shoppingmall.product.query.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static springboot.shoppingmall.product.query.ProductQueryOrderType.*;
+import static springboot.shoppingmall.product.query.ProductQueryOrderType.PRICE;
+import static springboot.shoppingmall.product.query.ProductQueryOrderType.RECENT;
+import static springboot.shoppingmall.product.query.ProductQueryOrderType.SCORE;
+import static springboot.shoppingmall.product.query.ProductQueryOrderType.SELL;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,26 +15,23 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.IntegrationTest;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
-import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.product.query.dto.ProductQueryDto;
 import springboot.shoppingmall.partners.domain.Partner;
 import springboot.shoppingmall.partners.domain.PartnerRepository;
+import springboot.shoppingmall.product.domain.Product;
+import springboot.shoppingmall.product.query.dto.ProductQueryDto;
 
 @Transactional
 @SpringBootTest
-class ProductQueryServiceTest {
+class ProductQueryServiceTest extends IntegrationTest {
 
     @Autowired
     ProductQueryService productQueryService;
 
     @Autowired
     CategoryRepository categoryRepository;
-
-    @Autowired
-    ProductRepository productRepository;
 
     @Autowired
     PartnerRepository partnerRepository;
@@ -50,33 +50,20 @@ class ProductQueryServiceTest {
 
         // "면바지", "청바지", "반바지", "조거팬츠"
         LocalDateTime now = LocalDateTime.of(2023, 8, 15, 12, 12, 12);
-        saveProduct("슬랙스 1", 23100, 2.7, 7, now);
-        saveProduct("반바지 1", 6900, 3.7, 4, now.plusDays(1));
-        saveProduct("반바지 2", 6900, 3.7, 4, now.plusDays(2));
-        saveProduct("반바지 3", 6900, 3.7, 4, now.plusDays(3));
-        saveProduct("반바지 4", 6900, 3.7, 4, now.plusDays(4));
-        saveProduct("반바지 5", 6900, 3.7, 4, now.plusDays(5));
-        saveProduct("반바지 6", 6900, 3.7, 4, now.plusDays(6));
-        saveProduct("반바지 7", 6900, 3.7, 4, now.plusDays(7));
-        saveProduct("반바지 8", 6900, 3.7, 4, now.plusDays(8));
-        saveProduct("청바지 1", 12000, 2.0, 5, now.plusDays(9));
-        saveProduct("면바지 1", 17900, 1.7, 2, now.plusDays(10));
-        saveProduct("면바지 2", 17900, 1.7, 2, now.plusDays(11));
-        saveProduct("면바지 3", 17900, 1.7, 2, now.plusDays(12));
-        saveProduct("면바지 4", 17900, 1.7, 2, now.plusDays(13));
-    }
-
-    private void saveProduct(String name, int price, double score, int salesVolume, LocalDateTime now) {
-        String storedFileName = "stored-file-name-" + name;
-        String viewFileName = "view-file-name-" + name;
-        productRepository.save(
-                new Product(
-                        name, price, 10, score, salesVolume, now,
-                        category, subCategory, partners.getId(),
-                        storedFileName, viewFileName, "상품 설명 입니다.",
-                        partners.generateProductCode()
-                )
-        );
+        saveProduct("슬랙스 1", 23100, 10, 2.7, 7, category.getId(), subCategory.getId(), partners.getId(), now);
+        saveProduct("반바지 1", 6900, 10,3.7, 4, category.getId(), subCategory.getId(), partners.getId(), now.plusDays(1));
+        saveProduct("반바지 2", 6900, 10,3.7, 4, category.getId(), subCategory.getId(), partners.getId(), now.plusDays(2));
+        saveProduct("반바지 3", 6900, 10,3.7, 4, category.getId(), subCategory.getId(), partners.getId(), now.plusDays(3));
+        saveProduct("반바지 4", 6900, 10,3.7, 4, category.getId(), subCategory.getId(), partners.getId(), now.plusDays(4));
+        saveProduct("반바지 5", 6900, 10,3.7, 4, category.getId(), subCategory.getId(), partners.getId(), now.plusDays(5));
+        saveProduct("반바지 6", 6900, 10,3.7, 4, category.getId(), subCategory.getId(), partners.getId(), now.plusDays(6));
+        saveProduct("반바지 7", 6900, 10,3.7, 4, category.getId(), subCategory.getId(), partners.getId(), now.plusDays(7));
+        saveProduct("반바지 8", 6900, 10,3.7, 4, category.getId(), subCategory.getId(), partners.getId(), now.plusDays(8));
+        saveProduct("청바지 1", 12000, 10,2.0, 5, category.getId(), subCategory.getId(), partners.getId(), now.plusDays(9));
+        saveProduct("면바지 1", 17900, 10,1.7, 2, category.getId(), subCategory.getId(), partners.getId(), now.plusDays(10));
+        saveProduct("면바지 2", 17900, 10,1.7, 2, category.getId(), subCategory.getId(), partners.getId(), now.plusDays(11));
+        saveProduct("면바지 3", 17900, 10,1.7, 2, category.getId(), subCategory.getId(), partners.getId(), now.plusDays(12));
+        saveProduct("면바지 4", 17900, 10,1.7, 2, category.getId(), subCategory.getId(), partners.getId(), now.plusDays(13));
     }
 
     @Test
@@ -257,15 +244,9 @@ class ProductQueryServiceTest {
     @DisplayName("특정 상품을 조회한다.")
     void find_product() {
         // given
-        Product product = productRepository.save(
-                new Product(
-                        "등록상품1", 23100, 10, 2.7, 7,
-                        LocalDateTime.of(2023, 7, 25, 10, 22, 10),
-                        category, subCategory, partners.getId(),
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        partners.generateProductCode()
-                )
-        );
+        LocalDateTime regDate = LocalDateTime.of(2023, 7, 25, 10, 22, 10);
+        Product product =
+                saveProduct("등록상품1", 23100, 10, 2.7, 7, category.getId(), subCategory.getId(), partners.getId(), regDate);
 
         // when
         ProductQueryDto productDto = productQueryService.findProductOf(product.getId());

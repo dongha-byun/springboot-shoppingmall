@@ -1,15 +1,19 @@
 package springboot.shoppingmall.product.domain;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import springboot.shoppingmall.category.domain.Category;
 
 class ProductReviewTest {
+
+    Long categoryId = 1L;
+    Long subCategoryId = 11L;
+    Long partnersId = 10L;
 
     @Test
     @DisplayName("상품 리뷰 등록 테스트")
@@ -18,7 +22,7 @@ class ProductReviewTest {
         Long userId = 10L;
         Product product = new Product(
                 "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
-                new Category("상위 카테고리"), new Category("하위 카테고리"), 10L,
+                categoryId, subCategoryId, partnersId,
                 "storedFileName1", "viewFileName1", "상품 설명 입니다.",
                 "test-product-code"
         );
@@ -42,7 +46,7 @@ class ProductReviewTest {
         // given
         Product product = new Product(
                 "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
-                new Category("상위 카테고리"), new Category("하위 카테고리"), 10L,
+                categoryId, subCategoryId, partnersId,
                 "storedFileName1", "viewFileName1", "상품 설명 입니다.",
                 "test-product-code"
         );
@@ -70,7 +74,7 @@ class ProductReviewTest {
         Long user2Id = 20L;
         Product product = new Product(
                 "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
-                new Category("상위 카테고리"), new Category("하위 카테고리"), 10L,
+                categoryId, subCategoryId, partnersId,
                 "storedFileName1", "viewFileName1", "상품 설명 입니다.",
                 "test-product-code"
         );
@@ -111,7 +115,7 @@ class ProductReviewTest {
         // given
         Product product = new Product(
                 "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
-                new Category("상위 카테고리"), new Category("하위 카테고리"), 10L,
+                categoryId, subCategoryId, partnersId,
                 "storedFileName1", "viewFileName1", "상품 설명 입니다.",
                 "test-product-code"
         );

@@ -93,7 +93,7 @@ public class DataInitializer {
                     for(int i=1; i<=100; i++){
                         Partner partner = partners.get(i%2);
                         em.persist(new Product("상품_"+categoryId+"_"+subCategoryId+"_"+i, 190 * i,
-                                501-i, category, subCategory, partner.getId(),
+                                501-i, categoryId, subCategoryId, partner.getId(),
                                 null, null, i + "번째 상품 설명 입니다.",
                                 partner.generateProductCode()));
                     }

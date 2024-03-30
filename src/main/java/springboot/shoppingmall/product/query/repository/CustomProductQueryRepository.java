@@ -7,13 +7,13 @@ import springboot.shoppingmall.product.query.ProductQueryOrderType;
 import springboot.shoppingmall.product.query.dto.ProductQueryDto;
 
 public interface CustomProductQueryRepository {
-    List<ProductQueryDto> queryProducts(Category category, Category subCategory, ProductQueryOrderType orderType);
+    List<ProductQueryDto> queryProducts(Long categoryId, Long subCategoryId, ProductQueryOrderType orderType);
 
-    List<ProductQueryDto> searchProducts(Category category, Category subCategory, String searchKeyword);
+    List<ProductQueryDto> searchProducts(Long categoryId, Long subCategoryId, String searchKeyword);
 
-    List<ProductQueryDto> queryProducts(Category category, Category subCategory, ProductQueryOrderType recent, int limit, int offset);
+    List<ProductQueryDto> queryProducts(Long categoryId, Long subCategoryId, ProductQueryOrderType recent, int limit, int offset);
 
-    List<ProductQueryDto> queryPartnersProducts(Long partnerId, Category category, Category subCategory, int limit, int offset);
+    List<ProductQueryDto> queryPartnersProducts(Long partnerId, Long categoryId, Long subCategoryId, int limit, int offset);
 
     List<ProductQueryDto> searchProducts(String searchKeyword, ProductQueryOrderType orderType, int limit, int offset);
 

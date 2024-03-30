@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.IntegrationTest;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.application.OrderUserInterfaceService;
@@ -26,11 +27,10 @@ import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.partners.application.dto.PartnersReadyOrderQueryDto;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.domain.ProductRepository;
 
 @Transactional
 @SpringBootTest
-class PartnersReadyOrderQueryServiceTest {
+class PartnersReadyOrderQueryServiceTest extends IntegrationTest {
 
     @Autowired
     PartnersReadyOrderQueryService service;
@@ -40,9 +40,6 @@ class PartnersReadyOrderQueryServiceTest {
 
     @Autowired
     OrderRepository orderRepository;
-
-    @Autowired
-    ProductRepository productRepository;
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -117,15 +114,9 @@ class PartnersReadyOrderQueryServiceTest {
     }
 
     private Product saveProduct(String name, int price, double score, int salesVolume, LocalDateTime now) {
-        String storedFileName = "stored-file-name-" + name;
-        String viewFileName = "view-file-name-" + name;
-        return productRepository.save(
-                new Product(
-                        name, price, 10, score, salesVolume, now,
-                        category, subCategory, partnersId,
-                        storedFileName, viewFileName, "상품 설명 입니다.",
-                        "product-code"
-                )
+        return saveProduct(
+                name, price, 10, score, salesVolume, category.getId(), subCategory.getId(), partnersId,
+                now
         );
     }
 

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.IntegrationTest;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.domain.Product;
@@ -17,19 +18,15 @@ import springboot.shoppingmall.product.domain.ProductQna;
 import springboot.shoppingmall.product.domain.ProductQnaAnswer;
 import springboot.shoppingmall.product.domain.ProductQnaAnswerRepository;
 import springboot.shoppingmall.product.domain.ProductQnaRepository;
-import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.query.ProductQnaAnswerCompleteType;
 import springboot.shoppingmall.product.query.dto.PartnersProductQnaDto;
 
 @Transactional
 @SpringBootTest
-class PartnerProductQnaQueryServiceTest {
+class PartnerProductQnaQueryServiceTest extends IntegrationTest {
 
     @Autowired
     PartnerProductQnaQueryService service;
-
-    @Autowired
-    ProductRepository productRepository;
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -49,13 +46,14 @@ class PartnerProductQnaQueryServiceTest {
     void setup() {
         Category category = categoryRepository.save(new Category("식품 분류"));
         Category subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
+
         LocalDateTime registerDate = LocalDateTime.of(2023, 8, 12, 0, 0, 0);
-        Product product1 = saveProduct("product1", 1000, 10, 10, 1.0,
-                registerDate.plusDays(1), category, subCategory, "storedFileName1", "viewFileName1");
-        Product product2 = saveProduct("product2", 1200, 11, 20, 1.5,
-                registerDate.plusDays(2), category, subCategory, "storedFileName2", "viewFileName2");
-        Product product3 = saveProduct("product3", 1500, 12, 15, 3.0,
-                registerDate.plusDays(3), category, subCategory, "storedFileName3", "viewFileName3");
+        Product product1 = saveProduct("product1", 1000, 10, 1.0, 10,
+                category.getId(), subCategory.getId(), partnerId, registerDate.plusDays(1));
+        Product product2 = saveProduct("product2", 1200, 11, 1.5, 20,
+                category.getId(), subCategory.getId(), partnerId, registerDate.plusDays(2));
+        Product product3 = saveProduct("product3", 1500, 12, 3.0, 15,
+                category.getId(), subCategory.getId(), partnerId, registerDate.plusDays(3));
 
         productQna1 = saveQna("상품 문의 드립니다. 1", product1);
         productQna2 = saveQna("상품 문의 드립니다. 2", product2);
@@ -68,8 +66,8 @@ class PartnerProductQnaQueryServiceTest {
         // given
 
         // when
-        List<PartnersProductQnaDto> qnaList = service.findPartnersProductQna(partnerId,
-                ProductQnaAnswerCompleteType.ALL);
+        List<PartnersProductQnaDto> qnaList =
+                service.findPartnersProductQna(partnerId, ProductQnaAnswerCompleteType.ALL);
 
         // then
         assertThat(qnaList).hasSize(3)
@@ -132,15 +130,4 @@ class PartnerProductQnaQueryServiceTest {
         );
     }
 
-    private Product saveProduct(String product1, int price, int count, int count1, double score, LocalDateTime now,
-                                Category category, Category subCategory, String storedFileName1, String viewFileName1) {
-        return productRepository.save(
-                new Product(
-                        product1, price, count, score, count1, now,
-                        category, subCategory, partnerId,
-                        storedFileName1, viewFileName1, "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-    }
 }

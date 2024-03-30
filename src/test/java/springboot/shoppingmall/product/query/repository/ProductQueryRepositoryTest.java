@@ -1,7 +1,11 @@
 package springboot.shoppingmall.product.query.repository;
 
-import static org.assertj.core.api.Assertions.*;
-import static springboot.shoppingmall.product.query.ProductQueryOrderType.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static springboot.shoppingmall.product.query.ProductQueryOrderType.PRICE;
+import static springboot.shoppingmall.product.query.ProductQueryOrderType.RECENT;
+import static springboot.shoppingmall.product.query.ProductQueryOrderType.SCORE;
+import static springboot.shoppingmall.product.query.ProductQueryOrderType.SELL;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,23 +15,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.IntegrationTest;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
-import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.product.query.dto.ProductQueryDto;
 import springboot.shoppingmall.partners.domain.Partner;
 import springboot.shoppingmall.partners.domain.PartnerRepository;
+import springboot.shoppingmall.product.query.dto.ProductQueryDto;
 
 @Transactional
 @SpringBootTest
-class ProductQueryRepositoryTest {
+class ProductQueryRepositoryTest extends IntegrationTest {
 
     @Autowired
     CategoryRepository categoryRepository;
-
-    @Autowired
-    ProductRepository productRepository;
 
     @Autowired
     ProductQueryRepository productQueryRepository;
@@ -35,7 +35,7 @@ class ProductQueryRepositoryTest {
     @Autowired
     PartnerRepository partnerRepository;
 
-    Category category, subCategory;
+    Long categoryId, subCategoryId;
 
     LocalDateTime now;
     Partner partners;
@@ -46,17 +46,19 @@ class ProductQueryRepositoryTest {
                 new Partner("테스트판매사", "테스트대표", "테스트시 테스트구 테스트동", "031-444-1234", "110-22-334411",
                         "test_partner", "test_partner1!", true)
         );
-        category = categoryRepository.save(new Category("식품 분류"));
-        subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
+        Category category = categoryRepository.save(new Category("식품 분류"));
+        Category subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
+        categoryId = category.getId();
+        subCategoryId = subCategory.getId();
         now = LocalDateTime.of(2023, 8, 11, 15, 45, 11);
 
-        saveProduct("생선3", 1500, 12, 3.0, 15, now.minusDays(2));
-        saveProduct("생선1", 1000, 10, 1.0, 10, now);
-        saveProduct("생선2", 1200, 11, 1.5, 20, now.plusDays(1));
-        saveProduct("생선4", 2300, 9, 2.0, 8, now.plusDays(3));
-        saveProduct("생선5", 9900, 1, 2.5, 11, now.plusDays(4));
-        saveProduct("생선6", 3900, 3, 3.5, 30, now.plusDays(5));
-        saveProduct("생선7", 1350, 7, 4.8, 2, now.plusDays(6));
+        saveProduct("생선3", 1500, 12, 3.0, 15, categoryId, subCategoryId, partners.getId(), now.minusDays(2));
+        saveProduct("생선1", 1000, 10, 1.0, 10, categoryId, subCategoryId, partners.getId(), now);
+        saveProduct("생선2", 1200, 11, 1.5, 20, categoryId, subCategoryId, partners.getId(), now.plusDays(1));
+        saveProduct("생선4", 2300, 9, 2.0, 8, categoryId, subCategoryId, partners.getId(), now.plusDays(3));
+        saveProduct("생선5", 9900, 1, 2.5, 11, categoryId, subCategoryId, partners.getId(), now.plusDays(4));
+        saveProduct("생선6", 3900, 3, 3.5, 30, categoryId, subCategoryId, partners.getId(), now.plusDays(5));
+        saveProduct("생선7", 1350, 7, 4.8, 2, categoryId, subCategoryId, partners.getId(), now.plusDays(6));
     }
 
     @Test
@@ -65,7 +67,7 @@ class ProductQueryRepositoryTest {
         // given
 
         // when
-        List<ProductQueryDto> products = productQueryRepository.queryProducts(category, subCategory, SCORE);
+        List<ProductQueryDto> products = productQueryRepository.queryProducts(categoryId, subCategoryId, SCORE);
 
         // then
         assertThat(products).hasSize(7)
@@ -87,7 +89,7 @@ class ProductQueryRepositoryTest {
         // given
 
         // when
-        List<ProductQueryDto> products = productQueryRepository.queryProducts(category, subCategory, RECENT);
+        List<ProductQueryDto> products = productQueryRepository.queryProducts(categoryId, subCategoryId, RECENT);
 
         // then
         assertThat(products).hasSize(7)
@@ -109,7 +111,7 @@ class ProductQueryRepositoryTest {
         // given
 
         // when
-        List<ProductQueryDto> products = productQueryRepository.queryProducts(category, subCategory, PRICE);
+        List<ProductQueryDto> products = productQueryRepository.queryProducts(categoryId, subCategoryId, PRICE);
 
         // then
         assertThat(products).hasSize(7)
@@ -131,7 +133,7 @@ class ProductQueryRepositoryTest {
         // given
 
         // when
-        List<ProductQueryDto> products = productQueryRepository.queryProducts(category, subCategory, SELL);
+        List<ProductQueryDto> products = productQueryRepository.queryProducts(categoryId, subCategoryId, SELL);
 
         // then
         assertThat(products).hasSize(7)
@@ -175,7 +177,7 @@ class ProductQueryRepositoryTest {
 
         // when
         // 7 개 중 뒤에 3개 조회이므로, 가장 나중에 등록된 3개가 최신순으로 조회되면 됨
-        List<ProductQueryDto> products = productQueryRepository.queryProducts(category, subCategory, RECENT, 3,
+        List<ProductQueryDto> products = productQueryRepository.queryProducts(categoryId, subCategoryId, RECENT, 3,
                 4);
 
         // then
@@ -194,7 +196,7 @@ class ProductQueryRepositoryTest {
         // given
 
         // when
-        int totalCount = productQueryRepository.countByCategoryAndSubCategory(category, subCategory);
+        int totalCount = productQueryRepository.countByCategoryIdAndSubCategoryId(categoryId, subCategoryId);
 
         // then
         assertThat(totalCount).isEqualTo(7);
@@ -207,7 +209,7 @@ class ProductQueryRepositoryTest {
 
         // when
         List<ProductQueryDto> products =
-                productQueryRepository.queryPartnersProducts(partners.getId(), category, subCategory, 10, 0);
+                productQueryRepository.queryPartnersProducts(partners.getId(), categoryId, subCategoryId, 10, 0);
 
         // then
         assertThat(products).hasSize(7)
@@ -229,7 +231,7 @@ class ProductQueryRepositoryTest {
         // given
 
         // when
-        int count = productQueryRepository.countByPartnerIdAndCategoryAndSubCategory(partners.getId(), category, subCategory);
+        int count = productQueryRepository.countByPartnerIdAndCategoryIdAndSubCategoryId(partners.getId(), categoryId, subCategoryId);
 
         // then
         assertThat(count).isEqualTo(7);
@@ -242,7 +244,7 @@ class ProductQueryRepositoryTest {
 
         // when
         List<ProductQueryDto> products = productQueryRepository.queryPartnersProducts(
-                partners.getId(), category, subCategory, 10, 0
+                partners.getId(), categoryId, subCategoryId, 10, 0
         );
 
         // then
@@ -257,19 +259,5 @@ class ProductQueryRepositoryTest {
                         tuple("생선1", 10, 1000),
                         tuple("생선3", 12, 1500)
                 );
-    }
-
-    private void saveProduct(String name, int price, int quantity, double score, int salesVolume, LocalDateTime regDate) {
-        String storedFileName = "storedFileName-" + name;
-        String viewFileName = "viewFileName-" + name;
-        String detail = name + " 상품 설명입니다.";
-        productRepository.save(
-                new Product(
-                        name, price, quantity, score, salesVolume, regDate,
-                        category, subCategory, partners.getId(),
-                        storedFileName, viewFileName, detail,
-                        partners.generateProductCode()
-                )
-        );
     }
 }

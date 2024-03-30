@@ -1,28 +1,26 @@
 package springboot.shoppingmall.order.domain;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.order.exception.OverQuantityException;
 import springboot.shoppingmall.product.domain.Product;
 
 class OrderItemTest {
 
-    Category category;
-    Category subCategory;
     Product product;
     int quantity = 10;
+    Long categoryId = 1L;
+    Long subCategoryId = 11L;
     @BeforeEach
     void beforeEach() {
-        category = new Category("상위 카테고리");
-        subCategory = new Category("하위 카테고리").changeParent(category);
-
         product = new Product(
-                "상품1", 10000, quantity, category, subCategory, 10L,
+                "상품1", 10000, quantity, categoryId, subCategoryId, 10L,
                 "stored-file-name", "view-file-name", "상품 상세 정보",
                 "test-product-code"
         );

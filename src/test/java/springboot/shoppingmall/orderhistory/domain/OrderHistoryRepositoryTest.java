@@ -1,6 +1,6 @@
 package springboot.shoppingmall.orderhistory.domain;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,34 +12,28 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.category.domain.Category;
-import springboot.shoppingmall.category.domain.CategoryRepository;
+import springboot.shoppingmall.IntegrationTest;
 import springboot.shoppingmall.order.domain.Order;
 import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.orderhistory.application.dto.OrderHistoryDto;
 import springboot.shoppingmall.partners.domain.Partner;
+import springboot.shoppingmall.partners.domain.PartnerRepository;
 import springboot.shoppingmall.pay.domain.PayHistory;
 import springboot.shoppingmall.pay.domain.PayHistoryRepository;
 import springboot.shoppingmall.payment.domain.PayType;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.partners.domain.PartnerRepository;
-import springboot.shoppingmall.orderhistory.application.dto.OrderHistoryDto;
 
 @Transactional
 @SpringBootTest
-class OrderHistoryRepositoryTest {
+class OrderHistoryRepositoryTest extends IntegrationTest {
 
     @Autowired
     OrderHistoryRepository orderHistoryRepository;
     @Autowired
     PartnerRepository partnerRepository;
-    @Autowired
-    ProductRepository productRepository;
-    @Autowired
-    CategoryRepository categoryRepository;
     @Autowired
     OrderRepository orderRepository;
 
@@ -60,18 +54,17 @@ class OrderHistoryRepositoryTest {
                 "주소 1", "상세주소 1", "요구사항 1"
         );
 
-        Category parent = categoryRepository.save(new Category("카테고리1"));
-        Category child = categoryRepository.save(new Category("하위 카테고리1"));
-
+        Long categoryId = 1L;
+        Long subCategoryId = 11L;
         partner = partnerRepository.save(
                 new Partner("테스트판매처", "테스터", "테스트시 테스트구 테스트동",
                         "031-222-3121", "102-33-122333",
                         "provider_test", "provider_test1!", true)
         );
-        product = productRepository.save(
-                new Product("테스트상품", 12000, 300, parent, child,
-                        partner.getId(), "storedFileName", "viewFileName",
-                        "상품 설명 입니다.", "test-product-code")
+
+        product = saveProduct(
+                "테스트상품", 12000, 300, 0.0, 0,
+                categoryId, subCategoryId, partner.getId(), LocalDateTime.now()
         );
 
         order1 = new Order(

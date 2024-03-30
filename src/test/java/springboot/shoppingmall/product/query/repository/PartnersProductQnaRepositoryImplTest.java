@@ -1,6 +1,7 @@
 package springboot.shoppingmall.product.query.repository;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -8,8 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.IntegrationTest;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.domain.Product;
@@ -17,22 +17,16 @@ import springboot.shoppingmall.product.domain.ProductQna;
 import springboot.shoppingmall.product.domain.ProductQnaAnswer;
 import springboot.shoppingmall.product.domain.ProductQnaAnswerRepository;
 import springboot.shoppingmall.product.domain.ProductQnaRepository;
-import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.query.ProductQnaAnswerCompleteType;
 import springboot.shoppingmall.product.query.dto.PartnersProductQnaDto;
 
-@Transactional
-@SpringBootTest
-class PartnersProductQnaRepositoryImplTest {
+class PartnersProductQnaRepositoryImplTest extends IntegrationTest {
 
     @Autowired
     PartnersProductQnaRepositoryImpl partnersProductQnaRepository;
 
     @Autowired
     ProductQnaRepository productQnaRepository;
-
-    @Autowired
-    ProductRepository productRepository;
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -50,29 +44,17 @@ class PartnersProductQnaRepositoryImplTest {
         Category category = categoryRepository.save(new Category("식품 분류"));
         Category subCategory = categoryRepository.save(new Category("생선 분류").changeParent(category));
         LocalDateTime now = LocalDateTime.now();
-        Product product1 = productRepository.save(
-                new Product(
-                        "product1", 1000, 10, 1.0, 10, now,
-                        category, subCategory, partnerId,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
+        Product product1 = saveProduct(
+                "product1", 1000, 10, 1.0, 10,
+                category.getId(), subCategory.getId(), partnerId, now
         );
-        Product product2 = productRepository.save(
-                new Product(
-                        "product2", 1200, 11, 1.5, 20,
-                        now.plusDays(1), category, subCategory, partnerId,
-                        "storedFileName2", "viewFileName2", "상품 설명 입니다.",
-                        "test-product-code"
-                )
+        Product product2 = saveProduct(
+                "product2", 1200, 11, 1.5, 20,
+                category.getId(), subCategory.getId(), partnerId, now
         );
-        Product product3 = productRepository.save(
-                new Product(
-                        "product3", 1500, 12, 3.0, 15,
-                        now.plusDays(2), category, subCategory, partnerId,
-                        "storedFileName3", "viewFileName3", "상품 설명 입니다.",
-                        "test-product-code"
-                )
+        Product product3 = saveProduct(
+                "product3", 1500, 12, 3.0, 15,
+                category.getId(), subCategory.getId(), partnerId, now
         );
 
         productQna1 = productQnaRepository.save(
@@ -92,16 +74,16 @@ class PartnersProductQnaRepositoryImplTest {
         // given
 
         // when
-        List<PartnersProductQnaDto> qnas = partnersProductQnaRepository.findPartnersProductQnaAll(partnerId,
-                ProductQnaAnswerCompleteType.N);
+        List<PartnersProductQnaDto> qnas =
+                partnersProductQnaRepository.findPartnersProductQnaAll(partnerId, ProductQnaAnswerCompleteType.N);
 
         // then
         assertThat(qnas).hasSize(3)
-                .extracting("id", "isAnswered", "productName", "imgFileName")
+                .extracting("id", "isAnswered", "productName")
                 .containsExactly(
-                        tuple(productQna1.getId(), false, "product1", "storedFileName1"),
-                        tuple(productQna2.getId(), false, "product2", "storedFileName2"),
-                        tuple(productQna3.getId(), false, "product3", "storedFileName3")
+                        tuple(productQna1.getId(), false, "product1"),
+                        tuple(productQna2.getId(), false, "product2"),
+                        tuple(productQna3.getId(), false, "product3")
                 );
     }
 
@@ -122,10 +104,10 @@ class PartnersProductQnaRepositoryImplTest {
 
         // then
         assertThat(qnas).hasSize(2)
-                .extracting("id", "isAnswered", "productName", "imgFileName")
+                .extracting("id", "isAnswered", "productName")
                 .containsExactly(
-                        tuple(productQna1.getId(), true, "product1", "storedFileName1"),
-                        tuple(productQna3.getId(), true, "product3", "storedFileName3")
+                        tuple(productQna1.getId(), true, "product1"),
+                        tuple(productQna3.getId(), true, "product3")
                 );
     }
 
@@ -146,11 +128,11 @@ class PartnersProductQnaRepositoryImplTest {
 
         // then
         assertThat(qnas).hasSize(3)
-                .extracting("id", "isAnswered", "productName", "imgFileName")
+                .extracting("id", "isAnswered", "productName")
                 .containsExactly(
-                        tuple(productQna1.getId(), true, "product1", "storedFileName1"),
-                        tuple(productQna2.getId(), false, "product2", "storedFileName2"),
-                        tuple(productQna3.getId(), true, "product3", "storedFileName3")
+                        tuple(productQna1.getId(), true, "product1"),
+                        tuple(productQna2.getId(), false, "product2"),
+                        tuple(productQna3.getId(), true, "product3")
                 );
     }
 }

@@ -3,25 +3,20 @@ package springboot.shoppingmall.product.domain;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.BaseEntity;
 import springboot.shoppingmall.order.exception.OverQuantityException;
 
@@ -52,13 +47,11 @@ public class Product extends BaseEntity {
 
     private LocalDateTime registerDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @Column(name = "category_id")
+    private Long categoryId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sub_category_id")
-    private Category subCategory;
+    @Column(name = "sub_category_id")
+    private Long subCategoryId;
 
     @Column(name = "partner_id")
     private Long partnerId;
@@ -79,21 +72,21 @@ public class Product extends BaseEntity {
     private final List<ProductDetail> details = new ArrayList<>();
 
     @Builder
-    public Product(String name, int price, int stock, Category category, Category subCategory
+    public Product(String name, int price, int stock, Long categoryId, Long subCategoryId
             , Long partnerId, String storedFileName, String viewFileName, String detail, String productCode) {
-        this(null, name, price, stock, 0.0, 0, LocalDateTime.now(), category, subCategory,
+        this(null, name, price, stock, 0.0, 0, LocalDateTime.now(), categoryId, subCategoryId,
                 partnerId, storedFileName, viewFileName, detail, productCode);
     }
 
     public Product(String name, int price, int stock, double score, int salesVolume,
-                   LocalDateTime registerDate, Category category, Category subCategory, Long partnerId,
+                   LocalDateTime registerDate, Long categoryId, Long subCategoryId, Long partnerId,
                    String storedFileName, String viewFileName, String detail, String productCode) {
-        this(null, name, price, stock, score, salesVolume, registerDate, category, subCategory,
+        this(null, name, price, stock, score, salesVolume, registerDate, categoryId, subCategoryId,
                 partnerId, storedFileName, viewFileName, detail, productCode);
     }
 
     public Product(Long id, String name, int price, int stock, double score, int salesVolume,
-                   LocalDateTime registerDate, Category category, Category subCategory, Long partnerId,
+                   LocalDateTime registerDate, Long categoryId, Long subCategoryId, Long partnerId,
                    String storedFileName, String viewFileName, String detail, String productCode) {
         this.id = id;
         this.name = name;
@@ -102,8 +95,8 @@ public class Product extends BaseEntity {
         this.score = score;
         this.salesVolume = salesVolume;
         this.registerDate = registerDate;
-        this.category = category;
-        this.subCategory = subCategory;
+        this.categoryId = categoryId;
+        this.subCategoryId = subCategoryId;
         this.partnerId = partnerId;
         this.thumbnail = new ProductThumbnail(storedFileName, viewFileName);
         this.productCode = productCode;

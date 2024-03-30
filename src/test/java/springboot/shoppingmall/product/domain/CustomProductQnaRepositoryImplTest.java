@@ -1,27 +1,27 @@
 package springboot.shoppingmall.product.domain;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.IntegrationTest;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.application.dto.ProductQnaDto;
 
 @Transactional
 @SpringBootTest
-class CustomProductQnaRepositoryImplTest {
+class CustomProductQnaRepositoryImplTest extends IntegrationTest {
 
     @Autowired
     CategoryRepository categoryRepository;
-
-    @Autowired
-    ProductRepository productRepository;
 
     @Autowired
     ProductQnaRepository productQnaRepository;
@@ -29,22 +29,24 @@ class CustomProductQnaRepositoryImplTest {
     @Autowired
     CustomProductQnaRepositoryImpl customProductQnaRepository;
 
+    Product product;
+
+    @BeforeEach
+    void setup() {
+        Category category = categoryRepository.save(new Category("상위 카테고리"));
+        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
+        product = saveProduct(
+                "상품 1", 12000, 20, 1.0, 10,
+                category.getId(), subCategory.getId(), 10L, LocalDateTime.now()
+        );
+    }
+
     @Test
     @DisplayName("특정 상품에 등록된 문의 목록을 조회한다.")
     void find_all_product_qna() {
         // given
         Long user1Id = 10L;
         Long user2Id = 20L;
-        Category category = categoryRepository.save(new Category("상위 카테고리"));
-        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product = productRepository.save(
-                new Product(
-                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
 
         ProductQna qna1 = saveProductQna("문의 드립니다. 1", product, user1Id);
         ProductQna qna2 = saveProductQna("문의 드립니다. 2", product, user2Id);

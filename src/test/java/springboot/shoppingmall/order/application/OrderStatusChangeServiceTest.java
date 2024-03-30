@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.IntegrationTest;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.application.dto.ExchangeEndResultDto;
@@ -29,11 +30,10 @@ import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.dto.OrderDeliveryInvoiceResponse;
 import springboot.shoppingmall.order.handler.OrderCanceledEventHandler;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.domain.ProductRepository;
 
 @Transactional
 @SpringBootTest
-class OrderStatusChangeServiceTest {
+class OrderStatusChangeServiceTest extends IntegrationTest {
 
     @Autowired
     OrderStatusChangeService orderStatusChangeService;
@@ -48,9 +48,6 @@ class OrderStatusChangeServiceTest {
     OrderCanceledEventHandler orderCanceledEventHandler;
 
     Product product, product2;
-
-    @Autowired
-    ProductRepository productRepository;
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -75,22 +72,10 @@ class OrderStatusChangeServiceTest {
         Category category = categoryRepository.save(new Category("상위 1"));
         Category subCategory = categoryRepository.save(new Category("하위 1").changeParent(category));
         LocalDateTime registerDate = LocalDateTime.of(2023, 5, 15, 0, 0, 0);
-        product = productRepository.save(
-                new Product(
-                        "상품 1", 22000, productCount, 1.0, 0, registerDate,
-                        category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-        product2 = productRepository.save(
-                new Product(
-                        "상품 2", 10000, productCount, 1.0, 0, registerDate,
-                        category, subCategory, 10L,
-                        "storedFileName2", "viewFileName2", "상품 설명 입니다.2",
-                        "test-product-code2"
-                )
-        );
+        product = saveProduct("상품 1", 22000, productCount, 1.0, 0,
+                category.getId(), subCategory.getId(), 10L, registerDate);
+        product2 = saveProduct("상품 2", 10000, productCount, 1.0, 0,
+                category.getId(), subCategory.getId(), 10L, registerDate);
     }
 
     @Test

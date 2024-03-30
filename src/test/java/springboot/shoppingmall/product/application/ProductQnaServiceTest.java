@@ -1,6 +1,6 @@
 package springboot.shoppingmall.product.application;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,41 +10,30 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import springboot.shoppingmall.category.domain.Category;
-import springboot.shoppingmall.category.domain.CategoryRepository;
+import springboot.shoppingmall.IntegrationTest;
 import springboot.shoppingmall.product.application.dto.ProductQnaCreateDto;
 import springboot.shoppingmall.product.application.dto.ProductQnaDto;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.presentation.response.ProductQnaResponse;
 
 @Transactional
 @SpringBootTest
-class ProductQnaServiceTest {
+class ProductQnaServiceTest extends IntegrationTest {
 
     @Autowired
     ProductQnaService productQnaService;
-
-    @Autowired
-    ProductRepository productRepository;
-
-    @Autowired
-    CategoryRepository categoryRepository;
 
     Product product;
     Long userId = 10L;
 
     @BeforeEach
     void setUp(){
-        Category category = categoryRepository.save(new Category("상위 1"));
-        Category subCategory = categoryRepository.save(new Category("하위 1").changeParent(category));
-        product = productRepository.save(
-                new Product(
-                        "상품 1", 22000, 10, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
+        Long categoryId = 1L;
+        Long subCategoryId = 11L;
+        Long partnersId = 1L;
+        product = saveProduct(
+                "상품 1", 22000, 10, 1.0, 10,
+                categoryId, subCategoryId, partnersId, LocalDateTime.now()
         );
     }
 

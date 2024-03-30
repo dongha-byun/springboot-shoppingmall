@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.IntegrationTest;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.client.couponservice.CouponServiceClient;
@@ -32,11 +33,10 @@ import springboot.shoppingmall.pay.domain.PayHistory;
 import springboot.shoppingmall.pay.domain.PayHistoryRepository;
 import springboot.shoppingmall.payment.domain.PayType;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.domain.ProductRepository;
 
 @Transactional
 @SpringBootTest
-class OrderItemResolutionServiceTest {
+class OrderItemResolutionServiceTest extends IntegrationTest {
 
     @Autowired
     OrderItemResolutionService service;
@@ -55,9 +55,6 @@ class OrderItemResolutionServiceTest {
 
     @Autowired
     OrderRepository orderRepository;
-
-    @Autowired
-    ProductRepository productRepository;
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -87,7 +84,7 @@ class OrderItemResolutionServiceTest {
         subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
 
         LocalDateTime now = LocalDateTime.of(2023, 8, 15, 12, 12, 12);
-        product = saveProduct("슬랙스", 23100, 2.7, 7, now);
+        product = saveProduct("슬랙스", 23100, 10, 2.7, 7, category.getId(), subCategory.getId(), partner.getId(), now);
 
         orderDeliveryInfo = new OrderDeliveryInfo(
                 "수령인 1", "010-2345-2345",
@@ -234,18 +231,5 @@ class OrderItemResolutionServiceTest {
                         userId, orderItem.getId(), OrderItemResolutionType.EXCHANGE, resolutionDateTime, ""
                 )
         ).isInstanceOf(IllegalArgumentException.class);
-    }
-
-    private Product saveProduct(String name, int price, double score, int salesVolume, LocalDateTime now) {
-        String storedFileName = "stored-file-name-" + name;
-        String viewFileName = "view-file-name-" + name;
-        return productRepository.save(
-                new Product(
-                        name, price, 10, score, salesVolume, now,
-                        category, subCategory, partner.getId(),
-                        storedFileName, viewFileName, "상품 설명 입니다.",
-                        partner.generateProductCode()
-                )
-        );
     }
 }

@@ -1,6 +1,7 @@
 package springboot.shoppingmall.product.application;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,24 +10,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.IntegrationTest;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.product.application.dto.ProductQnaAnswerDto;
 import springboot.shoppingmall.product.domain.Product;
 import springboot.shoppingmall.product.domain.ProductQna;
 import springboot.shoppingmall.product.domain.ProductQnaRepository;
-import springboot.shoppingmall.product.domain.ProductRepository;
-import springboot.shoppingmall.product.presentation.response.ProductQnaAnswerResponse;
 
 @Transactional
 @SpringBootTest
-public class ProductQnaAnswerServiceTest {
+public class ProductQnaAnswerServiceTest extends IntegrationTest {
 
     @Autowired
     ProductQnaAnswerService productQnaAnswerService;
-
-    @Autowired
-    ProductRepository productRepository;
 
     @Autowired
     ProductQnaRepository productQnaRepository;
@@ -41,13 +38,9 @@ public class ProductQnaAnswerServiceTest {
     void setUp(){
         Category category = categoryRepository.save(new Category("상위 1"));
         Category subCategory = categoryRepository.save(new Category("하위 1").changeParent(category));
-        product = productRepository.save(
-                new Product(
-                        "상품 1", 22000, 10, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
+        product = saveProduct(
+                "상품 1", 22000, 10, 1.0, 10,
+                category.getId(), subCategory.getId(), 10L, LocalDateTime.now()
         );
     }
 

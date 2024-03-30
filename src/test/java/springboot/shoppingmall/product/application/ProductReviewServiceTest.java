@@ -1,6 +1,8 @@
 package springboot.shoppingmall.product.application;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.shoppingmall.IntegrationTest;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.domain.Order;
@@ -20,26 +23,22 @@ import springboot.shoppingmall.order.domain.OrderDeliveryInfo;
 import springboot.shoppingmall.order.domain.OrderItem;
 import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
+import springboot.shoppingmall.product.application.dto.ProductReviewCreateDto;
 import springboot.shoppingmall.product.application.dto.ProductReviewDto;
 import springboot.shoppingmall.product.application.dto.ProductUserReviewDto;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.domain.ProductRepository;
 import springboot.shoppingmall.product.domain.ProductReview;
 import springboot.shoppingmall.product.domain.ProductReviewRepository;
-import springboot.shoppingmall.product.application.dto.ProductReviewCreateDto;
 
 @Transactional
 @SpringBootTest
-class ProductReviewServiceTest {
+class ProductReviewServiceTest extends IntegrationTest {
 
     @Autowired
     EntityManager em;
 
     @Autowired
     CategoryRepository categoryRepository;
-
-    @Autowired
-    ProductRepository productRepository;
 
     @Autowired
     ProductReviewRepository productReviewRepository;
@@ -52,12 +51,26 @@ class ProductReviewServiceTest {
 
     OrderDeliveryInfo orderDeliveryInfo;
 
+    Product product1, product2;
+
     @BeforeEach
     void beforeEach() {
         orderDeliveryInfo = new OrderDeliveryInfo(
                 "test-receiver", "010-1234-1234",
                 "test-zipcode", "test-address",
                 "test-detail-address", "test-message"
+        );
+
+        Category category = categoryRepository.save(new Category("상위 카테고리"));
+        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
+
+        product1 = saveProduct(
+                "상품 1", 12000, 20, 1.0, 10,
+                category.getId(), subCategory.getId(), 10L, LocalDateTime.now()
+        );
+        product2 = saveProduct(
+                "상품 2", 12000, 20, 1.0, 10,
+                category.getId(), subCategory.getId(), 10L, LocalDateTime.now()
         );
     }
 
@@ -70,23 +83,13 @@ class ProductReviewServiceTest {
     void createReviewTest() {
         // given
         Long userId = 10L;
-        Category category = categoryRepository.save(new Category("상위 카테고리"));
-        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product = productRepository.save(
-                new Product(
-                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-        Order endOrder = saveOrder("test-order-code", userId, product);
+        Order endOrder = saveOrder("test-order-code", userId, product1);
 
         // when
         OrderItem savedOrderItem = endOrder.getItems().get(0);
         ProductReviewCreateDto createDto = new ProductReviewCreateDto("리뷰 등록 합니다.", 3);
         ProductUserReviewDto productReviewDto = service.createProductReview(
-                userId, savedOrderItem.getId(), product.getId(), createDto, new ArrayList<>()
+                userId, savedOrderItem.getId(), product1.getId(), createDto, new ArrayList<>()
         );
 
         // then
@@ -104,26 +107,16 @@ class ProductReviewServiceTest {
     void createReviewTest_fail() {
         // given
         Long userId = 10L;
-        Category category = categoryRepository.save(new Category("상위 카테고리"));
-        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product = productRepository.save(
-                new Product(
-                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-        Order endOrder = saveOrder("test-order-code", userId, product);
+        Order endOrder = saveOrder("test-order-code", userId, product1);
         Long orderItemId = getFirstOrderItemOf(endOrder);
 
         ProductReviewCreateDto createDto = new ProductReviewCreateDto("리뷰 등록 합니다.", 3);
         OrderItem savedItem = endOrder.getItems().get(0);
-        service.createProductReview(userId, orderItemId, product.getId(), createDto, new ArrayList<>());
+        service.createProductReview(userId, orderItemId, product1.getId(), createDto, new ArrayList<>());
 
         // when & then
         assertThatThrownBy(
-                () -> service.createProductReview(userId, savedItem.getId(), product.getId(), createDto, new ArrayList<>())
+                () -> service.createProductReview(userId, savedItem.getId(), product1.getId(), createDto, new ArrayList<>())
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -133,22 +126,11 @@ class ProductReviewServiceTest {
         // given
         Long user1Id = 10L;
         Long user2Id = 20L;
-        Category category = categoryRepository.save(new Category("상위 카테고리"));
-        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product = productRepository.save(
-                new Product(
-                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-
-        ProductReview review1 = saveReview("리뷰 입니다.", 4, product, user1Id);
-        ProductReview review2 = saveReview("리뷰 2 입니다.", 5, product, user2Id);
+        ProductReview review1 = saveReview("리뷰 입니다.", 4, product1, user1Id);
+        ProductReview review2 = saveReview("리뷰 2 입니다.", 5, product1, user2Id);
 
         // when
-        List<ProductReviewDto> reviews = service.findAllReview(product.getId());
+        List<ProductReviewDto> reviews = service.findAllReview(product1.getId());
 
         // then
         assertThat(reviews).hasSize(2)
@@ -164,25 +146,6 @@ class ProductReviewServiceTest {
     void deleteProductReview() {
         // given
         Long userId = 10L;
-        Category category = categoryRepository.save(new Category("상위 카테고리"));
-        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product1 = productRepository.save(
-                new Product(
-                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-        Product product2 = productRepository.save(
-                new Product(
-                        "상품 2", 12000, 20, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-
         ProductReview review1 = saveReview("리뷰 입니다.", 4, product1, userId);
         ProductReview review2 = saveReview("리뷰 2 입니다.", 5, product2, userId);
 
@@ -209,25 +172,6 @@ class ProductReviewServiceTest {
     void findAllReviewByUser() {
         // given
         Long userId = 10L;
-        Category category = categoryRepository.save(new Category("상위 카테고리"));
-        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product1 = productRepository.save(
-                new Product(
-                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-        Product product2 = productRepository.save(
-                new Product(
-                        "상품 2", 42100, 15, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-
         ProductReview review1 = saveReview("리뷰 입니다.", 4, product1, userId);
         ProductReview review2 = saveReview("리뷰 2 입니다.", 5, product2, userId);
 
@@ -248,17 +192,7 @@ class ProductReviewServiceTest {
     void create_review_with_image() {
         // given
         Long userId = 10L;
-        Category category = categoryRepository.save(new Category("상위 카테고리"));
-        Category subCategory = categoryRepository.save(new Category("하위 카테고리").changeParent(category));
-        Product product = productRepository.save(
-                new Product(
-                        "상품 1", 12000, 20, 1.0, 10, LocalDateTime.now(),
-                        category, subCategory, 10L,
-                        "storedFileName1", "viewFileName1", "상품 설명 입니다.",
-                        "test-product-code"
-                )
-        );
-        Order endOrder = saveOrder("test-order-code-1", userId, product);
+        Order endOrder = saveOrder("test-order-code-1", userId, product1);
         Long orderItemId = getFirstOrderItemOf(endOrder);
 
         em.flush();
@@ -274,7 +208,7 @@ class ProductReviewServiceTest {
                 new ThumbnailInfo("stored-file-name5", "view-file-name5")
         );
         ProductUserReviewDto productReviewDto = service.createProductReview(userId, orderItemId,
-                product.getId(), createDto, reviewImages);
+                product1.getId(), createDto, reviewImages);
 
         // then
         ProductReview findReview = productReviewRepository.findById(productReviewDto.getId()).orElseThrow();

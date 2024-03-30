@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -16,9 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
+import springboot.shoppingmall.IntegrationTest;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
 import springboot.shoppingmall.order.application.OrderUserInterfaceService;
@@ -30,11 +27,10 @@ import springboot.shoppingmall.order.domain.OrderRepository;
 import springboot.shoppingmall.order.domain.OrderStatus;
 import springboot.shoppingmall.order.partners.application.dto.PartnersDeliveryOrderQueryDto;
 import springboot.shoppingmall.product.domain.Product;
-import springboot.shoppingmall.product.domain.ProductRepository;
 
 @Transactional
 @SpringBootTest
-class PartnersDeliveryOrderQueryServiceTest {
+class PartnersDeliveryOrderQueryServiceTest extends IntegrationTest {
     @Autowired
     PartnersDeliveryOrderQueryService service;
 
@@ -43,9 +39,6 @@ class PartnersDeliveryOrderQueryServiceTest {
 
     @Autowired
     OrderRepository orderRepository;
-
-    @Autowired
-    ProductRepository productRepository;
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -122,15 +115,9 @@ class PartnersDeliveryOrderQueryServiceTest {
     }
 
     private Product saveProduct(String name, int price, double score, int salesVolume, LocalDateTime now) {
-        String storedFileName = "stored-file-name-" + name;
-        String viewFileName = "view-file-name-" + name;
-        return productRepository.save(
-                new Product(
-                        name, price, 10, score, salesVolume, now,
-                        category, subCategory, partnersId,
-                        storedFileName, viewFileName, "상품 설명 입니다.",
-                        "product-code"
-                )
+        return saveProduct(
+                name, price, 10, score, salesVolume,
+                category.getId(), subCategory.getId(), partnersId, now
         );
     }
 
