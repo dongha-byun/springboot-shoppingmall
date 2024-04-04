@@ -11,9 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.transaction.annotation.Transactional;
 import springboot.shoppingmall.IntegrationTest;
 import springboot.shoppingmall.category.domain.Category;
 import springboot.shoppingmall.category.domain.CategoryRepository;
@@ -34,8 +32,6 @@ import springboot.shoppingmall.pay.domain.PayHistoryRepository;
 import springboot.shoppingmall.payment.domain.PayType;
 import springboot.shoppingmall.product.domain.Product;
 
-@Transactional
-@SpringBootTest
 class OrderItemResolutionServiceTest extends IntegrationTest {
 
     @Autowired
@@ -111,7 +107,7 @@ class OrderItemResolutionServiceTest extends IntegrationTest {
                 )
         );
 
-        doNothing().when(payServiceClient).cancel(isA(String.class), isA(String.class), isA(Integer.class));
+        doNothing().when(payServiceClient).cancel(isA(Long.class), isA(Integer.class));
         doNothing().when(couponServiceClient).recoveryCoupon(isA(Long.class));
 
         // when
