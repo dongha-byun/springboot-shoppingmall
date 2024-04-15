@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,21 +19,22 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import springboot.shoppingmall.authorization.GatewayConstants;
 import springboot.shoppingmall.coupon.domain.OrderCodeCreator;
+import springboot.shoppingmall.order.dto.DeliveryInfoRequest;
+import springboot.shoppingmall.order.dto.OrderItemRequest;
+import springboot.shoppingmall.order.dto.OrderRequest;
 import springboot.shoppingmall.pay.type.kakakopay.dto.approve.KakaoPayApproveResponseDto;
 import springboot.shoppingmall.pay.type.kakakopay.dto.cancel.KakaoPayCancelResponseDto;
 import springboot.shoppingmall.pay.type.kakakopay.dto.ready.KakaoPayReadyResponseDto;
 import springboot.shoppingmall.pay.type.kakakopay.service.KakaoPayService;
 import springboot.shoppingmall.pay.type.kakakopay.web.approve.KakaoPayApproveRequest;
-import springboot.shoppingmall.pay.type.kakakopay.web.approve.KakaoPayApproveResponse;
 import springboot.shoppingmall.pay.type.kakakopay.value.ApprovedCancelAmount;
 import springboot.shoppingmall.pay.type.kakakopay.value.CancelAvailableAmount;
 import springboot.shoppingmall.pay.type.kakakopay.value.CanceledAmount;
 import springboot.shoppingmall.pay.type.kakakopay.web.cancel.KakaoPayCancelRequest;
-import springboot.shoppingmall.pay.type.kakakopay.web.cancel.KakaoPayCancelResponse;
 import springboot.shoppingmall.pay.type.kakakopay.value.Amount;
 import springboot.shoppingmall.pay.type.kakakopay.web.ready.KakaoPayReadyRequest;
-import springboot.shoppingmall.pay.type.kakakopay.web.ready.KakaoPayReadyResponse;
-import springboot.shoppingmall.pay.web.PayRequest;
+import springboot.shoppingmall.pay.web.request.PayApproveRequest;
+import springboot.shoppingmall.pay.web.request.PayRequest;
 import springboot.shoppingmall.payment.domain.PayType;
 
 @WebMvcTest(KakaoPayController.class)
@@ -104,14 +106,22 @@ class KakaoPayControllerTest {
                 "partner_order_id",
                 "pg_token"
         );
+        OrderRequest orderData = new OrderRequest(
+                "test-transaction-id", "partner_order_id", PayType.KAKAO_PAY.name(),
+                List.of(new OrderItemRequest(1L, 10, null)), 0,
+                new DeliveryInfoRequest(
+                        "수령인", "010-1234-1234", "01234",
+                        "수령인 주소", "수령인 상세주소", "배송시 요구사항"
+                )
+        );
 
-        PayRequest<KakaoPayApproveRequest> kakaoPayApproveRequestPayRequest = new PayRequest<>(
-                PayType.KAKAO_PAY.name(), kakaoPayApproveRequest
+        PayApproveRequest<KakaoPayApproveRequest> kakaoPayApproveRequestPayRequest = new PayApproveRequest<>(
+                PayType.KAKAO_PAY.name(), kakaoPayApproveRequest, orderData
         );
 
         String requestBody = objectMapper.writeValueAsString(kakaoPayApproveRequestPayRequest);
 
-        when(kakaoPayService.approve(any())).thenReturn(
+        when(kakaoPayService.approve(any(), any())).thenReturn(
                 new KakaoPayApproveResponseDto(
                         "test-cid",
                         "test-aid",
@@ -127,7 +137,6 @@ class KakaoPayControllerTest {
                         ),
                         LocalDateTime.of(2023, 11, 29, 0, 0, 0),
                         LocalDateTime.of(2023, 11, 29, 0, 0, 0)
-
                 )
         );
 

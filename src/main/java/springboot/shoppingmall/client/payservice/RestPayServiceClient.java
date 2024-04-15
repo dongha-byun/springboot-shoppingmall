@@ -7,7 +7,7 @@ import springboot.shoppingmall.pay.domain.PayHistory;
 import springboot.shoppingmall.pay.domain.PayHistoryRepository;
 import springboot.shoppingmall.pay.type.kakakopay.web.cancel.KakaoPayCancelRequest;
 import springboot.shoppingmall.pay.type.kakakopay.web.cancel.KakaoPayCancelResponse;
-import springboot.shoppingmall.pay.web.PayRequest;
+import springboot.shoppingmall.pay.web.request.PayRequest;
 
 @RequiredArgsConstructor
 @Component

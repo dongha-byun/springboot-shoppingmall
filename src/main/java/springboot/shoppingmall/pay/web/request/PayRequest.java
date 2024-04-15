@@ -1,4 +1,4 @@
-package springboot.shoppingmall.pay.web;
+package springboot.shoppingmall.pay.web.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
